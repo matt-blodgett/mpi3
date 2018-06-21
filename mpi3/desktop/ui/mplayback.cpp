@@ -6,57 +6,82 @@
 
 #include <QLabel>
 
+#include <QDebug>
 
-PanelPlayback::PanelPlayback(QWidget *parent)
+
+PlaybackControl::PlaybackControl(QWidget *parent)
     : QWidget(parent)
 {
-    QGridLayout *layoutMain = new QGridLayout;
+    //    QGridLayout *layoutPlayback = new QGridLayout;
+    //    layoutPlayback->addWidget(btnPrev, 0, 0, 1, 1);
+    //    layoutPlayback->addWidget(btnPlay, 0, 1, 1, 1);
+    //    layoutPlayback->addWidget(btnNext, 0, 2, 1, 1);
 
 
-    frmVolume = new QWidget;
-    frmPlayback = new QWidget;
-    frmSearchbar = new QWidget;
-
-    QGridLayout *layoutVolume = new QGridLayout;
-    QGridLayout *layoutPlayback = new QGridLayout;
-    QGridLayout *layoutSearchbar = new QGridLayout;
+    //    frmPlayback->setLayout(layoutPlayback);
 
 
-    volSlider = new QSlider;
-    volSlider->setOrientation(Qt::Horizontal);
-
-    layoutVolume->addWidget(volSlider, 0, 0, 1, 1);
-
-    frmVolume->setLayout(layoutVolume);
-
-
-    btnNext = new QPushButton;
-    btnPrev = new QPushButton;
-    btnPlay = new QPushButton;
+    btnNext = new QPushButton(this);
+    btnPrev = new QPushButton(this);
+    btnPlay = new QPushButton(this);
 
     btnNext->setText("Next");
     btnPrev->setText("Prev");
     btnPlay->setText("Play");
 
 
-    layoutPlayback->addWidget(btnPrev, 0, 0, 1, 1);
-    layoutPlayback->addWidget(btnPlay, 0, 1, 1, 1);
-    layoutPlayback->addWidget(btnNext, 0, 2, 1, 1);
+    this->update();
+
+    btnPlay->move(btnPrev->width(), 0);
+    btnNext->move(btnPrev->width() + btnPlay->width(), 0);
+}
 
 
-    frmPlayback->setLayout(layoutPlayback);
+PlaybackControl::~PlaybackControl()
+{
+
+}
+
+void PlaybackControl::resizeEvent(QResizeEvent *event)
+{
+    Q_UNUSED(event);
+
+    qDebug() << this->size();
+
+}
+
+
+PanelPlayback::PanelPlayback(QWidget *parent)
+    : QWidget(parent)
+{
+    QGridLayout *layoutMain = new QGridLayout;
+
+    frmVolume = new QWidget(this);
+    frmSearchbar = new QWidget(this);
+
+    QGridLayout *layoutVolume = new QGridLayout;
+    QGridLayout *layoutSearchbar = new QGridLayout;
+
+
+    volSlider = new QSlider(frmVolume);
+    volSlider->setOrientation(Qt::Horizontal);
+    layoutVolume->addWidget(volSlider, 0, 0, 1, 1);
+    frmVolume->setLayout(layoutVolume);
 
 
 
-    boxSearch = new QLineEdit;
-    btnSearch = new QPushButton;
+
+    frmPlayback = new PlaybackControl(this);
+
+
+
+
+    boxSearch = new QLineEdit(frmSearchbar);
+    btnSearch = new QPushButton(frmSearchbar);
 
     btnSearch->setText("S");
-
     layoutSearchbar->addWidget(boxSearch);
     layoutSearchbar->addWidget(btnSearch);
-
-
     frmSearchbar->setLayout(layoutSearchbar);
 
 
