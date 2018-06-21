@@ -41,6 +41,10 @@ void Mpi3RootDesktop::initialize()
 //    window->setStyleSheet("QWidget#window {background-color: #000000}");
     windowMain->setLayout(layoutMain);
     setCentralWidget(windowMain);
+
+    windowMain->setGeometry(200, 200, 1000, 400);
+
+
     windowMain->show();
 }
 

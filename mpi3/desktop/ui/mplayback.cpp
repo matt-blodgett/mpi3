@@ -19,6 +19,7 @@
 PlaybackControl::PlaybackControl(QWidget *parent)
     : QWidget(parent)
 {
+
     container = new QWidget(this);
 
     btnNext = new QPushButton(container);
@@ -30,8 +31,13 @@ PlaybackControl::PlaybackControl(QWidget *parent)
     btnPlay->setText("Play");
 
 
+
     btnPlay->move(btnPrev->width(), 0);
     btnNext->move(btnPrev->width() + btnPlay->width(), 0);
+
+//    int x = (this->width() / 2) - (300 / 2);
+//    container->move(x, 0);
+
 }
 
 PlaybackControl::~PlaybackControl()
@@ -43,10 +49,13 @@ void PlaybackControl::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
 
-    int x = (this->width() / 2) - (container->width() / 2);
+//    qDebug() << container->width();
+
+
+//    int x = (this->width() / 2) - (container->width() / 2);
+    int x = (this->width() / 2) - (300 / 2);
     container->move(x, 0);
 
-    btnPrev->set
 }
 
 
@@ -59,7 +68,10 @@ PanelPlayback::PanelPlayback(QWidget *parent)
     QGridLayout *layoutMain = new QGridLayout;
 
     frmVolume = new QWidget(this);
+    frmPlayback = new PlaybackControl(this);
     frmSearchbar = new QWidget(this);
+
+
 
     QGridLayout *layoutVolume = new QGridLayout;
     QGridLayout *layoutSearchbar = new QGridLayout;
@@ -70,10 +82,6 @@ PanelPlayback::PanelPlayback(QWidget *parent)
     layoutVolume->addWidget(volSlider, 0, 0, 1, 1);
     frmVolume->setLayout(layoutVolume);
 
-
-
-
-    frmPlayback = new PlaybackControl(this);
 
 
 
@@ -100,6 +108,7 @@ PanelPlayback::PanelPlayback(QWidget *parent)
 
     layoutMain->setMargin(0);
     this->setLayout(layoutMain);
+
 }
 
 PanelPlayback::~PanelPlayback()
