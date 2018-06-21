@@ -22,6 +22,8 @@ PanelViews::PanelViews(QWidget *parent)
     layout->addWidget(btnArtists, 1, 0, 1, 1);
     layout->addWidget(btnPlaylists, 2, 0, 1, 1);
 
+    layout->setRowStretch(3, 1);
+
     layout->setMargin(0);
 
 //    this->setObjectName("panel");

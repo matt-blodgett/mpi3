@@ -2,6 +2,7 @@
 #define MPLAYBACK_H
 
 #include <QPushButton>
+#include <QLineEdit>
 #include <QSlider>
 
 
@@ -19,6 +20,17 @@ private:
     QWidget *frmSearchbar = nullptr;
 
     QSlider *volSlider = nullptr;
+
+    QPushButton *btnNext = nullptr;
+    QPushButton *btnPrev = nullptr;
+    QPushButton *btnPlay = nullptr;
+//    QSlider *posSlider = nullptr;
+
+
+    QLineEdit *boxSearch = nullptr;
+    QPushButton *btnSearch = nullptr;
+
+
 
 
 private:

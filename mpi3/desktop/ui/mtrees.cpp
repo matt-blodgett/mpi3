@@ -10,7 +10,7 @@
 PanelTrees::PanelTrees(QWidget *parent)
     : QWidget(parent)
 {
-    QGridLayout *layout = new QGridLayout;
+    QGridLayout *layoutMain = new QGridLayout;
 
     lblTreeview = new QLabel(this);
     treeLibrary = new QTreeView(this);
@@ -23,14 +23,15 @@ PanelTrees::PanelTrees(QWidget *parent)
     font.setPointSize(12);
 
     lblTreeview->setFont(font);
-    layout->addWidget(lblTreeview, 0, 0, 1, 1);
-    layout->addWidget(treeLibrary, 1, 0, 1, 1);
+    layoutMain->addWidget(lblTreeview, 0, 0, 1, 1);
+    layoutMain->addWidget(treeLibrary, 1, 0, 1, 1);
 
-    layout->setMargin(0);
+
+    layoutMain->setMargin(0);
 
 //    this->setObjectName("panel");
 //    this->setStyleSheet("QWidget#panel {background-color: #c669f4}");
-    this->setLayout(layout);
+    this->setLayout(layoutMain);
 }
 
 PanelTrees::~PanelTrees()

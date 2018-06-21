@@ -30,9 +30,33 @@ PanelPlayback::PanelPlayback(QWidget *parent)
     frmVolume->setLayout(layoutVolume);
 
 
+    btnNext = new QPushButton;
+    btnPrev = new QPushButton;
+    btnPlay = new QPushButton;
+
+    btnNext->setText("Next");
+    btnPrev->setText("Prev");
+    btnPlay->setText("Play");
+
+
+    layoutPlayback->addWidget(btnPrev, 0, 0, 1, 1);
+    layoutPlayback->addWidget(btnPlay, 0, 1, 1, 1);
+    layoutPlayback->addWidget(btnNext, 0, 2, 1, 1);
 
 
     frmPlayback->setLayout(layoutPlayback);
+
+
+
+    boxSearch = new QLineEdit;
+    btnSearch = new QPushButton;
+
+    btnSearch->setText("S");
+
+    layoutSearchbar->addWidget(boxSearch);
+    layoutSearchbar->addWidget(btnSearch);
+
+
     frmSearchbar->setLayout(layoutSearchbar);
 
 
@@ -40,6 +64,8 @@ PanelPlayback::PanelPlayback(QWidget *parent)
     layoutMain->addWidget(frmVolume, 0, 0, 1, 1);
     layoutMain->addWidget(frmPlayback, 0, 1, 1, 1);
     layoutMain->addWidget(frmSearchbar, 0, 2, 1, 1);
+
+    layoutMain->setColumnStretch(1, 1);
 
 
     layoutMain->setMargin(0);
