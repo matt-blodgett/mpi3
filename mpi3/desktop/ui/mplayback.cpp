@@ -9,33 +9,30 @@
 #include <QDebug>
 
 
+// https://doc.qt.io/qt-5/qtwidgets-widgets-icons-example.html#
+
+
+
+// ----------------------------------------------------------------------------------------------------
+// * PlaybackControl *
+// ----------------------------------------------------------------------------------------------------
 PlaybackControl::PlaybackControl(QWidget *parent)
     : QWidget(parent)
 {
-    //    QGridLayout *layoutPlayback = new QGridLayout;
-    //    layoutPlayback->addWidget(btnPrev, 0, 0, 1, 1);
-    //    layoutPlayback->addWidget(btnPlay, 0, 1, 1, 1);
-    //    layoutPlayback->addWidget(btnNext, 0, 2, 1, 1);
+    container = new QWidget(this);
 
-
-    //    frmPlayback->setLayout(layoutPlayback);
-
-
-    btnNext = new QPushButton(this);
-    btnPrev = new QPushButton(this);
-    btnPlay = new QPushButton(this);
+    btnNext = new QPushButton(container);
+    btnPrev = new QPushButton(container);
+    btnPlay = new QPushButton(container);
 
     btnNext->setText("Next");
     btnPrev->setText("Prev");
     btnPlay->setText("Play");
 
 
-    this->update();
-
     btnPlay->move(btnPrev->width(), 0);
     btnNext->move(btnPrev->width() + btnPlay->width(), 0);
 }
-
 
 PlaybackControl::~PlaybackControl()
 {
@@ -46,11 +43,16 @@ void PlaybackControl::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
 
-    qDebug() << this->size();
+    int x = (this->width() / 2) - (container->width() / 2);
+    container->move(x, 0);
 
+    btnPrev->set
 }
 
 
+// ----------------------------------------------------------------------------------------------------
+// * PanelPlayback *
+// ----------------------------------------------------------------------------------------------------
 PanelPlayback::PanelPlayback(QWidget *parent)
     : QWidget(parent)
 {
@@ -92,6 +94,9 @@ PanelPlayback::PanelPlayback(QWidget *parent)
 
     layoutMain->setColumnStretch(1, 1);
 
+    layoutMain->setColumnMinimumWidth(0, 150);
+    layoutMain->setColumnMinimumWidth(1, 400);
+    layoutMain->setColumnMinimumWidth(2, 150);
 
     layoutMain->setMargin(0);
     this->setLayout(layoutMain);

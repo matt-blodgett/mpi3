@@ -16,6 +16,8 @@ public:
     ~PlaybackControl();
 
 private:
+    QWidget *container = nullptr;
+
     QPushButton *btnNext = nullptr;
     QPushButton *btnPrev = nullptr;
     QPushButton *btnPlay = nullptr;
@@ -37,8 +39,8 @@ public:
 
 private:
     QWidget *frmVolume = nullptr;
-//    QWidget *frmPlayback = nullptr;
     QWidget *frmSearchbar = nullptr;
+
 
     QSlider *volSlider = nullptr;
 
