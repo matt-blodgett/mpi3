@@ -7,7 +7,7 @@ QT += gui
 QT += widgets
 
 
-TARGET = mpi3
+TARGET = device
 TEMPLATE = app
 
 
