@@ -1,10 +1,27 @@
 #ifndef MTREES_H
 #define MTREES_H
 
-#include <QLabel>
 #include <QTreeView>
+#include <QLabel>
 
 
+// ----------------------------------------------------------------------------------------------------
+// * LibraryTreeview *
+// ----------------------------------------------------------------------------------------------------
+class LibraryTreeview : public QTreeView
+{
+    Q_OBJECT
+
+public:
+    explicit LibraryTreeview(QWidget *parent=nullptr);
+    ~LibraryTreeview();
+
+};
+
+
+// ----------------------------------------------------------------------------------------------------
+// * PanelTrees *
+// ----------------------------------------------------------------------------------------------------
 class PanelTrees : public QWidget
 {
     Q_OBJECT
@@ -15,12 +32,11 @@ public:
 
 private:
     QLabel *lblTreeview = nullptr;
-    QTreeView *treeLibrary = nullptr;
+    LibraryTreeview *treeLibrary = nullptr;
 
 private:
     void paintEvent(QPaintEvent *event);
 
 };
-
 
 #endif // MTREES_H

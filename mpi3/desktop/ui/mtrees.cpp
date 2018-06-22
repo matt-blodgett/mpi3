@@ -3,30 +3,43 @@
 #include <QGridLayout>
 #include <QStyleOption>
 #include <QPainter>
-
 #include <QFont>
 
 
+// ----------------------------------------------------------------------------------------------------
+// * LibraryTreeview *
+// ----------------------------------------------------------------------------------------------------
+LibraryTreeview::LibraryTreeview(QWidget *parent) : QTreeView(parent)
+{
+
+}
+
+LibraryTreeview::~LibraryTreeview()
+{
+
+}
+
+
+// ----------------------------------------------------------------------------------------------------
+// * PanelTrees *
+// ----------------------------------------------------------------------------------------------------
 PanelTrees::PanelTrees(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName("PanelTrees");
 
-    QGridLayout *layoutMain = new QGridLayout;
-
     lblTreeview = new QLabel(this);
-    treeLibrary = new QTreeView(this);
-
-    lblTreeview->setText("Treeview");
+    treeLibrary = new LibraryTreeview(this);
 
     QFont font;
-
     font.setFamily("Helvetica");
     font.setPointSize(12);
-
     lblTreeview->setFont(font);
+    lblTreeview->setText("Treeview");
+
+    QGridLayout *layoutMain = new QGridLayout;
+
     layoutMain->addWidget(lblTreeview, 0, 0, 1, 1);
     layoutMain->addWidget(treeLibrary, 1, 0, 1, 1);
-
     layoutMain->setMargin(0);
 
     this->setLayout(layoutMain);
@@ -47,5 +60,3 @@ void PanelTrees::paintEvent(QPaintEvent *event)
 
     QWidget::paintEvent(event);
 }
-
-
