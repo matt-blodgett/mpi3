@@ -5,10 +5,9 @@
 #include <QPainter>
 #include <QMenuBar>
 
+#include <QStandardPaths>
 #include <QFileDialog>
 #include <QFile>
-#include <QStandardPaths>
-#include <QDir>
 
 #include <QDebug>
 
@@ -36,11 +35,16 @@ void Mpi3RootDesktop::initialize()
 
     QGridLayout *layoutMain = new QGridLayout;
 
-    layoutMain->addWidget(frmPlayback, 0, 0, 1, 2);
-    layoutMain->addWidget(frmViews, 1, 0, 1, 1);
-    layoutMain->addWidget(frmTrees, 1, 1, 1, 1);
+    frmLibrary = new QSplitter(this);
+    frmLibrary->setOrientation(Qt::Horizontal);
+    frmLibrary->addWidget(frmViews);
+    frmLibrary->addWidget(frmTrees);
 
-    layoutMain->setColumnStretch(1, 1);
+
+    layoutMain->addWidget(frmPlayback, 0, 0, 1, 1);
+    layoutMain->addWidget(frmLibrary, 1, 0, 1, 1);
+
+    layoutMain->setColumnStretch(0, 1);
     layoutMain->setRowStretch(1, 1);
 
     layoutMain->setMargin(0);
@@ -53,10 +57,11 @@ void Mpi3RootDesktop::initialize()
 
     windowMain->setObjectName("Mpi3RootDesktop");
     windowMain->setGeometry(200, 200, 1000, 400);
-    windowMain->show();
 
     themeCurrent = QString(":/desktop/qss/default.qss");
     themeRefresh();
+
+    windowMain->show();
 }
 
 void Mpi3RootDesktop::initializeMenubar()

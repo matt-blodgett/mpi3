@@ -6,6 +6,7 @@
 #include "mpanels.h"
 
 #include <QMainWindow>
+#include <QSplitter>
 #include <QAction>
 #include <QMenu>
 
@@ -24,6 +25,8 @@ private:
     void paintEvent(QPaintEvent *event);
 
 private:
+    QSplitter *frmLibrary = nullptr;
+
     PanelPlayback *frmPlayback = nullptr;
     PanelViews *frmViews = nullptr;
     PanelTrees *frmTrees = nullptr;
