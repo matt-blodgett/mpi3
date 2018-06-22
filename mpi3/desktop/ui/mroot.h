@@ -6,7 +6,9 @@
 #include "mpanels.h"
 
 #include <QMainWindow>
+
 #include <QString>
+#include <QMenu>
 
 
 class Mpi3RootDesktop : public QMainWindow
@@ -26,8 +28,19 @@ private:
     PanelViews *frmViews = nullptr;
     PanelTrees *frmTrees = nullptr;
 
+private:
+    QMenu *fileMenu;
+    QAction *m_setTheme = nullptr;
+
+
+//protected:
+//#ifndef QT_NO_CONTEXTMENU
+//    void contextMenuEvent(QContextMenuEvent *event) override;
+//#endif // QT_NO_CONTEXTMENU
+
 private slots:
-    void testButton(QString const &str);
+    void setTheme();
+
 };
 
 

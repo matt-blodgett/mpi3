@@ -74,7 +74,7 @@ void PlaybackControl::resizeEvent(QResizeEvent *event)
 
 
 // ----------------------------------------------------------------------------------------------------
-// * PlaybackControl *
+// * LibrarySearchbar *
 // ----------------------------------------------------------------------------------------------------
 LibrarySearchbar::LibrarySearchbar(QWidget *parent) : QWidget(parent)
 {
@@ -83,8 +83,11 @@ LibrarySearchbar::LibrarySearchbar(QWidget *parent) : QWidget(parent)
     boxSearch = new QLineEdit(this);
     btnSearch = new QPushButton(this);
 
+    boxSearch->setFixedWidth(120);
+
     btnSearch->setText("S");
     btnSearch->setFixedWidth(20);
+
 
     layoutSearchbar->addWidget(boxSearch, 0, 0, 1, 1);
     layoutSearchbar->addWidget(btnSearch, 0, 1, 1, 1);
@@ -121,6 +124,13 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent)
     layoutMain->setRowMinimumHeight(0, 60);
 
     layoutMain->setMargin(0);
+
+
+    this->setObjectName("PanelPlayback");
+    this->setStyleSheet("QWidget#PanelPlayback {"
+                        "background-color: #BABABA;"
+                        "border-bottom: 1px solid #000000}");
+
     this->setLayout(layoutMain);
 }
 
