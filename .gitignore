@@ -4,4 +4,4 @@ mpi3/desktop/*.pro.user
 mpi3/device/*.pro.user
 
 # Builds and executables
-**/build
+build*
