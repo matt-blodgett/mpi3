@@ -12,6 +12,7 @@
 LibraryTreeview::LibraryTreeview(QWidget *parent) : QTreeView(parent)
 {
     this->setObjectName("LibraryTreeview");
+
 }
 
 LibraryTreeview::~LibraryTreeview()

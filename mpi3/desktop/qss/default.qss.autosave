@@ -1,0 +1,44 @@
+QMenuBar#MainMenuBar {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #828282, stop:1 #565656);
+    color: #FFFFFF;
+    border-bottom: 1px solid #000000;
+}
+
+QMenuBar#MainMenuBar::item {
+    spacing: 3px;
+    padding: 4px 4px;
+    background: transparent;
+    border-radius: 0px;
+}
+
+QMenuBar#MainMenuBar::item:selected {
+    background: #999999;
+}
+
+QMenuBar#MainMenuBar::item:pressed {
+    background: #888888;
+}
+
+
+QWidget#PanelPlayback {
+    background-color: #BABABA;
+    border-bottom: 1px solid #000000;
+}
+
+
+QWidget#PanelTrees {
+    background-color: #FFFFFF;
+    border-top: 0px;
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+
+QTreeView#LibraryTreeview {
+    background-color: #EDEDED;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-bottom: 0px;
+}
