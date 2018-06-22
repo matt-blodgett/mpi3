@@ -19,8 +19,9 @@ public:
     Mpi3RootDesktop();
     ~Mpi3RootDesktop();
 
-private:
     void initialize();
+
+private:
     void initializeMenubar();
     void paintEvent(QPaintEvent *event);
 

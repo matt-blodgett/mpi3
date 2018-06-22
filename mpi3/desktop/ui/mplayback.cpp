@@ -103,6 +103,8 @@ LibrarySearchbar::~LibrarySearchbar()
 // ----------------------------------------------------------------------------------------------------
 PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent)
 {
+    this->setObjectName("PanelPlayback");
+
     frmVolume = new VolumeControl(this);
     frmPlayback = new PlaybackControl(this);
     frmSearchbar = new LibrarySearchbar(this);
@@ -124,10 +126,6 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent)
     layoutMain->setMargin(0);
 
 
-    this->setObjectName("PanelPlayback");
-//    this->setStyleSheet("QWidget#PanelPlayback {"
-//                        "background-color: #BABABA;"
-//                        "border-bottom: 1px solid #000000}");
 
     this->setLayout(layoutMain);
 }

@@ -5,9 +5,10 @@
 #include <QPainter>
 
 
-PanelViews::PanelViews(QWidget *parent)
-    : QWidget(parent)
+PanelViews::PanelViews(QWidget *parent) : QWidget(parent)
 {
+    this->setObjectName("PanelViews");
+
     QGridLayout *layout = new QGridLayout;
 
     btnSongs = new QPushButton(this);
@@ -26,8 +27,6 @@ PanelViews::PanelViews(QWidget *parent)
 
     layout->setMargin(0);
 
-//    this->setObjectName("panel");
-//    this->setStyleSheet("QWidget#panel {background-color: #db5c5c}");
     this->setLayout(layout);
 }
 

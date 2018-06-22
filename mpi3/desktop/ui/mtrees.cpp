@@ -7,9 +7,10 @@
 #include <QFont>
 
 
-PanelTrees::PanelTrees(QWidget *parent)
-    : QWidget(parent)
+PanelTrees::PanelTrees(QWidget *parent) : QWidget(parent)
 {
+    this->setObjectName("PanelTrees");
+
     QGridLayout *layoutMain = new QGridLayout;
 
     lblTreeview = new QLabel(this);
@@ -26,11 +27,8 @@ PanelTrees::PanelTrees(QWidget *parent)
     layoutMain->addWidget(lblTreeview, 0, 0, 1, 1);
     layoutMain->addWidget(treeLibrary, 1, 0, 1, 1);
 
-
     layoutMain->setMargin(0);
 
-//    this->setObjectName("panel");
-//    this->setStyleSheet("QWidget#panel {background-color: #c669f4}");
     this->setLayout(layoutMain);
 }
 

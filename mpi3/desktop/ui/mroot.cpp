@@ -14,7 +14,6 @@
 
 Mpi3RootDesktop::Mpi3RootDesktop()
 {
-    initialize();
     initializeMenubar();
 }
 
@@ -25,6 +24,7 @@ Mpi3RootDesktop::~Mpi3RootDesktop()
 
 void Mpi3RootDesktop::initialize()
 {
+    this->setObjectName("Mpi3RootDesktop");
 
     QWidget *windowMain = new QWidget;
     setCentralWidget(windowMain);
@@ -39,6 +39,7 @@ void Mpi3RootDesktop::initialize()
     frmLibrary->setOrientation(Qt::Horizontal);
     frmLibrary->addWidget(frmViews);
     frmLibrary->addWidget(frmTrees);
+    frmLibrary->setHandleWidth(15);
 
 
     layoutMain->addWidget(frmPlayback, 0, 0, 1, 1);
@@ -55,7 +56,7 @@ void Mpi3RootDesktop::initialize()
 //    connect(frmNav->btnPlaylists, &QPushButton::clicked, this, [this]{testButton("PLAYLISTS");});
 //    frmTree->lblTreeview->setText(str);
 
-    windowMain->setObjectName("Mpi3RootDesktop");
+
     windowMain->setGeometry(200, 200, 1000, 400);
 
     themeCurrent = QString(":/desktop/qss/default.qss");
@@ -66,6 +67,8 @@ void Mpi3RootDesktop::initialize()
 
 void Mpi3RootDesktop::initializeMenubar()
 {
+    menuBar()->setObjectName("MainMenuBar");
+
     menuTheme = new QMenu("Themes", this);
 
     m_themeSet = new QAction("Set Theme", this);
@@ -99,6 +102,8 @@ void Mpi3RootDesktop::themeSet()
 void Mpi3RootDesktop::themeRefresh()
 {
     if (themeCurrent != ""){
+        qDebug() << themeCurrent;
+
         QFile qssFile(themeCurrent);
         qssFile.open(QFile::ReadOnly);
 
