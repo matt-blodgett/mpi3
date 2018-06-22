@@ -3,41 +3,55 @@
 #include <QGridLayout>
 #include <QStyleOption>
 #include <QPainter>
-
 #include <QLabel>
 
 #include <QDebug>
 
 
-// https://doc.qt.io/qt-5/qtwidgets-widgets-icons-example.html#
+// ----------------------------------------------------------------------------------------------------
+// * VolumeControl *
+// ----------------------------------------------------------------------------------------------------
+VolumeControl::VolumeControl(QWidget *parent) : QWidget(parent)
+{
+    QGridLayout *layoutVolume = new QGridLayout;
 
+    volSlider = new QSlider(this);
+    volSlider->setOrientation(Qt::Horizontal);
+    layoutVolume->addWidget(volSlider, 0, 0, 1, 1);
+
+    this->setLayout(layoutVolume);
+}
+
+VolumeControl::~VolumeControl()
+{
+
+}
 
 
 // ----------------------------------------------------------------------------------------------------
 // * PlaybackControl *
 // ----------------------------------------------------------------------------------------------------
-PlaybackControl::PlaybackControl(QWidget *parent)
-    : QWidget(parent)
+PlaybackControl::PlaybackControl(QWidget *parent) : QWidget(parent)
 {
-
     container = new QWidget(this);
 
     btnNext = new QPushButton(container);
     btnPrev = new QPushButton(container);
     btnPlay = new QPushButton(container);
+    posSlider = new QSlider(container);
+
+    posSlider->setOrientation(Qt::Horizontal);
 
     btnNext->setText("Next");
     btnPrev->setText("Prev");
     btnPlay->setText("Play");
 
-
-
     btnPlay->move(btnPrev->width(), 0);
     btnNext->move(btnPrev->width() + btnPlay->width(), 0);
 
-//    int x = (this->width() / 2) - (300 / 2);
-//    container->move(x, 0);
-
+    posSlider->setFixedHeight(20);
+    posSlider->setGeometry(0, btnPrev->height(), 300, posSlider->height());
+    posSlider->move(0, btnPrev->height());
 }
 
 PlaybackControl::~PlaybackControl()
@@ -60,41 +74,39 @@ void PlaybackControl::resizeEvent(QResizeEvent *event)
 
 
 // ----------------------------------------------------------------------------------------------------
+// * PlaybackControl *
+// ----------------------------------------------------------------------------------------------------
+LibrarySearchbar::LibrarySearchbar(QWidget *parent) : QWidget(parent)
+{
+    QGridLayout *layoutSearchbar = new QGridLayout;
+
+    boxSearch = new QLineEdit(this);
+    btnSearch = new QPushButton(this);
+
+    btnSearch->setText("S");
+    btnSearch->setFixedWidth(20);
+
+    layoutSearchbar->addWidget(boxSearch, 0, 0, 1, 1);
+    layoutSearchbar->addWidget(btnSearch, 0, 1, 1, 1);
+    this->setLayout(layoutSearchbar);
+}
+
+LibrarySearchbar::~LibrarySearchbar()
+{
+
+}
+
+
+// ----------------------------------------------------------------------------------------------------
 // * PanelPlayback *
 // ----------------------------------------------------------------------------------------------------
-PanelPlayback::PanelPlayback(QWidget *parent)
-    : QWidget(parent)
+PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent)
 {
     QGridLayout *layoutMain = new QGridLayout;
 
-    frmVolume = new QWidget(this);
+    frmVolume = new VolumeControl(this);
     frmPlayback = new PlaybackControl(this);
-    frmSearchbar = new QWidget(this);
-
-
-
-    QGridLayout *layoutVolume = new QGridLayout;
-    QGridLayout *layoutSearchbar = new QGridLayout;
-
-
-    volSlider = new QSlider(frmVolume);
-    volSlider->setOrientation(Qt::Horizontal);
-    layoutVolume->addWidget(volSlider, 0, 0, 1, 1);
-    frmVolume->setLayout(layoutVolume);
-
-
-
-
-
-    boxSearch = new QLineEdit(frmSearchbar);
-    btnSearch = new QPushButton(frmSearchbar);
-
-    btnSearch->setText("S");
-    layoutSearchbar->addWidget(boxSearch);
-    layoutSearchbar->addWidget(btnSearch);
-    frmSearchbar->setLayout(layoutSearchbar);
-
-
+    frmSearchbar = new LibrarySearchbar(this);
 
     layoutMain->addWidget(frmVolume, 0, 0, 1, 1);
     layoutMain->addWidget(frmPlayback, 0, 1, 1, 1);
@@ -106,9 +118,10 @@ PanelPlayback::PanelPlayback(QWidget *parent)
     layoutMain->setColumnMinimumWidth(1, 400);
     layoutMain->setColumnMinimumWidth(2, 150);
 
+    layoutMain->setRowMinimumHeight(0, 60);
+
     layoutMain->setMargin(0);
     this->setLayout(layoutMain);
-
 }
 
 PanelPlayback::~PanelPlayback()

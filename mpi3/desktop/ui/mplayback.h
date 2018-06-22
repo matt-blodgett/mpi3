@@ -6,7 +6,26 @@
 #include <QSlider>
 
 
+// ----------------------------------------------------------------------------------------------------
+// * VolumeControl *
+// ----------------------------------------------------------------------------------------------------
+class VolumeControl : public QWidget
+{
+    Q_OBJECT
 
+public:
+    explicit VolumeControl(QWidget *parent=nullptr);
+    ~VolumeControl();
+
+private:
+    QSlider *volSlider = nullptr;
+
+};
+
+
+// ----------------------------------------------------------------------------------------------------
+// * PlaybackControl *
+// ----------------------------------------------------------------------------------------------------
 class PlaybackControl : public QWidget
 {
     Q_OBJECT
@@ -21,7 +40,7 @@ private:
     QPushButton *btnNext = nullptr;
     QPushButton *btnPrev = nullptr;
     QPushButton *btnPlay = nullptr;
-    //    QSlider *posSlider = nullptr;
+    QSlider *posSlider = nullptr;
 
 private:
     void resizeEvent(QResizeEvent *event);
@@ -29,6 +48,24 @@ private:
 };
 
 
+class LibrarySearchbar : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit LibrarySearchbar(QWidget *parent=nullptr);
+    ~LibrarySearchbar();
+
+private:
+    QLineEdit *boxSearch = nullptr;
+    QPushButton *btnSearch = nullptr;
+
+};
+
+
+// ----------------------------------------------------------------------------------------------------
+// * PanelPlayback *
+// ----------------------------------------------------------------------------------------------------
 class PanelPlayback : public QWidget
 {
     Q_OBJECT
@@ -38,25 +75,14 @@ public:
     ~PanelPlayback();
 
 private:
-    QWidget *frmVolume = nullptr;
-    QWidget *frmSearchbar = nullptr;
-
-
-    QSlider *volSlider = nullptr;
-
-
+    VolumeControl *frmVolume = nullptr;
     PlaybackControl *frmPlayback = nullptr;
-
-    QLineEdit *boxSearch = nullptr;
-    QPushButton *btnSearch = nullptr;
+    LibrarySearchbar *frmSearchbar = nullptr;
 
 private:
     void paintEvent(QPaintEvent *event);
 
 };
-
-
-
 
 
 #endif // MPLAYBACK_H
