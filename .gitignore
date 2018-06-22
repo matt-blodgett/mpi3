@@ -1,7 +1,5 @@
 # Qt Creator files
-mpi3/desktop/*.pro.user
-mpi3/device/*.pro.user
-
+mpi3/*.pro.user
 
 # Builds and executables
 mpi3/build*
