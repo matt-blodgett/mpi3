@@ -105,8 +105,6 @@ void Mpi3RootDesktop::themeSet()
 void Mpi3RootDesktop::themeRefresh()
 {
     if (themeCurrent != ""){
-        qDebug() << themeCurrent;
-
         QFile qssFile(themeCurrent);
         qssFile.open(QFile::ReadOnly);
 
