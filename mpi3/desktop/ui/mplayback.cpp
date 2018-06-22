@@ -65,7 +65,6 @@ void PlaybackControl::resizeEvent(QResizeEvent *event)
 
 //    qDebug() << container->width();
 
-
 //    int x = (this->width() / 2) - (container->width() / 2);
     int x = (this->width() / 2) - (300 / 2);
     container->move(x, 0);
@@ -78,8 +77,6 @@ void PlaybackControl::resizeEvent(QResizeEvent *event)
 // ----------------------------------------------------------------------------------------------------
 LibrarySearchbar::LibrarySearchbar(QWidget *parent) : QWidget(parent)
 {
-    QGridLayout *layoutSearchbar = new QGridLayout;
-
     boxSearch = new QLineEdit(this);
     btnSearch = new QPushButton(this);
 
@@ -88,6 +85,7 @@ LibrarySearchbar::LibrarySearchbar(QWidget *parent) : QWidget(parent)
     btnSearch->setText("S");
     btnSearch->setFixedWidth(20);
 
+    QGridLayout *layoutSearchbar = new QGridLayout;
 
     layoutSearchbar->addWidget(boxSearch, 0, 0, 1, 1);
     layoutSearchbar->addWidget(btnSearch, 0, 1, 1, 1);
@@ -105,11 +103,11 @@ LibrarySearchbar::~LibrarySearchbar()
 // ----------------------------------------------------------------------------------------------------
 PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent)
 {
-    QGridLayout *layoutMain = new QGridLayout;
-
     frmVolume = new VolumeControl(this);
     frmPlayback = new PlaybackControl(this);
     frmSearchbar = new LibrarySearchbar(this);
+
+    QGridLayout *layoutMain = new QGridLayout;
 
     layoutMain->addWidget(frmVolume, 0, 0, 1, 1);
     layoutMain->addWidget(frmPlayback, 0, 1, 1, 1);
@@ -127,9 +125,9 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent)
 
 
     this->setObjectName("PanelPlayback");
-    this->setStyleSheet("QWidget#PanelPlayback {"
-                        "background-color: #BABABA;"
-                        "border-bottom: 1px solid #000000}");
+//    this->setStyleSheet("QWidget#PanelPlayback {"
+//                        "background-color: #BABABA;"
+//                        "border-bottom: 1px solid #000000}");
 
     this->setLayout(layoutMain);
 }
@@ -149,14 +147,3 @@ void PanelPlayback::paintEvent(QPaintEvent *event)
 
     QWidget::paintEvent(event);
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -20,3 +20,6 @@ HEADERS += desktop/ui/mroot.h
 HEADERS += desktop/ui/mpanels.h
 HEADERS += desktop/ui/mplayback.h
 HEADERS += desktop/ui/mtrees.h
+
+
+RESOURCES += desktop/qss

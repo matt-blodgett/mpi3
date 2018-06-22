@@ -1,0 +1,12 @@
+INPUT(
+./release\main.o
+./release\mroot.o
+./release\mpanels.o
+./release\mplayback.o
+./release\mtrees.o
+./release\qrc_qmake_qmake_immediate.o
+./release\moc_mroot.o
+./release\moc_mpanels.o
+./release\moc_mplayback.o
+./release\moc_mtrees.o
+);

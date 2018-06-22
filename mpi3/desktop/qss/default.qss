@@ -1,1 +1,1 @@
-QPushButton {background-color: #ffffff}
+QWidget#PanelPlayback {background-color: #BABABA; border-bottom: 1px solid #000000})

@@ -6,8 +6,7 @@
 #include "mpanels.h"
 
 #include <QMainWindow>
-
-#include <QString>
+#include <QAction>
 #include <QMenu>
 
 
@@ -21,6 +20,7 @@ public:
 
 private:
     void initialize();
+    void initializeMenubar();
     void paintEvent(QPaintEvent *event);
 
 private:
@@ -29,17 +29,18 @@ private:
     PanelTrees *frmTrees = nullptr;
 
 private:
-    QMenu *fileMenu;
-    QAction *m_setTheme = nullptr;
+    QString themeCurrent = "";
 
+private:
+    QMenu *menuFile = nullptr;
+    QMenu *menuTheme = nullptr;
 
-//protected:
-//#ifndef QT_NO_CONTEXTMENU
-//    void contextMenuEvent(QContextMenuEvent *event) override;
-//#endif // QT_NO_CONTEXTMENU
+    QAction *m_themeSet = nullptr;
+    QAction *m_themeRefresh = nullptr;
 
 private slots:
-    void setTheme();
+    void themeSet();
+    void themeRefresh();
 
 };
 
