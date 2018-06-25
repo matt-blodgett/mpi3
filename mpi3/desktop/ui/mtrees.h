@@ -4,6 +4,19 @@
 #include <QTreeView>
 #include <QLabel>
 
+#include <QStandardItemModel>
+
+
+class SongModel : public QStandardItemModel
+{
+    Q_OBJECT
+
+public:
+    explicit SongModel(QObject *parent=nullptr);
+    ~SongModel();
+
+};
+
 
 // ----------------------------------------------------------------------------------------------------
 // * LibraryTreeview *
@@ -15,6 +28,8 @@ class LibraryTreeview : public QTreeView
 public:
     explicit LibraryTreeview(QWidget *parent=nullptr);
     ~LibraryTreeview();
+
+    SongModel *modelSongs = nullptr;
 
 };
 

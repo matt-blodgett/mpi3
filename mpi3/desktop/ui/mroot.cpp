@@ -42,7 +42,7 @@ void Mpi3RootDesktop::initialize()
     frmLibrary->setOrientation(Qt::Horizontal);
     frmLibrary->addWidget(frmViews);
     frmLibrary->addWidget(frmTrees);
-    frmLibrary->setHandleWidth(15);
+    frmLibrary->setHandleWidth(8);
 
 
     layoutMain->addWidget(frmPlayback, 0, 0, 1, 1);
@@ -52,6 +52,9 @@ void Mpi3RootDesktop::initialize()
     layoutMain->setRowStretch(1, 1);
 
     layoutMain->setMargin(0);
+    layoutMain->setHorizontalSpacing(0);
+    layoutMain->setVerticalSpacing(0);
+
     windowMain->setLayout(layoutMain);
 
 //    connect(frmNav->btnSongs, &QPushButton::clicked, this, [this]{testButton("SONGS");});
