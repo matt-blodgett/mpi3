@@ -1,25 +1,26 @@
 #ifndef MEDIALIB_H
 #define MEDIALIB_H
 
-#include <string>
-#include <vector>
+#include <QString>
+#include <QMap>
 
 
-std::string generatePID();
+QString generatePID();
 
 
 class Mpi3Element
 {
 
-//public:
-//    std::string pid() const;
-//    std::string name() const;
-//    std::string added() const;
+public:
+    Mpi3Element(const QString &pid = NULL);
 
 public:
-    std::string pid = NULL;
-    std::string name = NULL;
-    std::string added = NULL;
+    QString pid();
+    QString name = NULL;
+    QString added = NULL;
+
+private:
+    QString mPID = NULL;
 
 };
 
@@ -27,16 +28,20 @@ public:
 class Mpi3Song : public Mpi3Element
 {
 
-private:
-    std::string artist;
-    std::string album;
-    std::string time;
-    std::string path;
-    std::string kind;
+public:
+    explicit Mpi3Song(const QString &pid = NULL);
 
-    int size;
-    int sampleRate;
-    int bitRate;
+public:
+
+    QString artist;
+//    QString album;
+//    QString time;
+    QString path;
+//    QString kind;
+
+//    int size;
+//    int bitRate;
+//    int sampleRate;
 
 };
 
@@ -44,9 +49,12 @@ private:
 class Mpi3Playlist : public Mpi3Element
 {
 
-private:
-    std::string folder;
-    std::vector<std::string> songs;
+public:
+    explicit Mpi3Playlist(const QString &pid = NULL);
+
+//public:
+//    QString folder;
+//    QMap<QString> songs;
 
 };
 
@@ -54,9 +62,12 @@ private:
 class Mpi3Folder : public Mpi3Element
 {
 
-private:
-    std::string folder;
-    std::vector<std::string> playlists;
+public:
+    explicit Mpi3Folder(const QString &pid = NULL);
+
+//public:
+//    QString folder;
+//    <QString> playlists;
 
 };
 
@@ -64,11 +75,34 @@ private:
 class Mpi3Library : public Mpi3Element
 {
 
+public:
+    explicit Mpi3Library(const QString &pid = NULL);
+
+public:
+    QString& filepath();
+    QMap<QString, Mpi3Song *> songs;
+    QMap<QString, Mpi3Playlist *> playlists;
+    QMap<QString, Mpi3Folder *> folders;
+
+public:
+    void open(const QString &path = NULL);
+    void load(const QString &path = NULL);
+    void save(const QString &path = NULL);
+
+    Mpi3Song* addSong();
+    Mpi3Playlist* addPlaylist();
+    Mpi3Folder* addFolder();
+
+    void removeSong(const QString &pid);
+    void removePlaylist(const QString &pid);
+    void removeFolder(const QString &pid);
+
+    QStringList children(const QString &parent = NULL);
+
 private:
-    std::string filepath;
+    QString mPath;
 
 };
-
 
 
 #endif // MEDIALIB_H
