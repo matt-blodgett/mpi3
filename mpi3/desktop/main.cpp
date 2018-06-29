@@ -1,18 +1,30 @@
-//#include "ui/mroot.h"
-//#include <QApplication>
-#include <QDebug>
+#include "ui/mroot.h"
+#include <QApplication>
 
 #include "util/medialib.h"
+#include <QDebug>
 
-void test(Mpi3Library *m, QString pid)
+
+void load_test()
 {
-    Mpi3Song *s = m->songs[pid];
-    qDebug() << s->name;
+
+    Mpi3Library *mpi3Lib2 = Mpi3Library::load("C:\\Users\\Matt\\Desktop\\lib.txt");
+
+    foreach(Mpi3Song *s, mpi3Lib2->songs.values()){
+        qDebug() << s->pid << " " << s->name;
+    }
+
 }
 
-int main()
+
+int main(int argc, char *argv[])
 {
-    Mpi3Library *mpi3Lib = new Mpi3Library;
+
+    srand(time(NULL));
+
+    Mpi3Library *mpi3Lib = new Mpi3Library(true);
+    mpi3Lib->name = "Main Library";
+    mpi3Lib->added = "03/07/2017";
 
     Mpi3Song *song_1 = mpi3Lib->addSong();
     song_1->name = "Me, Myself and I";
@@ -22,22 +34,27 @@ int main()
     song_2->name = "Been On";
     song_2->artist = "G-Eazy";
 
-    qDebug() << mpi3Lib->songs.values().length();
+    Mpi3Folder *fldr_1 = mpi3Lib->addFolder();
+    Mpi3Playlist *plist_1 = mpi3Lib->addPlaylist();
 
-    test(mpi3Lib, song_1->pid());
+    fldr_1->name = "electric beat";
+    plist_1->name = "upbeat";
 
-    mpi3Lib->save("C:\\Users\\mablodgett\\Desktop\\lib.txt");
-    return 0;
+    Mpi3Playlist *plist_2 = mpi3Lib->addPlaylist(fldr_1);
+    plist_2->name = "dance";
 
+    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
+
+    load_test();
+
+
+
+
+    QApplication app(argc, argv);
+    Mpi3RootDesktop wnd;
+
+    wnd.initialize();
+    wnd.show();
+
+    return app.exec();
 }
-
-//int main(int argc, char *argv[])
-//{
-//    QApplication app(argc, argv);
-//    Mpi3RootDesktop wnd;
-
-//    wnd.initialize();
-//    wnd.show();
-
-//    return app.exec();
-//}
