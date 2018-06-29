@@ -1,3 +1,6 @@
+!NAME=Default
+
+!THEME=BEGIN
 QMenuBar#MainMenuBar {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #828282, stop:1 #565656);
     color: #FFFFFF;
@@ -31,6 +34,46 @@ QWidget#PlaybackControl {
     background-color: #FFFFFF;
     border-bottom: 1px solid #000000;
 }
+
+
+
+QPushButton#ButtonPrev {
+    background-color: qlineargradient(x1: 1, y1: 0, x2: 0, y2: 0, stop: 0 #F6F7FA, stop: 1 #DADBDE);
+}
+
+QPushButton#ButtonPrev:pressed {
+    background-color: qlineargradient(x1: 1, y1: 0, x2: 0, y2: 0, stop: 0 #E2E2E2, stop: 1 #CCCCCC);
+}
+
+QPushButton#ButtonPrev:flat {
+    border: none;
+}
+
+QPushButton#ButtonNext {
+    background-color: qlineargradient(x1: 1, y1: 0, x2: 0, y2: 0, stop: 0 #F6F7FA, stop: 1 #DADBDE);
+}
+
+QPushButton#ButtonNext:pressed {
+    background-color: qlineargradient(x1: 1, y1: 0, x2: 0, y2: 0, stop: 0 #E2E2E2, stop: 1 #CCCCCC);
+}
+
+QPushButton#ButtonNext:flat {
+    border: none;
+}
+
+
+QPushButton#ButtonPlay {
+    background-color: #FFFFFF;
+}
+
+QPushButton#ButtonPlay:pressed {
+    background-color: #FFFFFF;
+}
+
+QPushButton#ButtonPlay:flat {
+    border: none;
+}
+
 
 QSlider#SliderPosition {
     border: 1px solid #999999;
@@ -80,3 +123,5 @@ QTreeView#LibraryTreeview {
     alternate-background-color: #DBE8FF;
     show-decoration-selected: 1;
 }
+
+!THEME=END

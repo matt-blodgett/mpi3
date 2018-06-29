@@ -8,6 +8,7 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QFile>
+#include <QDir>
 
 #include <QDebug>
 
@@ -62,12 +63,16 @@ void Mpi3RootDesktop::initialize()
 //    connect(frmNav->btnPlaylists, &QPushButton::clicked, this, [this]{testButton("PLAYLISTS");});
 //    frmTree->lblTreeview->setText(str);
 
-
     windowMain->setGeometry(200, 200, 1000, 400);
 
-    themeCurrent = QString(":/desktop/qss/default.qss");
-    themeRefresh();
+    themeCurrent = new Mpi3Theme;
+//    qDebug() << QDir::currentPath();
+//    QString qssPath = QDir::currentPath() + "/qss/default.qss";
 
+    themeCurrent->load(":/desktop/qss/default.qss");
+    this->setStyleSheet(themeCurrent->qssStyle);
+
+//    qDebug() << themeCurrent->qssStyle;
     windowMain->show();
 }
 
@@ -100,19 +105,16 @@ void Mpi3RootDesktop::themeSet()
                 pathDesktop, "QSS Files (*.qss)");
 
     if(qssFile != ""){
-        themeCurrent = qssFile;
+        themeCurrent->load(qssFile);
         themeRefresh();
     }
 }
 
 void Mpi3RootDesktop::themeRefresh()
 {
-    if (themeCurrent != ""){
-        QFile qssFile(themeCurrent);
-        qssFile.open(QFile::ReadOnly);
-
-        QString qssStyle(qssFile.readAll());
-        this->setStyleSheet(qssStyle);
+    if (themeCurrent != nullptr){
+        themeCurrent->load();
+        this->setStyleSheet(themeCurrent->qssStyle);
     }
 }
 

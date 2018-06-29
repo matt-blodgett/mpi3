@@ -9,6 +9,7 @@
 QString generatePID();
 void xmlWriteElement(QDomDocument xml, QDomElement elem, QString tagname, QString text);
 
+
 class Mpi3Element;
 class Mpi3Song;
 class Mpi3Playlist;

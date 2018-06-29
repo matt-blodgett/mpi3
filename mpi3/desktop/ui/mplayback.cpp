@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QLabel>
 
+
 #include <QDebug>
 
 
@@ -18,10 +19,9 @@ VolumeControl::VolumeControl(QWidget *parent) : QWidget(parent)
     volSlider = new QSlider(this);
     volSlider->setOrientation(Qt::Horizontal);
     layoutVolume->addWidget(volSlider, 0, 0, 1, 1);
-
-    volSlider->setObjectName("SliderVolume");
     this->setLayout(layoutVolume);
 
+    volSlider->setObjectName("SliderVolume");
     this->setObjectName("VolumeControl");
 }
 
@@ -43,49 +43,53 @@ PlaybackControl::PlaybackControl(QWidget *parent) : QWidget(parent)
     btnPlay = new QPushButton(container);
     posSlider = new QSlider(container);
 
-    posSlider->setOrientation(Qt::Horizontal);
-
     QPixmap pixmapNext(":/desktop/icons/next.png");
-    QIcon icnNext(pixmapNext);
-    btnNext->setIcon(icnNext);
-    btnNext->setIconSize(pixmapNext.rect().size());
-
     QPixmap pixmapPrev(":/desktop/icons/prev.png");
-    QIcon icnPrev(pixmapPrev);
-    btnPrev->setIcon(icnPrev);
-    btnPrev->setIconSize(pixmapPrev.rect().size());
-
     QPixmap pixmapPlay(":/desktop/icons/play.png");
-    QIcon icnPlay(pixmapPlay);
+    QPixmap pixmapPaus(":/desktop/icons/paus.png");
+
+    icnNext.addPixmap(pixmapNext);
+    icnPrev.addPixmap(pixmapPrev);
+    icnPlay.addPixmap(pixmapPlay);
+    icnPaus.addPixmap(pixmapPaus);
+
+    btnNext->setIcon(icnNext);
+    btnPrev->setIcon(icnPrev);
     btnPlay->setIcon(icnPlay);
+
+    btnNext->setIconSize(pixmapNext.rect().size());
+    btnPrev->setIconSize(pixmapPrev.rect().size());
     btnPlay->setIconSize(pixmapPlay.rect().size());
 
+    posSlider->setOrientation(Qt::Horizontal);
+    btnNext->setFlat(true);
+    btnPrev->setFlat(true);
+    btnPlay->setFlat(true);
 
     int h = 60;
     int w = 300;
+    int w_btn = 50;
 
     container->setFixedHeight(h);
     container->setFixedWidth(w);
 
-    btnNext->setFixedHeight(h);
-    btnPrev->setFixedHeight(h);
-    btnPlay->setFixedHeight(h);
+    btnNext->setFixedHeight(h-1);
+    btnPrev->setFixedHeight(h-1);
+    btnPlay->setFixedHeight(h-20);
 
-    btnNext->setFixedWidth(50);
-    btnPrev->setFixedWidth(50);
-    btnPlay->setFixedWidth(50);
+    btnNext->setFixedWidth(w_btn);
+    btnPrev->setFixedWidth(w_btn);
+    btnPlay->setFixedWidth(w-(w_btn*2));
 
     btnPrev->move(0, 0);
-    btnNext->move(w-50, 0);
-    btnPlay->move((w/2)-(50/2), 0);
+    btnNext->move(w-w_btn, 0);
+    btnPlay->move(w_btn, 0);
 
-
-    posSlider->setGeometry(0, btnPrev->height(), 300, posSlider->height());
-    posSlider->move(0, btnPrev->height());
-
-    posSlider->setFixedWidth(300);
+    posSlider->setFixedWidth(w-(w_btn*2));
     posSlider->setFixedHeight(12);
+    posSlider->move(w_btn, 45);
 
+    connect(btnPlay, &QPushButton::clicked, this, [this]{clickPlay();});
 
     btnNext->setObjectName("ButtonNext");
     btnPrev->setObjectName("ButtonPrev");
@@ -101,16 +105,26 @@ PlaybackControl::~PlaybackControl()
 
 }
 
+void PlaybackControl::clickPlay()
+{
+    // https://evileg.com/en/post/155/
+    this->btnPlay->setIcon(this->icnPaus);
+
+
+    this->audio = new QMediaPlayer;
+
+//    this->audio->setMedia(QUrl("C:/Users/mablodgett/Desktop/Calm Down.mp3"));
+    this->audio->setMedia(QUrl::fromLocalFile("C:/Users/mablodgett/Desktop/Calm Down.mp3"));
+//    this->audio->setVolume(50);
+//    this->audio->play();
+}
+
 void PlaybackControl::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
 
-//    qDebug() << container->width();
-
-//    int x = (this->width() / 2) - (container->width() / 2);
     int x = (this->width() / 2) - (300 / 2);
     container->move(x, 0);
-
 }
 
 

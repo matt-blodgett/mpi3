@@ -152,7 +152,6 @@ void Mpi3Library::save(const QString &path)
     if(saveFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
     {
         QDomDocument xml("Mpi3Library");
-
         QDomElement root = xml.createElement("library");
         xml.appendChild(root);
 

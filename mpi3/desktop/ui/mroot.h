@@ -4,6 +4,7 @@
 #include "mplayback.h"
 #include "mtrees.h"
 #include "mpanels.h"
+#include "util/mtheme.h"
 
 #include <QMainWindow>
 #include <QSplitter>
@@ -18,7 +19,6 @@ class Mpi3RootDesktop : public QMainWindow
 public:
     Mpi3RootDesktop();
     ~Mpi3RootDesktop();
-
     void initialize();
 
 private:
@@ -33,7 +33,7 @@ private:
     PanelTrees *frmTrees = nullptr;
 
 private:
-    QString themeCurrent = "";
+    Mpi3Theme *themeCurrent = nullptr;
 
 private:
     QMenu *menuFile = nullptr;

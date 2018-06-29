@@ -1,6 +1,8 @@
 #ifndef MPLAYBACK_H
 #define MPLAYBACK_H
 
+#include <QMediaPlayer>
+
 #include <QPushButton>
 #include <QLineEdit>
 #include <QSlider>
@@ -34,6 +36,9 @@ public:
     explicit PlaybackControl(QWidget *parent=nullptr);
     ~PlaybackControl();
 
+public:
+    QMediaPlayer *audio = nullptr;
+
 private:
     QWidget *container = nullptr;
 
@@ -42,8 +47,16 @@ private:
     QPushButton *btnPlay = nullptr;
     QSlider *posSlider = nullptr;
 
+    QIcon icnNext;
+    QIcon icnPrev;
+    QIcon icnPlay;
+    QIcon icnPaus;
+
 private:
     void resizeEvent(QResizeEvent *event);
+
+private slots:
+    void clickPlay();
 
 };
 
