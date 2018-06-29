@@ -29,3 +29,4 @@ SOURCES += util/medialib.cpp
 
 
 RESOURCES += desktop/qss
+RESOURCES += desktop/icons

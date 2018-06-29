@@ -19,7 +19,10 @@ VolumeControl::VolumeControl(QWidget *parent) : QWidget(parent)
     volSlider->setOrientation(Qt::Horizontal);
     layoutVolume->addWidget(volSlider, 0, 0, 1, 1);
 
+    volSlider->setObjectName("SliderVolume");
     this->setLayout(layoutVolume);
+
+    this->setObjectName("VolumeControl");
 }
 
 VolumeControl::~VolumeControl()
@@ -42,16 +45,55 @@ PlaybackControl::PlaybackControl(QWidget *parent) : QWidget(parent)
 
     posSlider->setOrientation(Qt::Horizontal);
 
-    btnNext->setText("Next");
-    btnPrev->setText("Prev");
-    btnPlay->setText("Play");
+    QPixmap pixmapNext(":/desktop/icons/next.png");
+    QIcon icnNext(pixmapNext);
+    btnNext->setIcon(icnNext);
+    btnNext->setIconSize(pixmapNext.rect().size());
 
-    btnPlay->move(btnPrev->width(), 0);
-    btnNext->move(btnPrev->width() + btnPlay->width(), 0);
+    QPixmap pixmapPrev(":/desktop/icons/prev.png");
+    QIcon icnPrev(pixmapPrev);
+    btnPrev->setIcon(icnPrev);
+    btnPrev->setIconSize(pixmapPrev.rect().size());
 
-    posSlider->setFixedHeight(20);
+    QPixmap pixmapPlay(":/desktop/icons/play.png");
+    QIcon icnPlay(pixmapPlay);
+    btnPlay->setIcon(icnPlay);
+    btnPlay->setIconSize(pixmapPlay.rect().size());
+
+
+    int h = 60;
+    int w = 300;
+
+    container->setFixedHeight(h);
+    container->setFixedWidth(w);
+
+    btnNext->setFixedHeight(h);
+    btnPrev->setFixedHeight(h);
+    btnPlay->setFixedHeight(h);
+
+    btnNext->setFixedWidth(50);
+    btnPrev->setFixedWidth(50);
+    btnPlay->setFixedWidth(50);
+
+    btnPrev->move(0, 0);
+    btnNext->move(w-50, 0);
+    btnPlay->move((w/2)-(50/2), 0);
+
+
     posSlider->setGeometry(0, btnPrev->height(), 300, posSlider->height());
     posSlider->move(0, btnPrev->height());
+
+    posSlider->setFixedWidth(300);
+    posSlider->setFixedHeight(12);
+
+
+    btnNext->setObjectName("ButtonNext");
+    btnPrev->setObjectName("ButtonPrev");
+    btnPlay->setObjectName("ButtonPlay");
+    posSlider->setObjectName("SliderPosition");
+
+    container->setObjectName("PlaybackControl");
+    this->setObjectName("PlaybackControl");
 }
 
 PlaybackControl::~PlaybackControl()
@@ -90,6 +132,8 @@ LibrarySearchbar::LibrarySearchbar(QWidget *parent) : QWidget(parent)
     layoutSearchbar->addWidget(boxSearch, 0, 0, 1, 1);
     layoutSearchbar->addWidget(btnSearch, 0, 1, 1, 1);
     this->setLayout(layoutSearchbar);
+
+    this->setObjectName("LibrarySearchbar");
 }
 
 LibrarySearchbar::~LibrarySearchbar()
