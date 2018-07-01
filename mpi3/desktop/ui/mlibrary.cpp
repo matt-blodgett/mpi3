@@ -79,8 +79,10 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent)
 
 
 
+    QStringList headers;
+    headers << "Name" << "Artist" << "Path";
 
-    m_model = new LibraryModel(this);
+    m_model = new LibraryModel(this, headers);
     tree_library->setModel(m_model);
 
 
@@ -95,20 +97,19 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent)
     mpi3Lib->added = "03/07/2017";
 
 
-//    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
+    //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
 
-
-    m_model->setLibrary(mpi3Lib);
 
     Mpi3Song *song_1 = mpi3Lib->addSong();
     song_1->name = "Me, Myself and I";
     song_1->artist = "G-Eazy";
     song_1->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Me, Myself  I (Ft. Bebe Rexha).mp3";
 
-    mpi3Lib->update();
+//    mpi3Lib->update();
 
-    QStringList headers;
-    headers << "Name" << "Artist" << "Path";
+    m_model->setLibrary(mpi3Lib);
+
+
 
 
 
