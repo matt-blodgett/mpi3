@@ -1,13 +1,13 @@
 #ifndef MEDIALIB_H
 #define MEDIALIB_H
 
-#include <QDomDocument>
-#include <QString>
+#include <QObject>
 #include <QMap>
 
-
-QString generatePID();
-void xmlWriteElement(QDomDocument xml, QDomElement elem, QString tagname, QString text);
+QT_BEGIN_NAMESPACE
+class QDomDocument;
+class QDomElement;
+QT_END_NAMESPACE
 
 
 class Mpi3Element;
@@ -17,11 +17,16 @@ class Mpi3Folder;
 class Mpi3Library;
 
 
+QString generatePID();
+void xmlWriteElement(QDomDocument xml, QDomElement elem, QString tagname, QString text);
+
+
 // ----------------------------------------------------------------------------------------------------
 // * Mpi3Element *
 // ----------------------------------------------------------------------------------------------------
-class Mpi3Element
+class Mpi3Element : public QObject
 {
+    Q_OBJECT
 
 public:
     Mpi3Element(const bool &newpid = false);
@@ -39,6 +44,7 @@ public:
 // ----------------------------------------------------------------------------------------------------
 class Mpi3Song : public Mpi3Element
 {
+    Q_OBJECT
 
 public:
     explicit Mpi3Song(const bool &newpid = false);
@@ -62,6 +68,7 @@ public:
 // ----------------------------------------------------------------------------------------------------
 class Mpi3Playlist : public Mpi3Element
 {
+    Q_OBJECT
 
 public:
     explicit Mpi3Playlist(const bool &newpid = false);
@@ -78,6 +85,7 @@ public:
 // ----------------------------------------------------------------------------------------------------
 class Mpi3Folder : public Mpi3Element
 {
+    Q_OBJECT
 
 public:
     explicit Mpi3Folder(const bool &newpid = false);
@@ -94,6 +102,7 @@ public:
 // ----------------------------------------------------------------------------------------------------
 class Mpi3Library : public Mpi3Element
 {
+    Q_OBJECT
 
 public:
     explicit Mpi3Library(const bool &newpid = false);
@@ -103,9 +112,9 @@ public:
 public:
     QString filepath;
 
-    QMap<QString, Mpi3Song *> songs;
-    QMap<QString, Mpi3Playlist *> playlists;
-    QMap<QString, Mpi3Folder *> folders;
+    QMap<QString, Mpi3Song*> *songs = nullptr;
+    QMap<QString, Mpi3Playlist*> *playlists = nullptr;
+    QMap<QString, Mpi3Folder*> *folders = nullptr;
 
 public:
     Mpi3Song* addSong();
@@ -118,7 +127,40 @@ public:
 
     QStringList children(const QString &parent);
 
+    void update();
+
+public:
+    int mediaCount() const;
+
+signals:
+    void mediaAboutToBeInserted(int start, int end);
+    void mediaAboutToBeRemoved(int start, int end);
+
+    void mediaInserted(int start, int end);
+    void mediaRemoved(int start, int end);
+    void mediaChanged(int start, int end);
+
 };
 
 
 #endif // MEDIALIB_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

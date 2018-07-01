@@ -1,5 +1,6 @@
 #include "medialib.h"
 
+#include <QDomDocument>
 #include <QTextStream>
 #include <QFile>
 
@@ -30,7 +31,7 @@ QString generatePID()
 // ----------------------------------------------------------------------------------------------------
 // * Mpi3Element *
 // ----------------------------------------------------------------------------------------------------
-Mpi3Element::Mpi3Element(const bool &newpid)
+Mpi3Element::Mpi3Element(const bool &newpid) : QObject(NULL)
 {
     if(newpid){this->pid = generatePID();}
 }
@@ -68,7 +69,9 @@ Mpi3Folder::Mpi3Folder(const bool &newpid) : Mpi3Element(newpid)
 // ----------------------------------------------------------------------------------------------------
 Mpi3Library::Mpi3Library(const bool &newpid) : Mpi3Element(newpid)
 {
-
+    songs = new QMap<QString, Mpi3Song*>;
+    playlists = new QMap<QString, Mpi3Playlist*>;
+    folders = new QMap<QString, Mpi3Folder*>;
 }
 
 Mpi3Library* Mpi3Library::load(const QString &path)
@@ -109,7 +112,7 @@ Mpi3Library* Mpi3Library::load(const QString &path)
             s->bitRate = songs.at(i).namedItem("bitRate").toElement().text().toInt();
             s->sampleRate = songs.at(i).namedItem("sampleRate").toElement().text().toInt();
 
-            mpi3Lib->songs[s->pid] = s;
+            mpi3Lib->songs->insert(s->pid, s);
         }
 
         for(int i = 0; i < playlists.length(); i++)
@@ -119,7 +122,7 @@ Mpi3Library* Mpi3Library::load(const QString &path)
             p->name = playlists.at(i).namedItem("name").toElement().text();
             p->added = playlists.at(i).namedItem("added").toElement().text();
 
-            mpi3Lib->playlists[p->pid] = p;
+            mpi3Lib->playlists->insert(p->pid, p);
         }
 
         for(int i = 0; i < folders.length(); i++)
@@ -129,7 +132,7 @@ Mpi3Library* Mpi3Library::load(const QString &path)
             f->name = folders.at(i).namedItem("name").toElement().text();
             f->added = folders.at(i).namedItem("added").toElement().text();
 
-            mpi3Lib->folders[f->pid] = f;
+            mpi3Lib->folders->insert(f->pid, f);
         }
     }
 
@@ -167,7 +170,7 @@ void Mpi3Library::save(const QString &path)
         root.appendChild(playlists);
         root.appendChild(folders);
 
-        foreach(Mpi3Song *s, this->songs.values())
+        foreach(Mpi3Song *s, this->songs->values())
         {
             QDomElement song = xml.createElement("song");
 
@@ -188,7 +191,7 @@ void Mpi3Library::save(const QString &path)
             songs.appendChild(song);
         }
 
-        foreach(Mpi3Playlist *p, this->playlists.values())
+        foreach(Mpi3Playlist *p, this->playlists->values())
         {
             QDomElement playlist = xml.createElement("song");
 
@@ -199,7 +202,7 @@ void Mpi3Library::save(const QString &path)
             playlists.appendChild(playlist);
         }
 
-        foreach(Mpi3Folder *f, this->folders.values())
+        foreach(Mpi3Folder *f, this->folders->values())
         {
             QDomElement folder = xml.createElement("song");
 
@@ -217,15 +220,24 @@ void Mpi3Library::save(const QString &path)
 
 Mpi3Song* Mpi3Library::addSong()
 {
+    int s = songs->values().length();
+
+    emit mediaAboutToBeInserted(0, 0);
+
     Mpi3Song *song = new Mpi3Song(true);
-    songs[song->pid] = song;
+    songs->insert(song->pid, song);
+
+    s = songs->values().length();
+    emit mediaInserted(0, 0);
+
     return song;
 }
 
 Mpi3Playlist* Mpi3Library::addPlaylist(Mpi3Folder *parent)
 {
     Mpi3Playlist *playlist = new Mpi3Playlist(true);
-    playlists[playlist->pid] = playlist;
+
+    playlists->insert(playlist->pid, playlist);
 
     if(parent){
         playlist->parent = parent;
@@ -237,7 +249,8 @@ Mpi3Playlist* Mpi3Library::addPlaylist(Mpi3Folder *parent)
 Mpi3Folder* Mpi3Library::addFolder(Mpi3Folder *parent)
 {
     Mpi3Folder *folder = new Mpi3Folder(true);
-    folders[folder->pid] = folder;
+
+    folders->insert(folder->pid, folder);
 
     if(parent){
         folder->parent = parent;
@@ -248,17 +261,17 @@ Mpi3Folder* Mpi3Library::addFolder(Mpi3Folder *parent)
 
 void Mpi3Library::removeSong(const QString &pid)
 {
-    songs.remove(pid);
+    songs->remove(pid);
 }
 
 void Mpi3Library::removePlaylist(const QString &pid)
 {
-    playlists.remove(pid);
+    playlists->remove(pid);
 }
 
 void Mpi3Library::removeFolder(const QString &pid)
 {
-    folders.remove(pid);
+    folders->remove(pid);
 }
 
 
@@ -289,3 +302,41 @@ QStringList children(const QString &parent)
 //            err = 'Non-container element {}'.format(parent)
 //            raise ValueError(err)
 }
+
+
+
+void Mpi3Library::update()
+{
+    emit mediaChanged(0, 10);
+}
+
+int Mpi3Library::mediaCount() const
+{
+    return songs->values().length();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

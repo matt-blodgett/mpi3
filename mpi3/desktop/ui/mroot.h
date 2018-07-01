@@ -1,15 +1,17 @@
 #ifndef MROOT_H
 #define MROOT_H
 
-#include "mplayback.h"
-#include "mtrees.h"
-#include "mpanels.h"
-#include "util/mtheme.h"
-
 #include <QMainWindow>
-#include <QSplitter>
-#include <QAction>
-#include <QMenu>
+
+QT_BEGIN_NAMESPACE
+class QMediaPlayer;
+class QAction;
+class QMenu;
+QT_END_NAMESPACE
+
+class PanelLibrary;
+class PanelPlayback;
+class Mpi3Theme;
 
 
 class Mpi3RootDesktop : public QMainWindow
@@ -26,18 +28,16 @@ private:
     void paintEvent(QPaintEvent *event);
 
 private:
-    QSplitter *frmLibrary = nullptr;
+    QMediaPlayer *m_audio = nullptr;
 
-    PanelPlayback *frmPlayback = nullptr;
-    PanelViews *frmViews = nullptr;
-    PanelTrees *frmTrees = nullptr;
+    PanelPlayback *m_playback = nullptr;
+    PanelLibrary *m_library = nullptr;
 
-private:
-    Mpi3Theme *themeCurrent = nullptr;
+    Mpi3Theme *m_theme = nullptr;
 
 private:
-    QMenu *menuFile = nullptr;
-    QMenu *menuTheme = nullptr;
+    QMenu *menu_file = nullptr;
+    QMenu *menu_theme = nullptr;
 
     QAction *m_themeSet = nullptr;
     QAction *m_themeRefresh = nullptr;

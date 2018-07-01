@@ -2,86 +2,16 @@
 #define MPLAYBACK_H
 
 #include <QMediaPlayer>
+#include <QWidget>
+#include <QIcon>
 
-#include <QPushButton>
-#include <QLineEdit>
-#include <QSlider>
-
-
-// ----------------------------------------------------------------------------------------------------
-// * VolumeControl *
-// ----------------------------------------------------------------------------------------------------
-class VolumeControl : public QWidget
-{
-    Q_OBJECT
-
-public:
-    explicit VolumeControl(QWidget *parent=nullptr);
-    ~VolumeControl();
-
-private:
-    QSlider *volSlider = nullptr;
-
-};
+QT_BEGIN_NAMESPACE
+class QLineEdit;
+class QAbstractSlider;
+class QPushButton;
+QT_END_NAMESPACE
 
 
-// ----------------------------------------------------------------------------------------------------
-// * PlaybackControl *
-// ----------------------------------------------------------------------------------------------------
-class PlaybackControl : public QWidget
-{
-    Q_OBJECT
-
-public:
-    explicit PlaybackControl(QWidget *parent=nullptr);
-    ~PlaybackControl();
-
-public:
-    QMediaPlayer *audio = nullptr;
-
-private:
-    QWidget *container = nullptr;
-
-    QPushButton *btnNext = nullptr;
-    QPushButton *btnPrev = nullptr;
-    QPushButton *btnPlay = nullptr;
-    QSlider *posSlider = nullptr;
-
-    QIcon icnNext;
-    QIcon icnPrev;
-    QIcon icnPlay;
-    QIcon icnPaus;
-
-private:
-    void resizeEvent(QResizeEvent *event);
-
-private slots:
-    void clickPlay();
-
-};
-
-
-// ----------------------------------------------------------------------------------------------------
-// * LibrarySearchbar *
-// ----------------------------------------------------------------------------------------------------
-class LibrarySearchbar : public QWidget
-{
-    Q_OBJECT
-
-public:
-    explicit LibrarySearchbar(QWidget *parent=nullptr);
-    ~LibrarySearchbar();
-
-private:
-    QLineEdit *boxSearch = nullptr;
-    QPushButton *btnSearch = nullptr;
-
-};
-
-
-// ----------------------------------------------------------------------------------------------------
-// * PanelPlayback *
-// ----------------------------------------------------------------------------------------------------
 class PanelPlayback : public QWidget
 {
     Q_OBJECT
@@ -90,12 +20,54 @@ public:
     explicit PanelPlayback(QWidget *parent=nullptr);
     ~PanelPlayback();
 
-private:
-    VolumeControl *frmVolume = nullptr;
-    PlaybackControl *frmPlayback = nullptr;
-    LibrarySearchbar *frmSearchbar = nullptr;
+public:
+    QMediaPlayer *m_audio = nullptr;
+    QMediaPlayer::State state() const;
+    int volume() const;
+    bool isMuted() const;
 
 private:
+    QMediaPlayer::State m_playerState = QMediaPlayer::StoppedState;
+    bool m_playerMuted = false;
+
+private:
+    QWidget *frm_controls = nullptr;
+
+    QPushButton *btn_next = nullptr;
+    QPushButton *btn_prev = nullptr;
+    QPushButton *btn_play = nullptr;
+    QAbstractSlider *sld_position = nullptr;
+
+    QIcon icn_next;
+    QIcon icn_prev;
+    QIcon icn_play;
+    QIcon icn_paus;
+
+    QLineEdit *box_search = nullptr;
+    QPushButton *btn_search = nullptr;
+    QAbstractSlider *sld_volume = nullptr;
+
+signals:
+    void play();
+    void pause();
+    void stop();
+    void next();
+    void previous();
+    void changeVolume(int volume);
+    void changeMuting(bool muting);
+
+public slots:
+    void setState(QMediaPlayer::State state);
+    void setVolume(int volume);
+    void setMuted(bool muted);
+
+private slots:
+    void clickPlay();
+    void clickMute();
+    void onVolumeSliderValueChanged();
+
+private:
+    void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *event);
 
 };

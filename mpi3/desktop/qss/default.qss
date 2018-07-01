@@ -1,6 +1,7 @@
 !NAME=Default
 
 !THEME=BEGIN
+
 QMenuBar#MainMenuBar {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #828282, stop:1 #565656);
     color: #FFFFFF;
@@ -37,51 +38,51 @@ QWidget#PlaybackControl {
 
 
 
-QPushButton#ButtonPrev {
+QWidget#ButtonPrev {
     background-color: qlineargradient(x1: 1, y1: 0, x2: 0, y2: 0, stop: 0 #F6F7FA, stop: 1 #DADBDE);
 }
 
-QPushButton#ButtonPrev:pressed {
+QWidget#ButtonPrev:pressed {
     background-color: qlineargradient(x1: 1, y1: 0, x2: 0, y2: 0, stop: 0 #E2E2E2, stop: 1 #CCCCCC);
 }
 
-QPushButton#ButtonPrev:flat {
+QWidget#ButtonPrev:flat {
     border: none;
 }
 
-QPushButton#ButtonNext {
+QWidget#ButtonNext {
     background-color: qlineargradient(x1: 1, y1: 0, x2: 0, y2: 0, stop: 0 #F6F7FA, stop: 1 #DADBDE);
 }
 
-QPushButton#ButtonNext:pressed {
+QWidget#ButtonNext:pressed {
     background-color: qlineargradient(x1: 1, y1: 0, x2: 0, y2: 0, stop: 0 #E2E2E2, stop: 1 #CCCCCC);
 }
 
-QPushButton#ButtonNext:flat {
+QWidget#ButtonNext:flat {
     border: none;
 }
 
 
-QPushButton#ButtonPlay {
+QWidget#ButtonPlay {
     background-color: #FFFFFF;
 }
 
-QPushButton#ButtonPlay:pressed {
+QWidget#ButtonPlay:pressed {
     background-color: #FFFFFF;
 }
 
-QPushButton#ButtonPlay:flat {
+QWidget#ButtonPlay:flat {
     border: none;
 }
 
 
-QSlider#SliderPosition {
+QWidget#SliderPosition {
     border: 1px solid #999999;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #B1B1B1, stop:1 #C4C4C4);
     margin: 2px 0;
 }
 
-QSlider#SliderPosition::handle:horizontal {
+QWidget#SliderPosition::handle:horizontal {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #828282, stop:1 #565656);
     border: 1px solid #5c5c5c;
     width: 18px;
@@ -89,17 +90,17 @@ QSlider#SliderPosition::handle:horizontal {
     border-radius: 3px;
 }
 
-QSlider#SliderPosition::groove:horizontal {
+QWidget#SliderPosition::groove:horizontal {
      background: red;
      position: absolute;
      left: 4px; right: 4px;
  }
 
- QSlider#SliderPosition::add-page:horizontal {
+ QWidget#SliderPosition::add-page:horizontal {
      background: white;
  }
 
- QSlider#SliderPosition::sub-page:horizontal {
+ QWidget#SliderPosition::sub-page:horizontal {
      background: pink;
  }
 
@@ -114,7 +115,7 @@ QWidget#PanelTrees {
 }
 
 
-QTreeView#LibraryTreeview {
+QWidget#LibraryTreeview {
     background-color: #FFFFFF;
     border-top: 1px solid #000000;
     border-left: 1px solid #000000;

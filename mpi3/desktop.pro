@@ -13,15 +13,19 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 
 HEADERS += desktop/ui/mroot.h
-HEADERS += desktop/ui/mpanels.h
+HEADERS += desktop/ui/mlibrary.h
 HEADERS += desktop/ui/mplayback.h
-HEADERS += desktop/ui/mtrees.h
+HEADERS += desktop/ui/mtreeviews.h
+HEADERS += desktop/ui/mlibrarymodel.h
+HEADERS += desktop/ui/mlibraryitem.h
 
 SOURCES += desktop/main.cpp
 SOURCES += desktop/ui/mroot.cpp
-SOURCES += desktop/ui/mpanels.cpp
+SOURCES += desktop/ui/mlibrary.cpp
 SOURCES += desktop/ui/mplayback.cpp
-SOURCES += desktop/ui/mtrees.cpp
+SOURCES += desktop/ui/mtreeviews.cpp
+SOURCES += desktop/ui/mlibrarymodel.cpp
+SOURCES += desktop/ui/mlibraryitem.cpp
 
 
 HEADERS += util/mtheme.h
@@ -29,10 +33,6 @@ SOURCES += util/mtheme.cpp
 
 HEADERS += util/medialib.h
 SOURCES += util/medialib.cpp
-
-HEADERS += util/maudio.h
-SOURCES += util/maudio.cpp
-
 
 RESOURCES += desktop/qss
 RESOURCES += desktop/icons
@@ -42,3 +42,15 @@ RESOURCES += desktop/icons
 # sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro *.png images
 # sources.path = $$[QT_INSTALL_EXAMPLES]/phonon/qmusicplayer
 # INSTALLS += target sources
+
+
+#HEADERS += libav/include/libavcodec/avcodec.h
+
+
+
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/libav/bin/ -lavcodec
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/libav/bin/ -lavcodecd
+#else:unix: LIBS += -L$$PWD/libav/bin/ -lavcodec
+
+#INCLUDEPATH += $$PWD/libav/include
+#DEPENDPATH += $$PWD/libav/include
