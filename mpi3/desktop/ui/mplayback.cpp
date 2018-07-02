@@ -7,7 +7,6 @@
 #include <QSlider>
 #include <QLineEdit>
 
-
 #include <QDebug>
 
 
@@ -98,7 +97,6 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent)
     layoutMain->setMargin(0);
 
     this->setLayout(layoutMain);
-
 
     connect(btn_play, &QAbstractButton::clicked, this, &PanelPlayback::clickPlay);
 //    connect(m_stopButton, &QAbstractButton::clicked, this, &PlayerControls::stop);

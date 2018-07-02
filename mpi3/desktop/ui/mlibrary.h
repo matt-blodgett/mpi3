@@ -1,18 +1,14 @@
-#ifndef MPANELS_H
-#define MPANELS_H
+#ifndef MLIBRARY_H
+#define MLIBRARY_H
 
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
 class QPushButton;
+class QTreeView;
 class QLabel;
-class QAbstractItemView;
 class QSplitter;
 QT_END_NAMESPACE
-
-class LibraryTreeview;
-class LibraryModel;
-class Mpi3Library;
 
 
 class PanelLibrary : public QWidget
@@ -25,8 +21,7 @@ public:
 
 
 private:
-    LibraryTreeview *tree_library = nullptr;
-    LibraryModel *m_model = nullptr;
+    QTreeView *tree_library = nullptr;
 
     QSplitter *frm_library = nullptr;
     QWidget *frm_views = nullptr;
@@ -38,13 +33,10 @@ private:
 
     QLabel *lbl_view = nullptr;
 
-
-    Mpi3Library *m_library = nullptr;
-
 private:
     void paintEvent(QPaintEvent *event);
 
 };
 
 
-#endif // MPANELS_H
+#endif // MLIBRARY_H

@@ -1,19 +1,16 @@
 #include "mlibrary.h"
-#include "mtreeviews.h"
-#include "mlibrarymodel.h"
-#include "util/medialib.h"
 
 #include <QGridLayout>
 #include <QStyleOption>
 #include <QPainter>
-#include <QSplitter>
+
 #include <QPushButton>
+#include <QSplitter>
+#include <QLabel>
+
+#include <QTreeView>
 
 
-
-// ----------------------------------------------------------------------------------------------------
-// * PanelViews *
-// ----------------------------------------------------------------------------------------------------
 PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent)
 {
     frm_library = new QSplitter(this);
@@ -40,11 +37,13 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent)
     layoutViews->setMargin(0);
     frm_views->setLayout(layoutViews);
 
-
     QGridLayout *layoutTrees = new QGridLayout;
 
     lbl_view = new QLabel(this);
-    tree_library = new LibraryTreeview(this);
+    tree_library = new QTreeView(this);
+    tree_library->setObjectName("LibraryTreeview");
+    tree_library->setAlternatingRowColors(true);
+
 
     QFont font;
     font.setFamily("Helvetica");
@@ -76,62 +75,6 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent)
     layoutMain->setVerticalSpacing(0);
 
     this->setLayout(layoutMain);
-
-
-
-    QStringList headers;
-    headers << "Name" << "Artist" << "Path";
-
-    m_model = new LibraryModel(this, headers);
-    tree_library->setModel(m_model);
-
-
-//    QString p("C:/Users/Matt/Desktop/Calm Down.wav");
-
-//    m_playlist->addMedia(QUrl(p));
-
-
-    Mpi3Library *mpi3Lib = new Mpi3Library(true);
-
-    mpi3Lib->name = "Main Library";
-    mpi3Lib->added = "03/07/2017";
-
-
-    //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
-
-
-    Mpi3Song *song_1 = mpi3Lib->addSong();
-    song_1->name = "Me, Myself and I";
-    song_1->artist = "G-Eazy";
-    song_1->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Me, Myself  I (Ft. Bebe Rexha).mp3";
-
-//    mpi3Lib->update();
-
-    m_model->setLibrary(mpi3Lib);
-
-
-
-
-
-    //    Mpi3Song *song_2 = mpi3Lib->addSong();
-    //    song_2->name = "Been On";
-    //    song_2->artist = "G-Eazy";
-
-    //    Mpi3Folder *fldr_1 = mpi3Lib->addFolder();
-    //    Mpi3Playlist *plist_1 = mpi3Lib->addPlaylist();
-
-    //    fldr_1->name = "electric beat";
-    //    plist_1->name = "upbeat";
-
-    //    Mpi3Playlist *plist_2 = mpi3Lib->addPlaylist(fldr_1);
-    //    plist_2->name = "dance";
-
-
-
-
-
-
-
 
     frm_views->setObjectName("PanelViews");
     frm_trees->setObjectName("PanelTrees");

@@ -1,5 +1,5 @@
-#ifndef LIBRARYITEM_H
-#define LIBRARYITEM_H
+#ifndef LIBITEM_H
+#define LIBITEM_H
 
 #include <QVariant>
 #include <QVector>

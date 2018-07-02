@@ -222,13 +222,12 @@ Mpi3Song* Mpi3Library::addSong()
 {
     int s = songs->values().length();
 
-    emit mediaAboutToBeInserted(0, 0);
-
     Mpi3Song *song = new Mpi3Song(true);
     songs->insert(song->pid, song);
 
     s = songs->values().length();
-    emit mediaInserted(0, 0);
+
+    emit mediaInserted(0, 1);
 
     return song;
 }
@@ -307,7 +306,7 @@ QStringList children(const QString &parent)
 
 void Mpi3Library::update()
 {
-    emit mediaChanged(0, 10);
+    emit mediaChanged(0, songs->values().at(0));
 }
 
 int Mpi3Library::mediaCount() const

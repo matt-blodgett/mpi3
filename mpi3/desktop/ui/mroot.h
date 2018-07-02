@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
+class QTreeView;
 class QMediaPlayer;
 class QAction;
 class QMenu;
@@ -11,6 +12,8 @@ QT_END_NAMESPACE
 
 class PanelLibrary;
 class PanelPlayback;
+class LibraryModel;
+class Mpi3Library;
 class Mpi3Theme;
 
 
@@ -21,17 +24,23 @@ class Mpi3RootDesktop : public QMainWindow
 public:
     Mpi3RootDesktop();
     ~Mpi3RootDesktop();
+
+private:
     void initialize();
-
-private:
     void initializeMenubar();
-    void paintEvent(QPaintEvent *event);
 
 private:
-    QMediaPlayer *m_audio = nullptr;
+    void paintEvent(QPaintEvent *event);
+    void onCustomContextMenu(const QPoint &point);
 
+private:
+    PanelLibrary *m_libview = nullptr;
     PanelPlayback *m_playback = nullptr;
-    PanelLibrary *m_library = nullptr;
+
+    QTreeView *tree_library = nullptr;
+    LibraryModel *m_model = nullptr;
+    QMediaPlayer *m_audio = nullptr;
+    Mpi3Library *m_library = nullptr;
 
     Mpi3Theme *m_theme = nullptr;
 
@@ -50,3 +59,11 @@ private slots:
 
 
 #endif // MROOT_H
+
+
+
+
+
+
+
+

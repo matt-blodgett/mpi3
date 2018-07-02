@@ -1,24 +1,27 @@
 #include "mroot.h"
 #include "mplayback.h"
 #include "mlibrary.h"
+#include "mlibmodel.h"
+
 #include "util/mtheme.h"
+#include "util/medialib.h"
 
 #include <QGridLayout>
 #include <QStyleOption>
 #include <QPainter>
+
 #include <QMenuBar>
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QDir>
+
 #include <QMediaPlayer>
+#include <QTreeView>
 
 
 #include <QDebug>
 
 
-// ----------------------------------------------------------------------------------------------------
-// * Mpi3RootDesktop *
-// ----------------------------------------------------------------------------------------------------
 Mpi3RootDesktop::Mpi3RootDesktop()
 {
     initializeMenubar();
@@ -39,10 +42,10 @@ void Mpi3RootDesktop::initialize()
     QGridLayout *layoutMain = new QGridLayout;
 
     m_playback = new PanelPlayback(this);
-    m_library = new PanelLibrary(this);
+    m_libview = new PanelLibrary(this);
 
     layoutMain->addWidget(m_playback, 0, 0, 1, 1);
-    layoutMain->addWidget(m_library, 1, 0, 1, 1);
+    layoutMain->addWidget(m_libview, 1, 0, 1, 1);
     layoutMain->setColumnStretch(0, 1);
     layoutMain->setRowStretch(1, 1);
     layoutMain->setMargin(0);
@@ -54,8 +57,8 @@ void Mpi3RootDesktop::initialize()
 
 
 
-    this->m_audio = new QMediaPlayer(this);
-    this->m_audio->setAudioRole(QAudio::MusicRole);
+    m_audio = new QMediaPlayer(this);
+    m_audio->setAudioRole(QAudio::MusicRole);
 
 
     m_playback->setState(m_audio->state());
@@ -79,9 +82,76 @@ void Mpi3RootDesktop::initialize()
 //  QString p("C:/Users/Matt/Desktop/Prayer in C.mp3");
     QString p("C:/Users/Matt/Desktop/Calm Down.wav");
 
-    this->m_audio->setMedia(QUrl(p));
+    m_audio->setMedia(QUrl(p));
 //    this->m_audio->setVolume(50);
 //    this->m_audio->play();
+
+
+
+    tree_library = this->findChild<QTreeView*>("LibraryTreeview");
+
+
+
+
+
+
+
+
+
+
+
+
+    QStringList headers;
+    headers << "Name" << "Artist" << "Path";
+
+    m_model = new LibraryModel(this, headers);
+    tree_library->setModel(m_model);
+
+
+//    QString p("C:/Users/Matt/Desktop/Calm Down.wav");
+
+//    m_playlist->addMedia(QUrl(p));
+
+
+    Mpi3Library *mpi3Lib = new Mpi3Library(true);
+
+    mpi3Lib->name = "Main Library";
+    mpi3Lib->added = "03/07/2017";
+
+
+    //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
+
+
+    m_model->setLibrary(mpi3Lib);
+
+    Mpi3Song *song_1 = mpi3Lib->addSong();
+    song_1->name = "Me, Myself and I";
+    song_1->artist = "G-Eazy";
+    song_1->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Me, Myself  I (Ft. Bebe Rexha).mp3";
+
+
+    mpi3Lib->update();
+
+    //    Mpi3Song *song_2 = mpi3Lib->addSong();
+    //    song_2->name = "Been On";
+    //    song_2->artist = "G-Eazy";
+
+    //    Mpi3Folder *fldr_1 = mpi3Lib->addFolder();
+    //    Mpi3Playlist *plist_1 = mpi3Lib->addPlaylist();
+
+    //    fldr_1->name = "electric beat";
+    //    plist_1->name = "upbeat";
+
+    //    Mpi3Playlist *plist_2 = mpi3Lib->addPlaylist(fldr_1);
+    //    plist_2->name = "dance";
+
+
+
+
+    tree_library->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(tree_library, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::onCustomContextMenu);
+
+
 
 
 
@@ -149,3 +219,33 @@ void Mpi3RootDesktop::paintEvent(QPaintEvent *event)
 
     QWidget::paintEvent(event);
 }
+
+
+
+
+void Mpi3RootDesktop::onCustomContextMenu(const QPoint &point)
+{
+    QModelIndex index = tree_library->indexAt(point);
+    if (index.isValid())
+    {
+
+        QMenu contextMenu(this);
+
+        QAction *a = new QAction("test", this);
+        contextMenu.addAction(a);
+
+        contextMenu.exec(tree_library->mapToGlobal(point));
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+

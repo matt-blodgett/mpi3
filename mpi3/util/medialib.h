@@ -133,12 +133,10 @@ public:
     int mediaCount() const;
 
 signals:
-    void mediaAboutToBeInserted(int start, int end);
-    void mediaAboutToBeRemoved(int start, int end);
+    void mediaInserted(int position, int rows);
+    void mediaChanged(int index, Mpi3Song *s);
 
-    void mediaInserted(int start, int end);
-    void mediaRemoved(int start, int end);
-    void mediaChanged(int start, int end);
+    void mediaRemoved();
 
 };
 
