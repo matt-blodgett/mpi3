@@ -9,10 +9,10 @@
 LibraryModel::LibraryModel(QObject *parent, const QStringList &headers) : QAbstractItemModel(parent)
 {
     QVector<QVariant> rootData;
-    foreach (QString header, headers)
-    {
+    foreach (QString header, headers){
         rootData << header;
     }
+
     rootItem = new LibraryItem(rootData);
 }
 
@@ -23,8 +23,9 @@ LibraryModel::~LibraryModel()
 
 Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid())
+    if (!index.isValid()){
         return 0;
+    }
 
     return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
@@ -42,20 +43,16 @@ int LibraryModel::columnCount(const QModelIndex &) const
 
 QModelIndex LibraryModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if (parent.isValid() && parent.column() != 0)
-    {
+    if (parent.isValid() && parent.column() != 0){
         return QModelIndex();
     }
 
     LibraryItem *parentItem = getItem(parent);
-
     LibraryItem *childItem = parentItem->child(row);
-    if (childItem)
-    {
+    if (childItem){
         return createIndex(row, column, childItem);
     }
-    else
-    {
+    else{
         return QModelIndex();
     }
 }
@@ -68,13 +65,11 @@ QModelIndex LibraryModel::parent(const QModelIndex &child) const
 
 QVariant LibraryModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
-    {
+    if (!index.isValid()){
         return QVariant();
     }
 
-    if (role != Qt::DisplayRole && role != Qt::EditRole)
-    {
+    if (role != Qt::DisplayRole && role != Qt::EditRole){
         return QVariant();
     }
 
@@ -84,8 +79,7 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const
 
 QVariant LibraryModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-    {
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole){
         return rootItem->data(section);
     }
 
@@ -94,16 +88,14 @@ QVariant LibraryModel::headerData(int section, Qt::Orientation orientation, int 
 
 bool LibraryModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (role != Qt::EditRole)
-    {
+    if (role != Qt::EditRole){
         return false;
     }
 
     LibraryItem *item = getItem(index);
     bool result = item->setData(index.column(), value);
 
-    if (result)
-    {
+    if (result){
         emit dataChanged(index, index);
     }
 
@@ -112,15 +104,13 @@ bool LibraryModel::setData(const QModelIndex &index, const QVariant &value, int 
 
 bool LibraryModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
 {
-    if (role != Qt::EditRole || orientation != Qt::Horizontal)
-    {
+    if (role != Qt::EditRole || orientation != Qt::Horizontal){
         return false;
     }
 
     bool result = rootItem->setData(section, value);
 
-    if (result)
-    {
+    if (result){
         emit headerDataChanged(orientation, section, section);
     }
 
@@ -195,7 +185,7 @@ bool LibraryModel::setHeaderData(int section, Qt::Orientation orientation, const
 
 void LibraryModel::insertItems(int position, int count)
 {
-    beginInsertRows(QModelIndex(), position, count);
+    beginInsertRows(QModelIndex(), position, position + count);
     rootItem->insertChildren(position, count, rootItem->columnCount());
     endInsertRows();
 }
@@ -239,8 +229,9 @@ LibraryItem *LibraryModel::getItem(const QModelIndex &index) const
 {
     if (index.isValid()) {
         LibraryItem *item = static_cast<LibraryItem*>(index.internalPointer());
-        if (item)
+        if (item){
             return item;
+        }
     }
     return rootItem;
 }

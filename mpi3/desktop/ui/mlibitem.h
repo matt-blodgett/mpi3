@@ -29,6 +29,7 @@ private:
     QList<LibraryItem*> childItems;
     QVector<QVariant> itemData;
     LibraryItem *parentItem;
+
 };
 
 #endif // LIBRARYITEM_H

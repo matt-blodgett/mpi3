@@ -2,7 +2,7 @@
 #define MEDIALIB_H
 
 #include <QObject>
-#include <QMap>
+#include <QVector>
 
 QT_BEGIN_NAMESPACE
 class QDomDocument;
@@ -21,9 +21,6 @@ QString generatePID();
 void xmlWriteElement(QDomDocument xml, QDomElement elem, QString tagname, QString text);
 
 
-// ----------------------------------------------------------------------------------------------------
-// * Mpi3Element *
-// ----------------------------------------------------------------------------------------------------
 class Mpi3Element : public QObject
 {
     Q_OBJECT
@@ -39,9 +36,6 @@ public:
 };
 
 
-// ----------------------------------------------------------------------------------------------------
-// * Mpi3Song *
-// ----------------------------------------------------------------------------------------------------
 class Mpi3Song : public Mpi3Element
 {
     Q_OBJECT
@@ -63,9 +57,6 @@ public:
 };
 
 
-// ----------------------------------------------------------------------------------------------------
-// * Mpi3Playlist *
-// ----------------------------------------------------------------------------------------------------
 class Mpi3Playlist : public Mpi3Element
 {
     Q_OBJECT
@@ -80,9 +71,6 @@ public:
 };
 
 
-// ----------------------------------------------------------------------------------------------------
-// * Mpi3Folder *
-// ----------------------------------------------------------------------------------------------------
 class Mpi3Folder : public Mpi3Element
 {
     Q_OBJECT
@@ -97,9 +85,6 @@ public:
 };
 
 
-// ----------------------------------------------------------------------------------------------------
-// * Mpi3Library *
-// ----------------------------------------------------------------------------------------------------
 class Mpi3Library : public Mpi3Element
 {
     Q_OBJECT
@@ -112,25 +97,20 @@ public:
 public:
     QString filepath;
 
-    QMap<QString, Mpi3Song*> *songs = nullptr;
-    QMap<QString, Mpi3Playlist*> *playlists = nullptr;
-    QMap<QString, Mpi3Folder*> *folders = nullptr;
+    QVector<Mpi3Song*> *songs = nullptr;
+    QVector<Mpi3Playlist*> *playlists = nullptr;
+    QVector<Mpi3Folder*> *folders = nullptr;
 
 public:
     Mpi3Song* addSong();
     Mpi3Playlist* addPlaylist(Mpi3Folder *parent = nullptr);
     Mpi3Folder* addFolder(Mpi3Folder *parent = nullptr);
 
-    void removeSong(const QString &pid);
-    void removePlaylist(const QString &pid);
-    void removeFolder(const QString &pid);
+    void removeSong(Mpi3Song *s);
+    void removePlaylist(Mpi3Playlist *p);
+    void removeFolder(Mpi3Folder *f);
 
-    QStringList children(const QString &parent);
-
-    void update();
-
-public:
-    int mediaCount() const;
+    void update(Mpi3Song *song);
 
 signals:
     void mediaInserted(int position, int rows);

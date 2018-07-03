@@ -4,10 +4,9 @@
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-class QTreeView;
 class QMediaPlayer;
+class QTreeView;
 class QAction;
-class QMenu;
 QT_END_NAMESPACE
 
 class PanelLibrary;
@@ -24,41 +23,100 @@ class Mpi3RootDesktop : public QMainWindow
 public:
     Mpi3RootDesktop();
     ~Mpi3RootDesktop();
-
-private:
     void initialize();
-    void initializeMenubar();
-
-private:
-    void paintEvent(QPaintEvent *event);
-    void onCustomContextMenu(const QPoint &point);
 
 private:
     PanelLibrary *m_libview = nullptr;
     PanelPlayback *m_playback = nullptr;
-
     QTreeView *tree_library = nullptr;
     LibraryModel *m_model = nullptr;
     QMediaPlayer *m_audio = nullptr;
     Mpi3Library *m_library = nullptr;
-
     Mpi3Theme *m_theme = nullptr;
 
 private:
-    QMenu *menu_file = nullptr;
-    QMenu *menu_theme = nullptr;
+    void initializeActions();
+    void initializeMainMenu();
+    void treeviewContextMenu(const QPoint &point);
 
-    QAction *m_themeSet = nullptr;
-    QAction *m_themeRefresh = nullptr;
+    QAction *act_audioSettings = nullptr;
+    QAction *act_wndExit = nullptr;
+
+    QAction *act_libImport = nullptr;
+    QAction *act_libExport = nullptr;
+
+    QAction *act_themeSet = nullptr;
+    QAction *act_themeRefresh = nullptr;
+
+    QAction *act_itemExpand = nullptr;
+    QAction *act_itemCollapse = nullptr;
+    QAction *act_itemExpandAll = nullptr;
+    QAction *act_itemCollapseAll = nullptr;
+
+    QAction *act_libDelete = nullptr;
+    QAction *act_libNewFolder = nullptr;
+    QAction *act_libNewPlaylist = nullptr;
+    QAction *act_libImportPlaylists = nullptr;
+    QAction *act_libImportSongs = nullptr;
+    QAction *act_libDownloadSongs = nullptr;
+
+    QAction *act_objPlay = nullptr;
+    QAction *act_objEdit = nullptr;
+    QAction *act_objDetails = nullptr;
+
+    QAction *act_objAddTo = nullptr;
+    QAction *act_objMoveTo = nullptr;
+    QAction *act_objRemoveFrom = nullptr;
+    QAction *act_objDuplicate = nullptr;
 
 private slots:
+    void libImport();
+    void libExport();
+
     void themeSet();
     void themeRefresh();
+
+    void itemExpand();
+    void itemCollapse();
+    void itemExpandAll();
+    void itemCollapseAll();
+
+    void libDelete();
+    void libNewFolder();
+    void libNewPlaylist();
+    void libImportPlaylists();
+
+    void objPlay();
+    void objEdit();
+    void objDetails();
+
+    void objAddTo();
+    void objMoveTo();
+    void objRemoveFrom();
+    void objDuplicate();
+
+
+private:
+    void paintEvent(QPaintEvent *event);
 
 };
 
 
 #endif // MROOT_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

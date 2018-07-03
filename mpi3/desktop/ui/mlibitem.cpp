@@ -25,8 +25,9 @@ int LibraryItem::childCount() const
 
 int LibraryItem::childNumber() const
 {
-    if (parentItem)
+    if (parentItem){
         return parentItem->childItems.indexOf(const_cast<LibraryItem*>(this));
+    }
 
     return 0;
 }
@@ -43,8 +44,9 @@ QVariant LibraryItem::data(int column) const
 
 bool LibraryItem::insertChildren(int position, int count, int columns)
 {
-    if (position < 0 || position > childItems.size())
+    if (position < 0 || position > childItems.size()){
         return false;
+    }
 
     for (int row = 0; row < count; ++row) {
         QVector<QVariant> data(columns);
@@ -57,14 +59,17 @@ bool LibraryItem::insertChildren(int position, int count, int columns)
 
 bool LibraryItem::insertColumns(int position, int columns)
 {
-    if (position < 0 || position > itemData.size())
+    if (position < 0 || position > itemData.size()){
         return false;
+    }
 
-    for (int column = 0; column < columns; ++column)
+    for (int column = 0; column < columns; ++column){
         itemData.insert(position, QVariant());
+    }
 
-    foreach (LibraryItem *child, childItems)
+    foreach (LibraryItem *child, childItems){
         child->insertColumns(position, columns);
+    }
 
     return true;
 }
@@ -76,11 +81,13 @@ LibraryItem *LibraryItem::parent()
 
 bool LibraryItem::removeChildren(int position, int count)
 {
-    if (position < 0 || position + count > childItems.size())
+    if (position < 0 || position + count > childItems.size()){
         return false;
+    }
 
-    for (int row = 0; row < count; ++row)
+    for (int row = 0; row < count; ++row){
         delete childItems.takeAt(position);
+    }
 
     return true;
 }
@@ -88,22 +95,26 @@ bool LibraryItem::removeChildren(int position, int count)
 
 bool LibraryItem::removeColumns(int position, int columns)
 {
-    if (position < 0 || position + columns > itemData.size())
+    if (position < 0 || position + columns > itemData.size()){
         return false;
+    }
 
-    for (int column = 0; column < columns; ++column)
+    for (int column = 0; column < columns; ++column){
         itemData.remove(position);
+    }
 
-    foreach (LibraryItem *child, childItems)
+    foreach (LibraryItem *child, childItems){
         child->removeColumns(position, columns);
+    }
 
     return true;
 }
 
 bool LibraryItem::setData(int column, const QVariant &value)
 {
-    if (column < 0 || column >= itemData.size())
+    if (column < 0 || column >= itemData.size()){
         return false;
+    }
 
     itemData[column] = value;
     return true;

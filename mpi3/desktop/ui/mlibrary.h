@@ -19,7 +19,6 @@ public:
     explicit PanelLibrary(QWidget *parent=nullptr);
     ~PanelLibrary();
 
-
 private:
     QTreeView *tree_library = nullptr;
 

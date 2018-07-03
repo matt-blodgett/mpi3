@@ -4,8 +4,8 @@
 #include <QAbstractItemModel>
 #include <QScopedPointer>
 
-class Mpi3Library;
 class LibraryItem;
+class Mpi3Library;
 class Mpi3Song;
 
 
