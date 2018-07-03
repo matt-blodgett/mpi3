@@ -10,8 +10,7 @@
 #include <QDebug>
 
 
-PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent)
-{
+PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent){
     frm_controls = new QWidget(this);
 
     btn_next = new QPushButton(frm_controls);
@@ -114,13 +113,9 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent)
     this->setObjectName("PanelPlayback");
 }
 
-PanelPlayback::~PanelPlayback()
-{
+PanelPlayback::~PanelPlayback(){}
 
-}
-
-void PanelPlayback::clickPlay()
-{
+void PanelPlayback::clickPlay(){
     this->btn_play->setIcon(this->icn_paus);
 
     switch (m_playerState) {
@@ -134,16 +129,14 @@ void PanelPlayback::clickPlay()
     }
 }
 
-void PanelPlayback::resizeEvent(QResizeEvent *event)
-{
+void PanelPlayback::resizeEvent(QResizeEvent *event){
     Q_UNUSED(event);
 
     int x = (this->frm_controls->width() / 2) - (300 / 2);
     this->frm_controls->move(x, 0);
 }
 
-void PanelPlayback::paintEvent(QPaintEvent *event)
-{
+void PanelPlayback::paintEvent(QPaintEvent *event){
     QStyleOption opt;
     opt.init(this);
 
@@ -158,8 +151,7 @@ void PanelPlayback::paintEvent(QPaintEvent *event)
 
 
 
-QMediaPlayer::State PanelPlayback::state() const
-{
+QMediaPlayer::State PanelPlayback::state() const{
     return m_playerState;
 }
 
@@ -185,8 +177,7 @@ void PanelPlayback::setState(QMediaPlayer::State state)
     }
 }
 
-int PanelPlayback::volume() const
-{
+int PanelPlayback::volume() const{
     qreal linearVolume =  QAudio::convertVolume(sld_volume->value() / qreal(100),
                                                 QAudio::LogarithmicVolumeScale,
                                                 QAudio::LinearVolumeScale);
@@ -194,8 +185,7 @@ int PanelPlayback::volume() const
     return qRound(linearVolume * 100);
 }
 
-void PanelPlayback::setVolume(int volume)
-{
+void PanelPlayback::setVolume(int volume){
     qreal logarithmicVolume = QAudio::convertVolume(volume / qreal(100),
                                                     QAudio::LinearVolumeScale,
                                                     QAudio::LogarithmicVolumeScale);
@@ -204,26 +194,22 @@ void PanelPlayback::setVolume(int volume)
 }
 
 
-void PanelPlayback::onVolumeSliderValueChanged()
-{
+void PanelPlayback::onVolumeSliderValueChanged(){
     emit changeVolume(volume());
 }
 
 
-bool PanelPlayback::isMuted() const
-{
+bool PanelPlayback::isMuted() const{
     return m_playerMuted;
 }
 
-void PanelPlayback::setMuted(bool muted)
-{
+void PanelPlayback::setMuted(bool muted){
     if (muted != m_playerMuted) {
         m_playerMuted = muted;
     }
 }
 
-void PanelPlayback::clickMute()
-{
+void PanelPlayback::clickMute(){
     emit changeMuting(!m_playerMuted);
 }
 

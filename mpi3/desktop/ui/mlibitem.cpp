@@ -2,29 +2,24 @@
 
 #include <QStringList>
 
-LibraryItem::LibraryItem(const QVector<QVariant> &data, LibraryItem *parent)
-{
+LibraryItem::LibraryItem(const QVector<QVariant> &data, LibraryItem *parent){
     parentItem = parent;
     itemData = data;
 }
 
-LibraryItem::~LibraryItem()
-{
+LibraryItem::~LibraryItem(){
     qDeleteAll(childItems);
 }
 
-LibraryItem *LibraryItem::child(int number)
-{
+LibraryItem *LibraryItem::child(int number){
     return childItems.value(number);
 }
 
-int LibraryItem::childCount() const
-{
+int LibraryItem::childCount() const{
     return childItems.count();
 }
 
-int LibraryItem::childNumber() const
-{
+int LibraryItem::childNumber() const{
     if (parentItem){
         return parentItem->childItems.indexOf(const_cast<LibraryItem*>(this));
     }
@@ -32,23 +27,20 @@ int LibraryItem::childNumber() const
     return 0;
 }
 
-int LibraryItem::columnCount() const
-{
+int LibraryItem::columnCount() const{
     return itemData.count();
 }
 
-QVariant LibraryItem::data(int column) const
-{
+QVariant LibraryItem::data(int column) const{
     return itemData.value(column);
 }
 
-bool LibraryItem::insertChildren(int position, int count, int columns)
-{
+bool LibraryItem::insertChildren(int position, int count, int columns){
     if (position < 0 || position > childItems.size()){
         return false;
     }
 
-    for (int row = 0; row < count; ++row) {
+    for (int row = 0; row < count; ++row){
         QVector<QVariant> data(columns);
         LibraryItem *item = new LibraryItem(data, this);
         childItems.insert(position, item);
@@ -57,8 +49,7 @@ bool LibraryItem::insertChildren(int position, int count, int columns)
     return true;
 }
 
-bool LibraryItem::insertColumns(int position, int columns)
-{
+bool LibraryItem::insertColumns(int position, int columns){
     if (position < 0 || position > itemData.size()){
         return false;
     }
@@ -74,13 +65,11 @@ bool LibraryItem::insertColumns(int position, int columns)
     return true;
 }
 
-LibraryItem *LibraryItem::parent()
-{
+LibraryItem *LibraryItem::parent(){
     return parentItem;
 }
 
-bool LibraryItem::removeChildren(int position, int count)
-{
+bool LibraryItem::removeChildren(int position, int count){
     if (position < 0 || position + count > childItems.size()){
         return false;
     }
@@ -93,8 +82,7 @@ bool LibraryItem::removeChildren(int position, int count)
 }
 
 
-bool LibraryItem::removeColumns(int position, int columns)
-{
+bool LibraryItem::removeColumns(int position, int columns){
     if (position < 0 || position + columns > itemData.size()){
         return false;
     }
@@ -110,8 +98,7 @@ bool LibraryItem::removeColumns(int position, int columns)
     return true;
 }
 
-bool LibraryItem::setData(int column, const QVariant &value)
-{
+bool LibraryItem::setData(int column, const QVariant &value){
     if (column < 0 || column >= itemData.size()){
         return false;
     }

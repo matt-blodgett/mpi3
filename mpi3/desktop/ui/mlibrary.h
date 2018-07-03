@@ -4,7 +4,7 @@
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
-class QPushButton;
+class QRadioButton;
 class QTreeView;
 class QLabel;
 class QSplitter;
@@ -19,6 +19,16 @@ public:
     explicit PanelLibrary(QWidget *parent=nullptr);
     ~PanelLibrary();
 
+public:
+    enum View {
+        Library,
+        Artists,
+        Playlists
+    };
+
+public:
+    View getCurrentView();
+
 private:
     QTreeView *tree_library = nullptr;
 
@@ -26,11 +36,19 @@ private:
     QWidget *frm_views = nullptr;
     QWidget *frm_trees = nullptr;
 
-    QPushButton *btn_songs = nullptr;
-    QPushButton *btn_artists = nullptr;
-    QPushButton *btn_playlists = nullptr;
+    QRadioButton *btn_songs = nullptr;
+    QRadioButton *btn_artists = nullptr;
+    QRadioButton *btn_playlists = nullptr;
 
     QLabel *lbl_view = nullptr;
+
+    View m_currentView;
+
+private slots:
+    void changeView(PanelLibrary::View view);
+
+signals:
+    void viewChanged();
 
 private:
     void paintEvent(QPaintEvent *event);

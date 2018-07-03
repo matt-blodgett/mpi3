@@ -5,14 +5,16 @@
 #include <QPainter>
 
 #include <QPushButton>
+#include <QRadioButton>
 #include <QSplitter>
 #include <QLabel>
 
 #include <QTreeView>
 
+#include <QDebug>
 
-PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent)
-{
+
+PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     frm_library = new QSplitter(this);
     frm_library->setOrientation(Qt::Horizontal);
 
@@ -21,20 +23,31 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent)
 
     QGridLayout *layoutViews = new QGridLayout;
 
-    btn_songs = new QPushButton(this);
-    btn_artists = new QPushButton(this);
-    btn_playlists = new QPushButton(this);
+    btn_songs = new QRadioButton(this);
+    btn_artists = new QRadioButton(this);
+    btn_playlists = new QRadioButton(this);
 
     btn_songs->setText("Songs");
     btn_artists->setText("Artists");
     btn_playlists->setText("Playlists");
+
+    btn_songs->toggle();
+
+    connect(btn_songs, &QRadioButton::released, this, [this](){changeView(PanelLibrary::Library);});
+    connect(btn_artists, &QPushButton::released, this, [this](){changeView(PanelLibrary::Artists);});
+    connect(btn_playlists, &QPushButton::released, this, [this](){changeView(PanelLibrary::Playlists);});
 
     layoutViews->addWidget(btn_songs, 0, 0, 1, 1);
     layoutViews->addWidget(btn_artists, 1, 0, 1, 1);
     layoutViews->addWidget(btn_playlists, 2, 0, 1, 1);
 
     layoutViews->setRowStretch(3, 1);
+    layoutViews->setContentsMargins(0, 0, 0, 0);
     layoutViews->setMargin(0);
+
+    layoutViews->setVerticalSpacing(0);
+    layoutViews->setHorizontalSpacing(0);
+
     frm_views->setLayout(layoutViews);
 
     QGridLayout *layoutTrees = new QGridLayout;
@@ -43,7 +56,7 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent)
     tree_library = new QTreeView(this);
     tree_library->setObjectName("LibraryTreeview");
     tree_library->setAlternatingRowColors(true);
-
+    tree_library->setRootIsDecorated(false);
 
     QFont font;
     font.setFamily("Helvetica");
@@ -63,8 +76,7 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent)
 
     frm_library->addWidget(frm_views);
     frm_library->addWidget(frm_trees);
-    frm_library->setHandleWidth(8);
-
+    frm_library->setHandleWidth(0);
 
     QGridLayout *layoutMain = new QGridLayout;
     layoutMain->addWidget(frm_library);
@@ -76,18 +88,27 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent)
 
     this->setLayout(layoutMain);
 
+    btn_songs->setObjectName("PanelViewsButton");
+    btn_artists->setObjectName("PanelViewsButton");
+    btn_playlists->setObjectName("PanelViewsButton");
+
     frm_views->setObjectName("PanelViews");
     frm_trees->setObjectName("PanelTrees");
     tree_library->setObjectName("LibraryTreeview");
 }
 
-PanelLibrary::~PanelLibrary()
-{
+PanelLibrary::~PanelLibrary(){}
 
+PanelLibrary::View PanelLibrary::getCurrentView(){
+    return m_currentView;
 }
 
-void PanelLibrary::paintEvent(QPaintEvent *event)
-{
+void PanelLibrary::changeView(PanelLibrary::View view){
+    m_currentView = view;
+    emit viewChanged();
+}
+
+void PanelLibrary::paintEvent(QPaintEvent *event){
     QStyleOption opt;
     opt.init(this);
 

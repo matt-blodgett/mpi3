@@ -3,6 +3,7 @@
 
 #include <QAbstractItemModel>
 #include <QScopedPointer>
+#include <QMap>
 
 class LibraryItem;
 class Mpi3Library;
@@ -40,10 +41,12 @@ public:
     Mpi3Library *library() const;
     void setLibrary(Mpi3Library *library);
 
+    QMap<int, bool> columnVisibility;
+
 private:
     QScopedPointer<Mpi3Library> m_library;
     LibraryItem *getItem(const QModelIndex &index) const;
-    LibraryItem *rootItem;
+    LibraryItem *rootItem = nullptr;
 
 };
 

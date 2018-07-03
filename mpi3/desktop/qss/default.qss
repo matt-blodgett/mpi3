@@ -2,6 +2,13 @@
 
 !THEME=BEGIN
 
+
+// PADDING - TOPpx RIGHTpx BOTTOMpx LEFTpx
+
+
+// --------------------------------------------------
+// * MainMenuBar *
+// --------------------------------------------------
 QMenuBar#MainMenuBar {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #828282, stop:1 #565656);
     color: #FFFFFF;
@@ -9,8 +16,7 @@ QMenuBar#MainMenuBar {
 }
 
 QMenuBar#MainMenuBar::item {
-    spacing: 3px;
-    padding: 4px 4px;
+    padding: 3px 8px 3px 2px;
     background: transparent;
     border-radius: 0px;
 }
@@ -24,20 +30,71 @@ QMenuBar#MainMenuBar::item:pressed {
 }
 
 
+// --------------------------------------------------
+// * QMenu *
+// --------------------------------------------------
+QMenu {
+    background-color: #777777;
+    color: #FFFFFF;
+    border: 1px solid #000000;
+    margin: 0px;
+}
 
+QMenu::item {
+    padding: 2px 25px 2px 20px;
+    border: 1px solid transparent;
+}
+
+QMenu::item:selected {
+    border: 0px;
+    border-color: #777777;
+    background: #646464;
+}
+
+QMenu::icon:checked {
+    background: #999999;
+    border: 1px inset #000000;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    left: 1px;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: #999999;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+QMenu::indicator {
+    width: 13px;
+    height: 13px;
+}
+
+
+// --------------------------------------------------
+// * PanelPlayback *
+// --------------------------------------------------
 QWidget#PanelPlayback {
     background-color: #BABABA;
     border-bottom: 1px solid #000000;
 }
 
 
+// --------------------------------------------------
+// * PlaybackControl *
+// --------------------------------------------------
 QWidget#PlaybackControl {
     background-color: #FFFFFF;
     border-bottom: 1px solid #000000;
 }
 
 
-
+// --------------------------------------------------
+// * ButtonPrev *
+// --------------------------------------------------
 QWidget#ButtonPrev {
     background-color: qlineargradient(x1: 1, y1: 0, x2: 0, y2: 0, stop: 0 #F6F7FA, stop: 1 #DADBDE);
 }
@@ -50,6 +107,10 @@ QWidget#ButtonPrev:flat {
     border: none;
 }
 
+
+// --------------------------------------------------
+// * ButtonNext *
+// --------------------------------------------------
 QWidget#ButtonNext {
     background-color: qlineargradient(x1: 1, y1: 0, x2: 0, y2: 0, stop: 0 #F6F7FA, stop: 1 #DADBDE);
 }
@@ -63,6 +124,9 @@ QWidget#ButtonNext:flat {
 }
 
 
+// --------------------------------------------------
+// * ButtonPlay *
+// --------------------------------------------------
 QWidget#ButtonPlay {
     background-color: #FFFFFF;
 }
@@ -76,6 +140,9 @@ QWidget#ButtonPlay:flat {
 }
 
 
+// --------------------------------------------------
+// * SliderPosition *
+// --------------------------------------------------
 QWidget#SliderPosition {
     border: 1px solid #999999;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #B1B1B1, stop:1 #C4C4C4);
@@ -105,7 +172,52 @@ QWidget#SliderPosition::groove:horizontal {
  }
 
 
+// --------------------------------------------------
+// * PanelViews *
+// --------------------------------------------------
+QWidget#PanelViews {
+    background-color: #FFFFFF;
+    border-top: 0px;
+    border-left: 1px solid #000000;
+    border-right: 0px;
+    border-bottom: 1px solid #000000;
+}
 
+
+// --------------------------------------------------
+// * PanelViewsButton *
+// --------------------------------------------------
+QWidget#PanelViewsButton {
+    background-color: #777777;
+    border-left: 1px solid #000000;
+    color: #FFFFFF;
+    text-align: left;
+    font: 12px normal;
+    padding: 2px 2px 2px 2px;
+}
+
+QWidget#PanelViewsButton::indicator {
+    width: 0px;
+    height: 0px;
+}
+
+QWidget#PanelViewsButton:hover {
+    background-color: #A3A3A3;
+}
+
+QWidget#PanelViewsButton:pushed {
+    background-color: #FFFFFF;
+}
+
+QWidget#PanelViewsButton:checked {
+    background-color: #A3A3A3;
+    font: 12px bold;
+}
+
+
+// --------------------------------------------------
+// * PanelTrees *
+// --------------------------------------------------
 QWidget#PanelTrees {
     background-color: #FFFFFF;
     border-top: 0px;
@@ -115,6 +227,9 @@ QWidget#PanelTrees {
 }
 
 
+// --------------------------------------------------
+// * LibraryTreeview *
+// --------------------------------------------------
 QWidget#LibraryTreeview {
     background-color: #FFFFFF;
     border-top: 1px solid #000000;

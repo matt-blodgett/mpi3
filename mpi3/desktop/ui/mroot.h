@@ -37,7 +37,9 @@ private:
 private:
     void initializeActions();
     void initializeMainMenu();
+
     void treeviewContextMenu(const QPoint &point);
+    void headerContextMenu(const QPoint &point);
 
     QAction *act_audioSettings = nullptr;
     QAction *act_wndExit = nullptr;
@@ -47,6 +49,21 @@ private:
 
     QAction *act_themeSet = nullptr;
     QAction *act_themeRefresh = nullptr;
+
+    QAction *act_editUndo = nullptr;
+    QAction *act_editRedo = nullptr;
+    QAction *act_editCut = nullptr;
+    QAction *act_editCopy = nullptr;
+    QAction *act_editPaste = nullptr;
+    QAction *act_editDelete = nullptr;
+
+    QAction *act_viewMaximize = nullptr;
+
+    QAction *act_raspiConnect = nullptr;
+
+    QAction *act_toolsOptions = nullptr;
+
+    QAction *act_helpAbout = nullptr;
 
     QAction *act_itemExpand = nullptr;
     QAction *act_itemCollapse = nullptr;
@@ -70,11 +87,15 @@ private:
     QAction *act_objDuplicate = nullptr;
 
 private slots:
+    void libraryViewChanged();
+
     void libImport();
     void libExport();
 
     void themeSet();
     void themeRefresh();
+
+    void setColumnVisibility(const int &column);
 
     void itemExpand();
     void itemCollapse();
@@ -94,7 +115,6 @@ private slots:
     void objMoveTo();
     void objRemoveFrom();
     void objDuplicate();
-
 
 private:
     void paintEvent(QPaintEvent *event);
