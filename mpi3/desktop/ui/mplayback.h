@@ -31,7 +31,9 @@ private:
     bool m_playerMuted = false;
 
 private:
+    QWidget *frm_volume = nullptr;
     QWidget *frm_controls = nullptr;
+    QWidget *frm_searchbar = nullptr;
 
     QPushButton *btn_next = nullptr;
     QPushButton *btn_prev = nullptr;

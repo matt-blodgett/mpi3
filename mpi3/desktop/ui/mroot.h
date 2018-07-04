@@ -26,18 +26,24 @@ public:
     void initialize();
 
 private:
-    PanelLibrary *m_libview = nullptr;
-    PanelPlayback *m_playback = nullptr;
-    QTreeView *tree_library = nullptr;
-    LibraryModel *m_model = nullptr;
-    QMediaPlayer *m_audio = nullptr;
-    Mpi3Library *m_library = nullptr;
-    Mpi3Theme *m_theme = nullptr;
-
-private:
+    void initializeLibrary();
     void initializeActions();
     void initializeMainMenu();
 
+private:
+    PanelLibrary *m_libview = nullptr;
+    PanelPlayback *m_playback = nullptr;
+    QTreeView *tree_library = nullptr;
+
+    LibraryModel *m_model = nullptr;
+    QMediaPlayer *m_audio = nullptr;
+
+    Mpi3Library *m_library = nullptr;
+    Mpi3Theme *m_theme = nullptr;
+
+    Mpi3Library *m_library_2 = nullptr;
+
+private:
     void treeviewContextMenu(const QPoint &point);
     void headerContextMenu(const QPoint &point);
 

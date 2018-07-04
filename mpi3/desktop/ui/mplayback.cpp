@@ -11,7 +11,9 @@
 
 
 PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent){
+    frm_volume = new QWidget(this);
     frm_controls = new QWidget(this);
+    frm_searchbar = new QWidget(this);
 
     btn_next = new QPushButton(frm_controls);
     btn_prev = new QPushButton(frm_controls);
@@ -43,7 +45,7 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent){
     btn_play->setFlat(true);
 
     int h = 60;
-    int w = 300;
+    int w = 350;
     int w_btn = 50;
 
     frm_controls->setFixedHeight(h);
@@ -66,36 +68,66 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent){
     sld_position->move(w_btn, 45);
 
 
-    sld_volume = new QSlider(this);
+
+
+
+    sld_volume = new QSlider(frm_volume);
     sld_volume->setOrientation(Qt::Horizontal);
+    sld_volume->setFixedWidth(120);
+
+    QGridLayout *layoutVolume = new QGridLayout(this);
+
+    layoutVolume->addWidget(sld_volume, 0, 0, 1, 1);
+    layoutVolume->setColumnStretch(1, 1);
+
+    frm_volume->setLayout(layoutVolume);
 
 
-    box_search = new QLineEdit(this);
-    btn_search = new QPushButton(this);
 
-    box_search->setFixedWidth(120);
+
+    box_search = new QLineEdit(frm_searchbar);
+    btn_search = new QPushButton(frm_searchbar);
+
+    box_search->setFixedWidth(100);
     btn_search->setText("S");
     btn_search->setFixedWidth(20);
 
-    QGridLayout *layoutSearchbar = new QGridLayout;
+    QGridLayout *layoutSearchbar = new QGridLayout(this);
 
-    layoutSearchbar->addWidget(box_search, 0, 0, 1, 1);
-    layoutSearchbar->addWidget(btn_search, 0, 1, 1, 1);
+    layoutSearchbar->addWidget(box_search, 0, 1, 1, 1);
+    layoutSearchbar->addWidget(btn_search, 0, 2, 1, 1);
+    layoutSearchbar->setColumnStretch(0, 1);
+    layoutSearchbar->setMargin(0);
+    layoutSearchbar->setVerticalSpacing(0);
+    layoutSearchbar->setHorizontalSpacing(0);
 
-    QGridLayout *layoutMain = new QGridLayout;
+    frm_searchbar->setLayout(layoutSearchbar);
 
-    layoutMain->addWidget(sld_volume, 0, 0, 1, 1);
+
+
+
+    QGridLayout *layoutMain = new QGridLayout(this);
+
+    layoutMain->addWidget(frm_volume, 0, 0, 1, 1);
     layoutMain->addWidget(frm_controls, 0, 1, 1, 1);
-    layoutMain->addLayout(layoutSearchbar, 0, 2, 1, 1);
+    layoutMain->addWidget(frm_searchbar, 0, 2, 1, 1);
 
     layoutMain->setColumnStretch(1, 1);
     layoutMain->setColumnMinimumWidth(0, 150);
-    layoutMain->setColumnMinimumWidth(1, 400);
+    layoutMain->setColumnMinimumWidth(1, 350);
     layoutMain->setColumnMinimumWidth(2, 150);
+
     layoutMain->setRowMinimumHeight(0, 60);
     layoutMain->setMargin(0);
 
     this->setLayout(layoutMain);
+
+
+
+    int x = frm_volume->width() + frm_controls->width();
+    frm_controls->move(x, 0);
+
+
 
     connect(btn_play, &QAbstractButton::clicked, this, &PanelPlayback::clickPlay);
 //    connect(m_stopButton, &QAbstractButton::clicked, this, &PlayerControls::stop);
@@ -112,7 +144,6 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent){
     sld_volume->setObjectName("SliderVolume");
     this->setObjectName("PanelPlayback");
 }
-
 PanelPlayback::~PanelPlayback(){}
 
 void PanelPlayback::clickPlay(){
@@ -128,31 +159,26 @@ void PanelPlayback::clickPlay(){
         break;
     }
 }
-
-void PanelPlayback::resizeEvent(QResizeEvent *event){
-    Q_UNUSED(event);
-
-    int x = (this->frm_controls->width() / 2) - (300 / 2);
-    this->frm_controls->move(x, 0);
+void PanelPlayback::clickMute(){
+    emit changeMuting(!m_playerMuted);
 }
-
-void PanelPlayback::paintEvent(QPaintEvent *event){
-    QStyleOption opt;
-    opt.init(this);
-
-    QPainter p(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-
-    QWidget::paintEvent(event);
+void PanelPlayback::onVolumeSliderValueChanged(){
+    emit changeVolume(volume());
 }
-
-
-
-
-
 
 QMediaPlayer::State PanelPlayback::state() const{
     return m_playerState;
+}
+int PanelPlayback::volume() const{
+    qreal linearVolume =  QAudio::convertVolume(
+                sld_volume->value() / qreal(100),
+                QAudio::LogarithmicVolumeScale,
+                QAudio::LinearVolumeScale);
+
+    return qRound(linearVolume * 100);
+}
+bool PanelPlayback::isMuted() const{
+    return m_playerMuted;
 }
 
 void PanelPlayback::setState(QMediaPlayer::State state)
@@ -176,42 +202,60 @@ void PanelPlayback::setState(QMediaPlayer::State state)
         }
     }
 }
-
-int PanelPlayback::volume() const{
-    qreal linearVolume =  QAudio::convertVolume(sld_volume->value() / qreal(100),
-                                                QAudio::LogarithmicVolumeScale,
-                                                QAudio::LinearVolumeScale);
-
-    return qRound(linearVolume * 100);
-}
-
 void PanelPlayback::setVolume(int volume){
-    qreal logarithmicVolume = QAudio::convertVolume(volume / qreal(100),
-                                                    QAudio::LinearVolumeScale,
-                                                    QAudio::LogarithmicVolumeScale);
+    qreal logarithmicVolume = QAudio::convertVolume(
+                volume / qreal(100),
+                QAudio::LinearVolumeScale,
+                QAudio::LogarithmicVolumeScale);
 
     sld_volume->setValue(qRound(logarithmicVolume * 100));
 }
-
-
-void PanelPlayback::onVolumeSliderValueChanged(){
-    emit changeVolume(volume());
-}
-
-
-bool PanelPlayback::isMuted() const{
-    return m_playerMuted;
-}
-
 void PanelPlayback::setMuted(bool muted){
     if (muted != m_playerMuted) {
         m_playerMuted = muted;
     }
 }
 
-void PanelPlayback::clickMute(){
-    emit changeMuting(!m_playerMuted);
+void PanelPlayback::resizeEvent(QResizeEvent *event){
+    Q_UNUSED(event);
+
+    int x = (this->width() / 2) - (frm_controls->width() / 2);
+    frm_controls->move(x, 0);
 }
+void PanelPlayback::paintEvent(QPaintEvent *event){
+    QStyleOption opt;
+    opt.init(this);
+
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+    QWidget::paintEvent(event);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -92,6 +92,8 @@ class Mpi3Library : public Mpi3Element
 public:
     explicit Mpi3Library(const bool &newpid = false);
     static Mpi3Library* load(const QString &path);
+    ~Mpi3Library();
+
     void save(const QString &path);
 
 public:

@@ -25,6 +25,7 @@
 
 
 Mpi3RootDesktop::Mpi3RootDesktop(){
+    initializeLibrary();
     initializeActions();
     initializeMainMenu();
 }
@@ -32,10 +33,10 @@ Mpi3RootDesktop::Mpi3RootDesktop(){
 Mpi3RootDesktop::~Mpi3RootDesktop(){}
 
 void Mpi3RootDesktop::initialize(){
-    this->setObjectName("Mpi3RootDesktop");
+
 
     QWidget *windowMain = new QWidget;
-    setCentralWidget(windowMain);
+    this->setCentralWidget(windowMain);
 
     QGridLayout *layoutMain = new QGridLayout;
 
@@ -54,14 +55,11 @@ void Mpi3RootDesktop::initialize(){
     windowMain->setGeometry(200, 200, 1000, 600);
 
 
-
     m_audio = new QMediaPlayer(this);
     m_audio->setAudioRole(QAudio::MusicRole);
 
-
     m_playback->setState(m_audio->state());
     m_playback->setVolume(m_audio->volume());
-
 
     connect(m_playback, &PanelPlayback::play, m_audio, &QMediaPlayer::play);
     connect(m_playback, &PanelPlayback::pause, m_audio, &QMediaPlayer::pause);
@@ -75,101 +73,34 @@ void Mpi3RootDesktop::initialize(){
     connect(m_audio, &QMediaPlayer::mutedChanged, m_playback, &PanelPlayback::setMuted);
 
 
-
     connect(m_libview, &PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
-
-
-
-
-
-
-
-
-
 
 
 //  QString p("file:///C:/Users/Matt/Desktop/Prayer in C.mp3");
 //  QString p("C:/Users/Matt/Desktop/Prayer in C.mp3");
+//    QString p("C:/Users/Matt/Desktop/Calm Down.wav");
     QString p("C:/Users/Matt/Desktop/Calm Down.wav");
-
     m_audio->setMedia(QUrl(p));
 //    this->m_audio->setVolume(50);
 //    this->m_audio->play();
 
 
-
     tree_library = this->findChild<QTreeView*>("LibraryTreeview");
-
 
     QStringList headers;
     headers << "Name" << "Artist" << "Path";
 
-
     m_model = new LibraryModel(this, headers);
+    m_model->setLibrary(m_library);
     tree_library->setModel(m_model);
 
-
-//    QString p("C:/Users/Matt/Desktop/Calm Down.wav");
-
-//    m_playlist->addMedia(QUrl(p));
-
-
-    Mpi3Library *mpi3Lib = new Mpi3Library(true);
-
-    mpi3Lib->name = "Main Library";
-    mpi3Lib->added = "03/07/2017";
-
-    //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
-
-    m_model->setLibrary(mpi3Lib);
-
-    Mpi3Song *song_1 = mpi3Lib->addSong();
-    song_1->name = "Me, Myself and I";
-    song_1->artist = "G-Eazy";
-    song_1->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Me, Myself  I (Ft. Bebe Rexha).mp3";
-
-    mpi3Lib->update(song_1);
-
-    Mpi3Song *song_2 = mpi3Lib->addSong();
-    song_2->name = "Been On";
-    song_2->artist = "G-Eazy";
-    song_2->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Been On.mp3";
-
-    mpi3Lib->update(song_2);
-
-    Mpi3Song *song_3 = mpi3Lib->addSong();
-    song_3->name = "Change My Heart";
-    song_3->artist = "Ozcan x Laurell";
-    song_3->path = "F:\\iTunes\\Music\\Ozcan x Laurell\\Unknown Album\\Change My Heart.mp3";
-
-    mpi3Lib->update(song_3);
-
-    Mpi3Song *song_4 = mpi3Lib->addSong();
-    song_4->name = "Little Moment";
-    song_4->artist = "Omar LinX";
-    song_4->path = "F:\\iTunes\\Music\\Omar LinX\\Unknown Album\\Little Moment.mp3";
-
-    mpi3Lib->update(song_4);
-
-    //    Mpi3Folder *fldr_1 = mpi3Lib->addFolder();
-    //    Mpi3Playlist *plist_1 = mpi3Lib->addPlaylist();
-
-    //    fldr_1->name = "electric beat";
-    //    plist_1->name = "upbeat";
-
-    //    Mpi3Playlist *plist_2 = mpi3Lib->addPlaylist(fldr_1);
-    //    plist_2->name = "dance";
-
-
     tree_library->setContextMenuPolicy(Qt::CustomContextMenu);
+    tree_library->header()->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(tree_library, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::treeviewContextMenu);
+    connect(tree_library->header(), &QHeaderView::customContextMenuRequested, this, &Mpi3RootDesktop::headerContextMenu);
 
-    QHeaderView *h = tree_library->header();
 
-    h->setContextMenuPolicy(Qt::CustomContextMenu);
-
-    connect(h, &QHeaderView::customContextMenuRequested, this, &Mpi3RootDesktop::headerContextMenu);
-
+    this->setObjectName("Mpi3RootDesktop");
 
     m_theme = new Mpi3Theme;
 //    qDebug() << QDir::currentPath();
@@ -178,6 +109,58 @@ void Mpi3RootDesktop::initialize(){
     this->setStyleSheet(m_theme->qssStyle);
 
     windowMain->show();
+}
+
+void Mpi3RootDesktop::initializeLibrary(){
+    m_library = new Mpi3Library(true);
+
+    m_library->name = "Main Library";
+    m_library->added = "03/07/2017";
+
+    //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
+
+    Mpi3Song *song_1 = m_library->addSong();
+    song_1->name = "Me, Myself and I";
+    song_1->artist = "G-Eazy";
+    song_1->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Me, Myself  I (Ft. Bebe Rexha).mp3";
+
+    m_library->update(song_1);
+
+    Mpi3Song *song_2 = m_library->addSong();
+    song_2->name = "Been On";
+    song_2->artist = "G-Eazy";
+    song_2->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Been On.mp3";
+
+    m_library->update(song_2);
+
+    Mpi3Song *song_3 = m_library->addSong();
+    song_3->name = "Change My Heart";
+    song_3->artist = "Ozcan x Laurell";
+    song_3->path = "F:\\iTunes\\Music\\Ozcan x Laurell\\Unknown Album\\Change My Heart.mp3";
+
+    m_library->update(song_3);
+
+    Mpi3Song *song_4 = m_library->addSong();
+    song_4->name = "Little Moment";
+    song_4->artist = "Omar LinX";
+    song_4->path = "F:\\iTunes\\Music\\Omar LinX\\Unknown Album\\Little Moment.mp3";
+
+    m_library->update(song_4);
+
+//    Mpi3Folder *fldr_1 = m_library->addFolder();
+//    Mpi3Playlist *plist_1 = m_library->addPlaylist();
+
+//    fldr_1->name = "electric beat";
+//    plist_1->name = "upbeat";
+
+//    Mpi3Playlist *plist_2 = m_library->addPlaylist(fldr_1);
+//    plist_2->name = "dance";
+
+
+    m_library_2 = new Mpi3Library(true);
+    m_library_2->name = "Second Library";
+    m_library_2->added = "03/07/2017";
+
 }
 
 void Mpi3RootDesktop::initializeActions(){
@@ -440,7 +423,20 @@ void Mpi3RootDesktop::treeviewContextMenu(const QPoint &point){
 
 
 void Mpi3RootDesktop::libraryViewChanged(){
-    qDebug() << m_libview->getCurrentView();
+    switch(m_libview->getCurrentView()) {
+        case PanelLibrary::Library:
+            m_model->setLibrary(m_library);
+            break;
+        case PanelLibrary::Artists:
+            qDebug() << "artists";
+            break;
+        case PanelLibrary::Containers:
+            m_model->setLibrary(m_library_2);
+            break;
+        case PanelLibrary::Playlist:
+            qDebug() << "playlist";
+            break;
+    }
 }
 
 void Mpi3RootDesktop::libImport(){}

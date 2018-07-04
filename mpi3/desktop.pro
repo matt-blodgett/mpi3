@@ -12,23 +12,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 
-HEADERS += desktop/ui/mroot.h \
-    desktop/ui/mlibitem.h \
-    desktop/ui/mlibmodel.h
+HEADERS += desktop/ui/mroot.h
+HEADERS += desktop/ui/mlibitem.h
+HEADERS += desktop/ui/mlibmodel.h
 HEADERS += desktop/ui/mlibrary.h
 HEADERS += desktop/ui/mplayback.h
-HEADERS +=
-HEADERS +=
 
-SOURCES += desktop/main.cpp \
-    desktop/ui/mlibitem.cpp \
-    desktop/ui/mlibmodel.cpp
+SOURCES += desktop/main.cpp
 SOURCES += desktop/ui/mroot.cpp
+SOURCES += desktop/ui/mlibitem.cpp
+SOURCES += desktop/ui/mlibmodel.cpp
 SOURCES += desktop/ui/mlibrary.cpp
 SOURCES += desktop/ui/mplayback.cpp
-SOURCES +=
-SOURCES +=
-
 
 HEADERS += util/mtheme.h
 SOURCES += util/mtheme.cpp

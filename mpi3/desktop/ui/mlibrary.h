@@ -23,7 +23,8 @@ public:
     enum View {
         Library,
         Artists,
-        Playlists
+        Containers,
+        Playlist
     };
 
 public:

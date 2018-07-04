@@ -35,7 +35,7 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
 
     connect(btn_songs, &QRadioButton::released, this, [this](){changeView(PanelLibrary::Library);});
     connect(btn_artists, &QPushButton::released, this, [this](){changeView(PanelLibrary::Artists);});
-    connect(btn_playlists, &QPushButton::released, this, [this](){changeView(PanelLibrary::Playlists);});
+    connect(btn_playlists, &QPushButton::released, this, [this](){changeView(PanelLibrary::Containers);});
 
     layoutViews->addWidget(btn_songs, 0, 0, 1, 1);
     layoutViews->addWidget(btn_artists, 1, 0, 1, 1);
