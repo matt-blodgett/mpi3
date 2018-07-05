@@ -10,10 +10,11 @@ class LibraryItem
 {
 
 public:
-    explicit LibraryItem(const QVector<QVariant> &data, LibraryItem *parent = 0);
+    explicit LibraryItem(LibraryItem *parent = nullptr);
     ~LibraryItem();
 
-    LibraryItem *child(int number);
+public:
+    LibraryItem *child(int row);
     int childCount() const;
     int columnCount() const;
     QVariant data(int column) const;

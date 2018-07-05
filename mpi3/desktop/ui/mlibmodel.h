@@ -17,7 +17,7 @@ class LibraryModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    explicit LibraryModel(QObject *parent, const QStringList &headers);
+    explicit LibraryModel(QObject *parent = nullptr);
     ~LibraryModel();
 
 public:
@@ -51,29 +51,31 @@ public:
     bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
 
 public:
-    View getCurrentView();
+    View currentView();
     QMap<int, bool> columnVisibility;
+
+private:
+    bool setView(LibraryModel::View view);
+    View m_currentView;
 
 public:
     Mpi3Library *library() const;
-    Mpi3Playlist *playlist() const;
-
     void setLibrary(Mpi3Library *library);
-    void setPlaylist(Mpi3Playlist *playlist);
-    void setView(LibraryModel::View view);
+
+    void viewLibrarySonglist();
+    void viewLibraryContainers();
+    void viewLibraryArtists();
+    void viewPlaylist(Mpi3Playlist *playlist);
 
 private:
-    void clear();
-    void loadSonglist();
-
-private:
-    View m_currentView;
-    QScopedPointer<Mpi3Library> m_library;
-    QScopedPointer<Mpi3Playlist> m_playlist;
+    void insertFolder(LibraryItem *item, Mpi3Folder *folder);
 
 private:
     LibraryItem *getItem(const QModelIndex &index) const;
     LibraryItem *rootItem = nullptr;
+
+    QScopedPointer<Mpi3Library> m_library;
+    QMap<QString, LibraryItem*> libItems;
 
 private slots:
     void insertItems(int position, int count);

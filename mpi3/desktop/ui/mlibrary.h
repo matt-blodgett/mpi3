@@ -28,10 +28,11 @@ public:
     };
 
 public:
-    View getCurrentView();
+    View currentView();
 
 private:
     QTreeView *tree_library = nullptr;
+    QTreeView *tree_playlists = nullptr;
 
     QSplitter *frm_library = nullptr;
     QWidget *frm_views = nullptr;

@@ -2,17 +2,17 @@
 
 #include <QStringList>
 
-LibraryItem::LibraryItem(const QVector<QVariant> &data, LibraryItem *parent){
+
+LibraryItem::LibraryItem(LibraryItem *parent){
     parentItem = parent;
-    itemData = data;
 }
 
 LibraryItem::~LibraryItem(){
     qDeleteAll(childItems);
 }
 
-LibraryItem *LibraryItem::child(int number){
-    return childItems.value(number);
+LibraryItem *LibraryItem::child(int row){
+    return childItems.value(row);
 }
 
 int LibraryItem::childCount() const{
@@ -41,8 +41,8 @@ bool LibraryItem::insertChildren(int position, int count, int columns){
     }
 
     for (int row = 0; row < count; ++row){
-        QVector<QVariant> data(columns);
-        LibraryItem *item = new LibraryItem(data, this);
+        LibraryItem *item = new LibraryItem(this);
+        item->insertColumns(0, columns);
         childItems.insert(position, item);
     }
 

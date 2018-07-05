@@ -33,9 +33,12 @@ private:
 private:
     PanelLibrary *m_libview = nullptr;
     PanelPlayback *m_playback = nullptr;
-    QTreeView *tree_library = nullptr;
 
-    LibraryModel *m_model = nullptr;
+    QTreeView *tree_library = nullptr;
+    QTreeView *tree_playlists = nullptr;
+
+    LibraryModel *m_modelLibrary = nullptr;
+    LibraryModel *m_modelPlaylists = nullptr;
     QMediaPlayer *m_audio = nullptr;
 
     Mpi3Library *m_library = nullptr;

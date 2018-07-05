@@ -84,16 +84,21 @@ void Mpi3RootDesktop::initialize(){
 
 
     tree_library = this->findChild<QTreeView*>("LibraryTreeview");
-
-    QStringList headers;
-    headers << "Name" << "Artist" << "Path";
-
-    m_model = new LibraryModel(this, headers);
-    m_model->setLibrary(m_library);
-    tree_library->setModel(m_model);
+    tree_playlists = this->findChild<QTreeView*>("PlaylistsTreeview");
 
 
-    m_model->setView(LibraryModel::Library);
+    m_modelLibrary = new LibraryModel();
+    m_modelPlaylists = new LibraryModel();
+
+    tree_library->setModel(m_modelLibrary);
+    tree_library->setRootIsDecorated(false);
+    m_modelLibrary->setLibrary(m_library);
+
+    tree_playlists->setModel(m_modelPlaylists);
+    tree_playlists->setRootIsDecorated(true);
+    m_modelPlaylists->setLibrary(m_library);
+    m_modelPlaylists->viewLibraryContainers();
+    tree_playlists->setHeaderHidden(true);
 
 
 
@@ -150,15 +155,20 @@ void Mpi3RootDesktop::initializeLibrary(){
 
     m_library->update(song_4);
 
-//    Mpi3Folder *fldr_1 = m_library->addFolder();
-//    Mpi3Playlist *plist_1 = m_library->addPlaylist();
+    Mpi3Folder *fldr_1 = m_library->addFolder();
+    fldr_1->name = "electric beat";
 
-//    fldr_1->name = "electric beat";
-//    plist_1->name = "upbeat";
+    Mpi3Folder *fldr_2 = m_library->addFolder();
+    fldr_2->name = "party mix";
 
-//    Mpi3Playlist *plist_2 = m_library->addPlaylist(fldr_1);
-//    plist_2->name = "dance";
+    Mpi3Folder *fldr_3 = m_library->addFolder(fldr_2);
+    fldr_3->name = "party mix subfolder";
 
+    Mpi3Playlist *plist_1 = m_library->addPlaylist();
+    plist_1->name = "upbeat";
+
+    Mpi3Playlist *plist_2 = m_library->addPlaylist(fldr_1);
+    plist_2->name = "dance";
 }
 
 void Mpi3RootDesktop::initializeActions(){
@@ -360,12 +370,12 @@ void Mpi3RootDesktop::headerContextMenu(const QPoint &point){
 
     QMenu contextMenu(this);
     QVector<QAction *> columnActions;
-    for(int i = 0; i < m_model->columnCount(); i++){
+    for(int i = 0; i < m_modelLibrary->columnCount(); i++){
         QAction *act = new QAction(this);
-        act->setText(m_model->headerData(i, Qt::Horizontal).toString());
+        act->setText(m_modelLibrary->headerData(i, Qt::Horizontal).toString());
 
         act->setCheckable(true);
-        act->setChecked(!m_model->columnVisibility[i]);
+        act->setChecked(!m_modelLibrary->columnVisibility[i]);
 
         connect(act, &QAction::triggered, this, [=](){setColumnVisibility(i);});
         contextMenu.addAction(act);
@@ -421,18 +431,21 @@ void Mpi3RootDesktop::treeviewContextMenu(const QPoint &point){
 
 
 void Mpi3RootDesktop::libraryViewChanged(){
-    switch(m_libview->getCurrentView()) {
+
+    switch(m_libview->currentView()) {
         case PanelLibrary::Library:
-            m_model->setView(LibraryModel::Library);
+            tree_library->setRootIsDecorated(false);
+            m_modelLibrary->viewLibrarySonglist();
             break;
         case PanelLibrary::Artists:
-            m_model->setView(LibraryModel::Artists);
+            tree_library->setRootIsDecorated(true);
+            m_modelLibrary->viewLibraryArtists();
             break;
         case PanelLibrary::Containers:
-            m_model->setView(LibraryModel::Containers);
+            tree_library->setRootIsDecorated(true);
+            m_modelLibrary->viewLibraryContainers();
             break;
         case PanelLibrary::Playlist:
-            m_model->setView(LibraryModel::Playlist);
             break;
     }
 }
@@ -458,9 +471,9 @@ void Mpi3RootDesktop::themeRefresh(){
 }
 
 void Mpi3RootDesktop::setColumnVisibility(const int &column){
-    bool hidden = m_model->columnVisibility[column];
+    bool hidden = m_modelLibrary->columnVisibility[column];
     tree_library->setColumnHidden(column, !hidden);
-    m_model->columnVisibility[column] = !hidden;
+    m_modelLibrary->columnVisibility[column] = !hidden;
 }
 
 void Mpi3RootDesktop::itemExpand(){}

@@ -6,6 +6,7 @@ QT += multimedia
 
 
 TARGET = desktop
+TEMPLATE = app
 
 
 DEFINES += QT_DEPRECATED_WARNINGS
@@ -34,6 +35,13 @@ SOURCES += util/medialib.cpp
 RESOURCES += desktop/qss
 RESOURCES += desktop/icons
 
+
+
+#QT_DEBUG_PLUGINS = 1
+
+#QT_FATAL_WARNINGS
+
+#QT_QPA_PLATFORM =
 
 # target.path = $$[QT_INSTALL_EXAMPLES]/phonon/qmusicplayer
 # sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro *.png images

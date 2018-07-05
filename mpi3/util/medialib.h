@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector>
+#include <QList>
 
 QT_BEGIN_NAMESPACE
 class QDomDocument;
@@ -94,14 +95,13 @@ public:
     static Mpi3Library* load(const QString &path);
     ~Mpi3Library();
 
-    void save(const QString &path);
-
 public:
+    void save(const QString &path);
     QString filepath;
 
-    QVector<Mpi3Song*> *songs = nullptr;
-    QVector<Mpi3Playlist*> *playlists = nullptr;
-    QVector<Mpi3Folder*> *folders = nullptr;
+    QVector<Mpi3Song*> *libSongs = nullptr;
+    QVector<Mpi3Playlist*> *libPlaylists = nullptr;
+    QVector<Mpi3Folder*> *libFolders = nullptr;
 
 public:
     Mpi3Song* addSong();
@@ -113,6 +113,9 @@ public:
     void removeFolder(Mpi3Folder *f);
 
     void update(Mpi3Song *song);
+
+    QList<Mpi3Folder*> childFolders(Mpi3Folder *parent);
+    QList<Mpi3Playlist*> childPlaylists(Mpi3Folder *parent);
 
 signals:
     void mediaInserted(int position, int rows);

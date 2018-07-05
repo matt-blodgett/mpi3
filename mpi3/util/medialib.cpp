@@ -41,9 +41,9 @@ Mpi3Playlist::Mpi3Playlist(const bool &newpid) : Mpi3Element(newpid){}
 Mpi3Folder::Mpi3Folder(const bool &newpid) : Mpi3Element(newpid){}
 
 Mpi3Library::Mpi3Library(const bool &newpid) : Mpi3Element(newpid){
-    songs = new QVector<Mpi3Song*>;
-    playlists = new QVector<Mpi3Playlist*>;
-    folders = new QVector<Mpi3Folder*>;
+    libSongs = new QVector<Mpi3Song*>;
+    libPlaylists = new QVector<Mpi3Playlist*>;
+    libFolders = new QVector<Mpi3Folder*>;
 }
 Mpi3Library* Mpi3Library::load(const QString &path){
     Mpi3Library *mpi3Lib = new Mpi3Library;
@@ -80,7 +80,7 @@ Mpi3Library* Mpi3Library::load(const QString &path){
             s->bitRate = songs.at(i).namedItem("bitRate").toElement().text().toInt();
             s->sampleRate = songs.at(i).namedItem("sampleRate").toElement().text().toInt();
 
-            mpi3Lib->songs->push_back(s);
+            mpi3Lib->libSongs->push_back(s);
         }
 
         for(int i = 0; i < playlists.length(); i++){
@@ -89,7 +89,7 @@ Mpi3Library* Mpi3Library::load(const QString &path){
             p->name = playlists.at(i).namedItem("name").toElement().text();
             p->added = playlists.at(i).namedItem("added").toElement().text();
 
-            mpi3Lib->playlists->push_back(p);
+            mpi3Lib->libPlaylists->push_back(p);
         }
 
         for(int i = 0; i < folders.length(); i++){
@@ -98,7 +98,7 @@ Mpi3Library* Mpi3Library::load(const QString &path){
             f->name = folders.at(i).namedItem("name").toElement().text();
             f->added = folders.at(i).namedItem("added").toElement().text();
 
-            mpi3Lib->folders->push_back(f);
+            mpi3Lib->libFolders->push_back(f);
         }
     }
 
@@ -129,8 +129,8 @@ void Mpi3Library::save(const QString &path){
         root.appendChild(playlists);
         root.appendChild(folders);
 
-        for(int i = 0; i < this->songs->size(); i++){
-            Mpi3Song *s = this->songs->at(i);
+        for(int i = 0; i < this->libSongs->size(); i++){
+            Mpi3Song *s = this->libSongs->at(i);
             QDomElement song = xml.createElement("song");
 
             xmlWriteElement(xml, song, "pid", s->pid);
@@ -150,8 +150,8 @@ void Mpi3Library::save(const QString &path){
             songs.appendChild(song);
         }
 
-        for(int i = 0; i < this->playlists->size(); i++){
-            Mpi3Playlist *p = this->playlists->at(i);
+        for(int i = 0; i < this->libPlaylists->size(); i++){
+            Mpi3Playlist *p = this->libPlaylists->at(i);
             QDomElement playlist = xml.createElement("song");
 
             xmlWriteElement(xml, playlist, "pid", p->pid);
@@ -161,8 +161,8 @@ void Mpi3Library::save(const QString &path){
             playlists.appendChild(playlist);
         }
 
-        for(int i = 0; i < this->folders->size(); i++){
-            Mpi3Folder *f = this->folders->at(i);
+        for(int i = 0; i < this->libFolders->size(); i++){
+            Mpi3Folder *f = this->libFolders->at(i);
             QDomElement folder = xml.createElement("song");
 
             xmlWriteElement(xml, folder, "pid", f->pid);
@@ -179,9 +179,9 @@ void Mpi3Library::save(const QString &path){
 
 Mpi3Song* Mpi3Library::addSong(){
     Mpi3Song *song = new Mpi3Song(true);
-    songs->push_back(song);
+    libSongs->push_back(song);
 
-    int index = songs->size() - 1;
+    int index = libSongs->size() - 1;
     emit mediaInserted(index, 1);
 
     return song;
@@ -190,7 +190,7 @@ Mpi3Song* Mpi3Library::addSong(){
 Mpi3Playlist* Mpi3Library::addPlaylist(Mpi3Folder *parent){
     Mpi3Playlist *playlist = new Mpi3Playlist(true);
 
-    playlists->push_back(playlist);
+    libPlaylists->push_back(playlist);
 
     if(parent){
         playlist->parent = parent;
@@ -201,7 +201,7 @@ Mpi3Playlist* Mpi3Library::addPlaylist(Mpi3Folder *parent){
 
 Mpi3Folder* Mpi3Library::addFolder(Mpi3Folder *parent){
     Mpi3Folder *folder = new Mpi3Folder(true);
-    folders->push_back(folder);
+    libFolders->push_back(folder);
 
     if(parent){
         folder->parent = parent;
@@ -223,14 +223,34 @@ void Mpi3Library::removeFolder(Mpi3Folder *f){
 }
 
 void Mpi3Library::update(Mpi3Song *song){
-    int index = songs->indexOf(song);
+    int index = libSongs->indexOf(song);
     emit mediaChanged(index, song);
 }
 
 
 
 
+QList<Mpi3Folder*> Mpi3Library::childFolders(Mpi3Folder *parent){
+    QList<Mpi3Folder*> folders;
+    for(int i = 0; i < libFolders->size(); i++){
+        Mpi3Folder *f = libFolders->at(i);
+        if(f->parent == parent){
+            folders.append(f);
+        }
+    }
+    return folders;
+}
 
+QList<Mpi3Playlist*> Mpi3Library::childPlaylists(Mpi3Folder *parent){
+    QList<Mpi3Playlist*> playlists;
+    for(int i = 0; i < libPlaylists->size(); i++){
+        Mpi3Playlist *p = libPlaylists->at(i);
+        if(p->parent == parent){
+            playlists.append(p);
+        }
+    }
+    return playlists;
+}
 
 
 

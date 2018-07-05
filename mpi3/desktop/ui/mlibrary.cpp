@@ -26,6 +26,7 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     btn_songs = new QRadioButton(this);
     btn_artists = new QRadioButton(this);
     btn_playlists = new QRadioButton(this);
+    tree_playlists = new QTreeView(this);
 
     btn_songs->setText("Songs");
     btn_artists->setText("Artists");
@@ -40,6 +41,7 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     layoutViews->addWidget(btn_songs, 0, 0, 1, 1);
     layoutViews->addWidget(btn_artists, 1, 0, 1, 1);
     layoutViews->addWidget(btn_playlists, 2, 0, 1, 1);
+    layoutViews->addWidget(tree_playlists, 3, 0, 1, 1);
 
     layoutViews->setRowStretch(3, 1);
     layoutViews->setContentsMargins(0, 0, 0, 0);
@@ -56,7 +58,6 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     tree_library = new QTreeView(this);
     tree_library->setObjectName("LibraryTreeview");
     tree_library->setAlternatingRowColors(true);
-    tree_library->setRootIsDecorated(false);
 
     QFont font;
     font.setFamily("Helvetica");
@@ -78,6 +79,13 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     frm_library->addWidget(frm_trees);
     frm_library->setHandleWidth(0);
 
+    frm_views->setMinimumWidth(100);
+    frm_views->setMaximumWidth(400);
+
+    frm_library->setChildrenCollapsible(false);
+    frm_library->setSizes({120, 10000000});
+
+
     QGridLayout *layoutMain = new QGridLayout;
     layoutMain->addWidget(frm_library);
     layoutMain->setColumnStretch(0, 1);
@@ -94,12 +102,13 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
 
     frm_views->setObjectName("PanelViews");
     frm_trees->setObjectName("PanelTrees");
+    tree_playlists->setObjectName("PlaylistsTreeview");
     tree_library->setObjectName("LibraryTreeview");
 }
 
 PanelLibrary::~PanelLibrary(){}
 
-PanelLibrary::View PanelLibrary::getCurrentView(){
+PanelLibrary::View PanelLibrary::currentView(){
     return m_currentView;
 }
 

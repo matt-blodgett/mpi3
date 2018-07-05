@@ -12,6 +12,7 @@ class Mpi3Theme
 
 public:
     Mpi3Theme();
+    ~Mpi3Theme();
 
 public:
     void load(const QString &path = NULL);
