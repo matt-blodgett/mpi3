@@ -120,6 +120,24 @@ signals:
 
     void mediaRemoved();
 
+
+    void songDeleted();
+    void playlistDeleted();
+    void folderDeleted();
+
+    void songAdded();
+    void playlistAdded();
+    void folderAdded();
+
+    void songInsertedInto();
+    void playlistInsertedInto();
+    void folderInsertedInto();
+
+    void songRemovedFrom();
+    void playlistRemovedFrom();
+    void folderRemovedFrom();
+
+
 };
 
 

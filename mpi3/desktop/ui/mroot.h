@@ -41,8 +41,6 @@ private:
     Mpi3Library *m_library = nullptr;
     Mpi3Theme *m_theme = nullptr;
 
-    Mpi3Library *m_library_2 = nullptr;
-
 private:
     void treeviewContextMenu(const QPoint &point);
     void headerContextMenu(const QPoint &point);

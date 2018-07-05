@@ -33,8 +33,6 @@ Mpi3RootDesktop::Mpi3RootDesktop(){
 Mpi3RootDesktop::~Mpi3RootDesktop(){}
 
 void Mpi3RootDesktop::initialize(){
-
-
     QWidget *windowMain = new QWidget;
     this->setCentralWidget(windowMain);
 
@@ -93,6 +91,11 @@ void Mpi3RootDesktop::initialize(){
     m_model = new LibraryModel(this, headers);
     m_model->setLibrary(m_library);
     tree_library->setModel(m_model);
+
+
+    m_model->setView(LibraryModel::Library);
+
+
 
     tree_library->setContextMenuPolicy(Qt::CustomContextMenu);
     tree_library->header()->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -155,11 +158,6 @@ void Mpi3RootDesktop::initializeLibrary(){
 
 //    Mpi3Playlist *plist_2 = m_library->addPlaylist(fldr_1);
 //    plist_2->name = "dance";
-
-
-    m_library_2 = new Mpi3Library(true);
-    m_library_2->name = "Second Library";
-    m_library_2->added = "03/07/2017";
 
 }
 
@@ -425,16 +423,16 @@ void Mpi3RootDesktop::treeviewContextMenu(const QPoint &point){
 void Mpi3RootDesktop::libraryViewChanged(){
     switch(m_libview->getCurrentView()) {
         case PanelLibrary::Library:
-            m_model->setLibrary(m_library);
+            m_model->setView(LibraryModel::Library);
             break;
         case PanelLibrary::Artists:
-            qDebug() << "artists";
+            m_model->setView(LibraryModel::Artists);
             break;
         case PanelLibrary::Containers:
-            m_model->setLibrary(m_library_2);
+            m_model->setView(LibraryModel::Containers);
             break;
         case PanelLibrary::Playlist:
-            qDebug() << "playlist";
+            m_model->setView(LibraryModel::Playlist);
             break;
     }
 }

@@ -24,6 +24,7 @@ public:
     enum View {
         Library,
         Artists,
+        Albums,
         Containers,
         Playlist
     };
@@ -34,8 +35,8 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
-    QModelIndex parent(const QModelIndex &child) const override;
+    QModelIndex index(int row, int column, const QModelIndex &index = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex &index) const override;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
@@ -43,7 +44,14 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::DisplayRole) override;
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
 
+    bool insertRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
+    bool insertColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
+
+    bool removeRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
+    bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
+
 public:
+    View getCurrentView();
     QMap<int, bool> columnVisibility;
 
 public:
@@ -55,6 +63,11 @@ public:
     void setView(LibraryModel::View view);
 
 private:
+    void clear();
+    void loadSonglist();
+
+private:
+    View m_currentView;
     QScopedPointer<Mpi3Library> m_library;
     QScopedPointer<Mpi3Playlist> m_playlist;
 
@@ -65,6 +78,7 @@ private:
 private slots:
     void insertItems(int position, int count);
     void changeItems(int position, Mpi3Song *s);
+    void removeItems(int position, int count);
 
 };
 
