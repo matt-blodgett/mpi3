@@ -1,7 +1,5 @@
 #include "mlibitem.h"
 
-#include <QStringList>
-
 
 LibraryItem::LibraryItem(LibraryItem *parent){
     parentItem = parent;
@@ -11,6 +9,9 @@ LibraryItem::~LibraryItem(){
     qDeleteAll(childItems);
 }
 
+LibraryItem *LibraryItem::parent(){
+    return parentItem;
+}
 LibraryItem *LibraryItem::child(int row){
     return childItems.value(row);
 }
@@ -18,7 +19,6 @@ LibraryItem *LibraryItem::child(int row){
 int LibraryItem::childCount() const{
     return childItems.count();
 }
-
 int LibraryItem::childNumber() const{
     if (parentItem){
         return parentItem->childItems.indexOf(const_cast<LibraryItem*>(this));
@@ -26,13 +26,27 @@ int LibraryItem::childNumber() const{
 
     return 0;
 }
-
 int LibraryItem::columnCount() const{
     return itemData.count();
 }
 
 QVariant LibraryItem::data(int column) const{
     return itemData.value(column);
+}
+bool LibraryItem::setData(int column, const QVariant &value){
+    if (column < 0 || column >= itemData.size()){
+        return false;
+    }
+
+    itemData[column] = value;
+    return true;
+}
+
+QIcon LibraryItem::icon() const{
+    return itemIcon;
+}
+void LibraryItem::setIcon(const QIcon &icn){
+    itemIcon = icn;
 }
 
 bool LibraryItem::insertChildren(int position, int count, int columns){
@@ -48,7 +62,6 @@ bool LibraryItem::insertChildren(int position, int count, int columns){
 
     return true;
 }
-
 bool LibraryItem::insertColumns(int position, int columns){
     if (position < 0 || position > itemData.size()){
         return false;
@@ -65,10 +78,6 @@ bool LibraryItem::insertColumns(int position, int columns){
     return true;
 }
 
-LibraryItem *LibraryItem::parent(){
-    return parentItem;
-}
-
 bool LibraryItem::removeChildren(int position, int count){
     if (position < 0 || position + count > childItems.size()){
         return false;
@@ -80,8 +89,6 @@ bool LibraryItem::removeChildren(int position, int count){
 
     return true;
 }
-
-
 bool LibraryItem::removeColumns(int position, int columns){
     if (position < 0 || position + columns > itemData.size()){
         return false;
@@ -95,14 +102,5 @@ bool LibraryItem::removeColumns(int position, int columns){
         child->removeColumns(position, columns);
     }
 
-    return true;
-}
-
-bool LibraryItem::setData(int column, const QVariant &value){
-    if (column < 0 || column >= itemData.size()){
-        return false;
-    }
-
-    itemData[column] = value;
     return true;
 }

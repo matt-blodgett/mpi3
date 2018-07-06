@@ -6,8 +6,8 @@
 QT_BEGIN_NAMESPACE
 class QRadioButton;
 class QTreeView;
-class QLabel;
 class QSplitter;
+class QLabel;
 QT_END_NAMESPACE
 
 
@@ -23,7 +23,6 @@ public:
     enum View {
         Library,
         Artists,
-        Containers,
         Playlist
     };
 
@@ -40,19 +39,19 @@ private:
 
     QRadioButton *btn_songs = nullptr;
     QRadioButton *btn_artists = nullptr;
-    QRadioButton *btn_playlists = nullptr;
 
     QLabel *lbl_view = nullptr;
 
     View m_currentView;
 
-private slots:
-    void changeView(PanelLibrary::View view);
-
 signals:
     void viewChanged();
 
+private slots:
+    void changeView(PanelLibrary::View view);
+
 private:
+    void showEvent(QShowEvent *event);
     void paintEvent(QPaintEvent *event);
 
 };

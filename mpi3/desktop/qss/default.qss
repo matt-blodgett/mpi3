@@ -35,8 +35,8 @@ QMenuBar#MainMenuBar::item:pressed {
 // --------------------------------------------------
 QMenu {
     background-color: #777777;
-    color: #FFFFFF;
     border: 1px solid #000000;
+    color: #FFFFFF;
     margin: 0px;
 }
 
@@ -46,9 +46,13 @@ QMenu::item {
 }
 
 QMenu::item:selected {
-    border: 0px;
-    border-color: #777777;
-    background: #646464;
+    background-color: #FFFFFF;
+    color: #777777;
+}
+
+QMenu::item:disabled {
+    background-color: #777777;
+    color: #BCBCBC;
 }
 
 QMenu::icon:checked {

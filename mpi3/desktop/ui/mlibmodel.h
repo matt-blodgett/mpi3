@@ -3,6 +3,7 @@
 
 #include <QAbstractItemModel>
 #include <QScopedPointer>
+#include <QIcon>
 #include <QMap>
 
 class LibraryItem;
@@ -22,11 +23,11 @@ public:
 
 public:
     enum View {
-        Library,
-        Artists,
-        Albums,
-        Containers,
-        Playlist
+        LibraryView,
+        ArtistsView,
+        AlbumsView,
+        ContainersView,
+        PlaylistView
     };
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;
@@ -51,8 +52,12 @@ public:
     bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
 
 public:
-    View currentView();
+    LibraryItem *getItem(const QModelIndex &index) const;
+    LibraryItem *getItem(const QString &pid) const;
+    QString getPID(LibraryItem *item) const;
+
     QMap<int, bool> columnVisibility;
+    View currentView();
 
 private:
     bool setView(LibraryModel::View view);
@@ -69,13 +74,13 @@ public:
 
 private:
     void insertFolder(LibraryItem *item, Mpi3Folder *folder);
+    QIcon icn_folder;
+    QIcon icn_playlist;
 
 private:
-    LibraryItem *getItem(const QModelIndex &index) const;
     LibraryItem *rootItem = nullptr;
-
-    QScopedPointer<Mpi3Library> m_library;
     QMap<QString, LibraryItem*> libItems;
+    QScopedPointer<Mpi3Library> m_library;
 
 private slots:
     void insertItems(int position, int count);

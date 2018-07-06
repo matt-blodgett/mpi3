@@ -4,6 +4,7 @@
 #include <QVariant>
 #include <QVector>
 #include <QList>
+#include <QIcon>
 
 
 class LibraryItem
@@ -14,22 +15,30 @@ public:
     ~LibraryItem();
 
 public:
+    LibraryItem *parent();
     LibraryItem *child(int row);
+
     int childCount() const;
+    int childNumber() const;
     int columnCount() const;
+
     QVariant data(int column) const;
+    bool setData(int column, const QVariant &value);
+
+    QIcon icon() const;
+    void setIcon(const QIcon &icn);
+
     bool insertChildren(int position, int count, int columns);
     bool insertColumns(int position, int columns);
-    LibraryItem *parent();
+
     bool removeChildren(int position, int count);
     bool removeColumns(int position, int columns);
-    int childNumber() const;
-    bool setData(int column, const QVariant &value);
 
 private:
     QList<LibraryItem*> childItems;
     QVector<QVariant> itemData;
     LibraryItem *parentItem;
+    QIcon itemIcon;
 
 };
 

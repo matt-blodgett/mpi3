@@ -253,9 +253,38 @@ QList<Mpi3Playlist*> Mpi3Library::childPlaylists(Mpi3Folder *parent){
 }
 
 
+Mpi3Song* Mpi3Library::getSong(const QString &pid){
+    for(int i = 0; i < libSongs->size(); i++){
+        Mpi3Song *s = libSongs->at(i);
+        if(s->pid == pid){
+            return s;
+        }
+    }
 
+    return nullptr;
+}
 
+Mpi3Playlist* Mpi3Library::getPlaylist(const QString &pid){
+    for(int i = 0; i < libPlaylists->size(); i++){
+        Mpi3Playlist *p = libPlaylists->at(i);
+        if(p->pid == pid){
+            return p;
+        }
+    }
 
+    return nullptr;
+}
+
+Mpi3Folder* Mpi3Library::getFolder(const QString &pid){
+    for(int i = 0; i < libFolders->size(); i++){
+        Mpi3Folder *f = libFolders->at(i);
+        if(f->pid == pid){
+            return f;
+        }
+    }
+
+    return nullptr;
+}
 
 
 

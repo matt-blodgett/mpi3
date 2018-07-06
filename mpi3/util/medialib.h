@@ -117,6 +117,10 @@ public:
     QList<Mpi3Folder*> childFolders(Mpi3Folder *parent);
     QList<Mpi3Playlist*> childPlaylists(Mpi3Folder *parent);
 
+    Mpi3Song *getSong(const QString &pid);
+    Mpi3Playlist *getPlaylist(const QString &pid);
+    Mpi3Folder *getFolder(const QString &pid);
+
 signals:
     void mediaInserted(int position, int rows);
     void mediaChanged(int index, Mpi3Song *s);

@@ -6,7 +6,6 @@
 QT_BEGIN_NAMESPACE
 class QMediaPlayer;
 class QTreeView;
-class QAction;
 QT_END_NAMESPACE
 
 class PanelLibrary;
@@ -27,7 +26,6 @@ public:
 
 private:
     void initializeLibrary();
-    void initializeActions();
     void initializeMainMenu();
 
 private:
@@ -45,53 +43,9 @@ private:
     Mpi3Theme *m_theme = nullptr;
 
 private:
-    void treeviewContextMenu(const QPoint &point);
     void headerContextMenu(const QPoint &point);
-
-    QAction *act_audioSettings = nullptr;
-    QAction *act_wndExit = nullptr;
-
-    QAction *act_libImport = nullptr;
-    QAction *act_libExport = nullptr;
-
-    QAction *act_themeSet = nullptr;
-    QAction *act_themeRefresh = nullptr;
-
-    QAction *act_editUndo = nullptr;
-    QAction *act_editRedo = nullptr;
-    QAction *act_editCut = nullptr;
-    QAction *act_editCopy = nullptr;
-    QAction *act_editPaste = nullptr;
-    QAction *act_editDelete = nullptr;
-
-    QAction *act_viewMaximize = nullptr;
-
-    QAction *act_raspiConnect = nullptr;
-
-    QAction *act_toolsOptions = nullptr;
-
-    QAction *act_helpAbout = nullptr;
-
-    QAction *act_itemExpand = nullptr;
-    QAction *act_itemCollapse = nullptr;
-    QAction *act_itemExpandAll = nullptr;
-    QAction *act_itemCollapseAll = nullptr;
-
-    QAction *act_libDelete = nullptr;
-    QAction *act_libNewFolder = nullptr;
-    QAction *act_libNewPlaylist = nullptr;
-    QAction *act_libImportPlaylists = nullptr;
-    QAction *act_libImportSongs = nullptr;
-    QAction *act_libDownloadSongs = nullptr;
-
-    QAction *act_objPlay = nullptr;
-    QAction *act_objEdit = nullptr;
-    QAction *act_objDetails = nullptr;
-
-    QAction *act_objAddTo = nullptr;
-    QAction *act_objMoveTo = nullptr;
-    QAction *act_objRemoveFrom = nullptr;
-    QAction *act_objDuplicate = nullptr;
+    void libraryContextMenu(const QPoint &point);
+    void playlistContextMenu(const QPoint &point);
 
 private slots:
     void libraryViewChanged();
@@ -109,10 +63,12 @@ private slots:
     void itemExpandAll();
     void itemCollapseAll();
 
-    void libDelete();
     void libNewFolder();
     void libNewPlaylist();
     void libImportPlaylists();
+    void libImportSongs();
+    void libDownloadSongs();
+    void libDelete();
 
     void objPlay();
     void objEdit();

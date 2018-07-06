@@ -1,8 +1,6 @@
 #include "ui/mroot.h"
 #include <QApplication>
 
-#include <QDebug>
-
 
 int main(int argc, char *argv[]){
     srand(time(NULL));
