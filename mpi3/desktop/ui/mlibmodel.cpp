@@ -2,6 +2,12 @@
 #include "mlibitem.h"
 #include "util/medialib.h"
 
+
+#include <QPixmap>
+
+#include <QIcon>
+
+
 #include <QDebug>
 
 
@@ -61,7 +67,7 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const{
         return QVariant();
     }
 
-    if (role != Qt::DisplayRole && role != Qt::EditRole){
+    if (role != Qt::DisplayRole && role != Qt::EditRole /* && role != Qt::DecorationRole */){
         return QVariant();
     }
 
@@ -195,10 +201,10 @@ bool LibraryModel::setView(LibraryModel::View view){
         if(view == LibraryModel::Library || view == LibraryModel::Playlist){
             headers << "Name" << "Artist" << "Path";
         } else {
-            headers << "Name";
+            headers << "Name" << "icon";
         }
 
-        insertColumns(0, headers.size());
+        rootItem->insertColumns(0, headers.size());
         for(int i = 0; i < headers.size(); i++){
             rootItem->setData(i, headers[i]);
         }
@@ -234,6 +240,11 @@ void LibraryModel::viewLibraryContainers(){
             LibraryItem *item = rootItem->child(i);
             insertFolder(item, f);
             item->setData(0, f->name);
+
+            QPixmap pix(":desktop/icons/folder.png");
+            QIcon icon(pix);
+            item->setData(1, icon);
+            //set
         }
     }
 }

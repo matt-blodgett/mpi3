@@ -59,6 +59,10 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     tree_library->setObjectName("LibraryTreeview");
     tree_library->setAlternatingRowColors(true);
 
+    tree_library->setIndentation(12);
+    tree_playlists->setIndentation(12);
+
+
     QFont font;
     font.setFamily("Helvetica");
     font.setPointSize(12);
