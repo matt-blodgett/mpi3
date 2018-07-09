@@ -335,22 +335,35 @@ void Mpi3RootDesktop::headerContextMenu(const QPoint &point){
 void Mpi3RootDesktop::libraryContextMenu(const QPoint &point){
 
     QMenu *menu_context = new QMenu(this);
-    QMenu *menu_addto = new QMenu(menu_context);
-
-    menu_addto->setTitle("Add to...");
 
     QAction *act_objPlay = new QAction(menu_context);
     QAction *act_objEdit = new QAction(menu_context);
     QAction *act_objDetails = new QAction(menu_context);
+    QMenu *menu_addto = new QMenu(menu_context);
+    QAction *act_editCut = new QAction(menu_context);
+    QAction *act_editCopy = new QAction(menu_context);
+    QAction *act_editPaste = new QAction(menu_context);
+    QAction *act_objShowExplorer = new QAction(menu_context);
+    QAction *act_treeSelectAll = new QAction(menu_context);
+    QAction *act_treeSelectNone = new QAction(menu_context);
     QAction *act_libImportSongs = new QAction(menu_context);
     QAction *act_libDownloadSongs = new QAction(menu_context);
+    QAction *act_objRemove = new QAction(menu_context);
     QAction *act_objDelete = new QAction(menu_context);
 
-    act_libImportSongs->setText("Import Songs");
-    act_libDownloadSongs->setText("Download Songs");
     act_objPlay->setText("Play");
     act_objEdit->setText("Edit");
     act_objDetails->setText("Details");
+    menu_addto->setTitle("Add to Playlist...");
+    act_editCut->setText("Cut");
+    act_editCopy->setText("Copy");
+    act_editPaste->setText("Paste");
+    act_objShowExplorer->setText("Show in Explorer");
+    act_treeSelectAll->setText("Select All");
+    act_treeSelectNone->setText("Select None");
+    act_libImportSongs->setText("Import Songs");
+    act_libDownloadSongs->setText("Download Songs");
+    act_objRemove->setText("Remove from Playlist");
     act_objDelete->setText("Delete from Library");
 
     menu_context->addAction(act_objPlay);
@@ -358,10 +371,23 @@ void Mpi3RootDesktop::libraryContextMenu(const QPoint &point){
     menu_context->addAction(act_objDetails);
     menu_context->addMenu(menu_addto);
     menu_context->addSeparator();
+    menu_context->addAction(act_editCut);
+    menu_context->addAction(act_editCopy);
+    menu_context->addAction(act_editPaste);
+    menu_context->addAction(act_objShowExplorer);
+    menu_context->addSeparator();
+    menu_context->addAction(act_treeSelectAll);
+    menu_context->addAction(act_treeSelectNone);
+    menu_context->addSeparator();
     menu_context->addAction(act_libImportSongs);
     menu_context->addAction(act_libDownloadSongs);
     menu_context->addSeparator();
+    menu_context->addAction(act_objRemove);
     menu_context->addAction(act_objDelete);
+
+//    qDebug() << tree_library->selectionModel()->selectedIndexes().size();
+
+    qDebug() << tree_library->selectionModel()->selectedRows().size();
 
     Mpi3Song *song = nullptr;
     QModelIndex index = tree_library->indexAt(point);
@@ -388,38 +414,37 @@ void Mpi3RootDesktop::libraryContextMenu(const QPoint &point){
 void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
 
     QMenu *menu_context = new QMenu(this);
-    QMenu *menu_new = new QMenu(menu_context);
-    QMenu *menu_import = new QMenu(menu_context);
-    QMenu *menu_moveto = new QMenu(menu_context);
-
-    menu_new->setTitle("New");
-    menu_import->setTitle("Import");
-    menu_moveto->setTitle("Move to...");
 
     QAction *act_itemExpand = new QAction(menu_context);
     QAction *act_itemCollapse = new QAction(menu_context);
     QAction *act_itemExpandAll = new QAction(menu_context);
     QAction *act_itemCollapseAll = new QAction(menu_context);
+    QMenu *menu_new = new QMenu(menu_context);
     QAction *act_newPlaylist = new QAction(menu_new);
     QAction *act_newFolder = new QAction(menu_new);
+    QMenu *menu_import = new QMenu(menu_context);
     QAction *act_importPlaylists = new QAction(menu_import);
     QAction *act_importSongs = new QAction(menu_import);
     QAction *act_objEdit = new QAction(menu_context);
     QAction *act_objDetails = new QAction(menu_context);
     QAction *act_objDuplicate = new QAction(menu_context);
+    QMenu *menu_moveto = new QMenu(menu_context);
     QAction *act_objDelete = new QAction(menu_context);
 
     act_itemExpand->setText("Expand");
     act_itemCollapse->setText("Collapse");
     act_itemExpandAll->setText("Expand All");
     act_itemCollapseAll->setText("Collapse All");
-    act_newPlaylist->setText("Playlist");
-    act_newFolder->setText("Folder");
-    act_importPlaylists->setText("Playlists");
-    act_importSongs->setText("Songs");
+    menu_new->setTitle("New");
+    act_newPlaylist->setText("New Playlist");
+    act_newFolder->setText("New Folder");
+    menu_import->setTitle("Import");
+    act_importPlaylists->setText("Import Playlists");
+    act_importSongs->setText("Import Songs");
     act_objEdit->setText("Edit");
     act_objDetails->setText("Details...");
     act_objDuplicate->setText("Duplicate");
+    menu_moveto->setTitle("Move to...");
     act_objDelete->setText("Delete from Library");
 
     menu_context->addAction(act_itemExpand);

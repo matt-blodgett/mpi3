@@ -52,8 +52,8 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
 
     lbl_view = new QLabel(this);
     tree_library = new QTreeView(this);
-    tree_library->setObjectName("LibraryTreeview");
     tree_library->setAlternatingRowColors(true);
+    tree_library->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     tree_library->setIndentation(12);
     tree_playlists->setIndentation(12);
