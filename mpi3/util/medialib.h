@@ -68,6 +68,12 @@ public:
     Mpi3Folder *parent = nullptr;
     QVector<Mpi3Song*> songs;
 
+public:
+    void appendSong(Mpi3Song *song);
+    void removeSong(Mpi3Song *song);
+    void insertSong(Mpi3Song *song, int position);
+    void moveSong(Mpi3Song *song, int position);
+
 };
 
 
@@ -82,6 +88,17 @@ public:
     Mpi3Folder *parent = nullptr;
     QVector<Mpi3Playlist*> playlists;
 
+public:
+    void appendPlaylist(Mpi3Playlist *playlist);
+    void removePlaylist(Mpi3Playlist *playlist);
+    void insertPlaylist(Mpi3Playlist *playlist, int position);
+    void movePlaylist(Mpi3Playlist *playlist, int position);
+
+    void appendFolder(Mpi3Folder *folder);
+    void removeFolder(Mpi3Folder *folder);
+    void insertFolder(Mpi3Folder *folder, int position);
+    void moveFolder(Mpi3Folder *folder, int position);
+
 };
 
 
@@ -95,23 +112,21 @@ public:
     ~Mpi3Library();
 
 public:
-    void save(const QString &path);
     QString filepath;
+    void save(const QString &path);
 
     QVector<Mpi3Song*> *libSongs = nullptr;
     QVector<Mpi3Playlist*> *libPlaylists = nullptr;
     QVector<Mpi3Folder*> *libFolders = nullptr;
 
 public:
-    Mpi3Song* addSong();
-    Mpi3Playlist* addPlaylist(Mpi3Folder *parent = nullptr);
-    Mpi3Folder* addFolder(Mpi3Folder *parent = nullptr);
+    Mpi3Song* newSong();
+    Mpi3Playlist* newPlaylist(Mpi3Folder *parent = nullptr);
+    Mpi3Folder* newFolder(Mpi3Folder *parent = nullptr);
 
-    void removeSong(Mpi3Song *s);
-    void removePlaylist(Mpi3Playlist *p);
-    void removeFolder(Mpi3Folder *f);
-
-    void update(Mpi3Song *song);
+    void deleteSong(Mpi3Song *s);
+    void deletePlaylist(Mpi3Playlist *p);
+    void deleteFolder(Mpi3Folder *f);
 
     QList<Mpi3Folder*> childFolders(Mpi3Folder *parent);
     QList<Mpi3Playlist*> childPlaylists(Mpi3Folder *parent);
@@ -120,51 +135,34 @@ public:
     Mpi3Playlist *getPlaylist(const QString &pid);
     Mpi3Folder *getFolder(const QString &pid);
 
-signals:
-    void mediaInserted(int position, int rows);
-    void mediaChanged(int index, Mpi3Song *s);
-
-    void mediaRemoved();
+    void update(Mpi3Song *song);
 
 
-    void songDeleted();
-    void playlistDeleted();
-    void folderDeleted();
+//signals:
+//    void mediaInserted(int position, int rows);
+//    void mediaChanged(int index, Mpi3Song *s);
 
-    void songAdded();
-    void playlistAdded();
-    void folderAdded();
+//    void mediaRemoved();
 
-    void songInsertedInto();
-    void playlistInsertedInto();
-    void folderInsertedInto();
 
-    void songRemovedFrom();
-    void playlistRemovedFrom();
-    void folderRemovedFrom();
+//    void songDeleted();
+//    void playlistDeleted();
+//    void folderDeleted();
+
+//    void songAdded();
+//    void playlistAdded();
+//    void folderAdded();
+
+//    void songInsertedInto();
+//    void playlistInsertedInto();
+//    void folderInsertedInto();
+
+//    void songRemovedFrom();
+//    void playlistRemovedFrom();
+//    void folderRemovedFrom();
 
 
 };
 
 
 #endif // MEDIALIB_H
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -128,47 +128,47 @@ void Mpi3RootDesktop::initializeLibrary(){
 
     //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
 
-    Mpi3Song *song_1 = m_library->addSong();
+    Mpi3Song *song_1 = m_library->newSong();
     song_1->name = "Me, Myself and I";
     song_1->artist = "G-Eazy";
     song_1->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Me, Myself  I (Ft. Bebe Rexha).mp3";
 
     m_library->update(song_1);
 
-    Mpi3Song *song_2 = m_library->addSong();
+    Mpi3Song *song_2 = m_library->newSong();
     song_2->name = "Been On";
     song_2->artist = "G-Eazy";
     song_2->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Been On.mp3";
 
     m_library->update(song_2);
 
-    Mpi3Song *song_3 = m_library->addSong();
+    Mpi3Song *song_3 = m_library->newSong();
     song_3->name = "Change My Heart";
     song_3->artist = "Ozcan x Laurell";
     song_3->path = "F:\\iTunes\\Music\\Ozcan x Laurell\\Unknown Album\\Change My Heart.mp3";
 
     m_library->update(song_3);
 
-    Mpi3Song *song_4 = m_library->addSong();
+    Mpi3Song *song_4 = m_library->newSong();
     song_4->name = "Little Moment";
     song_4->artist = "Omar LinX";
     song_4->path = "F:\\iTunes\\Music\\Omar LinX\\Unknown Album\\Little Moment.mp3";
 
     m_library->update(song_4);
 
-    Mpi3Folder *fldr_1 = m_library->addFolder();
+    Mpi3Folder *fldr_1 = m_library->newFolder();
     fldr_1->name = "electric beat";
 
-    Mpi3Folder *fldr_2 = m_library->addFolder();
+    Mpi3Folder *fldr_2 = m_library->newFolder();
     fldr_2->name = "party mix";
 
-    Mpi3Folder *fldr_3 = m_library->addFolder(fldr_2);
+    Mpi3Folder *fldr_3 = m_library->newFolder(fldr_2);
     fldr_3->name = "party mix subfolder";
 
-    Mpi3Playlist *plist_1 = m_library->addPlaylist();
+    Mpi3Playlist *plist_1 = m_library->newPlaylist();
     plist_1->name = "upbeat";
 
-    Mpi3Playlist *plist_2 = m_library->addPlaylist(fldr_1);
+    Mpi3Playlist *plist_2 = m_library->newPlaylist(fldr_1);
     plist_2->name = "dance";
 
     plist_1->songs.push_back(song_3);
@@ -593,16 +593,3 @@ void Mpi3RootDesktop::paintEvent(QPaintEvent *event){
 
     QWidget::paintEvent(event);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,9 +2,7 @@
 
 #include <QFile>
 
-// ----------------------------------------------------------------------------------------------------
-// * Mpi3Theme *
-// ----------------------------------------------------------------------------------------------------
+
 Mpi3Theme::Mpi3Theme(){}
 Mpi3Theme::~Mpi3Theme(){}
 
@@ -75,7 +73,8 @@ QString Mpi3Theme::removeComments(const QString &text){
         int s = line.indexOf("//", 0);
         if(s > -1){
             parsed += line.left(s);
-        } else {
+        }
+        else {
             parsed += line + "\n";
         }
 

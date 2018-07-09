@@ -223,20 +223,20 @@ Mpi3Library *LibraryModel::library() const{
     return m_library.data();
 }
 void LibraryModel::setLibrary(Mpi3Library *library){
-    if (m_library) {
-        disconnect(m_library.data(), &Mpi3Library::mediaInserted, this, &LibraryModel::insertItems);
-        disconnect(m_library.data(), &Mpi3Library::mediaChanged, this, &LibraryModel::changeItems);
-    }
+//    if (m_library) {
+//        disconnect(m_library.data(), &Mpi3Library::mediaInserted, this, &LibraryModel::insertItems);
+//        disconnect(m_library.data(), &Mpi3Library::mediaChanged, this, &LibraryModel::changeItems);
+//    }
 
     beginResetModel();
 
     m_library.take();
     m_library.reset(library);
 
-    if (m_library) {
-        connect(m_library.data(), &Mpi3Library::mediaInserted, this, &LibraryModel::insertItems);
-        connect(m_library.data(), &Mpi3Library::mediaChanged, this, &LibraryModel::changeItems);
-    }
+//    if (m_library) {
+//        connect(m_library.data(), &Mpi3Library::mediaInserted, this, &LibraryModel::insertItems);
+//        connect(m_library.data(), &Mpi3Library::mediaChanged, this, &LibraryModel::changeItems);
+//    }
 
     endResetModel();
 
@@ -245,7 +245,7 @@ void LibraryModel::setLibrary(Mpi3Library *library){
     }
 
     m_currentView = LibraryModel::ViewPlaylists;
-    this->viewLibrarySonglist();
+    viewLibrarySonglist();
 }
 
 void LibraryModel::viewLibrarySonglist(){
@@ -358,23 +358,3 @@ void LibraryModel::removeItems(int position, int count){
     rootItem->removeChildren(position, count);
     endRemoveRows();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
