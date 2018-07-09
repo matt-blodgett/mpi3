@@ -21,13 +21,14 @@ public:
 
 public:
     enum View {
-        Library,
-        Artists,
-        Playlist
+        ViewLibrary,
+        ViewArtists,
+        ViewPlaylist
     };
 
 public:
     View currentView();
+    void setDisplay(const QString &title);
 
 private:
     QTreeView *tree_library = nullptr;
@@ -49,6 +50,7 @@ signals:
 
 private slots:
     void changeView(PanelLibrary::View view);
+    void playlistClicked(const QModelIndex &index);
 
 private:
     void showEvent(QShowEvent *event);

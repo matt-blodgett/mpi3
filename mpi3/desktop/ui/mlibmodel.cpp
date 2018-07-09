@@ -74,7 +74,7 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const{
 //    Qt::ForegroundRole
 //    Qt::CheckStateRole
 
-    if(role == Qt::DecorationRole && m_currentView == LibraryModel::ContainersView && index.column() == 0){
+    if(role == Qt::DecorationRole && m_currentView == LibraryModel::ViewContainers && index.column() == 0){
         LibraryItem *item = getItem(index);
         return item->icon();
     }
@@ -194,7 +194,7 @@ LibraryModel::View LibraryModel::currentView(){
     return m_currentView;
 }
 bool LibraryModel::setView(LibraryModel::View view){
-    if(m_currentView == view){
+    if(view == m_currentView && view != LibraryModel::ViewPlaylists){
         return false;
     } else {
         m_currentView = view;
@@ -204,7 +204,7 @@ bool LibraryModel::setView(LibraryModel::View view){
         removeColumns(0, columnCount());
 
         QVector<QString> headers;
-        if(view == LibraryModel::LibraryView || view == LibraryModel::PlaylistView){
+        if(view == LibraryModel::ViewLibrary || view == LibraryModel::ViewPlaylists){
             headers << "Name" << "Artist" << "Path";
         } else {
             headers << "Name";
@@ -244,12 +244,12 @@ void LibraryModel::setLibrary(Mpi3Library *library){
         columnVisibility[i] = false;
     }
 
-    m_currentView = LibraryModel::PlaylistView;
+    m_currentView = LibraryModel::ViewPlaylists;
     this->viewLibrarySonglist();
 }
 
 void LibraryModel::viewLibrarySonglist(){
-    if(!setView(LibraryModel::LibraryView)){
+    if(!setView(LibraryModel::ViewLibrary)){
         return;
     }
 
@@ -263,7 +263,7 @@ void LibraryModel::viewLibrarySonglist(){
     }
 }
 void LibraryModel::viewLibraryContainers(){
-    if(!setView(LibraryModel::ContainersView)){
+    if(!setView(LibraryModel::ViewContainers)){
         return;
     }
 
@@ -293,12 +293,20 @@ void LibraryModel::viewLibraryContainers(){
     }
 }
 void LibraryModel::viewLibraryArtists(){
-    if(!setView(LibraryModel::ArtistsView)){
+    if(!setView(LibraryModel::ViewArtists)){
         return;
     }
 }
 void LibraryModel::viewPlaylist(Mpi3Playlist *playlist){
-    Q_UNUSED(playlist);
+    if(!setView(LibraryModel::ViewPlaylists)){
+        return;
+    }
+
+    insertItems(0, playlist->songs.size());
+    for(int i = 0; i < playlist->songs.size(); i++){
+        Mpi3Song *s = playlist->songs.at(i);
+        changeItems(i, s);
+    }
 }
 
 void LibraryModel::insertFolder(LibraryItem *item, Mpi3Folder *folder){
@@ -330,6 +338,9 @@ void LibraryModel::insertFolder(LibraryItem *item, Mpi3Folder *folder){
 }
 
 void LibraryModel::insertItems(int position, int count){
+    if(count <= 0){
+        return;
+    }
     beginInsertRows(QModelIndex(), position, position + count - 1);
     rootItem->insertChildren(position, count, rootItem->columnCount());
     endInsertRows();

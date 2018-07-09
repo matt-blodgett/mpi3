@@ -23,11 +23,11 @@ public:
 
 public:
     enum View {
-        LibraryView,
-        ArtistsView,
-        AlbumsView,
-        ContainersView,
-        PlaylistView
+        ViewLibrary,
+        ViewArtists,
+        ViewAlbums,
+        ViewContainers,
+        ViewPlaylists
     };
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;

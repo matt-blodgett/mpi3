@@ -10,7 +10,6 @@ class QDomDocument;
 class QDomElement;
 QT_END_NAMESPACE
 
-
 class Mpi3Element;
 class Mpi3Song;
 class Mpi3Playlist;
@@ -67,7 +66,7 @@ public:
 
 public:
     Mpi3Folder *parent = nullptr;
-//    QMap<QString> songs;
+    QVector<Mpi3Song*> songs;
 
 };
 
@@ -81,7 +80,7 @@ public:
 
 public:
     Mpi3Folder *parent = nullptr;
-//    <QString> playlists;
+    QVector<Mpi3Playlist*> playlists;
 
 };
 

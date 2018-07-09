@@ -28,7 +28,6 @@ Mpi3RootDesktop::Mpi3RootDesktop(){
     initializeLibrary();
     initializeMainMenu();
 }
-
 Mpi3RootDesktop::~Mpi3RootDesktop(){}
 
 void Mpi3RootDesktop::initialize(){
@@ -171,6 +170,10 @@ void Mpi3RootDesktop::initializeLibrary(){
 
     Mpi3Playlist *plist_2 = m_library->addPlaylist(fldr_1);
     plist_2->name = "dance";
+
+    plist_1->songs.push_back(song_3);
+
+
 }
 void Mpi3RootDesktop::initializeMainMenu(){
     QMenuBar *menu_main = menuBar();
@@ -506,15 +509,30 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
 
 void Mpi3RootDesktop::libraryViewChanged(){
     switch(m_libview->currentView()) {
-        case PanelLibrary::Library:
+
+        case PanelLibrary::ViewLibrary:
+            m_libview->setDisplay("Library");
             tree_library->setRootIsDecorated(false);
             m_modelLibrary->viewLibrarySonglist();
             break;
-        case PanelLibrary::Artists:
+
+        case PanelLibrary::ViewArtists:
+            m_libview->setDisplay("Artists");
             tree_library->setRootIsDecorated(true);
             m_modelLibrary->viewLibraryArtists();
             break;
-        case PanelLibrary::Playlist:
+
+        case PanelLibrary::ViewPlaylist:
+            QModelIndex selectedIndex = tree_playlists->selectionModel()->currentIndex();
+            LibraryItem *item = m_modelPlaylists->getItem(selectedIndex);
+            QString pid = m_modelPlaylists->getPID(item);
+            Mpi3Playlist *playlist = m_library->getPlaylist(pid);
+
+            if(playlist){
+                m_libview->setDisplay(playlist->name);
+                m_modelLibrary->viewPlaylist(playlist);
+            }
+
             break;
     }
 }

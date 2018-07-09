@@ -6,10 +6,10 @@
 // PADDING - TOPpx RIGHTpx BOTTOMpx LEFTpx
 
 
-//QWidget {
-//    font-family: "Helvetica";
-//    font-size: 12px;
-//}
+QWidget {
+    font-family: "Helvetica";
+    font-size: 12px;
+}
 
 
 // --------------------------------------------------
@@ -237,6 +237,10 @@ QWidget#PanelTrees {
     border-left: 1px solid #000000;
     border-right: 1px solid #000000;
     border-bottom: 1px solid #000000;
+}
+
+QWidget#PanelTreesTitle {
+    font-size: 20px;
 }
 
 
