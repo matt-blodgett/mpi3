@@ -36,10 +36,17 @@ RESOURCES += desktop/qss
 RESOURCES += desktop.qrc
 
 
+
+
+# EXTERNAL QRC BINARY RESOURCE
+#rcc -binary myresource.qrc -o myresource.rcc
+#QResource::registerResource("/path/to/myresource.rcc");
+#rcc -no-compress myresources.qrc
+
+
+
 #QT_DEBUG_PLUGINS = 1
-
 #QT_FATAL_WARNINGS
-
 #QT_QPA_PLATFORM =
 
 # target.path = $$[QT_INSTALL_EXAMPLES]/phonon/qmusicplayer
@@ -47,10 +54,7 @@ RESOURCES += desktop.qrc
 # sources.path = $$[QT_INSTALL_EXAMPLES]/phonon/qmusicplayer
 # INSTALLS += target sources
 
-
 #HEADERS += libav/include/libavcodec/avcodec.h
-
-
 
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/libav/bin/ -lavcodec
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/libav/bin/ -lavcodecd
