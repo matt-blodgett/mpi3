@@ -20,10 +20,10 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent){
     btn_play = new QPushButton(frm_controls);
     sld_position = new QSlider(frm_controls);
 
-    QPixmap pixmapNext(":/desktop/icons/next.png");
-    QPixmap pixmapPrev(":/desktop/icons/prev.png");
-    QPixmap pixmapPlay(":/desktop/icons/play.png");
-    QPixmap pixmapPaus(":/desktop/icons/paus.png");
+    QPixmap pixmapNext(":/icons/playback/next.png");
+    QPixmap pixmapPrev(":/icons/playback/prev.png");
+    QPixmap pixmapPlay(":/icons/playback/play.png");
+    QPixmap pixmapPaus(":/icons/playback/paus.png");
 
     icn_next.addPixmap(pixmapNext);
     icn_prev.addPixmap(pixmapPrev);

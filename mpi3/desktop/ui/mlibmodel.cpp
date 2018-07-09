@@ -10,8 +10,8 @@
 LibraryModel::LibraryModel(QObject *parent) : QAbstractItemModel(parent){
     rootItem = new LibraryItem();
 
-    QPixmap pix_folder(":/desktop/icons/folder.png");
-    QPixmap pix_playlist(":/desktop/icons/playlist.png");
+    QPixmap pix_folder(":/icons/treeview/folder.png");
+    QPixmap pix_playlist(":/icons/treeview/playlist.png");
 
     icn_folder.addPixmap(pix_folder);
     icn_playlist.addPixmap(pix_playlist);

@@ -33,8 +33,7 @@ HEADERS += util/medialib.h
 SOURCES += util/medialib.cpp
 
 RESOURCES += desktop/qss
-RESOURCES += desktop/icons
-
+RESOURCES += desktop.qrc
 
 
 #QT_DEBUG_PLUGINS = 1
