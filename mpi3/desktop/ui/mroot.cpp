@@ -386,8 +386,7 @@ void Mpi3RootDesktop::libraryContextMenu(const QPoint &point){
     menu_context->addAction(act_objDelete);
 
 //    qDebug() << tree_library->selectionModel()->selectedIndexes().size();
-
-    qDebug() << tree_library->selectionModel()->selectedRows().size();
+//    qDebug() << tree_library->selectionModel()->selectedRows().size();
 
     Mpi3Song *song = nullptr;
     QModelIndex index = tree_library->indexAt(point);
@@ -405,6 +404,10 @@ void Mpi3RootDesktop::libraryContextMenu(const QPoint &point){
         act_objEdit->setDisabled(true);
         act_objDetails->setDisabled(true);
         menu_addto->setDisabled(true);
+        act_editCopy->setDisabled(true);
+        act_editCut->setDisabled(true);
+        act_objShowExplorer->setDisabled(true);
+        act_objRemove->setDisabled(true);
         act_objDelete->setDisabled(true);
     }
 
@@ -467,15 +470,38 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
     menu_context->addSeparator();
     menu_context->addAction(act_objDelete);
 
+    Mpi3Folder *folder = nullptr;
+    Mpi3Playlist *playlist = nullptr;
     QModelIndex index = tree_playlists->indexAt(point);
-    if (!index.isValid()){
+    if (index.isValid()){
+        LibraryItem *item = m_modelPlaylists->getItem(index);
+        QString pid = m_modelPlaylists->getPID(item);
+        folder = m_library->getFolder(pid);
+        playlist = m_library->getPlaylist(pid);
+    }
+
+    if(playlist){
+        qDebug() << "playlist:" << playlist->name;
         act_itemExpand->setDisabled(true);
         act_itemCollapse->setDisabled(true);
+    }
+    else if(folder) {
+        qDebug() << "folder:" << folder->name;
 
+    }
+    else {
+        act_itemExpand->setDisabled(true);
+        act_itemCollapse->setDisabled(true);
+        act_objDuplicate->setDisabled(true);
+        act_objEdit->setDisabled(true);
+        act_objDetails->setDisabled(true);
+        menu_moveto->setDisabled(true);
+        act_objDelete->setDisabled(true);
     }
 
     menu_context->exec(tree_playlists->mapToGlobal(point));
     delete menu_context;
+
 }
 
 void Mpi3RootDesktop::libraryViewChanged(){

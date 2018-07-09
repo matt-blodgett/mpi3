@@ -189,7 +189,6 @@ Mpi3Song* Mpi3Library::addSong(){
 
 Mpi3Playlist* Mpi3Library::addPlaylist(Mpi3Folder *parent){
     Mpi3Playlist *playlist = new Mpi3Playlist(true);
-
     libPlaylists->push_back(playlist);
 
     if(parent){

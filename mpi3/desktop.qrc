@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/icons/playback">
+        <file>desktop/icons/folder.png</file>
+        <file>desktop/icons/next.png</file>
+        <file>desktop/icons/paus.png</file>
+        <file>desktop/icons/play.png</file>
+        <file>desktop/icons/playlist.png</file>
+        <file>desktop/icons/prev.png</file>
+    </qresource>
+    <qresource prefix="/new/prefix1"/>
+</RCC>
