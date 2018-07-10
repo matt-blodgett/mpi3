@@ -126,52 +126,52 @@ void Mpi3RootDesktop::initializeLibrary(){
     m_library->name = "Main Library";
     m_library->added = "03/07/2017";
 
-    //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
+//    //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
 
-    Mpi3Song *song_1 = m_library->newSong();
-    song_1->name = "Me, Myself and I";
-    song_1->artist = "G-Eazy";
-    song_1->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Me, Myself  I (Ft. Bebe Rexha).mp3";
+//    Mpi3Song *song_1 = m_library->newSong();
+//    song_1->name = "Me, Myself and I";
+//    song_1->artist = "G-Eazy";
+//    song_1->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Me, Myself  I (Ft. Bebe Rexha).mp3";
 
-    m_library->update(song_1);
+//    m_library->update(song_1);
 
-    Mpi3Song *song_2 = m_library->newSong();
-    song_2->name = "Been On";
-    song_2->artist = "G-Eazy";
-    song_2->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Been On.mp3";
+//    Mpi3Song *song_2 = m_library->newSong();
+//    song_2->name = "Been On";
+//    song_2->artist = "G-Eazy";
+//    song_2->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Been On.mp3";
 
-    m_library->update(song_2);
+//    m_library->update(song_2);
 
-    Mpi3Song *song_3 = m_library->newSong();
-    song_3->name = "Change My Heart";
-    song_3->artist = "Ozcan x Laurell";
-    song_3->path = "F:\\iTunes\\Music\\Ozcan x Laurell\\Unknown Album\\Change My Heart.mp3";
+//    Mpi3Song *song_3 = m_library->newSong();
+//    song_3->name = "Change My Heart";
+//    song_3->artist = "Ozcan x Laurell";
+//    song_3->path = "F:\\iTunes\\Music\\Ozcan x Laurell\\Unknown Album\\Change My Heart.mp3";
 
-    m_library->update(song_3);
+//    m_library->update(song_3);
 
-    Mpi3Song *song_4 = m_library->newSong();
-    song_4->name = "Little Moment";
-    song_4->artist = "Omar LinX";
-    song_4->path = "F:\\iTunes\\Music\\Omar LinX\\Unknown Album\\Little Moment.mp3";
+//    Mpi3Song *song_4 = m_library->newSong();
+//    song_4->name = "Little Moment";
+//    song_4->artist = "Omar LinX";
+//    song_4->path = "F:\\iTunes\\Music\\Omar LinX\\Unknown Album\\Little Moment.mp3";
 
-    m_library->update(song_4);
+//    m_library->update(song_4);
 
-    Mpi3Folder *fldr_1 = m_library->newFolder();
-    fldr_1->name = "electric beat";
+//    Mpi3Folder *fldr_1 = m_library->newFolder();
+//    fldr_1->name = "electric beat";
 
-    Mpi3Folder *fldr_2 = m_library->newFolder();
-    fldr_2->name = "party mix";
+//    Mpi3Folder *fldr_2 = m_library->newFolder();
+//    fldr_2->name = "party mix";
 
-    Mpi3Folder *fldr_3 = m_library->newFolder(fldr_2);
-    fldr_3->name = "party mix subfolder";
+//    Mpi3Folder *fldr_3 = m_library->newFolder(fldr_2);
+//    fldr_3->name = "party mix subfolder";
 
-    Mpi3Playlist *plist_1 = m_library->newPlaylist();
-    plist_1->name = "upbeat";
+//    Mpi3Playlist *plist_1 = m_library->newPlaylist();
+//    plist_1->name = "upbeat";
 
-    Mpi3Playlist *plist_2 = m_library->newPlaylist(fldr_1);
-    plist_2->name = "dance";
+//    Mpi3Playlist *plist_2 = m_library->newPlaylist(fldr_1);
+//    plist_2->name = "dance";
 
-    plist_1->songs.push_back(song_3);
+//    plist_1->songs.push_back(song_3);
 
 
 }
@@ -275,7 +275,7 @@ void Mpi3RootDesktop::initializeMainMenu(){
     menu_tools->setTitle("Tools");
     menu_help->setTitle("Help");
 
-    menuBar()->addMenu(menu_file);
+    menu_main->addMenu(menu_file);
     QMenu *menu_library = new QMenu(menu_main);
     QMenu *menu_theme = new QMenu(menu_main);
 
@@ -297,7 +297,7 @@ void Mpi3RootDesktop::initializeMainMenu(){
     menu_file->addSeparator();
     menu_file->addAction(act_wndExit);
 
-    menuBar()->addMenu(menu_edit);
+    menu_main->addMenu(menu_edit);
     menu_edit->addAction(act_editUndo);
     menu_edit->addAction(act_editRedo);
     menu_edit->addSeparator();
@@ -306,16 +306,16 @@ void Mpi3RootDesktop::initializeMainMenu(){
     menu_edit->addAction(act_editPaste);
     menu_edit->addAction(act_editDelete);
 
-    menuBar()->addMenu(menu_view);
+    menu_main->addMenu(menu_view);
     menu_view->addAction(act_viewMaximize);
 
-    menuBar()->addMenu(menu_device);
+    menu_main->addMenu(menu_device);
     menu_device->addAction(act_raspiConnect);
 
-    menuBar()->addMenu(menu_tools);
+    menu_main->addMenu(menu_tools);
     menu_tools->addAction(act_toolsOptions);
 
-    menuBar()->addMenu(menu_help);
+    menu_main->addMenu(menu_help);
     menu_help->addAction(act_helpAbout);
 }
 
@@ -453,6 +453,20 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
     menu_moveto->setTitle("Move to...");
     act_objDelete->setText("Delete from Library");
 
+    connect(act_itemExpand, &QAction::triggered, this, &Mpi3RootDesktop::itemExpand);
+    connect(act_itemCollapse, &QAction::triggered, this, &Mpi3RootDesktop::itemCollapse);
+    connect(act_itemExpandAll, &QAction::triggered, this, &Mpi3RootDesktop::itemExpandAll);
+    connect(act_itemCollapseAll, &QAction::triggered, this, &Mpi3RootDesktop::itemCollapseAll);
+    connect(act_newPlaylist, &QAction::triggered, this, &Mpi3RootDesktop::libNewPlaylist);
+    connect(act_newFolder, &QAction::triggered, this, &Mpi3RootDesktop::libNewFolder);
+    connect(act_importPlaylists, &QAction::triggered, this, &Mpi3RootDesktop::libImportPlaylists);
+    connect(act_importSongs, &QAction::triggered, this, &Mpi3RootDesktop::libImportSongs);
+    connect(act_objEdit, &QAction::triggered, this, &Mpi3RootDesktop::objEdit);
+    connect(act_objDetails, &QAction::triggered, this, &Mpi3RootDesktop::objDetails);
+    connect(act_objDuplicate, &QAction::triggered, this, &Mpi3RootDesktop::objDuplicate);
+
+    connect(act_objDelete, &QAction::triggered, this, &Mpi3RootDesktop::objDelete);
+
     menu_context->addAction(act_itemExpand);
     menu_context->addAction(act_itemCollapse);
     menu_context->addSeparator();
@@ -484,12 +498,12 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
     }
 
     if(playlist){
-        qDebug() << "playlist:" << playlist->name;
+//        qDebug() << "playlist:" << playlist->name;
         act_itemExpand->setDisabled(true);
         act_itemCollapse->setDisabled(true);
     }
     else if(folder) {
-        qDebug() << "folder:" << folder->name;
+//        qDebug() << "folder:" << folder->name;
 
     }
     else {
@@ -504,7 +518,6 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
 
     menu_context->exec(tree_playlists->mapToGlobal(point));
     delete menu_context;
-
 }
 
 void Mpi3RootDesktop::libraryViewChanged(){
@@ -537,8 +550,35 @@ void Mpi3RootDesktop::libraryViewChanged(){
     }
 }
 
-void Mpi3RootDesktop::libImport(){}
-void Mpi3RootDesktop::libExport(){}
+void Mpi3RootDesktop::libImport(){
+    QString libFile;
+    QString pathDesktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+    libFile = QFileDialog::getOpenFileName(this, "Open Mpi3Library File", pathDesktop, "Mpi3Lib Files (*.mpi3lib)");
+
+    if(libFile != ""){
+//        delete m_modelLibrary;
+//        delete m_modelPlaylists;
+
+        delete m_library;
+
+        m_library = Mpi3Library::load(libFile);
+
+        m_modelLibrary->setLibrary(m_library);
+        m_modelPlaylists->setLibrary(m_library);
+
+
+        themeRefresh();
+    }
+}
+void Mpi3RootDesktop::libExport(){
+    QString libFile;
+    QString pathDesktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+    libFile = QFileDialog::getSaveFileName(this, "Export Mpi3Library File", pathDesktop, "Mpi3Lib Files (*.mpi3lib)");
+
+    if(libFile != ""){
+        m_library->save(libFile);
+    }
+}
 
 void Mpi3RootDesktop::themeSet(){
     QString qssFile;
@@ -568,8 +608,16 @@ void Mpi3RootDesktop::itemCollapse(){}
 void Mpi3RootDesktop::itemExpandAll(){}
 void Mpi3RootDesktop::itemCollapseAll(){}
 
-void Mpi3RootDesktop::libNewFolder(){}
-void Mpi3RootDesktop::libNewPlaylist(){}
+void Mpi3RootDesktop::libNewFolder(){
+    Mpi3Folder *folder = m_library->newFolder();
+    folder->name = "New Folder";
+    m_library->update(folder);
+}
+void Mpi3RootDesktop::libNewPlaylist(){
+    Mpi3Playlist *playlist = m_library->newPlaylist();
+    playlist->name = "New Playlist";
+    m_library->update(playlist);
+}
 void Mpi3RootDesktop::libImportPlaylists(){}
 void Mpi3RootDesktop::libImportSongs() {}
 void Mpi3RootDesktop::libDownloadSongs() {}
@@ -578,6 +626,7 @@ void Mpi3RootDesktop::libDelete(){}
 void Mpi3RootDesktop::objPlay(){}
 void Mpi3RootDesktop::objEdit(){}
 void Mpi3RootDesktop::objDetails(){}
+void Mpi3RootDesktop::objDelete(){}
 
 void Mpi3RootDesktop::objAddTo(){}
 void Mpi3RootDesktop::objMoveTo(){}

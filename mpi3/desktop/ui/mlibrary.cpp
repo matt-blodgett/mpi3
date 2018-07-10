@@ -10,6 +10,7 @@
 #include <QLabel>
 
 #include <QTreeView>
+#include <QHeaderView>
 
 #include <QDebug>
 
@@ -99,8 +100,10 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     frm_views->setObjectName("PanelViews");
     frm_trees->setObjectName("PanelTrees");
     lbl_view->setObjectName("PanelTreesTitle");
-    tree_playlists->setObjectName("PlaylistsTreeview");
     tree_library->setObjectName("LibraryTreeview");
+    tree_playlists->setObjectName("PlaylistsTreeview");
+    tree_library->header()->setObjectName("LibraryTreeviewHeader");
+    tree_playlists->header()->setObjectName("PlaylistsTreeviewHeader");
 }
 PanelLibrary::~PanelLibrary(){}
 

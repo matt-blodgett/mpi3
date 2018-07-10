@@ -73,6 +73,7 @@ private slots:
     void objPlay();
     void objEdit();
     void objDetails();
+    void objDelete();
 
     void objAddTo();
     void objMoveTo();

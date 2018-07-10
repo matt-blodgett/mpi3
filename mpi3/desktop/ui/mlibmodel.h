@@ -77,15 +77,23 @@ private:
     QIcon icn_folder;
     QIcon icn_playlist;
 
+    void insertChildren(int position, int count);
+    void removeChildren(int position, int count);
+
 private:
     LibraryItem *rootItem = nullptr;
     QMap<QString, LibraryItem*> libItems;
     QScopedPointer<Mpi3Library> m_library;
+    QScopedPointer<Mpi3Playlist> m_playlist;
 
 private slots:
-    void insertItems(int position, int count);
-    void changeItems(int position, Mpi3Song *s);
-    void removeItems(int position, int count);
+    void songUpdated(Mpi3Song *song);
+    void playlistUpdated(Mpi3Playlist *playlist);
+    void folderUpdated(Mpi3Folder *folder);
+
+    void songInserted(Mpi3Song *song, Mpi3Playlist *parent, int position);
+    void playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *parent, int position);
+    void folderInserted(Mpi3Folder *folder, Mpi3Folder *parent, int position);
 
 };
 
