@@ -41,6 +41,7 @@ private:
     QRadioButton *btn_songs = nullptr;
     QRadioButton *btn_artists = nullptr;
 
+    QLabel *lbl_playlist = nullptr;
     QLabel *lbl_view = nullptr;
 
     View m_currentView;

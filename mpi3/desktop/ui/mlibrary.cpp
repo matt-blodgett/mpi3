@@ -26,10 +26,12 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
 
     btn_songs = new QRadioButton(this);
     btn_artists = new QRadioButton(this);
+    lbl_playlist = new QLabel(this);
     tree_playlists = new QTreeView(this);
 
     btn_songs->setText("Songs");
     btn_artists->setText("Artists");
+    lbl_playlist->setText("Playlists");
 
     connect(btn_songs, &QRadioButton::released, this, [this](){changeView(PanelLibrary::ViewLibrary);});
     connect(btn_artists, &QPushButton::released, this, [this](){changeView(PanelLibrary::ViewArtists);});
@@ -37,12 +39,13 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
 
     layoutViews->addWidget(btn_songs, 0, 0, 1, 1);
     layoutViews->addWidget(btn_artists, 1, 0, 1, 1);
-    layoutViews->addWidget(tree_playlists, 2, 0, 1, 1);
+    layoutViews->addWidget(lbl_playlist, 2, 0, 1, 1);
+    layoutViews->addWidget(tree_playlists, 3, 0, 1, 1);
 
-    layoutViews->setRowStretch(2, 1);
-    layoutViews->setContentsMargins(0, 0, 0, 0);
+    layoutViews->setRowStretch(3, 1);
+
     layoutViews->setMargin(0);
-
+    layoutViews->setContentsMargins(0, 0, 0, 0);
     layoutViews->setVerticalSpacing(0);
     layoutViews->setHorizontalSpacing(0);
 
@@ -88,18 +91,16 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
 
     setLayout(layoutMain);
 
-
     changeView(PanelLibrary::ViewLibrary);
     setDisplay("Library");
     btn_songs->toggle();
 
-
     btn_songs->setObjectName("PanelViewsButton");
     btn_artists->setObjectName("PanelViewsButton");
-
     frm_views->setObjectName("PanelViews");
     frm_trees->setObjectName("PanelTrees");
     lbl_view->setObjectName("PanelTreesTitle");
+    lbl_playlist->setObjectName("PanelViewsLabel");
     tree_library->setObjectName("LibraryTreeview");
     tree_playlists->setObjectName("PlaylistsTreeview");
     tree_library->header()->setObjectName("LibraryTreeviewHeader");
