@@ -5,6 +5,7 @@
 #include <QPixmap>
 
 #include <QDebug>
+#include <QFont>
 
 
 LibraryModel::LibraryModel(QObject *parent) : QAbstractItemModel(parent){
@@ -74,14 +75,19 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const{
 //    Qt::ForegroundRole
 //    Qt::CheckStateRole
 
+    LibraryItem *item = getItem(index);
     if(role == Qt::DecorationRole && m_currentView == LibraryModel::ViewContainers && index.column() == 0){
-        LibraryItem *item = getItem(index);
         return item->icon();
     }
 
     if (role == Qt::DisplayRole || role == Qt::EditRole){
-        LibraryItem *item = getItem(index);
         return item->data(index.column());
+    }
+
+    if(role == Qt::FontRole && item->data(0) == "(No playlists)"){
+        QFont font;
+        font.setItalic(true);
+        return font;
     }
 
     return QVariant();
@@ -436,5 +442,7 @@ void LibraryModel::folderInserted(Mpi3Folder *folder, Mpi3Folder *parent, int po
 
     child->setData(0, folder->name);
     child->setIcon(icn_folder);
+    child->insertChildren(0, 1, columnCount());
+    child->child(0)->setData(0, "(No playlists)");
     libItems[folder->pid] = child;
 }

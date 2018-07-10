@@ -96,9 +96,6 @@ void Mpi3RootDesktop::initialize(){
     tree_playlists->setHeaderHidden(true);
     tree_playlists->expandAll();
 
-
-
-
     tree_playlists->setContextMenuPolicy(Qt::CustomContextMenu);
     tree_library->setContextMenuPolicy(Qt::CustomContextMenu);
     tree_library->header()->setContextMenuPolicy(Qt::CustomContextMenu);
