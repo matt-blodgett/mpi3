@@ -54,6 +54,7 @@ public:
 public:
     LibraryItem *getItem(const QModelIndex &index) const;
     LibraryItem *getItem(const QString &pid) const;
+    QString getPID(const QModelIndex &index) const;
     QString getPID(LibraryItem *item) const;
 
     QMap<int, bool> columnVisibility;
@@ -72,8 +73,15 @@ public:
     void viewLibraryArtists();
     void viewPlaylist(Mpi3Playlist *playlist);
 
+
+public:
+    QModelIndex m_currentIndex = QModelIndex();
+    void insertFolder();
+    void insertPlaylist();
+
+
 private:
-    void insertFolder(LibraryItem *item, Mpi3Folder *folder);
+    void recurseFolder(LibraryItem *item, Mpi3Folder *folder);
     QIcon icn_folder;
     QIcon icn_playlist;
 
@@ -83,18 +91,9 @@ private:
 private:
     LibraryItem *rootItem = nullptr;
     QMap<QString, LibraryItem*> libItems;
+
     QScopedPointer<Mpi3Library> m_library;
     QScopedPointer<Mpi3Playlist> m_playlist;
-
-private slots:
-    void songUpdated(Mpi3Song *song);
-    void playlistUpdated(Mpi3Playlist *playlist);
-    void folderUpdated(Mpi3Folder *folder);
-
-    void songInserted(Mpi3Song *song, Mpi3Playlist *parent, int position);
-    void playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *parent, int position);
-    void folderInserted(Mpi3Folder *folder, Mpi3Folder *parent, int position);
-
 };
 
 

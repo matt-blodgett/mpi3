@@ -391,8 +391,7 @@ void Mpi3RootDesktop::libraryContextMenu(const QPoint &point){
     Mpi3Song *song = nullptr;
     QModelIndex index = tree_library->indexAt(point);
     if (index.isValid()){
-        LibraryItem *item = m_modelLibrary->getItem(index);
-        QString pid = m_modelLibrary->getPID(item);
+        QString pid = m_modelLibrary->getPID(index);
         song = m_library->getSong(pid);
     }
 
@@ -423,8 +422,8 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
     QAction *act_itemExpandAll = new QAction(menu_context);
     QAction *act_itemCollapseAll = new QAction(menu_context);
     QMenu *menu_new = new QMenu(menu_context);
-    QAction *act_newPlaylist = new QAction(menu_new);
     QAction *act_newFolder = new QAction(menu_new);
+    QAction *act_newPlaylist = new QAction(menu_new);
     QMenu *menu_import = new QMenu(menu_context);
     QAction *act_importPlaylists = new QAction(menu_import);
     QAction *act_importSongs = new QAction(menu_import);
@@ -439,8 +438,8 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
     act_itemExpandAll->setText("Expand All");
     act_itemCollapseAll->setText("Collapse All");
     menu_new->setTitle("New");
-    act_newPlaylist->setText("New Playlist");
     act_newFolder->setText("New Folder");
+    act_newPlaylist->setText("New Playlist");
     menu_import->setTitle("Import");
     act_importPlaylists->setText("Import Playlists");
     act_importSongs->setText("Import Songs");
@@ -450,28 +449,14 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
     menu_moveto->setTitle("Move to...");
     act_objDelete->setText("Delete from Library");
 
-    connect(act_itemExpand, &QAction::triggered, this, &Mpi3RootDesktop::itemExpand);
-    connect(act_itemCollapse, &QAction::triggered, this, &Mpi3RootDesktop::itemCollapse);
-    connect(act_itemExpandAll, &QAction::triggered, this, &Mpi3RootDesktop::itemExpandAll);
-    connect(act_itemCollapseAll, &QAction::triggered, this, &Mpi3RootDesktop::itemCollapseAll);
-    connect(act_newPlaylist, &QAction::triggered, this, &Mpi3RootDesktop::libNewPlaylist);
-    connect(act_newFolder, &QAction::triggered, this, &Mpi3RootDesktop::libNewFolder);
-    connect(act_importPlaylists, &QAction::triggered, this, &Mpi3RootDesktop::libImportPlaylists);
-    connect(act_importSongs, &QAction::triggered, this, &Mpi3RootDesktop::libImportSongs);
-    connect(act_objEdit, &QAction::triggered, this, &Mpi3RootDesktop::objEdit);
-    connect(act_objDetails, &QAction::triggered, this, &Mpi3RootDesktop::objDetails);
-    connect(act_objDuplicate, &QAction::triggered, this, &Mpi3RootDesktop::objDuplicate);
-
-    connect(act_objDelete, &QAction::triggered, this, &Mpi3RootDesktop::objDelete);
-
     menu_context->addAction(act_itemExpand);
     menu_context->addAction(act_itemCollapse);
     menu_context->addSeparator();
     menu_context->addAction(act_itemExpandAll);
     menu_context->addAction(act_itemCollapseAll);
     menu_context->addSeparator();
-    menu_new->addAction(act_newPlaylist);
     menu_new->addAction(act_newFolder);
+    menu_new->addAction(act_newPlaylist);
     menu_context->addMenu(menu_new);
     menu_import->addAction(act_importPlaylists);
     menu_import->addAction(act_importSongs);
@@ -488,16 +473,42 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
     Mpi3Playlist *playlist = nullptr;
     QModelIndex index = tree_playlists->indexAt(point);
     if (index.isValid()){
-        LibraryItem *item = m_modelPlaylists->getItem(index);
-        QString pid = m_modelPlaylists->getPID(item);
+        QString pid = m_modelPlaylists->getPID(index);
         folder = m_library->getFolder(pid);
         playlist = m_library->getPlaylist(pid);
     }
+    else {
+        tree_playlists->clearSelection();
+    }
+
+
+    m_modelPlaylists->m_currentIndex = index;
+
+
+
+
+    connect(act_itemExpand, &QAction::triggered, this, &Mpi3RootDesktop::itemExpand);
+    connect(act_itemCollapse, &QAction::triggered, this, &Mpi3RootDesktop::itemCollapse);
+    connect(act_itemExpandAll, &QAction::triggered, this, &Mpi3RootDesktop::itemExpandAll);
+    connect(act_itemCollapseAll, &QAction::triggered, this, &Mpi3RootDesktop::itemCollapseAll);
+
+    connect(act_newPlaylist, &QAction::triggered, this, &Mpi3RootDesktop::libNewPlaylist);
+    connect(act_newFolder, &QAction::triggered, this, &Mpi3RootDesktop::libNewFolder);
+
+//    connect(act_importPlaylists, &QAction::triggered, this, &Mpi3RootDesktop::libImportPlaylists);
+//    connect(act_importSongs, &QAction::triggered, this, &Mpi3RootDesktop::libImportSongs);
+    connect(act_objEdit, &QAction::triggered, this, &Mpi3RootDesktop::objEdit);
+    connect(act_objDetails, &QAction::triggered, this, &Mpi3RootDesktop::objDetails);
+    connect(act_objDuplicate, &QAction::triggered, this, &Mpi3RootDesktop::objDuplicate);
+
+    connect(act_objDelete, &QAction::triggered, this, &Mpi3RootDesktop::objDelete);
+
 
     if(playlist){
 //        qDebug() << "playlist:" << playlist->name;
         act_itemExpand->setDisabled(true);
         act_itemCollapse->setDisabled(true);
+
     }
     else if(folder) {
 //        qDebug() << "folder:" << folder->name;
@@ -511,6 +522,7 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
         act_objDetails->setDisabled(true);
         menu_moveto->setDisabled(true);
         act_objDelete->setDisabled(true);
+
     }
 
     menu_context->exec(tree_playlists->mapToGlobal(point));
@@ -534,8 +546,7 @@ void Mpi3RootDesktop::libraryViewChanged(){
 
         case PanelLibrary::ViewPlaylist:
             QModelIndex selectedIndex = tree_playlists->selectionModel()->currentIndex();
-            LibraryItem *item = m_modelPlaylists->getItem(selectedIndex);
-            QString pid = m_modelPlaylists->getPID(item);
+            QString pid = m_modelPlaylists->getPID(selectedIndex);
             Mpi3Playlist *playlist = m_library->getPlaylist(pid);
 
             if(playlist){
@@ -600,25 +611,30 @@ void Mpi3RootDesktop::setColumnVisibility(const int &column){
     m_modelLibrary->columnVisibility[column] = !hidden;
 }
 
-void Mpi3RootDesktop::itemExpand(){}
-void Mpi3RootDesktop::itemCollapse(){}
-void Mpi3RootDesktop::itemExpandAll(){}
-void Mpi3RootDesktop::itemCollapseAll(){}
+void Mpi3RootDesktop::itemExpand(){
+    QModelIndex index = tree_playlists->selectionModel()->currentIndex();
+    tree_playlists->expand(index);
+}
+void Mpi3RootDesktop::itemCollapse(){
+    QModelIndex index = tree_playlists->selectionModel()->currentIndex();
+    tree_playlists->collapse(index);
+}
+void Mpi3RootDesktop::itemExpandAll(){
+    tree_playlists->expandAll();
+}
+void Mpi3RootDesktop::itemCollapseAll(){
+    tree_playlists->collapseAll();
+}
 
 void Mpi3RootDesktop::libNewFolder(){
-    Mpi3Folder *folder = m_library->newFolder();
-    folder->name = "New Folder";
-    m_library->update(folder);
+    m_modelPlaylists->insertFolder();
 }
 void Mpi3RootDesktop::libNewPlaylist(){
-    Mpi3Playlist *playlist = m_library->newPlaylist();
-    playlist->name = "New Playlist";
-    m_library->update(playlist);
+    m_modelPlaylists->insertPlaylist();
 }
 void Mpi3RootDesktop::libImportPlaylists(){}
 void Mpi3RootDesktop::libImportSongs() {}
 void Mpi3RootDesktop::libDownloadSongs() {}
-void Mpi3RootDesktop::libDelete(){}
 
 void Mpi3RootDesktop::objPlay(){}
 void Mpi3RootDesktop::objEdit(){}

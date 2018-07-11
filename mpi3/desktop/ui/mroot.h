@@ -12,6 +12,9 @@ class PanelLibrary;
 class PanelPlayback;
 class LibraryModel;
 class Mpi3Library;
+class Mpi3Folder;
+class Mpi3Playlist;
+class Mpi3Song;
 class Mpi3Theme;
 
 
@@ -68,7 +71,6 @@ private slots:
     void libImportPlaylists();
     void libImportSongs();
     void libDownloadSongs();
-    void libDelete();
 
     void objPlay();
     void objEdit();
