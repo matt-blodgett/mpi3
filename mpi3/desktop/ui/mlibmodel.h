@@ -23,6 +23,7 @@ public:
 
 public:
     enum View {
+        ViewNone,
         ViewLibrary,
         ViewArtists,
         ViewAlbums,
@@ -62,9 +63,14 @@ public:
 
 private:
     bool setView(LibraryModel::View view);
-    View m_currentView;
+    View m_currentView = LibraryModel::ViewNone;
+
+    QModelIndex m_currentIndex = QModelIndex();
 
 public:
+    void setCurrentIndex(QModelIndex &index);
+    QModelIndex currentIndex();
+
     Mpi3Library *library() const;
     void setLibrary(Mpi3Library *library);
 
@@ -73,9 +79,7 @@ public:
     void viewLibraryArtists();
     void viewPlaylist(Mpi3Playlist *playlist);
 
-
 public:
-    QModelIndex m_currentIndex = QModelIndex();
     void insertFolder();
     void insertPlaylist();
 
@@ -84,9 +88,6 @@ private:
     void recurseFolder(LibraryItem *item, Mpi3Folder *folder);
     QIcon icn_folder;
     QIcon icn_playlist;
-
-    void insertChildren(int position, int count);
-    void removeChildren(int position, int count);
 
 private:
     LibraryItem *rootItem = nullptr;

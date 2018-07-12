@@ -482,8 +482,7 @@ void Mpi3RootDesktop::playlistContextMenu(const QPoint &point){
     }
 
 
-    m_modelPlaylists->m_currentIndex = index;
-
+    m_modelPlaylists->setCurrentIndex(index);
 
 
 
@@ -628,9 +627,11 @@ void Mpi3RootDesktop::itemCollapseAll(){
 
 void Mpi3RootDesktop::libNewFolder(){
     m_modelPlaylists->insertFolder();
+    tree_playlists->expand(m_modelPlaylists->currentIndex());
 }
 void Mpi3RootDesktop::libNewPlaylist(){
     m_modelPlaylists->insertPlaylist();
+    tree_playlists->expand(m_modelPlaylists->currentIndex());
 }
 void Mpi3RootDesktop::libImportPlaylists(){}
 void Mpi3RootDesktop::libImportSongs() {}

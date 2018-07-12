@@ -226,3 +226,14 @@ Mpi3Folder* Mpi3Library::getFolder(const QString &pid){
 
     return nullptr;
 }
+
+QList<Mpi3Folder*> Mpi3Library::rootFolders(){
+    QList<Mpi3Folder*> folders;
+    for(int i = 0; i < libFolders->size(); i++){
+        Mpi3Folder *f = libFolders->at(i);
+        if(!f->parent){
+            folders.append(f);
+        }
+    }
+    return folders;
+}

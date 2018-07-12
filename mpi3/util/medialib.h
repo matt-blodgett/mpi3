@@ -80,8 +80,8 @@ public:
 
 public:
     Mpi3Folder *parent = nullptr;
-    QVector<Mpi3Playlist*> playlists;
     QVector<Mpi3Folder*> folders;
+    QVector<Mpi3Playlist*> playlists;
 
 };
 
@@ -110,6 +110,8 @@ public:
     Mpi3Song *getSong(const QString &pid);
     Mpi3Playlist *getPlaylist(const QString &pid);
     Mpi3Folder *getFolder(const QString &pid);
+
+    QList<Mpi3Folder*> rootFolders();
 
 //public:
 //    Mpi3Song* newSong();
