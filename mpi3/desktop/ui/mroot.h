@@ -13,11 +13,7 @@ class PanelLibrary;
 class PanelPlayback;
 class LibraryModel;
 class SonglistModel;
-
 class Mpi3Library;
-class Mpi3Folder;
-class Mpi3Playlist;
-class Mpi3Song;
 class Mpi3Theme;
 
 
@@ -95,10 +91,10 @@ private slots:
     void objDuplicate();
 
 private:
-//    void dragEnterEvent(QDragEnterEvent *event);
-//    void dragMoveEvent(QDragMoveEvent *event);
-//    void dragLeaveEvent(QDragLeaveEvent *event);
-//    void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dropEvent(QDropEvent *event);
 
     void paintEvent(QPaintEvent *event);
 

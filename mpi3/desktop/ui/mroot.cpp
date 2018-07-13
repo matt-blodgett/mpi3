@@ -21,13 +21,25 @@
 #include <QMenuBar>
 
 
+
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+
+#include <QMimeData>
+#include <QUrl>
+#include <QList>
+
+
+
 #include <QDebug>
 
 
 Mpi3RootDesktop::Mpi3RootDesktop(){}
 Mpi3RootDesktop::~Mpi3RootDesktop(){}
 
-void Mpi3RootDesktop::initialize(){
+void Mpi3RootDesktop::initialize(){    
     initializeObjects();
     initializeSharedActions();
     initializeMainMenu();
@@ -125,7 +137,7 @@ void Mpi3RootDesktop::initialize(){
 
 
 
-
+    setAcceptDrops(true);
     setObjectName("Mpi3RootDesktop");
     setStyleSheet(m_theme->qssStyle);
     resize(800, 600);
@@ -701,9 +713,25 @@ void Mpi3RootDesktop::objMoveTo(){}
 void Mpi3RootDesktop::objRemoveFrom(){}
 void Mpi3RootDesktop::objDuplicate(){}
 
-//void Mpi3RootDesktop::dragEnterEvent(QDragEnterEvent *event){
+void Mpi3RootDesktop::dragEnterEvent(QDragEnterEvent *event){
 
-//}
+//    https://wiki.qt.io/Drag_and_Drop_of_files
+
+
+//    QWidget *child = childAt(event->pos());
+//    qDebug() << child->objectName();
+
+    event->acceptProposedAction();
+}
+void Mpi3RootDesktop::dragMoveEvent(QDragMoveEvent *event){
+    event->acceptProposedAction();
+}
+void Mpi3RootDesktop::dragLeaveEvent(QDragLeaveEvent *event){
+    event->accept();
+}
+void Mpi3RootDesktop::dropEvent(QDropEvent *event){
+    Q_UNUSED(event);
+}
 
 void Mpi3RootDesktop::paintEvent(QPaintEvent *event){
     QStyleOption opt;
