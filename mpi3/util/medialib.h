@@ -113,10 +113,10 @@ public:
 
     QList<Mpi3Folder*> rootFolders();
 
-//public:
-//    Mpi3Song* newSong();
-//    Mpi3Playlist* newPlaylist(Mpi3Folder *parent = nullptr);
-//    Mpi3Folder* newFolder(Mpi3Folder *parent = nullptr);
+public:
+    Mpi3Song* newSong();
+    Mpi3Playlist* newPlaylist(bool named = false);
+    Mpi3Folder* newFolder(bool named = false);
 
 //    void update(Mpi3Song *song);
 //    void update(Mpi3Playlist *playlist);

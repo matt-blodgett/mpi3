@@ -96,18 +96,16 @@ QVariant LibraryModel::headerData(int section, Qt::Orientation orientation, int 
 }
 
 bool LibraryModel::setData(const QModelIndex &index, const QVariant &value, int role){
-    if (role != Qt::EditRole){
-        return false;
+    if (role == Qt::EditRole){
+        LibraryItem *item = getItem(index);
+        bool result = item->setData(index.column(), value);
+
+        if (result){
+            emit dataChanged(index, index);
+        }
+        return result;
     }
-
-    LibraryItem *item = getItem(index);
-    bool result = item->setData(index.column(), value);
-
-    if (result){
-        emit dataChanged(index, index);
-    }
-
-    return result;
+    return false;
 }
 bool LibraryModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role){
     if (role != Qt::EditRole || orientation != Qt::Horizontal){
@@ -353,11 +351,7 @@ void LibraryModel::insertFolder(){
         return;
     }
 
-    Mpi3Folder *folder = new Mpi3Folder(true);
-
-    m_library->libFolders->push_back(folder);
-    folder->name = "New Folder";
-
+    Mpi3Folder *folder = m_library->newFolder(true);
     if(m_currentIndex.isValid()){
         QString pid = getPID(m_currentIndex);
         Mpi3Playlist *currentPlaylist = m_library->getPlaylist(pid);
@@ -378,8 +372,6 @@ void LibraryModel::insertFolder(){
 
     int index = parentFolder ? parentFolder->folders.size() - 1 : m_library->rootFolders().size() - 1;
 
-    qDebug() << index;
-
     insertRows(index, 1, m_currentIndex);
 
     LibraryItem *child = item->child(index);
@@ -395,11 +387,7 @@ void LibraryModel::insertPlaylist(){
         return;
     }
 
-    Mpi3Playlist *playlist = new Mpi3Playlist(true);
-
-    m_library->libPlaylists->push_back(playlist);
-    playlist->name = "New Playlist";
-
+    Mpi3Playlist *playlist = m_library->newPlaylist(true);
     if(m_currentIndex.isValid()){
         QString pid = getPID(m_currentIndex);
         Mpi3Playlist *currentPlaylist = m_library->getPlaylist(pid);

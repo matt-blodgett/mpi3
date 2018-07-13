@@ -235,5 +235,58 @@ QList<Mpi3Folder*> Mpi3Library::rootFolders(){
             folders.append(f);
         }
     }
+
     return folders;
+}
+
+Mpi3Song* Mpi3Library::newSong(){
+    Mpi3Song *song = new Mpi3Song(true);
+    libSongs->push_back(song);
+    return song;
+}
+Mpi3Playlist* Mpi3Library::newPlaylist(bool named){
+    Mpi3Playlist *playlist = new Mpi3Playlist(true);
+
+    if(named){
+
+        QString name = "New Playlist";
+        QString append = "";
+        int duplicates = 1;
+
+        int i = 0;
+        while(i < libPlaylists->size()){
+            Mpi3Playlist *p = libPlaylists->at(i++);
+            if(p->name == name + append){
+                append = " " + QString::number(duplicates++);
+                i = 0;
+            }
+        }
+        playlist->name = name + append;
+    }
+
+    libPlaylists->push_back(playlist);
+    return playlist;
+}
+Mpi3Folder* Mpi3Library::newFolder(bool named){
+    Mpi3Folder *folder = new Mpi3Folder(true);
+
+    if(named){
+
+        QString name = "New Folder";
+        QString append = "";
+        int duplicates = 1;
+
+        int i = 0;
+        while(i < libFolders->size()){
+            Mpi3Folder *f = libFolders->at(i++);
+            if(f->name == name + append){
+                append = " " + QString::number(duplicates++);
+                i = 0;
+            }
+        }
+        folder->name = name + append;
+    }
+
+    libFolders->push_back(folder);
+    return folder;
 }
