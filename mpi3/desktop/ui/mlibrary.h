@@ -10,6 +10,8 @@ class QSplitter;
 class QLabel;
 QT_END_NAMESPACE
 
+class SonglistTreeview;
+
 
 class PanelLibrary : public QWidget
 {
@@ -31,8 +33,8 @@ public:
     void setDisplay(const QString &title);
 
 private:
-    QTreeView *tree_library = nullptr;
-    QTreeView *tree_playlists = nullptr;
+    SonglistTreeview *tree_songlist = nullptr;
+    QTreeView *tree_containers = nullptr;
 
     QSplitter *frm_library = nullptr;
     QWidget *frm_views = nullptr;

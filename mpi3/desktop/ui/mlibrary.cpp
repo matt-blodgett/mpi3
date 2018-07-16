@@ -1,5 +1,7 @@
 #include "mlibrary.h"
 
+#include "mtreeviews.h"
+
 #include <QGridLayout>
 #include <QStyleOption>
 #include <QPainter>
@@ -27,7 +29,7 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     btn_songs = new QRadioButton(this);
     btn_artists = new QRadioButton(this);
     lbl_playlist = new QLabel(this);
-    tree_playlists = new QTreeView(this);
+    tree_containers = new QTreeView(this);
 
     btn_songs->setText("Songs");
     btn_artists->setText("Artists");
@@ -35,12 +37,12 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
 
     connect(btn_songs, &QRadioButton::released, this, [this](){changeView(PanelLibrary::ViewLibrary);});
     connect(btn_artists, &QPushButton::released, this, [this](){changeView(PanelLibrary::ViewArtists);});
-    connect(tree_playlists, &QTreeView::clicked, this, &PanelLibrary::playlistClicked);
+    connect(tree_containers, &QTreeView::clicked, this, &PanelLibrary::playlistClicked);
 
     layoutViews->addWidget(btn_songs, 0, 0, 1, 1);
     layoutViews->addWidget(btn_artists, 1, 0, 1, 1);
     layoutViews->addWidget(lbl_playlist, 2, 0, 1, 1);
-    layoutViews->addWidget(tree_playlists, 3, 0, 1, 1);
+    layoutViews->addWidget(tree_containers, 3, 0, 1, 1);
 
     layoutViews->setRowStretch(3, 1);
 
@@ -54,17 +56,17 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     QGridLayout *layoutTrees = new QGridLayout;
 
     lbl_view = new QLabel(this);
-    tree_library = new QTreeView(this);
+    tree_songlist = new SonglistTreeview(this);
     QSpacerItem *s = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    tree_library->setAlternatingRowColors(true);
-    tree_library->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    tree_library->setIndentation(12);
-    tree_playlists->setIndentation(12);
+    tree_songlist->setAlternatingRowColors(true);
+    tree_songlist->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    tree_songlist->setIndentation(12);
+    tree_containers->setIndentation(12);
 
     layoutTrees->addItem(s, 0, 0, 1, 1);
     layoutTrees->addWidget(lbl_view, 0, 1, 1, 1);
-    layoutTrees->addWidget(tree_library, 1, 0, 1, 2);
+    layoutTrees->addWidget(tree_songlist, 1, 0, 1, 2);
     layoutTrees->setRowStretch(1, 1);
     layoutTrees->setColumnStretch(1, 1);
     layoutTrees->setRowMinimumHeight(0, 60);
@@ -101,10 +103,10 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     frm_trees->setObjectName("PanelTrees");
     lbl_view->setObjectName("PanelTreesTitle");
     lbl_playlist->setObjectName("PanelViewsLabel");
-    tree_library->setObjectName("LibraryTreeview");
-    tree_playlists->setObjectName("PlaylistsTreeview");
-    tree_library->header()->setObjectName("LibraryTreeviewHeader");
-    tree_playlists->header()->setObjectName("PlaylistsTreeviewHeader");
+    tree_songlist->setObjectName("LibraryTreeview");
+    tree_containers->setObjectName("PlaylistsTreeview");
+    tree_songlist->header()->setObjectName("LibraryTreeviewHeader");
+    tree_containers->header()->setObjectName("PlaylistsTreeviewHeader");
 }
 PanelLibrary::~PanelLibrary(){}
 
@@ -121,11 +123,11 @@ void PanelLibrary::changeView(PanelLibrary::View view){
     switch(m_currentView){
 
         case PanelLibrary::ViewLibrary:
-            tree_playlists->clearSelection();
+            tree_containers->clearSelection();
             break;
 
         case PanelLibrary::ViewArtists:
-            tree_playlists->clearSelection();
+            tree_containers->clearSelection();
             break;
 
         case PanelLibrary::ViewPlaylist:

@@ -128,6 +128,7 @@ void Mpi3RootDesktop::initialize(){
 
 
 
+
 //    qDebug() << QDir::currentPath();
 //    QString qssPath = QDir::currentPath() + "/qss/default.qss";
     m_theme->load(":/desktop/qss/default.qss");
@@ -714,20 +715,29 @@ void Mpi3RootDesktop::objRemoveFrom(){}
 void Mpi3RootDesktop::objDuplicate(){}
 
 void Mpi3RootDesktop::dragEnterEvent(QDragEnterEvent *event){
-
+    Q_UNUSED(event);
 //    https://wiki.qt.io/Drag_and_Drop_of_files
 
-
+//    QWidget *tree = childAt(event->pos());
+//    if(tree == tree_songlist){
+//        qDebug() << "tree";
+//    }
 //    QWidget *child = childAt(event->pos());
 //    qDebug() << child->objectName();
 
-    event->acceptProposedAction();
+//    event->acceptProposedAction();
 }
 void Mpi3RootDesktop::dragMoveEvent(QDragMoveEvent *event){
-    event->acceptProposedAction();
+    Q_UNUSED(event);
+//    if(tree == tree_songlist){
+//        qDebug() << "tree";
+//    }
+
+//    event->acceptProposedAction();
 }
 void Mpi3RootDesktop::dragLeaveEvent(QDragLeaveEvent *event){
-    event->accept();
+    Q_UNUSED(event);
+//    event->accept();
 }
 void Mpi3RootDesktop::dropEvent(QDropEvent *event){
     Q_UNUSED(event);

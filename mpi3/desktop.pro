@@ -18,6 +18,7 @@ HEADERS += desktop/ui/mlibitem.h
 HEADERS += desktop/ui/mlibmodel.h
 HEADERS += desktop/ui/mlibrary.h
 HEADERS += desktop/ui/mplayback.h
+HEADERS += desktop/ui/mtreeviews.h
 
 SOURCES += desktop/main.cpp
 SOURCES += desktop/ui/mroot.cpp
@@ -25,6 +26,7 @@ SOURCES += desktop/ui/mlibitem.cpp
 SOURCES += desktop/ui/mlibmodel.cpp
 SOURCES += desktop/ui/mlibrary.cpp
 SOURCES += desktop/ui/mplayback.cpp
+SOURCES += desktop/ui/mtreeviews.cpp
 
 HEADERS += util/mtheme.h
 SOURCES += util/mtheme.cpp
