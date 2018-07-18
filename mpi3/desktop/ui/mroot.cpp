@@ -2,6 +2,7 @@
 #include "mplayback.h"
 #include "mlibrary.h"
 #include "mlibmodel.h"
+#include "mtreeviews.h"
 
 #include "util/mtheme.h"
 #include "util/medialib.h"
@@ -17,20 +18,7 @@
 #include <QDir>
 
 #include <QHeaderView>
-#include <QTreeView>
 #include <QMenuBar>
-
-
-
-#include <QDragEnterEvent>
-#include <QDragLeaveEvent>
-#include <QDragMoveEvent>
-#include <QDropEvent>
-
-#include <QMimeData>
-#include <QUrl>
-#include <QList>
-
 
 
 #include <QDebug>
@@ -91,40 +79,17 @@ void Mpi3RootDesktop::initialize(){
 
 
 
-
-
-
-
-
-
-
-
-
     tree_songlist->setModel(m_modelSonglist);
-    tree_songlist->setRootIsDecorated(false);
-
-
-
     tree_containers->setModel(m_modelContainers);
-    tree_containers->setRootIsDecorated(true);
     m_modelContainers->setLibrary(m_library);
-
-    tree_containers->setHeaderHidden(true);
     tree_containers->expandAll();
-
-    tree_containers->setContextMenuPolicy(Qt::CustomContextMenu);
-    tree_songlist->setContextMenuPolicy(Qt::CustomContextMenu);
-    tree_songlist->header()->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(tree_containers, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::playlistContextMenu);
     connect(tree_songlist, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::libraryContextMenu);
     connect(tree_songlist->header(), &QHeaderView::customContextMenuRequested, this, &Mpi3RootDesktop::headerContextMenu);
 
-
     connect(tree_containers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
     connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
-
-
 
 
 
@@ -135,10 +100,6 @@ void Mpi3RootDesktop::initialize(){
 
 
 
-
-
-
-    setAcceptDrops(true);
     setObjectName("Mpi3RootDesktop");
     setStyleSheet(m_theme->qssStyle);
     resize(800, 600);
@@ -149,11 +110,11 @@ void Mpi3RootDesktop::initializeObjects(){
     m_libview = new PanelLibrary(this);
     m_playback = new PanelPlayback(this);
 
-    tree_songlist = findChild<QTreeView*>("LibraryTreeview");
-    tree_containers = findChild<QTreeView*>("PlaylistsTreeview");
+    tree_containers = findChild<LibraryTreeview*>("PlaylistsTreeview");
+    tree_songlist = findChild<SonglistTreeview*>("LibraryTreeview");
 
-    m_modelSonglist = new SonglistModel();
     m_modelContainers = new LibraryModel();
+    m_modelSonglist = new SonglistModel();
     m_audio = new QMediaPlayer(this);
 
     m_library = new Mpi3Library(true);
@@ -713,35 +674,6 @@ void Mpi3RootDesktop::objAddTo(){}
 void Mpi3RootDesktop::objMoveTo(){}
 void Mpi3RootDesktop::objRemoveFrom(){}
 void Mpi3RootDesktop::objDuplicate(){}
-
-void Mpi3RootDesktop::dragEnterEvent(QDragEnterEvent *event){
-    Q_UNUSED(event);
-//    https://wiki.qt.io/Drag_and_Drop_of_files
-
-//    QWidget *tree = childAt(event->pos());
-//    if(tree == tree_songlist){
-//        qDebug() << "tree";
-//    }
-//    QWidget *child = childAt(event->pos());
-//    qDebug() << child->objectName();
-
-//    event->acceptProposedAction();
-}
-void Mpi3RootDesktop::dragMoveEvent(QDragMoveEvent *event){
-    Q_UNUSED(event);
-//    if(tree == tree_songlist){
-//        qDebug() << "tree";
-//    }
-
-//    event->acceptProposedAction();
-}
-void Mpi3RootDesktop::dragLeaveEvent(QDragLeaveEvent *event){
-    Q_UNUSED(event);
-//    event->accept();
-}
-void Mpi3RootDesktop::dropEvent(QDropEvent *event){
-    Q_UNUSED(event);
-}
 
 void Mpi3RootDesktop::paintEvent(QPaintEvent *event){
     QStyleOption opt;

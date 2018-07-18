@@ -6,13 +6,14 @@
 QT_BEGIN_NAMESPACE
 class QMediaPlayer;
 class QTreeView;
-class QItemSelection;
 QT_END_NAMESPACE
 
 class PanelLibrary;
 class PanelPlayback;
 class LibraryModel;
 class SonglistModel;
+class LibraryTreeview;
+class SonglistTreeview;
 class Mpi3Library;
 class Mpi3Theme;
 
@@ -36,11 +37,11 @@ private:
     PanelLibrary *m_libview = nullptr;
     PanelPlayback *m_playback = nullptr;
 
-    QTreeView *tree_songlist = nullptr;
-    QTreeView *tree_containers = nullptr;
+    LibraryTreeview *tree_containers = nullptr;
+    SonglistTreeview *tree_songlist = nullptr;
 
-    SonglistModel *m_modelSonglist = nullptr;
     LibraryModel *m_modelContainers = nullptr;
+    SonglistModel *m_modelSonglist = nullptr;
     QMediaPlayer *m_audio = nullptr;
 
     Mpi3Library *m_library = nullptr;
@@ -91,11 +92,6 @@ private slots:
     void objDuplicate();
 
 private:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
-    void dragLeaveEvent(QDragLeaveEvent *event);
-    void dropEvent(QDropEvent *event);
-
     void paintEvent(QPaintEvent *event);
 
 };

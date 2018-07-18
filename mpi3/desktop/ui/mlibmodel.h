@@ -23,6 +23,13 @@ public:
 
 public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
+    Qt::DropActions supportedDragActions() const override;
+    Qt::DropActions supportedDropActions() const override;
+
+//    bool match(const QModelIndex &start, int role, const QVariant &value, int hits, Qt::MatchFlags flags) const override;
+
+//    QStringList mimeTypes() const override;
+//    QMimeData mimeData(const QModelIndexList &indexes) const override;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -84,6 +91,16 @@ public:
 
 public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
+    Qt::DropActions supportedDragActions() const override;
+    Qt::DropActions supportedDropActions() const override;
+
+    //    bool match(const QModelIndex &start, int role, const QVariant &value, int hits, Qt::MatchFlags flags) const override;
+
+    //    QStringList mimeTypes() const override;
+    //    QMimeData mimeData(const QModelIndexList &indexes) const override;
+
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;

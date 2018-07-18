@@ -2,6 +2,7 @@
 #include "mlibitem.h"
 #include "util/medialib.h"
 
+#include <QMimeData>
 #include <QPixmap>
 //#include <QFont>
 
@@ -26,12 +27,28 @@ LibraryModel::~LibraryModel(){
 }
 
 Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const{
-    if (!index.isValid()){
-        return 0;
+    if (index.isValid()){
+        return Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
     }
 
-    return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    return 0;
 }
+Qt::DropActions LibraryModel::supportedDragActions() const{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+Qt::DropActions LibraryModel::supportedDropActions() const{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+//QStringList LibraryModel::mimeTypes() const {
+//    QStringList mTypes;
+//    mTypes << "audio/x-wav" << "audio/mpeg" << "audio/mp4";
+//    return mTypes;
+//}
+
+//QMimeData LibraryModel::mimeData(const QModelIndexList &indexes) const{
+
+//}
 
 int LibraryModel::rowCount(const QModelIndex &parent) const{
     LibraryItem *parentItem = getItem(parent);
@@ -318,12 +335,11 @@ SonglistModel::SonglistModel(QObject *parent) : QAbstractItemModel(parent){
     for(int i = 0; i < this->columnCount(); i++){
         columnVisibility[i] = false;
     }
-}
 
+}
 SonglistModel::~SonglistModel(){
 
 }
-
 
 Qt::ItemFlags SonglistModel::flags(const QModelIndex &index) const{
     if (!index.isValid()){
@@ -332,6 +348,52 @@ Qt::ItemFlags SonglistModel::flags(const QModelIndex &index) const{
 
     return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
+Qt::DropActions SonglistModel::supportedDragActions() const{
+    return Qt::CopyAction;
+}
+Qt::DropActions SonglistModel::supportedDropActions() const{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+bool SonglistModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const{
+    Q_UNUSED(data);
+    Q_UNUSED(action);
+    Q_UNUSED(row);
+    Q_UNUSED(column);
+    Q_UNUSED(parent);
+
+    return true;
+}
+bool SonglistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent){
+    Q_UNUSED(data);
+    Q_UNUSED(action);
+    Q_UNUSED(row);
+    Q_UNUSED(column);
+    Q_UNUSED(parent);
+
+    if(action == Qt::IgnoreAction){
+        return true;
+    }
+
+    if(column > 0){
+        return false;
+    }
+
+    qDebug() << data->hasUrls();
+
+    return false;
+}
+
+//QStringList SonglistModel::mimeTypes() const {
+//    QStringList mTypes;
+////    mTypes << "audio/x-wav" << "audio/mpeg" << "audio/mp4";
+//    mTypes << "application/vnd.text.list";
+//    return mTypes;
+//}
+
+//QMimeData SonglistModel::mimeData(const QModelIndexList &indexes) const{
+
+//}
 
 int SonglistModel::rowCount(const QModelIndex &) const{
     return m_songlist.count();
@@ -375,8 +437,6 @@ QVariant SonglistModel::headerData(int section, Qt::Orientation orientation, int
     }
     return QVariant();
 }
-
-
 
 bool SonglistModel::setData(const QModelIndex &index, const QVariant &value, int role){
     if (role == Qt::EditRole){
