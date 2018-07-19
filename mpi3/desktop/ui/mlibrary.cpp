@@ -33,6 +33,8 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     tree_songlist = new SonglistTreeview(this);
     tree_containers = new LibraryTreeview(this);
 
+
+
     btn_songs->setText("Songs");
     btn_artists->setText("Artists");
     lbl_playlist->setText("Playlists");
@@ -58,8 +60,8 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
 
     frm_views->setLayout(layoutViews);
 
-    QGridLayout *layoutTrees = new QGridLayout;
 
+    QGridLayout *layoutTrees = new QGridLayout;
     QSpacerItem *s = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
     layoutTrees->addItem(s, 0, 0, 1, 1);
     layoutTrees->addWidget(lbl_view, 0, 1, 1, 1);
@@ -80,6 +82,7 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
 
     frm_library->setChildrenCollapsible(false);
 
+
     QGridLayout *layoutMain = new QGridLayout;
     layoutMain->addWidget(frm_library);
     layoutMain->setColumnStretch(0, 1);
@@ -87,12 +90,38 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     layoutMain->setMargin(0);
     layoutMain->setHorizontalSpacing(0);
     layoutMain->setVerticalSpacing(0);
-
     setLayout(layoutMain);
+
 
     changeView(PanelLibrary::ViewLibrary);
     setDisplay("Library");
     btn_songs->toggle();
+
+
+//    tree_containers->setContextMenuPolicy(Qt::CustomContextMenu);
+//    tree_containers->setSelectionMode(QAbstractItemView::SingleSelection);
+//    tree_containers->viewport()->setAcceptDrops(true);
+//    tree_containers->setDragDropMode(QAbstractItemView::DragDrop);
+//    tree_containers->setAcceptDrops(true);
+//    tree_containers->setDragEnabled(true);
+//    tree_containers->setDropIndicatorShown(true);
+//    tree_containers->setRootIsDecorated(true);
+//    tree_containers->setHeaderHidden(true);
+//    tree_containers->setIndentation(12);
+
+//    tree_songlist->setContextMenuPolicy(Qt::CustomContextMenu);
+//    tree_songlist->header()->setContextMenuPolicy(Qt::CustomContextMenu);
+//    tree_songlist->setSelectionMode(QAbstractItemView::ExtendedSelection);
+//    tree_songlist->viewport()->setAcceptDrops(true);
+//    tree_songlist->setDragDropMode(QAbstractItemView::DragDrop);
+//    tree_songlist->setAcceptDrops(true);
+//    tree_songlist->setDragEnabled(true);
+//    tree_songlist->setDropIndicatorShown(true);
+//    tree_songlist->setAlternatingRowColors(true);
+//    tree_songlist->setRootIsDecorated(false);
+//    tree_songlist->setIndentation(12);
+//    tree_songlist->setSelectionBehavior(QAbstractItemView::SelectRows);
+
 
     btn_songs->setObjectName("PanelViewsButton");
     btn_artists->setObjectName("PanelViewsButton");

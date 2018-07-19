@@ -5,6 +5,12 @@
 #include <QScopedPointer>
 #include <QIcon>
 #include <QMap>
+#include <QVector>
+#include <QUrl>
+
+QT_BEGIN_NAMESPACE
+class QMimeData;
+QT_END_NAMESPACE
 
 class LibraryItem;
 class Mpi3Library;
@@ -28,8 +34,8 @@ public:
 
 //    bool match(const QModelIndex &start, int role, const QVariant &value, int hits, Qt::MatchFlags flags) const override;
 
-//    QStringList mimeTypes() const override;
-//    QMimeData mimeData(const QModelIndexList &indexes) const override;
+    QStringList mimeTypes() const override;
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -94,13 +100,10 @@ public:
     Qt::DropActions supportedDragActions() const override;
     Qt::DropActions supportedDropActions() const override;
 
-    //    bool match(const QModelIndex &start, int role, const QVariant &value, int hits, Qt::MatchFlags flags) const override;
+//    bool match(const QModelIndex &start, int role, const QVariant &value, int hits, Qt::MatchFlags flags) const override;
 
-    //    QStringList mimeTypes() const override;
-    //    QMimeData mimeData(const QModelIndexList &indexes) const override;
-
-    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
-    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    QStringList mimeTypes() const override;
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -122,10 +125,21 @@ public:
 
 public:
     QMap<int, bool> columnVisibility;
+    Mpi3Library *library() const;
+    void setLibrary(Mpi3Library *library);
+
+    QString getPID(const QModelIndex &index) const;
+
+    void setSonglist(QVector<Mpi3Song*> songlist);
+
 
 private:
-    QList<Mpi3Song*> m_songlist;
-    QList<QString> m_headers;
+    QScopedPointer<Mpi3Library> m_library;
+    QVector<Mpi3Song*> m_songlist;
+    QStringList m_headers;
+
+public slots:
+    void dropExternalFiles(QModelIndex index, QList<QUrl> urls);
 
 };
 

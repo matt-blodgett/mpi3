@@ -82,6 +82,8 @@ void Mpi3RootDesktop::initialize(){
     tree_songlist->setModel(m_modelSonglist);
     tree_containers->setModel(m_modelContainers);
     m_modelContainers->setLibrary(m_library);
+    m_modelSonglist->setLibrary(m_library);
+
     tree_containers->expandAll();
 
     connect(tree_containers, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::playlistContextMenu);
@@ -90,6 +92,9 @@ void Mpi3RootDesktop::initialize(){
 
     connect(tree_containers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
     connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
+
+
+    connect(tree_songlist, &SonglistTreeview::filesDropped, m_modelSonglist, &SonglistModel::dropExternalFiles);
 
 
 
@@ -568,7 +573,7 @@ void Mpi3RootDesktop::libraryViewChanged(){
 
             if(playlist){
                 m_libview->setDisplay(playlist->name);
-//                m_modelSonglist->viewPlaylist(playlist);
+                m_modelSonglist->setSonglist(playlist->songs);
             }
 
             break;

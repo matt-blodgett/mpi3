@@ -1,6 +1,9 @@
 #ifndef MTREEVIEWS_H
 #define MTREEVIEWS_H
 
+#include <QList>
+#include <QUrl>
+
 #include <QTreeView>
 
 
@@ -13,10 +16,11 @@ public:
     ~LibraryTreeview();
 
 signals:
-    void filesDropped(QStringList droppedFiles);
+    void filesDropped(QModelIndex index, QList<QUrl> m_urls);
 
 private:
-    QStringList paths;
+    QList<QUrl> m_urls;
+    QStringList m_pids;
 
 private:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -35,11 +39,12 @@ public:
     explicit SonglistTreeview(QWidget *parent = nullptr);
     ~SonglistTreeview();
 
-private:
-    QStringList paths;
-
 signals:
-    void filesDropped(QStringList droppedFiles);
+    void filesDropped(QModelIndex index, QList<QUrl> m_urls);
+
+private:
+    QList<QUrl> m_urls;
+    QStringList m_pids;
 
 private:
     void dragEnterEvent(QDragEnterEvent *event);

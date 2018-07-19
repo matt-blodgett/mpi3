@@ -8,8 +8,12 @@
 #include <QDropEvent>
 
 #include <QMimeData>
-#include <QUrl>
 #include <QList>
+#include <QUrl>
+
+#include <QItemSelection>
+
+#include <QDebug>
 
 
 LibraryTreeview::LibraryTreeview(QWidget *parent) : QTreeView(parent){
@@ -17,9 +21,11 @@ LibraryTreeview::LibraryTreeview(QWidget *parent) : QTreeView(parent){
     setSelectionMode(QAbstractItemView::SingleSelection);
 
     viewport()->setAcceptDrops(true);
-    setDragDropMode(QAbstractItemView::InternalMove);
+    setDragDropMode(QAbstractItemView::DragDrop);
+
     setAcceptDrops(true);
     setDragEnabled(true);
+
     setDropIndicatorShown(true);
 
     setRootIsDecorated(true);
@@ -31,35 +37,42 @@ LibraryTreeview::~LibraryTreeview(){}
 void LibraryTreeview::dragEnterEvent(QDragEnterEvent *event){
     const QMimeData *mimeData = event->mimeData();
 
+    if(event->source()){
+        qDebug() << "source";
+    }
+
     if(mimeData->hasUrls()){
-//        QStringList paths;
         QList<QUrl> urls = mimeData->urls();
 
         for(int i = 0; i < urls.size(); i++){
             QString path = urls.at(i).toLocalFile();
             if(path.endsWith(".wav") || path.endsWith(".mp3")){
-                paths.append(path);
+                m_urls.append(QUrl(path));
             }
         }
 
-        if(paths.size() == urls.size()){
+        if(m_urls.size() == urls.size()){
             event->acceptProposedAction();
         }
+    }
+    else if(mimeData->hasText()) {
+        qDebug() << mimeData->text();
+        event->acceptProposedAction();
     }
 }
 void LibraryTreeview::dragMoveEvent(QDragMoveEvent *event){
     QModelIndex index = indexAt(event->pos());
-    selectionModel()->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
+    selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     event->acceptProposedAction();
 }
 void LibraryTreeview::dragLeaveEvent(QDragLeaveEvent *event){
-    paths.clear();
+    m_urls.clear();
     event->accept();
 }
 void LibraryTreeview::dropEvent(QDropEvent *event){
-    Q_UNUSED(event);
-    emit filesDropped(paths);
-    paths.clear();
+    QModelIndex index = indexAt(event->pos());
+    emit filesDropped(index, m_urls);
+    m_urls.clear();
 }
 
 
@@ -69,7 +82,7 @@ SonglistTreeview::SonglistTreeview(QWidget *parent) : QTreeView(parent){
     setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     viewport()->setAcceptDrops(true);
-    setDragDropMode(QAbstractItemView::InternalMove);
+    setDragDropMode(QAbstractItemView::DragDrop);
     setAcceptDrops(true);
     setDragEnabled(true);
     setDropIndicatorShown(true);
@@ -77,6 +90,8 @@ SonglistTreeview::SonglistTreeview(QWidget *parent) : QTreeView(parent){
     setAlternatingRowColors(true);
     setRootIsDecorated(false);
     setIndentation(12);
+
+    setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 SonglistTreeview::~SonglistTreeview(){}
 
@@ -90,25 +105,31 @@ void SonglistTreeview::dragEnterEvent(QDragEnterEvent *event){
         for(int i = 0; i < urls.size(); i++){
             QString path = urls.at(i).toLocalFile();
             if(path.endsWith(".wav") || path.endsWith(".mp3")){
-                paths.append(path);
+                m_urls.append(path);
             }
         }
 
-        if(paths.size() == urls.size()){
+        if(m_urls.size() == urls.size()){
             event->acceptProposedAction();
         }
     }
+    else if(mimeData->hasText()) {
+        qDebug() << mimeData->text();
+        event->acceptProposedAction();
+    }
 }
 void SonglistTreeview::dragMoveEvent(QDragMoveEvent *event){
+    QModelIndex index = indexAt(event->pos());
 
+    selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     event->acceptProposedAction();
 }
 void SonglistTreeview::dragLeaveEvent(QDragLeaveEvent *event){
-    paths.clear();
+    m_urls.clear();
     event->accept();
 }
 void SonglistTreeview::dropEvent(QDropEvent *event){
-    Q_UNUSED(event);
-    emit filesDropped(paths);
-    paths.clear();
+    QModelIndex index = indexAt(event->pos());
+    emit filesDropped(index, m_urls);
+    m_urls.clear();
 }

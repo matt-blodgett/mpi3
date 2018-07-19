@@ -5,7 +5,7 @@
 #include <QMimeData>
 #include <QPixmap>
 //#include <QFont>
-
+#include <QUrl>
 
 #include <QDebug>
 
@@ -28,10 +28,20 @@ LibraryModel::~LibraryModel(){
 
 Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const{
     if (index.isValid()){
-        return Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
+        Mpi3Folder *folder = m_library->getFolder(getPID(index));
+        if(folder){
+            return Qt::ItemIsEditable
+                    | Qt::ItemIsDragEnabled
+                    | Qt::ItemIsDropEnabled
+                    | QAbstractItemModel::flags(index);
+        }
+        else {
+            return Qt::ItemIsEditable
+                    | Qt::ItemIsDragEnabled
+                    | QAbstractItemModel::flags(index);
+        }
     }
-
-    return 0;
+    return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
 }
 Qt::DropActions LibraryModel::supportedDragActions() const{
     return Qt::CopyAction | Qt::MoveAction;
@@ -40,15 +50,19 @@ Qt::DropActions LibraryModel::supportedDropActions() const{
     return Qt::CopyAction | Qt::MoveAction;
 }
 
-//QStringList LibraryModel::mimeTypes() const {
-//    QStringList mTypes;
-//    mTypes << "audio/x-wav" << "audio/mpeg" << "audio/mp4";
-//    return mTypes;
-//}
-
-//QMimeData LibraryModel::mimeData(const QModelIndexList &indexes) const{
-
-//}
+QStringList LibraryModel::mimeTypes() const {
+    QStringList mTypes;
+    mTypes << "text/plain";
+    return mTypes;
+}
+QMimeData* LibraryModel::mimeData(const QModelIndexList &indexes) const{
+    QMimeData *mimeData = new QMimeData();
+    if(indexes.size() == 1){
+        QString pid = getPID(indexes.at(0));
+        mimeData->setText(pid);
+    }
+    return mimeData;
+}
 
 int LibraryModel::rowCount(const QModelIndex &parent) const{
     LibraryItem *parentItem = getItem(parent);
@@ -342,58 +356,38 @@ SonglistModel::~SonglistModel(){
 }
 
 Qt::ItemFlags SonglistModel::flags(const QModelIndex &index) const{
-    if (!index.isValid()){
-        return 0;
+    if (index.isValid()){
+        return Qt::ItemIsEditable
+                | Qt::ItemIsDragEnabled
+                | Qt::ItemIsDropEnabled
+                | QAbstractItemModel::flags(index);
     }
-
-    return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
 }
 Qt::DropActions SonglistModel::supportedDragActions() const{
-    return Qt::CopyAction;
+    return Qt::CopyAction | Qt::MoveAction;
 }
 Qt::DropActions SonglistModel::supportedDropActions() const{
     return Qt::CopyAction | Qt::MoveAction;
 }
 
-bool SonglistModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const{
-    Q_UNUSED(data);
-    Q_UNUSED(action);
-    Q_UNUSED(row);
-    Q_UNUSED(column);
-    Q_UNUSED(parent);
-
-    return true;
+QStringList SonglistModel::mimeTypes() const {
+    QStringList mTypes;
+    mTypes << "text/plain";
+    return mTypes;
 }
-bool SonglistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent){
-    Q_UNUSED(data);
-    Q_UNUSED(action);
-    Q_UNUSED(row);
-    Q_UNUSED(column);
-    Q_UNUSED(parent);
+QMimeData* SonglistModel::mimeData(const QModelIndexList &indexes) const{
+    QMimeData *mimeData = new QMimeData();
 
-    if(action == Qt::IgnoreAction){
-        return true;
+    QString pids;
+    for(int i = 0; i < indexes.size(); i++){
+        QModelIndex index = indexes.at(i);
+        pids += ";" + getPID(index);
     }
 
-    if(column > 0){
-        return false;
-    }
-
-    qDebug() << data->hasUrls();
-
-    return false;
+    mimeData->setText(pids);
+    return mimeData;
 }
-
-//QStringList SonglistModel::mimeTypes() const {
-//    QStringList mTypes;
-////    mTypes << "audio/x-wav" << "audio/mpeg" << "audio/mp4";
-//    mTypes << "application/vnd.text.list";
-//    return mTypes;
-//}
-
-//QMimeData SonglistModel::mimeData(const QModelIndexList &indexes) const{
-
-//}
 
 int SonglistModel::rowCount(const QModelIndex &) const{
     return m_songlist.count();
@@ -403,10 +397,8 @@ int SonglistModel::columnCount(const QModelIndex &) const{
 }
 
 QModelIndex SonglistModel::index(int row, int column, const QModelIndex &parent) const{
-    Q_UNUSED(row);
-    Q_UNUSED(column);
     Q_UNUSED(parent);
-    return QModelIndex();
+    return createIndex(row, column);
 }
 QModelIndex SonglistModel::parent(const QModelIndex &index) const{
     Q_UNUSED(index);
@@ -425,8 +417,11 @@ QVariant SonglistModel::data(const QModelIndex &index, int role) const{
 
     if (role == Qt::DisplayRole || role == Qt::EditRole){
         Mpi3Song *song = m_songlist.at(index.row());
-        return song->name;
-//        return m_songlist.at(index.row());
+        switch(index.column()){
+            case 0: return song->name;
+            case 1: return song->artist;
+            case 2: return song->path;
+        }
     }
 
     return QVariant();
@@ -465,7 +460,6 @@ bool SonglistModel::insertRows(int position, int count, const QModelIndex &paren
     if(count > 0){
 
         beginInsertRows(parent, position, position + count - 1);
-//        bool success = parentItem->insertChildren(position, count, rootItem->columnCount());
         endInsertRows();
 
         return true;
@@ -475,7 +469,6 @@ bool SonglistModel::insertRows(int position, int count, const QModelIndex &paren
 bool SonglistModel::insertColumns(int position, int count, const QModelIndex &parent){
     if(count > 0){
         beginInsertColumns(parent, position, position + count - 1);
-//        bool success = rootItem->insertColumns(position, count);
         endInsertColumns();
 
         return true;
@@ -511,7 +504,33 @@ bool SonglistModel::removeColumns(int position, int count, const QModelIndex &pa
     return false;
 }
 
+Mpi3Library *SonglistModel::library() const{
+    return m_library.data();
+}
+void SonglistModel::setLibrary(Mpi3Library *library){
+    m_library.take();
+    m_library.reset(library);
+}
 
+QString SonglistModel::getPID(const QModelIndex &index) const{
+    return m_songlist.at(index.row())->pid;
+}
+
+void SonglistModel::setSonglist(QVector<Mpi3Song*> songlist){
+    m_songlist = songlist;
+}
+
+void SonglistModel::dropExternalFiles(QModelIndex index, QList<QUrl> urls){
+    int position = index.row() == -1 ? 0 : index.row();
+    insertRows(position, urls.size());
+
+    for(int i = 0; i < urls.size(); i++){
+        Mpi3Song *song = m_library->newSong();
+        song->name = urls.at(i).fileName();
+        song->path = urls.at(i).toString();
+        m_songlist.insert(i + position, song);
+    }
+}
 
 
 
