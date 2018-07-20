@@ -44,7 +44,7 @@ Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const{
     return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
 }
 Qt::DropActions LibraryModel::supportedDragActions() const{
-    return Qt::CopyAction | Qt::MoveAction;
+    return Qt::MoveAction;
 }
 Qt::DropActions LibraryModel::supportedDropActions() const{
     return Qt::CopyAction | Qt::MoveAction;
@@ -356,7 +356,7 @@ SonglistModel::~SonglistModel(){
 }
 
 Qt::ItemFlags SonglistModel::flags(const QModelIndex &index) const{
-    if (index.isValid()){
+    if(index.isValid()){
         return Qt::ItemIsEditable
                 | Qt::ItemIsDragEnabled
                 | Qt::ItemIsDropEnabled
@@ -365,7 +365,7 @@ Qt::ItemFlags SonglistModel::flags(const QModelIndex &index) const{
     return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
 }
 Qt::DropActions SonglistModel::supportedDragActions() const{
-    return Qt::CopyAction | Qt::MoveAction;
+    return Qt::CopyAction;
 }
 Qt::DropActions SonglistModel::supportedDropActions() const{
     return Qt::CopyAction | Qt::MoveAction;
@@ -531,7 +531,6 @@ void SonglistModel::dropExternalFiles(QModelIndex index, QList<QUrl> urls){
         m_songlist.insert(i + position, song);
     }
 }
-
 
 
 

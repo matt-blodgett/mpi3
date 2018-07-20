@@ -52,6 +52,9 @@ private:
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
 
+//private:
+//    void startDrag(Qt::DropActions supportedActions);
+
 };
 
 

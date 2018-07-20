@@ -25,7 +25,7 @@ class LibraryModel : public QAbstractItemModel
 
 public:
     explicit LibraryModel(QObject *parent = nullptr);
-    ~LibraryModel();
+    ~LibraryModel() override;
 
 public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
@@ -93,7 +93,7 @@ class SonglistModel : public QAbstractItemModel
 
 public:
     explicit SonglistModel(QObject *parent = nullptr);
-    ~SonglistModel();
+    ~SonglistModel() override;
 
 public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;

@@ -12,6 +12,8 @@
 #include <QUrl>
 
 #include <QItemSelection>
+//#include <QDrag>
+
 
 #include <QDebug>
 
@@ -35,11 +37,15 @@ LibraryTreeview::LibraryTreeview(QWidget *parent) : QTreeView(parent){
 LibraryTreeview::~LibraryTreeview(){}
 
 void LibraryTreeview::dragEnterEvent(QDragEnterEvent *event){
+    m_urls.clear();
+
     const QMimeData *mimeData = event->mimeData();
 
-    if(event->source()){
-        qDebug() << "source";
-    }
+//    if(event->source()){
+//        if(event->source() != this){
+//            event->setDropAction(Qt::CopyAction);
+//        }
+//    }
 
     if(mimeData->hasUrls()){
         QList<QUrl> urls = mimeData->urls();
@@ -56,7 +62,7 @@ void LibraryTreeview::dragEnterEvent(QDragEnterEvent *event){
         }
     }
     else if(mimeData->hasText()) {
-        qDebug() << mimeData->text();
+//        qDebug() << mimeData->text();
         event->acceptProposedAction();
     }
 }
@@ -83,9 +89,13 @@ SonglistTreeview::SonglistTreeview(QWidget *parent) : QTreeView(parent){
 
     viewport()->setAcceptDrops(true);
     setDragDropMode(QAbstractItemView::DragDrop);
+//    setDragDropMode(QAbstractItemView::InternalMove);
     setAcceptDrops(true);
     setDragEnabled(true);
     setDropIndicatorShown(true);
+
+//    setDefaultDropAction(Qt::MoveAction);
+//    setEditTriggers(QAbstractItemView::SelectedClicked);
 
     setAlternatingRowColors(true);
     setRootIsDecorated(false);
@@ -114,13 +124,12 @@ void SonglistTreeview::dragEnterEvent(QDragEnterEvent *event){
         }
     }
     else if(mimeData->hasText()) {
-        qDebug() << mimeData->text();
+//        qDebug() << mimeData->text();
         event->acceptProposedAction();
     }
 }
 void SonglistTreeview::dragMoveEvent(QDragMoveEvent *event){
     QModelIndex index = indexAt(event->pos());
-
     selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     event->acceptProposedAction();
 }
@@ -133,3 +142,23 @@ void SonglistTreeview::dropEvent(QDropEvent *event){
     emit filesDropped(index, m_urls);
     m_urls.clear();
 }
+
+
+
+//void SonglistTreeview::startDrag(Qt::DropActions supportedActions){
+//    QDrag *drag = new QDrag(this);
+
+//    drag->setMimeData(model()->mimeData(selectionModel()->selectedIndexes()));
+//    drag->exec(supportedActions);
+//}
+
+
+
+
+
+
+
+
+
+
+

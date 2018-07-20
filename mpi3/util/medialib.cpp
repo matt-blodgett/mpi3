@@ -31,7 +31,7 @@ void xmlWriteElement(QDomDocument xml, QDomElement elem, QString tagname, QStrin
     elem.appendChild(e);
 }
 
-Mpi3Element::Mpi3Element(const bool &newpid) : QObject(NULL){
+Mpi3Element::Mpi3Element(const bool &newpid) : QObject(nullptr){
     if(newpid){this->pid = generatePID();}
 }
 Mpi3Song::Mpi3Song(const bool &newpid) : Mpi3Element(newpid){}
@@ -105,7 +105,7 @@ Mpi3Library* Mpi3Library::load(const QString &path){
 Mpi3Library::~Mpi3Library(){}
 
 void Mpi3Library::save(const QString &path){
-    if(path != NULL){
+    if(path != nullptr){
         this->filepath = path;
     }
 

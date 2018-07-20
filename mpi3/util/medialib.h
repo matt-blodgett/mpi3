@@ -11,10 +11,10 @@ class QDomElement;
 QT_END_NAMESPACE
 
 class Mpi3Element;
-class Mpi3Song;
-class Mpi3Playlist;
-class Mpi3Folder;
 class Mpi3Library;
+class Mpi3Folder;
+class Mpi3Playlist;
+class Mpi3Song;
 
 
 QString generatePID();
