@@ -37,6 +37,9 @@ public:
     QStringList mimeTypes() const override;
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
 
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
@@ -55,27 +58,7 @@ public:
     bool removeRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
     bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
 
-public:
-    LibraryItem *getItem(const QModelIndex &index) const;
-    LibraryItem *getItem(const QString &pid) const;
-
-    QString getPID(const QModelIndex &index) const;
-    QString getPID(LibraryItem *item) const;
-
-    QModelIndex currentIndex();
-    void setCurrentIndex(QModelIndex &index);
-
-    Mpi3Library *library() const;
-    void setLibrary(Mpi3Library *library);
-
-    QModelIndex getIndex(const QString &pid, QModelIndex parent = QModelIndex());
-
-public:
-    void insertFolder();
-    void insertPlaylist();
-
 private:
-    void recurseFolder(LibraryItem *item, Mpi3Folder *folder);
     QIcon icn_folder;
     QIcon icn_playlist;
 
@@ -83,18 +66,29 @@ private:
     LibraryItem *rootItem = nullptr;
     QMap<QString, LibraryItem*> libItems;
 
-    QModelIndex m_currentIndex = QModelIndex();
     QScopedPointer<Mpi3Library> m_library;
     QScopedPointer<Mpi3Playlist> m_playlist;
 
-public slots:
-    void playlistModified(Mpi3Playlist *playlist);
-    void playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *folder);
-    void playlistRemoved(Mpi3Playlist *playlist, Mpi3Folder *folder);
+public:
+    QModelIndex getIndex(const QString &pid, QModelIndex parent = QModelIndex());
 
-    void folderModified(Mpi3Folder *folder);
+    LibraryItem *getItem(const QModelIndex &index) const;
+    LibraryItem *getItem(const QString &pid) const;
+
+    QString getPID(const QModelIndex &index) const;
+    QString getPID(LibraryItem *item) const;
+
+    void setLibrary(Mpi3Library *library);
+    void populate(Mpi3Folder *parentFolder = nullptr, QModelIndex parent = QModelIndex());
+
+private:
+    void playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *folder);
     void folderInserted(Mpi3Folder *folder, Mpi3Folder *parent);
-    void folderRemoved(Mpi3Folder *folder, Mpi3Folder *parent);
+
+public slots:
+    void elementModified(const QString &pidModified);
+    void elementInserted(const QString &pidInserted, const QString &pidParent);
+    void elementRemoved(const QString &pidRemoved, const QString &pidParent);
 
 };
 
@@ -117,6 +111,9 @@ public:
     QStringList mimeTypes() const override;
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
 
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
@@ -137,22 +134,24 @@ public:
 
 public:
     QMap<int, bool> columnVisibility;
-    Mpi3Library *library() const;
-    void setLibrary(Mpi3Library *library);
-
-    QString getPID(const QModelIndex &index) const;
-
-    void setSonglist(QVector<Mpi3Song*> songlist);
-
 
 private:
     QScopedPointer<Mpi3Library> m_library;
     QVector<Mpi3Song*> m_songlist;
     QStringList m_headers;
 
-public slots:
-    void dropExternalFiles(QModelIndex index, QList<QUrl> urls);
+    Mpi3Playlist *m_playlist = nullptr;
 
+public:
+    QString getPID(const QModelIndex &index) const;
+
+    void setLibrary(Mpi3Library *library);
+    void setPlaylist(Mpi3Playlist *playlist);
+
+public slots:
+    void elementModified(const QString &pidModified);
+    void elementInserted(const QString &pidInserted, const QString &pidParent);
+    void elementRemoved(const QString &pidRemoved, const QString &pidParent);
 };
 
 

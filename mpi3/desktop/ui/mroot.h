@@ -12,8 +12,6 @@ class PanelLibrary;
 class PanelPlayback;
 class LibraryModel;
 class SonglistModel;
-class LibraryTreeview;
-class SonglistTreeview;
 class Mpi3Library;
 class Mpi3Theme;
 
@@ -34,11 +32,16 @@ private:
     void initializeLibrary();
 
 private:
+    void headerContextMenu(const QPoint &point);
+    void songlistContextMenu(const QPoint &point);
+    void containersContextMenu(const QPoint &point);
+
+private:
     PanelLibrary *m_libview = nullptr;
     PanelPlayback *m_playback = nullptr;
 
-    LibraryTreeview *tree_containers = nullptr;
-    SonglistTreeview *tree_songlist = nullptr;
+    QTreeView *tree_containers = nullptr;
+    QTreeView *tree_songlist = nullptr;
 
     LibraryModel *m_modelContainers = nullptr;
     SonglistModel *m_modelSonglist = nullptr;
@@ -46,11 +49,6 @@ private:
 
     Mpi3Library *m_library = nullptr;
     Mpi3Theme *m_theme = nullptr;
-
-private:
-    void headerContextMenu(const QPoint &point);
-    void libraryContextMenu(const QPoint &point);
-    void playlistContextMenu(const QPoint &point);
 
 private:
     QAction *act_editCut;
@@ -93,7 +91,7 @@ private slots:
 
 private:
     void paintEvent(QPaintEvent *event);
-
+    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 

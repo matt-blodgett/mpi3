@@ -78,6 +78,7 @@ public:
     explicit Mpi3Playlist();
 
 public:
+    Mpi3Song *getSong(const QString &pid);
     Mpi3Folder *parent = nullptr;
     QVector<Mpi3Song*> songs;
 
@@ -131,9 +132,8 @@ public:
     QVector<Mpi3Folder*> *libFolders = nullptr;
 
 public:
-    QList<Mpi3Folder*> rootFolders();
-    QList<Mpi3Folder*> childFolders(Mpi3Folder *parent);
-    QList<Mpi3Playlist*> childPlaylists(Mpi3Folder *parent);
+    QList<Mpi3Folder*> childFolders(Mpi3Folder *parent = nullptr);
+    QList<Mpi3Playlist*> childPlaylists(Mpi3Folder *parent = nullptr);
 
     Mpi3Song *getSong(const QString &pid);
     Mpi3Playlist *getPlaylist(const QString &pid);
@@ -150,9 +150,9 @@ public:
     void modify(Mpi3Playlist *playlist, Mpi3Playlist::Property property, const QString &value);
     void modify(Mpi3Folder *folder, Mpi3Folder::Property property, const QString &value);
 
-    void insert(Mpi3Song *inSong, Mpi3Playlist *toPlaylist, int position);
-    void insert(Mpi3Playlist *inPlaylist, Mpi3Folder *toFolder, int position);
-    void insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder, int position);
+    void insert(Mpi3Song *inSong, Mpi3Playlist *toPlaylist = nullptr, int position = -1);
+    void insert(Mpi3Playlist *inPlaylist, Mpi3Folder *toFolder = nullptr, int position = -1);
+    void insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder = nullptr, int position = -1);
 
     void remove(Mpi3Song *remSong, Mpi3Playlist *fromPlaylist);
     void remove(Mpi3Playlist *remPlaylist, Mpi3Folder *fromFolder);
@@ -167,23 +167,9 @@ public:
     void move(Mpi3Folder *moveFolder, Mpi3Folder *inFolder, int position);
 
 signals:
-    void libraryModified();
-
-//    void songCreated();
-    void songModified(Mpi3Song *song);
-    void songInserted(Mpi3Song *song, Mpi3Playlist *playlist);
-    void songRemoved(Mpi3Song *song, Mpi3Playlist *playlist);
-
-//    void playlistCreated();
-    void playlistModified(Mpi3Playlist *playlist);
-    void playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *folder);
-    void playlistRemoved(Mpi3Playlist *playlist, Mpi3Folder *folder);
-
-//    void folderCreated();
-    void folderModified(Mpi3Folder *folder);
-    void folderInserted(Mpi3Folder *folder, Mpi3Folder *parent);
-    void folderRemoved(Mpi3Folder *folder, Mpi3Folder *parent);
-
+    void elementModified(const QString &pidModified);
+    void elementInserted(const QString &pidInserted, const QString &pidParent);
+    void elementRemoved(const QString &pidRemoved, const QString &pidParent);
 };
 
 
