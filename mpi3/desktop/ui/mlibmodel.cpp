@@ -93,7 +93,6 @@ QModelIndex LibraryModel::parent(const QModelIndex &index) const{
 
     LibraryItem *childItem = getItem(index);
     LibraryItem *parentItem = childItem->parent();
-
     if (parentItem == rootItem){
         return QModelIndex();
     }
@@ -140,10 +139,10 @@ bool LibraryModel::setData(const QModelIndex &index, const QVariant &value, int 
         Mpi3Playlist *playlist = m_library->getPlaylist(pid);
 
         if(folder){
-            folder->name = value.toString();
+            m_library->modify(folder, Mpi3Folder::Name, value.toString());
         }
         else if (playlist){
-            playlist->name = value.toString();
+            m_library->modify(playlist, Mpi3Playlist::Name, value.toString());
         }
 
         if (result){
@@ -218,6 +217,25 @@ bool LibraryModel::removeColumns(int position, int count, const QModelIndex &par
     return false;
 }
 
+
+QModelIndex LibraryModel::getIndex(const QString &pid, QModelIndex parent){
+    LibraryItem *item = getItem(parent);
+    for(int i = 0; i < item->childCount(); i++){
+        QModelIndex idx = index(i, 0, parent);
+        if(getPID(idx) == pid){
+            return idx;
+        }
+        else {
+            QModelIndex child = getIndex(pid, idx);
+            if(child.isValid() && getPID(child) == pid){
+                return child;
+            }
+        }
+    }
+
+    return QModelIndex();
+}
+
 LibraryItem *LibraryModel::getItem(const QModelIndex &index) const{
     if(index.isValid()){
         LibraryItem *item = static_cast<LibraryItem*>(index.internalPointer());
@@ -251,45 +269,102 @@ Mpi3Library *LibraryModel::library() const{
 void LibraryModel::setLibrary(Mpi3Library *library){
     beginResetModel();
 
+    if(m_library){
+        disconnect(m_library.data(), &Mpi3Library::playlistModified, this, &LibraryModel::playlistModified);
+        disconnect(m_library.data(), &Mpi3Library::playlistInserted, this, &LibraryModel::playlistInserted);
+        disconnect(m_library.data(), &Mpi3Library::playlistRemoved, this, &LibraryModel::playlistRemoved);
+
+        disconnect(m_library.data(), &Mpi3Library::folderModified, this, &LibraryModel::folderModified);
+        disconnect(m_library.data(), &Mpi3Library::folderInserted, this, &LibraryModel::folderInserted);
+        disconnect(m_library.data(), &Mpi3Library::folderRemoved, this, &LibraryModel::folderRemoved);
+    }
+
     m_library.take();
     m_library.reset(library);
+
+    if(m_library){
+        connect(m_library.data(), &Mpi3Library::playlistModified, this, &LibraryModel::playlistModified);
+        connect(m_library.data(), &Mpi3Library::playlistInserted, this, &LibraryModel::playlistInserted);
+        connect(m_library.data(), &Mpi3Library::playlistRemoved, this, &LibraryModel::playlistRemoved);
+
+        connect(m_library.data(), &Mpi3Library::folderModified, this, &LibraryModel::folderModified);
+        connect(m_library.data(), &Mpi3Library::folderInserted, this, &LibraryModel::folderInserted);
+        connect(m_library.data(), &Mpi3Library::folderRemoved, this, &LibraryModel::folderRemoved);
+    }
 
     removeRows(0, rowCount());
 
     endResetModel();
 }
 
-void LibraryModel::insertFolder(){
-    Mpi3Folder *folder = m_library->newFolder(true);
-    if(m_currentIndex.isValid()){
-        QString pid = getPID(m_currentIndex);
-        Mpi3Playlist *currentPlaylist = m_library->getPlaylist(pid);
+void LibraryModel::playlistModified(Mpi3Playlist *playlist){
+    LibraryItem *item = getItem(playlist->pid());
+    item->setData(0, playlist->name());
+}
+void LibraryModel::playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *folder){
+    QModelIndex idx;
+    LibraryItem *item = nullptr;
+    int position = 0;
 
-        if(currentPlaylist){
-            m_currentIndex = m_currentIndex.parent();
-        }
+    if(folder){
+        idx = getIndex(folder->pid());
+        item = getItem(folder->pid());
+        position = folder->playlists.indexOf(playlist);
+    }
+    else {
+        item = rootItem;
+        position = rowCount();
     }
 
-    Mpi3Folder *parentFolder = m_library->getFolder(getPID(m_currentIndex));
+    insertRows(position, 1, idx);
 
-    if(parentFolder){
-        parentFolder->folders.push_back(folder);
-        folder->parent = parentFolder;
+    LibraryItem *child = item->child(position);
+    child->setData(0, playlist->name());
+    child->setIcon(icn_playlist);
+
+    libItems[playlist->pid()] = child;
+}
+void LibraryModel::playlistRemoved(Mpi3Playlist *playlist, Mpi3Folder *folder){
+    Q_UNUSED(playlist);
+    Q_UNUSED(folder);
+}
+
+void LibraryModel::folderModified(Mpi3Folder *folder){
+    LibraryItem *item = getItem(folder->pid());
+    item->setData(0, folder->name());
+}
+void LibraryModel::folderInserted(Mpi3Folder *folder, Mpi3Folder *parent){
+    QModelIndex idx;
+    LibraryItem *item = nullptr;
+    int position = 0;
+
+    if(parent){
+        idx = getIndex(parent->pid());
+        item = getItem(parent->pid());
+        position = parent->folders.indexOf(folder);
+    }
+    else {
+        item = rootItem;
+        position = rowCount();
     }
 
-    LibraryItem *item = getItem(m_currentIndex);
-    int index = parentFolder ? parentFolder->folders.size() - 1 : m_library->rootFolders().size() - 1;
+    insertRows(position, 1, idx);
 
-    insertRows(index, 1, m_currentIndex);
-
-    LibraryItem *child = item->child(index);
-    child->setData(0, folder->name);
+    LibraryItem *child = item->child(position);
+    child->setData(0, folder->name());
     child->setIcon(icn_folder);
 
-    libItems[folder->pid] = child;
+    libItems[folder->pid()] = child;
 }
-void LibraryModel::insertPlaylist(){
-    Mpi3Playlist *playlist = m_library->newPlaylist(true);
+void LibraryModel::folderRemoved(Mpi3Folder *folder, Mpi3Folder *parent){
+    Q_UNUSED(folder);
+    Q_UNUSED(parent);
+}
+
+
+
+
+void LibraryModel::insertFolder(){
     if(m_currentIndex.isValid()){
         QString pid = getPID(m_currentIndex);
         Mpi3Playlist *currentPlaylist = m_library->getPlaylist(pid);
@@ -299,19 +374,27 @@ void LibraryModel::insertPlaylist(){
         }
     }
 
-    Mpi3Folder *parentFolder = m_library->getFolder(getPID(m_currentIndex));
-    if(parentFolder){
-        parentFolder->playlists.push_back(playlist);
-        playlist->parent = parentFolder;
+    Mpi3Folder *parent = m_library->getFolder(getPID(m_currentIndex));
+    Mpi3Folder *folder = m_library->newFolder(true);
+    int position = parent ? parent->folders.size() : -1;
+
+    m_library->insert(folder, parent, position);
+}
+void LibraryModel::insertPlaylist(){
+    if(m_currentIndex.isValid()){
+        QString pid = getPID(m_currentIndex);
+        Mpi3Playlist *currentPlaylist = m_library->getPlaylist(pid);
+
+        if(currentPlaylist){
+            m_currentIndex = m_currentIndex.parent();
+        }
     }
 
-    LibraryItem *item = getItem(m_currentIndex);
-    insertRows(item->childCount(), 1, m_currentIndex);
+    Mpi3Folder *parent = m_library->getFolder(getPID(m_currentIndex));
+    Mpi3Playlist *playlist = m_library->newPlaylist(true);
+    int position = parent ? parent->playlists.size() : -1;
 
-    LibraryItem *child = item->child(item->childCount() - 1);
-    child->setData(0, playlist->name);
-    child->setIcon(icn_playlist);
-    libItems[playlist->pid] = child;
+    m_library->insert(playlist, parent, position);
 }
 
 void LibraryModel::recurseFolder(LibraryItem *item, Mpi3Folder *folder){
@@ -322,9 +405,9 @@ void LibraryModel::recurseFolder(LibraryItem *item, Mpi3Folder *folder){
         item->insertChildren(item->childCount(), 1, columnCount());
 
         LibraryItem *child = item->child(item->childCount() - 1);
-        libItems[f->pid] = child;
+        libItems[f->pid()] = child;
 
-        child->setData(0, f->name);
+        child->setData(0, f->name());
         child->setIcon(icn_folder);
     }
 
@@ -335,9 +418,9 @@ void LibraryModel::recurseFolder(LibraryItem *item, Mpi3Folder *folder){
         item->insertChildren(item->childCount(), 1, columnCount());
 
         LibraryItem *child = item->child(item->childCount() - 1);
-        libItems[p->pid] = child;
+        libItems[p->pid()] = child;
 
-        child->setData(0, p->name);
+        child->setData(0, p->name());
         child->setIcon(icn_playlist);
     }
 }
@@ -418,7 +501,7 @@ QVariant SonglistModel::data(const QModelIndex &index, int role) const{
     if (role == Qt::DisplayRole || role == Qt::EditRole){
         Mpi3Song *song = m_songlist.at(index.row());
         switch(index.column()){
-            case 0: return song->name;
+            case 0: return song->name();
             case 1: return song->artist;
             case 2: return song->path;
         }
@@ -437,7 +520,7 @@ bool SonglistModel::setData(const QModelIndex &index, const QVariant &value, int
     if (role == Qt::EditRole){
         Mpi3Song *song = m_songlist.at(index.row());
         if(index.column() == 0){
-            song->name = value.toString();
+            m_library->modify(song, Mpi3Song::Name, value.toString());
         }
 
         emit dataChanged(index, index);
@@ -513,7 +596,7 @@ void SonglistModel::setLibrary(Mpi3Library *library){
 }
 
 QString SonglistModel::getPID(const QModelIndex &index) const{
-    return m_songlist.at(index.row())->pid;
+    return m_songlist.at(index.row())->pid();
 }
 
 void SonglistModel::setSonglist(QVector<Mpi3Song*> songlist){
@@ -526,8 +609,8 @@ void SonglistModel::dropExternalFiles(QModelIndex index, QList<QUrl> urls){
 
     for(int i = 0; i < urls.size(); i++){
         Mpi3Song *song = m_library->newSong();
-        song->name = urls.at(i).fileName();
-        song->path = urls.at(i).toString();
+//        song->name = urls.at(i).fileName();
+//        song->path = urls.at(i).toString();
         m_songlist.insert(i + position, song);
     }
 }

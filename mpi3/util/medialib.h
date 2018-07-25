@@ -17,21 +17,24 @@ class Mpi3Playlist;
 class Mpi3Song;
 
 
-QString generatePID();
-void xmlWriteElement(QDomDocument xml, QDomElement elem, QString tagname, QString text);
-
-
 class Mpi3Element : public QObject
 {
     Q_OBJECT
 
-public:
-    Mpi3Element(const bool &newpid = false);
+friend class Mpi3Library;
 
 public:
-    QString pid;
-    QString name;
-    QString added;
+    Mpi3Element();
+
+public:
+    QString pid();
+    QString name();
+    QString added();
+
+private:
+    QString m_pid;
+    QString m_name;
+    QString m_added;
 
 };
 
@@ -41,7 +44,12 @@ class Mpi3Song : public Mpi3Element
     Q_OBJECT
 
 public:
-    explicit Mpi3Song(const bool &newpid = false);
+    enum Property{
+        Name,
+        Added
+    };
+
+    explicit Mpi3Song();
 
 public:
     QString artist;
@@ -62,7 +70,12 @@ class Mpi3Playlist : public Mpi3Element
     Q_OBJECT
 
 public:
-    explicit Mpi3Playlist(const bool &newpid = false);
+    enum Property{
+        Name,
+        Added,
+    };
+
+    explicit Mpi3Playlist();
 
 public:
     Mpi3Folder *parent = nullptr;
@@ -76,7 +89,12 @@ class Mpi3Folder : public Mpi3Element
     Q_OBJECT
 
 public:
-    explicit Mpi3Folder(const bool &newpid = false);
+    enum Property{
+        Name,
+        Added,
+    };
+
+    explicit Mpi3Folder();
 
 public:
     Mpi3Folder *parent = nullptr;
@@ -90,20 +108,30 @@ class Mpi3Library : public Mpi3Element
 {
     Q_OBJECT
 
-public:
-    explicit Mpi3Library(const bool &newpid = false);
-    static Mpi3Library* load(const QString &path);
+public:    
+    enum Property{
+        Name,
+        Added,
+    };
+
+    explicit Mpi3Library();
     ~Mpi3Library();
+
+    void load(const QString &path);
+    void save(const QString &path);
+
+private:
+    QString generatePID();
+    void xmlWriteElement(QDomDocument xml, QDomElement elem, QString tagname, QString text);
 
 public:
     QString filepath;
-    void save(const QString &path);
-
     QVector<Mpi3Song*> *libSongs = nullptr;
     QVector<Mpi3Playlist*> *libPlaylists = nullptr;
     QVector<Mpi3Folder*> *libFolders = nullptr;
 
 public:
+    QList<Mpi3Folder*> rootFolders();
     QList<Mpi3Folder*> childFolders(Mpi3Folder *parent);
     QList<Mpi3Playlist*> childPlaylists(Mpi3Folder *parent);
 
@@ -111,50 +139,50 @@ public:
     Mpi3Playlist *getPlaylist(const QString &pid);
     Mpi3Folder *getFolder(const QString &pid);
 
-    QList<Mpi3Folder*> rootFolders();
-
 public:
     Mpi3Song* newSong();
     Mpi3Playlist* newPlaylist(bool named = false);
     Mpi3Folder* newFolder(bool named = false);
 
-//    void update(Mpi3Song *song);
-//    void update(Mpi3Playlist *playlist);
-//    void update(Mpi3Folder *folder);
+public:
+    void modify(Mpi3Library::Property property, const QString &value);
+    void modify(Mpi3Song *song, Mpi3Song::Property property, const QString &value);
+    void modify(Mpi3Playlist *playlist, Mpi3Playlist::Property property, const QString &value);
+    void modify(Mpi3Folder *folder, Mpi3Folder::Property property, const QString &value);
 
-//    void insert(Mpi3Song *inSong, Mpi3Playlist *toPlaylist, int position);
-//    void insert(Mpi3Playlist *inPlaylist, Mpi3Folder *toFolder, int position);
-//    void insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder, int position);
+    void insert(Mpi3Song *inSong, Mpi3Playlist *toPlaylist, int position);
+    void insert(Mpi3Playlist *inPlaylist, Mpi3Folder *toFolder, int position);
+    void insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder, int position);
 
-//    void move(Mpi3Song *moveSong, Mpi3Playlist *inPlaylist, int position);
-//    void move(Mpi3Playlist *movePlaylist, Mpi3Folder *inFolder, int position);
-//    void move(Mpi3Folder *moveFolder, Mpi3Folder *inFolder, int position);
+    void remove(Mpi3Song *remSong, Mpi3Playlist *fromPlaylist);
+    void remove(Mpi3Playlist *remPlaylist, Mpi3Folder *fromFolder);
+    void remove(Mpi3Folder *remFolder, Mpi3Folder *fromFolder);
 
-//    void remove(Mpi3Song *remSong, Mpi3Playlist *fromPlaylist);
-//    void remove(Mpi3Playlist *remPlaylist, Mpi3Folder *fromFolder);
-//    void remove(Mpi3Folder *remFolder, Mpi3Folder *fromFolder);
+    void remove(Mpi3Song *remSong);
+    void remove(Mpi3Playlist *remPlaylist);
+    void remove(Mpi3Folder *remFolder);
 
-//    void remove(Mpi3Song *remSong);
-//    void remove(Mpi3Playlist *remPlaylist);
-//    void remove(Mpi3Folder *remFolder);
+    void move(Mpi3Song *moveSong, Mpi3Playlist *inPlaylist, int position);
+    void move(Mpi3Playlist *movePlaylist, Mpi3Folder *inFolder, int position);
+    void move(Mpi3Folder *moveFolder, Mpi3Folder *inFolder, int position);
 
+signals:
+    void libraryModified();
 
-//signals:
-//    void songUpdated(Mpi3Song *song);
-//    void playlistUpdated(Mpi3Playlist *playlist);
-//    void folderUpdated(Mpi3Folder *folder);
+//    void songCreated();
+    void songModified(Mpi3Song *song);
+    void songInserted(Mpi3Song *song, Mpi3Playlist *playlist);
+    void songRemoved(Mpi3Song *song, Mpi3Playlist *playlist);
 
-//    void songInserted(Mpi3Song *song, Mpi3Playlist *parent, int position);
-//    void songMoved(int position, int destination);
-//    void songRemoved(int position);
+//    void playlistCreated();
+    void playlistModified(Mpi3Playlist *playlist);
+    void playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *folder);
+    void playlistRemoved(Mpi3Playlist *playlist, Mpi3Folder *folder);
 
-//    void playlistInserted(Mpi3Playlist *playlist);
-//    void playlistMoved();
-//    void playlistRemoved();
-
-//    void folderInserted(Mpi3Folder *folder);
-//    void folderMoved();
-//    void folderRemoved();
+//    void folderCreated();
+    void folderModified(Mpi3Folder *folder);
+    void folderInserted(Mpi3Folder *folder, Mpi3Folder *parent);
+    void folderRemoved(Mpi3Folder *folder, Mpi3Folder *parent);
 
 };
 

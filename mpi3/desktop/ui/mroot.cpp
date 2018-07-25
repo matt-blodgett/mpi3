@@ -122,7 +122,7 @@ void Mpi3RootDesktop::initializeObjects(){
     m_modelSonglist = new SonglistModel();
     m_audio = new QMediaPlayer(this);
 
-    m_library = new Mpi3Library(true);
+    m_library = new Mpi3Library();
     m_theme = new Mpi3Theme();
 }
 void Mpi3RootDesktop::initializeSharedActions(){
@@ -288,9 +288,8 @@ void Mpi3RootDesktop::initializeMainMenu(){
     menu_help->addAction(act_helpAbout);
 }
 void Mpi3RootDesktop::initializeLibrary(){
-
-    m_library->name = "Main Library";
-    m_library->added = "03/07/2017";
+    m_library->modify(Mpi3Library::Name, "Main Library");
+    m_library->modify(Mpi3Library::Added, "03/07/2017");
 
 //    //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
 
@@ -572,7 +571,7 @@ void Mpi3RootDesktop::libraryViewChanged(){
             Mpi3Playlist *playlist = m_library->getPlaylist(pid);
 
             if(playlist){
-                m_libview->setDisplay(playlist->name);
+                m_libview->setDisplay(playlist->name());
                 m_modelSonglist->setSonglist(playlist->songs);
             }
 
@@ -599,10 +598,7 @@ void Mpi3RootDesktop::libImport(){
 //        delete m_modelLibrary;
 //        delete m_modelPlaylists;
 
-        delete m_library;
-
-        m_library = Mpi3Library::load(libFile);
-
+        m_library->load(libFile);
 //        m_modelSonglist->setLibrary(m_library);
         m_modelContainers->setLibrary(m_library);
 

@@ -68,6 +68,8 @@ public:
     Mpi3Library *library() const;
     void setLibrary(Mpi3Library *library);
 
+    QModelIndex getIndex(const QString &pid, QModelIndex parent = QModelIndex());
+
 public:
     void insertFolder();
     void insertPlaylist();
@@ -84,6 +86,16 @@ private:
     QModelIndex m_currentIndex = QModelIndex();
     QScopedPointer<Mpi3Library> m_library;
     QScopedPointer<Mpi3Playlist> m_playlist;
+
+public slots:
+    void playlistModified(Mpi3Playlist *playlist);
+    void playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *folder);
+    void playlistRemoved(Mpi3Playlist *playlist, Mpi3Folder *folder);
+
+    void folderModified(Mpi3Folder *folder);
+    void folderInserted(Mpi3Folder *folder, Mpi3Folder *parent);
+    void folderRemoved(Mpi3Folder *folder, Mpi3Folder *parent);
+
 };
 
 
