@@ -10,6 +10,18 @@
 #include <QDebug>
 
 
+bool validMediaFiles(QList<QUrl> urls){
+    for(int i = 0; i < urls.size(); i++){
+        QUrl file = urls.at(i);
+        if(!file.toString().endsWith(".mp3") && !file.toString().endsWith(".wav")){
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 LibraryModel::LibraryModel(QObject *parent) : QAbstractItemModel(parent){
     rootItem = new LibraryItem();
 
@@ -27,21 +39,25 @@ LibraryModel::~LibraryModel(){
 }
 
 Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const{
-    if (index.isValid()){
-        Mpi3Folder *folder = m_library->getFolder(getPID(index));
-        if(folder){
-            return Qt::ItemIsEditable
-                    | Qt::ItemIsDragEnabled
-                    | Qt::ItemIsDropEnabled
-                    | QAbstractItemModel::flags(index);
-        }
-        else {
-            return Qt::ItemIsEditable
-                    | Qt::ItemIsDragEnabled
-                    | QAbstractItemModel::flags(index);
-        }
-    }
-    return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
+//    if (index.isValid()){
+//        Mpi3Folder *folder = m_library->getFolder(getPID(index));
+//        if(folder){
+//            return Qt::ItemIsEditable
+//                    | Qt::ItemIsDragEnabled
+//                    | Qt::ItemIsDropEnabled
+//                    | QAbstractItemModel::flags(index);
+//        }
+//        else {
+//            return Qt::ItemIsEditable
+//                    | Qt::ItemIsDragEnabled
+//                    | QAbstractItemModel::flags(index);
+//        }
+//    }
+//    return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
+    return Qt::ItemIsEditable
+            | Qt::ItemIsDragEnabled
+            | Qt::ItemIsDropEnabled
+            | QAbstractItemModel::flags(index);
 }
 Qt::DropActions LibraryModel::supportedDragActions() const{
     return Qt::MoveAction;
@@ -70,6 +86,21 @@ bool LibraryModel::canDropMimeData(const QMimeData *data, Qt::DropAction action,
     Q_UNUSED(row);
     Q_UNUSED(column);
     Q_UNUSED(parent);
+
+//    if(data->hasUrls()){
+////        QModelIndex idx = index(row, column, parent);
+
+////        LibraryItem *parentItem = getItem(parent);
+////        LibraryItem *childItem = parentItem->child(row);
+
+////        qDebug() << getPID(childItem);
+
+////        if(getPID(childItem).isNull()){
+////            qDebug() << row << column;
+////        }
+
+//        return validMediaFiles(data->urls());
+//    }
 
     return true;
 }
@@ -448,26 +479,26 @@ QMimeData* SonglistModel::mimeData(const QModelIndexList &indexes) const{
 }
 
 bool SonglistModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const {
-//    Q_UNUSED(data);
+    Q_UNUSED(data);
     Q_UNUSED(action);
     Q_UNUSED(row);
     Q_UNUSED(column);
     Q_UNUSED(parent);
 
-    if(data->hasUrls()){
-        for(int i = 0; i < data->urls().size(); i++){
-            QUrl file = data->urls().at(i);
-            if(!file.toString().endsWith(".mp3") && !file.toString().endsWith(".wav")){
-                return false;
-            }
-        }
+    return true;
+//    if(data->hasUrls()){
+//        return validMediaFiles(data->urls());
+//    }
 
-        return true;
-    }
-
-    return false;
+//    return false;
 }
 bool SonglistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent){
+    //    Q_UNUSED(data);
+        Q_UNUSED(action);
+    //    Q_UNUSED(row);
+        Q_UNUSED(column);
+        Q_UNUSED(parent);
+
     if(!m_playlist){
         return false;
     }
@@ -479,22 +510,16 @@ bool SonglistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
             m_library->insert(song, m_playlist, qMax(0, row));
             song->path = file.toString();
             m_library->modify(song, Mpi3Song::Name, file.fileName());
-
         }
+
+        return true;
     }
 
-    Q_UNUSED(data);
-    Q_UNUSED(action);
-    Q_UNUSED(row);
-    Q_UNUSED(column);
-    Q_UNUSED(parent);
-
-    qDebug() << row << column;
     return false;
 }
 
 int SonglistModel::rowCount(const QModelIndex &) const{
-    return m_songlist.count();
+    return m_playlist ? m_playlist->songs.size() : 0;
 }
 int SonglistModel::columnCount(const QModelIndex &) const{
     return m_headers.count();
@@ -542,8 +567,12 @@ QVariant SonglistModel::headerData(int section, Qt::Orientation orientation, int
 }
 
 bool SonglistModel::setData(const QModelIndex &index, const QVariant &value, int role){
+    if(!m_playlist){
+        return false;
+    }
+
     if (role == Qt::EditRole){
-        Mpi3Song *song = m_songlist.at(index.row());
+        Mpi3Song *song = m_playlist->songs.at(index.row());
         if(index.column() == 0){
             m_library->modify(song, Mpi3Song::Name, value.toString());
         }
@@ -599,7 +628,7 @@ bool SonglistModel::removeColumns(int position, int count, const QModelIndex &pa
 }
 
 QString SonglistModel::getPID(const QModelIndex &index) const{
-    return m_songlist.at(index.row())->pid();
+    return m_playlist->songs.at(index.row())->pid();
 }
 
 void SonglistModel::setLibrary(Mpi3Library *library){
@@ -625,7 +654,6 @@ void SonglistModel::setLibrary(Mpi3Library *library){
     endResetModel();
 }
 void SonglistModel::setPlaylist(Mpi3Playlist *playlist){
-    m_songlist = playlist->songs;
     m_playlist = playlist;
 }
 
@@ -633,8 +661,13 @@ void SonglistModel::elementModified(const QString &pidModified){
     Q_UNUSED(pidModified);
 }
 void SonglistModel::elementInserted(const QString &pidInserted, const QString &pidParent){
+    if(!m_playlist){
+        return;
+    }
+
     if(m_playlist->pid() == pidParent){
         Mpi3Song *song = m_playlist->getSong(pidInserted);
+//        qDebug() << m_playlist->songs.indexOf(song);
         insertRows(m_playlist->songs.indexOf(song), 1);
     }
 }

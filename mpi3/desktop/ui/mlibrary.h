@@ -5,10 +5,11 @@
 
 QT_BEGIN_NAMESPACE
 class QRadioButton;
-class QTreeView;
 class QSplitter;
 class QLabel;
 QT_END_NAMESPACE
+
+class Mpi3TreeView;
 
 
 class PanelLibrary : public QWidget
@@ -16,7 +17,7 @@ class PanelLibrary : public QWidget
     Q_OBJECT
 
 public:
-    explicit PanelLibrary(QWidget *parent=nullptr);
+    explicit PanelLibrary(QWidget *parent = nullptr);
     ~PanelLibrary();
 
 public:
@@ -31,8 +32,8 @@ public:
     void setDisplay(const QString &title);
 
 private:
-    QTreeView *tree_songlist = nullptr;
-    QTreeView *tree_containers = nullptr;
+    Mpi3TreeView *tree_songlist = nullptr;
+    Mpi3TreeView *tree_containers = nullptr;
 
     QSplitter *frm_library = nullptr;
     QWidget *frm_views = nullptr;
@@ -46,12 +47,12 @@ private:
 
     View m_currentView;
 
-signals:
-    void viewChanged();
-
 private slots:
     void changeView(PanelLibrary::View view);
     void playlistClicked(const QModelIndex &index);
+
+signals:
+    void viewChanged();
 
 private:
     void showEvent(QShowEvent *event);

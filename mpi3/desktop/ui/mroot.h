@@ -5,13 +5,13 @@
 
 QT_BEGIN_NAMESPACE
 class QMediaPlayer;
-class QTreeView;
 QT_END_NAMESPACE
 
 class PanelLibrary;
 class PanelPlayback;
 class LibraryModel;
 class SonglistModel;
+class Mpi3TreeView;
 class Mpi3Library;
 class Mpi3Theme;
 
@@ -40,8 +40,8 @@ private:
     PanelLibrary *m_libview = nullptr;
     PanelPlayback *m_playback = nullptr;
 
-    QTreeView *tree_containers = nullptr;
-    QTreeView *tree_songlist = nullptr;
+    Mpi3TreeView *tree_containers = nullptr;
+    Mpi3TreeView *tree_songlist = nullptr;
 
     LibraryModel *m_modelContainers = nullptr;
     SonglistModel *m_modelSonglist = nullptr;

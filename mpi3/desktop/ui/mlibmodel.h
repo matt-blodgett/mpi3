@@ -7,6 +7,7 @@
 #include <QMap>
 #include <QVector>
 #include <QUrl>
+#include <QList>
 
 QT_BEGIN_NAMESPACE
 class QMimeData;
@@ -17,6 +18,9 @@ class Mpi3Library;
 class Mpi3Folder;
 class Mpi3Playlist;
 class Mpi3Song;
+
+
+bool validMediaFiles(QList<QUrl> urls);
 
 
 class LibraryModel : public QAbstractItemModel
@@ -67,7 +71,6 @@ private:
     QMap<QString, LibraryItem*> libItems;
 
     QScopedPointer<Mpi3Library> m_library;
-    QScopedPointer<Mpi3Playlist> m_playlist;
 
 public:
     QModelIndex getIndex(const QString &pid, QModelIndex parent = QModelIndex());
@@ -89,7 +92,6 @@ public slots:
     void elementModified(const QString &pidModified);
     void elementInserted(const QString &pidInserted, const QString &pidParent);
     void elementRemoved(const QString &pidRemoved, const QString &pidParent);
-
 };
 
 
@@ -137,10 +139,9 @@ public:
 
 private:
     QScopedPointer<Mpi3Library> m_library;
-    QVector<Mpi3Song*> m_songlist;
+    Mpi3Playlist *m_playlist = nullptr;
     QStringList m_headers;
 
-    Mpi3Playlist *m_playlist = nullptr;
 
 public:
     QString getPID(const QModelIndex &index) const;

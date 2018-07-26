@@ -2,6 +2,7 @@
 #include "mplayback.h"
 #include "mlibrary.h"
 #include "mlibmodel.h"
+#include "mtreeview.h"
 
 #include "util/mtheme.h"
 #include "util/medialib.h"
@@ -19,7 +20,10 @@
 #include <QHeaderView>
 #include <QMenuBar>
 
+#include <QMimeData>
+
 #include <QTreeView>
+#include <QAbstractItemView>
 
 #include <QDebug>
 
@@ -115,11 +119,8 @@ void Mpi3RootDesktop::initializeObjects(){
     m_libview = new PanelLibrary(this);
     m_playback = new PanelPlayback(this);
 
-    tree_containers = findChild<QTreeView*>("PlaylistsTreeview");
-    tree_songlist = findChild<QTreeView*>("LibraryTreeview");
-
-    tree_containers->installEventFilter(this);
-    tree_songlist->installEventFilter(this);
+    tree_containers = findChild<Mpi3TreeView*>("PlaylistsTreeview");
+    tree_songlist = findChild<Mpi3TreeView*>("LibraryTreeview");
 
     tree_containers->viewport()->installEventFilter(this);
     tree_songlist->viewport()->installEventFilter(this);
@@ -748,37 +749,33 @@ void Mpi3RootDesktop::paintEvent(QPaintEvent *event){
     QWidget::paintEvent(event);
 }
 bool Mpi3RootDesktop::eventFilter(QObject *obj, QEvent *event){
+    if(obj == tree_containers->viewport()){
+        if(event->type() == QEvent::DragEnter){
+            QDragEnterEvent *scEvent = static_cast<QDragEnterEvent*>(event);
 
-    if(obj == tree_containers){
-        if(event->type() == QEvent::DragMove){
-            QDragMoveEvent *scEvent = static_cast<QDragMoveEvent*>(event);
-            QModelIndex index = tree_containers->indexAt(scEvent->pos());
-            tree_containers->selectionModel()->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-            return true;
+            if(scEvent->source() == tree_containers){
+                scEvent->setDropAction(Qt::MoveAction);
+                tree_containers->setDropIndicatorStyle(Mpi3TreeView::MoveIndicator);
+            }
+            else {
+                scEvent->setDropAction(Qt::CopyAction);
+                tree_containers->setDropIndicatorStyle(Mpi3TreeView::DropIndicator);
+            }
         }
-    }
-    else if(obj == tree_songlist){
-        if(event->type() == QEvent::DragMove){
-            QDragMoveEvent *scEvent = static_cast<QDragMoveEvent*>(event);
-            QModelIndex index = tree_songlist->indexAt(scEvent->pos());
-            tree_songlist->selectionModel()->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-            return true;
-        }
-    }
-    else if(obj == tree_containers->viewport()){
-        if(event->type() == QEvent::Drop){
-            QDropEvent *scEvent = static_cast<QDropEvent*>(event);
-            QModelIndex index = tree_containers->indexAt(scEvent->pos());
-            scEvent->accept();
-            return m_modelContainers->dropMimeData(scEvent->mimeData(), scEvent->dropAction(), index.row(), index.column(), index.parent());
-        }
+
     }
     else if(obj == tree_songlist->viewport()){
-        if(event->type() == QEvent::Drop){
-            QDropEvent *scEvent = static_cast<QDropEvent*>(event);
-            QModelIndex index = tree_songlist->indexAt(scEvent->pos());
-            scEvent->accept();
-            return m_modelSonglist->dropMimeData(scEvent->mimeData(), scEvent->dropAction(), index.row(), index.column(), index.parent());
+        if(event->type() == QEvent::DragEnter){
+            QDragEnterEvent *scEvent = static_cast<QDragEnterEvent*>(event);
+
+            if(scEvent->source() == tree_songlist){
+                scEvent->setDropAction(Qt::MoveAction);
+                tree_songlist->setDropIndicatorStyle(Mpi3TreeView::MoveIndicator);
+            }
+            else {
+                scEvent->setDropAction(Qt::CopyAction);
+                tree_songlist->setDropIndicatorStyle(Mpi3TreeView::MoveIndicator);
+            }
         }
     }
 

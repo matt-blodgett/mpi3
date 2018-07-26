@@ -1,4 +1,5 @@
 #include "mlibrary.h"
+#include "mtreeview.h"
 
 #include <QGridLayout>
 #include <QStyleOption>
@@ -15,6 +16,7 @@
 #include <QDebug>
 
 
+
 PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     frm_library = new QSplitter(this);
     frm_library->setOrientation(Qt::Horizontal);
@@ -28,8 +30,8 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     lbl_playlist = new QLabel(this);
     lbl_view = new QLabel(this);
 
-    tree_songlist = new QTreeView(this);
-    tree_containers = new QTreeView(this);
+    tree_songlist = new Mpi3TreeView(this);
+    tree_containers = new Mpi3TreeView(this);
 
 
 
@@ -98,9 +100,8 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
 
     tree_containers->setContextMenuPolicy(Qt::CustomContextMenu);
     tree_containers->setSelectionMode(QAbstractItemView::SingleSelection);
-    tree_containers->viewport()->setAcceptDrops(true);
     tree_containers->setDragDropMode(QAbstractItemView::DragDrop);
-    tree_containers->setAcceptDrops(true);
+    tree_containers->viewport()->setAcceptDrops(true);
     tree_containers->setDragEnabled(true);
     tree_containers->setDropIndicatorShown(true);
     tree_containers->setRootIsDecorated(true);
@@ -110,16 +111,14 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     tree_songlist->setContextMenuPolicy(Qt::CustomContextMenu);
     tree_songlist->header()->setContextMenuPolicy(Qt::CustomContextMenu);
     tree_songlist->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    tree_songlist->viewport()->setAcceptDrops(true);
     tree_songlist->setDragDropMode(QAbstractItemView::DragDrop);
-    tree_songlist->setAcceptDrops(true);
+    tree_songlist->viewport()->setAcceptDrops(true);
     tree_songlist->setDragEnabled(true);
     tree_songlist->setDropIndicatorShown(true);
     tree_songlist->setAlternatingRowColors(true);
     tree_songlist->setRootIsDecorated(false);
     tree_songlist->setIndentation(12);
     tree_songlist->setSelectionBehavior(QAbstractItemView::SelectRows);
-
 
     btn_songs->setObjectName("PanelViewsButton");
     btn_artists->setObjectName("PanelViewsButton");
@@ -131,8 +130,6 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     tree_containers->setObjectName("PlaylistsTreeview");
     tree_songlist->header()->setObjectName("LibraryTreeviewHeader");
     tree_containers->header()->setObjectName("PlaylistsTreeviewHeader");
-
-
 }
 PanelLibrary::~PanelLibrary(){}
 
@@ -171,7 +168,6 @@ void PanelLibrary::changeView(PanelLibrary::View view){
 
     emit viewChanged();
 }
-
 void PanelLibrary::playlistClicked(const QModelIndex &index){
     if(index.isValid()){
         changeView(PanelLibrary::ViewPlaylist);
@@ -179,12 +175,10 @@ void PanelLibrary::playlistClicked(const QModelIndex &index){
 }
 
 void PanelLibrary::showEvent(QShowEvent *event){
-    Q_UNUSED(event);
-
     int w = width();
     frm_library->setSizes({180, w-180});
+    QWidget::showEvent(event);
 }
-
 void PanelLibrary::paintEvent(QPaintEvent *event){
     QStyleOption opt;
     opt.init(this);
@@ -194,3 +188,4 @@ void PanelLibrary::paintEvent(QPaintEvent *event){
 
     QWidget::paintEvent(event);
 }
+
