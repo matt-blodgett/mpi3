@@ -4,15 +4,17 @@
 
 #include <QMimeData>
 #include <QPixmap>
-//#include <QFont>
 #include <QUrl>
 
 #include <QDebug>
 
 
-bool validMediaFiles(QList<QUrl> urls){
-    for(int i = 0; i < urls.size(); i++){
-        QUrl file = urls.at(i);
+bool validMediaFiles(const QMimeData *data){
+    if(!data->hasUrls()){
+        return false;
+    }
+    for(int i = 0; i < data->urls().size(); i++){
+        QUrl file = data->urls().at(i);
         if(!file.toString().endsWith(".mp3") && !file.toString().endsWith(".wav")){
             return false;
         }
@@ -39,21 +41,6 @@ LibraryModel::~LibraryModel(){
 }
 
 Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const{
-//    if (index.isValid()){
-//        Mpi3Folder *folder = m_library->getFolder(getPID(index));
-//        if(folder){
-//            return Qt::ItemIsEditable
-//                    | Qt::ItemIsDragEnabled
-//                    | Qt::ItemIsDropEnabled
-//                    | QAbstractItemModel::flags(index);
-//        }
-//        else {
-//            return Qt::ItemIsEditable
-//                    | Qt::ItemIsDragEnabled
-//                    | QAbstractItemModel::flags(index);
-//        }
-//    }
-//    return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
     return Qt::ItemIsEditable
             | Qt::ItemIsDragEnabled
             | Qt::ItemIsDropEnabled
@@ -87,20 +74,19 @@ bool LibraryModel::canDropMimeData(const QMimeData *data, Qt::DropAction action,
     Q_UNUSED(column);
     Q_UNUSED(parent);
 
-//    if(data->hasUrls()){
-////        QModelIndex idx = index(row, column, parent);
+    if(validMediaFiles(data)){
+        LibraryItem *parentItem = getItem(parent);
+        LibraryItem *childItem = parentItem->child(row);
+        Mpi3Playlist *dropPlaylist = m_library->getPlaylist(getPID(childItem));
 
-////        LibraryItem *parentItem = getItem(parent);
-////        LibraryItem *childItem = parentItem->child(row);
-
-////        qDebug() << getPID(childItem);
-
-////        if(getPID(childItem).isNull()){
-////            qDebug() << row << column;
-////        }
-
-//        return validMediaFiles(data->urls());
-//    }
+        if(dropPlaylist){
+            qDebug() << dropPlaylist->name();
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     return true;
 }
@@ -111,7 +97,7 @@ bool LibraryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, in
     Q_UNUSED(column);
     Q_UNUSED(parent);
 
-    return true;
+    return false;
 }
 
 int LibraryModel::rowCount(const QModelIndex &parent) const{

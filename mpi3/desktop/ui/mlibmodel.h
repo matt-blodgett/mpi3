@@ -20,7 +20,7 @@ class Mpi3Playlist;
 class Mpi3Song;
 
 
-bool validMediaFiles(QList<QUrl> urls);
+bool validMediaFiles(const QMimeData *data);
 
 
 class LibraryModel : public QAbstractItemModel

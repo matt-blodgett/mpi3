@@ -17,13 +17,9 @@
 #include <QFileDialog>
 #include <QDir>
 
-#include <QHeaderView>
 #include <QMenuBar>
+#include <QHeaderView>
 
-#include <QMimeData>
-
-#include <QTreeView>
-#include <QAbstractItemView>
 
 #include <QDebug>
 
@@ -121,9 +117,6 @@ void Mpi3RootDesktop::initializeObjects(){
 
     tree_containers = findChild<Mpi3TreeView*>("PlaylistsTreeview");
     tree_songlist = findChild<Mpi3TreeView*>("LibraryTreeview");
-
-    tree_containers->viewport()->installEventFilter(this);
-    tree_songlist->viewport()->installEventFilter(this);
 
     m_modelContainers = new LibraryModel();
     m_modelSonglist = new SonglistModel();
@@ -747,37 +740,4 @@ void Mpi3RootDesktop::paintEvent(QPaintEvent *event){
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     QWidget::paintEvent(event);
-}
-bool Mpi3RootDesktop::eventFilter(QObject *obj, QEvent *event){
-    if(obj == tree_containers->viewport()){
-        if(event->type() == QEvent::DragEnter){
-            QDragEnterEvent *scEvent = static_cast<QDragEnterEvent*>(event);
-
-            if(scEvent->source() == tree_containers){
-                scEvent->setDropAction(Qt::MoveAction);
-                tree_containers->setDropIndicatorStyle(Mpi3TreeView::MoveIndicator);
-            }
-            else {
-                scEvent->setDropAction(Qt::CopyAction);
-                tree_containers->setDropIndicatorStyle(Mpi3TreeView::DropIndicator);
-            }
-        }
-
-    }
-    else if(obj == tree_songlist->viewport()){
-        if(event->type() == QEvent::DragEnter){
-            QDragEnterEvent *scEvent = static_cast<QDragEnterEvent*>(event);
-
-            if(scEvent->source() == tree_songlist){
-                scEvent->setDropAction(Qt::MoveAction);
-                tree_songlist->setDropIndicatorStyle(Mpi3TreeView::MoveIndicator);
-            }
-            else {
-                scEvent->setDropAction(Qt::CopyAction);
-                tree_songlist->setDropIndicatorStyle(Mpi3TreeView::MoveIndicator);
-            }
-        }
-    }
-
-    return QMainWindow::eventFilter(obj, event);
 }

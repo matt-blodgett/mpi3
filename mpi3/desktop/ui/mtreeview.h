@@ -1,8 +1,11 @@
 #ifndef MTREEVIEW_H
 #define MTREEVIEW_H
 
-#include <QTreeView>
 #include <QProxyStyle>
+#include <QTreeView>
+
+class Mpi3TreeView;
+class Mpi3TreeViewStyle;
 
 
 class Mpi3TreeView : public QTreeView
@@ -10,22 +13,28 @@ class Mpi3TreeView : public QTreeView
     Q_OBJECT
 
 public:
-    enum IndicatorStyle {
-        MoveIndicator,
-        DropIndicator
-    };
-
     explicit Mpi3TreeView(QWidget *parent = nullptr);
 
 public:
-    IndicatorStyle dropIndicatorStyle() const;
-    void setDropIndicatorStyle(IndicatorStyle style);
+    enum DisplayStyle{
+        DisplayStyleSonglist,
+        DisplayStyleContainers
+    };
+
+    DisplayStyle displayStyle() const;
+    void setDisplayStyle(Mpi3TreeView::DisplayStyle dStyle);
 
 private:
-    IndicatorStyle m_currentStyle = Mpi3TreeView::DropIndicator;
+    DisplayStyle m_displayStyle = Mpi3TreeView::DisplayStyleSonglist;
+    Mpi3TreeViewStyle *m_drawStyle = nullptr;
 
 private:
-    void paintEvent(QPaintEvent *event);
+    bool eventFilter(QObject *object, QEvent *event);
+
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dropEvent(QDropEvent *event);
 };
 
 
@@ -34,7 +43,21 @@ class Mpi3TreeViewStyle: public QProxyStyle
     Q_OBJECT
 
 public:
-    Mpi3TreeViewStyle(QStyle* style = nullptr);
+    Mpi3TreeViewStyle(QStyle *style = nullptr);
+
+public:
+    enum IndicatorStyle {
+        IndicatorStyleMove,
+        IndicatorStyleDrop
+    };
+
+    IndicatorStyle indicatorStyle() const;
+    void setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyle iStyle);
+
+private:
+    IndicatorStyle m_indicatorStyle = Mpi3TreeViewStyle::IndicatorStyleDrop;
+
+public:
     void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const;
 };
 

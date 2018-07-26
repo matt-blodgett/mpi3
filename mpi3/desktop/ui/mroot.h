@@ -91,7 +91,6 @@ private slots:
 
 private:
     void paintEvent(QPaintEvent *event);
-    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 
