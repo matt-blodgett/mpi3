@@ -38,3 +38,6 @@ HEADERS += util/userprofile.h
 SOURCES += util/uistyle.cpp
 SOURCES += util/mpi3library.cpp
 SOURCES += util/userprofile.cpp
+
+HEADERS += util/xmlsettings.h
+SOURCES += util/xmlsettings.cpp
