@@ -1,5 +1,5 @@
 #include "mlibrary.h"
-#include "mtreeview.h"
+#include "mvc/mtreeview.h"
 
 #include <QGridLayout>
 #include <QStyleOption>

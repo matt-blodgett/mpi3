@@ -1,8 +1,9 @@
 ﻿#include "mroot.h"
-#include "mplayback.h"
 #include "mlibrary.h"
-#include "mlibmodel.h"
-#include "mtreeview.h"
+#include "mplayback.h"
+
+#include "mvc/mlibmodel.h"
+#include "mvc/mtreeview.h"
 
 #include "util/mtheme.h"
 #include "util/medialib.h"

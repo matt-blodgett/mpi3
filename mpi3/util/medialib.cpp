@@ -4,9 +4,6 @@
 #include <QTextStream>
 #include <QFile>
 
-#include <random>
-#include <time.h>
-
 #include <QDebug>
 
 
