@@ -1,6 +1,6 @@
 #include "mlibmodel.h"
 #include "mlibitem.h"
-#include "util/medialib.h"
+#include "util/mpi3library.h"
 
 #include <QMimeData>
 #include <QPixmap>

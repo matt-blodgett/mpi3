@@ -1,4 +1,4 @@
-#include "ui/mroot.h"
+#include "ui/root.h"
 #include <QApplication>
 
 

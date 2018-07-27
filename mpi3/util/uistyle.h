@@ -1,5 +1,5 @@
-#ifndef MTHEME_H
-#define MTHEME_H
+#ifndef UISTYLE_H
+#define UISTYLE_H
 
 #include <QString>
 
@@ -12,8 +12,8 @@ public:
     ~Mpi3Theme();
 
 public:
-    void load(const QString &path = NULL);
-    void save(const QString &path = NULL);
+    void load(const QString &path = QString());
+    void save(const QString &path = QString());
 
 private:
     void setProperty(const QString &line);
@@ -29,4 +29,4 @@ private:
 
 };
 
-#endif // MTHEME_H
+#endif

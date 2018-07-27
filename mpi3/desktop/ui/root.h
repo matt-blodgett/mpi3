@@ -1,5 +1,5 @@
-#ifndef MROOT_H
-#define MROOT_H
+#ifndef ROOT_H
+#define ROOT_H
 
 #include <QMainWindow>
 
@@ -94,4 +94,4 @@ private:
 };
 
 
-#endif // MROOT_H
+#endif

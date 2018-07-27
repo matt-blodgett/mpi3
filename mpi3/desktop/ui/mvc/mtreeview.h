@@ -62,4 +62,4 @@ public:
 };
 
 
-#endif // MTREEVIEW_H
+#endif

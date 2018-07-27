@@ -1,5 +1,5 @@
-#ifndef LIBITEM_H
-#define LIBITEM_H
+#ifndef MLIBITEM_H
+#define MLIBITEM_H
 
 #include <QVariant>
 #include <QVector>
@@ -45,4 +45,4 @@ private:
 
 };
 
-#endif // LIBRARYITEM_H
+#endif

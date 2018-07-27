@@ -1,3 +1,6 @@
+DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
+
 QT += core
 QT += xml
 QT += gui
@@ -7,55 +10,31 @@ QT += multimedia
 TARGET = Mpi3MediaPlayer
 TEMPLATE = app
 
-DEFINES += QT_DEPRECATED_WARNINGS
-DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
+RESOURCES += desktop.qrc
+RESOURCES += desktop/mpi3media
 
-HEADERS += desktop/ui/mroot.h
-HEADERS += desktop/ui/mlibrary.h
-HEADERS += desktop/ui/mplayback.h
+SOURCES += desktop/main.cpp
+
+HEADERS += desktop/ui/root.h
+HEADERS += desktop/ui/plibrary.h
+HEADERS += desktop/ui/pplayback.h
+
+SOURCES += desktop/ui/root.cpp
+SOURCES += desktop/ui/plibrary.cpp
+SOURCES += desktop/ui/pplayback.cpp
+
 HEADERS += desktop/ui/mvc/mlibitem.h
 HEADERS += desktop/ui/mvc/mlibmodel.h
 HEADERS += desktop/ui/mvc/mtreeview.h
 
-SOURCES += desktop/main.cpp
-SOURCES += desktop/ui/mroot.cpp
-SOURCES += desktop/ui/mlibrary.cpp
-SOURCES += desktop/ui/mplayback.cpp
 SOURCES += desktop/ui/mvc/mlibitem.cpp
 SOURCES += desktop/ui/mvc/mlibmodel.cpp
 SOURCES += desktop/ui/mvc/mtreeview.cpp
 
-HEADERS += util/mtheme.h
-SOURCES += util/mtheme.cpp
+HEADERS += util/uistyle.h
+HEADERS += util/mpi3library.h
+HEADERS += util/userprofile.h
 
-HEADERS += util/medialib.h
-SOURCES += util/medialib.cpp
-
-RESOURCES += desktop/mpi3media
-RESOURCES += desktop.qrc
-
-
-# EXTERNAL QRC BINARY RESOURCE
-#rcc -binary myresource.qrc -o myresource.rcc
-#QResource::registerResource("/path/to/myresource.rcc");
-#rcc -no-compress myresources.qrc
-
-
-
-#QT_DEBUG_PLUGINS = 1
-#QT_FATAL_WARNINGS
-#QT_QPA_PLATFORM =
-
-# target.path = $$[QT_INSTALL_EXAMPLES]/phonon/qmusicplayer
-# sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro *.png images
-# sources.path = $$[QT_INSTALL_EXAMPLES]/phonon/qmusicplayer
-# INSTALLS += target sources
-
-#HEADERS += libav/include/libavcodec/avcodec.h
-
-#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/libav/bin/ -lavcodec
-#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/libav/bin/ -lavcodecd
-#else:unix: LIBS += -L$$PWD/libav/bin/ -lavcodec
-
-#INCLUDEPATH += $$PWD/libav/include
-#DEPENDPATH += $$PWD/libav/include
+SOURCES += util/uistyle.cpp
+SOURCES += util/mpi3library.cpp
+SOURCES += util/userprofile.cpp

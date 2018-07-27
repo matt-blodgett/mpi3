@@ -1,12 +1,12 @@
-﻿#include "mroot.h"
-#include "mlibrary.h"
-#include "mplayback.h"
+﻿#include "root.h"
+#include "plibrary.h"
+#include "pplayback.h"
 
 #include "mvc/mlibmodel.h"
 #include "mvc/mtreeview.h"
 
-#include "util/mtheme.h"
-#include "util/medialib.h"
+#include "util/uistyle.h"
+#include "util/mpi3library.h"
 
 #include <QMediaPlayer>
 

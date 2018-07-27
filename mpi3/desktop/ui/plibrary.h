@@ -1,5 +1,5 @@
-#ifndef MLIBRARY_H
-#define MLIBRARY_H
+#ifndef PLIBRARY_H
+#define PLIBRARY_H
 
 #include <QWidget>
 
@@ -61,4 +61,4 @@ private:
 };
 
 
-#endif // MLIBRARY_H
+#endif

@@ -1,5 +1,5 @@
-#ifndef MEDIALIB_H
-#define MEDIALIB_H
+#ifndef MPI3LIBRARY_H
+#define MPI3LIBRARY_H
 
 #include <QObject>
 #include <QVector>
@@ -173,4 +173,4 @@ signals:
 };
 
 
-#endif // MEDIALIB_H
+#endif

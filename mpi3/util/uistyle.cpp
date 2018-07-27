@@ -1,4 +1,4 @@
-#include "mtheme.h"
+#include "uistyle.h"
 
 #include <QFile>
 

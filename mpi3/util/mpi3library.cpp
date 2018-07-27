@@ -1,4 +1,4 @@
-#include "medialib.h"
+#include "mpi3library.h"
 
 #include <QDomDocument>
 #include <QTextStream>

@@ -1,5 +1,5 @@
-#ifndef MPLAYBACK_H
-#define MPLAYBACK_H
+#ifndef PPLAYBACK_H
+#define PPLAYBACK_H
 
 #include <QMediaPlayer>
 #include <QWidget>
@@ -75,4 +75,4 @@ private:
 };
 
 
-#endif // MPLAYBACK_H
+#endif
