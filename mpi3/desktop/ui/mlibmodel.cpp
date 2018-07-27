@@ -68,15 +68,45 @@ QMimeData* LibraryModel::mimeData(const QModelIndexList &indexes) const{
 }
 
 bool LibraryModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const {
-    Q_UNUSED(data);
+//    Q_UNUSED(data);
     Q_UNUSED(action);
-    Q_UNUSED(row);
+//    Q_UNUSED(row);
     Q_UNUSED(column);
-    Q_UNUSED(parent);
+//    Q_UNUSED(parent);
+
+    qDebug() << row << column << parent.row() << parent.column() ;
+
+
+
+//    qDebug() << row << column;
+
+
+//    if(!parent.isValid()){
+//        return true;
+//    }
+
 
     if(validMediaFiles(data)){
+
+//        if(row == 0 && column == 0 && parent.row() == -1 && parent.column() == -1){
+//            return true;
+//        }
+
+//        if(row == -1 && column == -1 && parent.row() == -1 && parent.column() == -1){
+//            return true;
+//        }
+
         LibraryItem *parentItem = getItem(parent);
-        LibraryItem *childItem = parentItem->child(row);
+        LibraryItem *childItem = nullptr;
+
+        if(row == -1 && column == -1){
+            childItem = rootItem->child(parent.row());
+        }
+        else{
+            childItem = parentItem->child(row);
+        }
+
+
         Mpi3Playlist *dropPlaylist = m_library->getPlaylist(getPID(childItem));
 
         if(dropPlaylist){
@@ -88,7 +118,7 @@ bool LibraryModel::canDropMimeData(const QMimeData *data, Qt::DropAction action,
         }
     }
 
-    return true;
+    return false;
 }
 bool LibraryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent){
     Q_UNUSED(data);
@@ -97,7 +127,7 @@ bool LibraryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, in
     Q_UNUSED(column);
     Q_UNUSED(parent);
 
-    return false;
+    return true;
 }
 
 int LibraryModel::rowCount(const QModelIndex &parent) const{
