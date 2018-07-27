@@ -33,11 +33,8 @@ SOURCES += desktop/ui/mvc/libitem.cpp
 
 HEADERS += util/uistyle.h
 HEADERS += util/mpi3library.h
-HEADERS += util/userprofile.h
+HEADERS += util/xmlsettings.h
 
 SOURCES += util/uistyle.cpp
 SOURCES += util/mpi3library.cpp
-SOURCES += util/userprofile.cpp
-
-HEADERS += util/xmlsettings.h
 SOURCES += util/xmlsettings.cpp

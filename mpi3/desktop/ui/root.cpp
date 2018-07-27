@@ -7,7 +7,6 @@
 
 #include "util/uistyle.h"
 #include "util/mpi3library.h"
-
 #include "util/xmlsettings.h"
 
 #include <QMediaPlayer>
@@ -23,11 +22,8 @@
 #include <QMenuBar>
 #include <QHeaderView>
 
-#include <QSettings>
 
 #include <QDebug>
-
-#include <QTextDocumentWriter>
 
 
 Mpi3RootDesktop::Mpi3RootDesktop(){}
@@ -55,6 +51,16 @@ void Mpi3RootDesktop::initializeObjects(){
     m_mediaLibrary = new Mpi3Library();
     m_qssStyle = new Mpi3Style();
 
+
+
+    tree_songlist->setModel(m_modelSonglist);
+    tree_containers->setModel(m_modelContainers);
+    m_modelContainers->setLibrary(m_mediaLibrary);
+    m_modelSonglist->setLibrary(m_mediaLibrary);
+
+    connect(tree_containers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
+    connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
+
     connect(m_panelPlayback, &PanelPlayback::play, m_audioOutput, &QMediaPlayer::play);
     connect(m_panelPlayback, &PanelPlayback::pause, m_audioOutput, &QMediaPlayer::pause);
     connect(m_panelPlayback, &PanelPlayback::stop, m_audioOutput, &QMediaPlayer::stop);
@@ -71,14 +77,6 @@ void Mpi3RootDesktop::initializeObjects(){
     connect(tree_containers, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::containersContextMenu);
     connect(tree_songlist, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::songlistContextMenu);
     connect(tree_songlist->header(), &QHeaderView::customContextMenuRequested, this, &Mpi3RootDesktop::headerContextMenu);
-
-    connect(tree_containers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
-    connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
-
-    tree_songlist->setModel(m_modelSonglist);
-    tree_containers->setModel(m_modelContainers);
-    m_modelContainers->setLibrary(m_mediaLibrary);
-    m_modelSonglist->setLibrary(m_mediaLibrary);
 
 }
 void Mpi3RootDesktop::initializeActions(){
@@ -245,23 +243,9 @@ void Mpi3RootDesktop::initializeMainMenu(){
 }
 void Mpi3RootDesktop::initializeState(){
 
-
-//    const QSettings::Format XmlFormat = QSettings::registerFormat("xml", readXmlFile, writeXmlFile);
-//    QSettings userSettings(":/desktop/mpi3media/test.xml", XmlFormat, this);
-
-//    QSettings userSettings(":/desktop/mpi3media/test.xml", xmlFormat);
-
-//    settings.setValue("mainwindow", "10");
-
-//    QTextDocumentWriter t(":/desktop/mpi3media/test.xml");
-
-//    QSettings settings("C:/Users/mablodgett/Desktop/test.ini", QSettings::IniFormat);
-//    QSettings settings("C:/Users/mablodgett/Desktop/mpi3/mpi3/desktop/mpi3media/test.ini", QSettings::IniFormat);
-
-    QSettings settings(QCoreApplication::applicationDirPath() + "profile.ini", QSettings::IniFormat);
+    QSettings settings(QDir::currentPath()  + "/profile.xml", XmlSettingsFormat);
     QString a = settings.value("geometry").toString();
     qDebug() << a;
-
 
     m_mediaLibrary->modify(Mpi3Library::Name, "Main Library");
     m_mediaLibrary->modify(Mpi3Library::Added, "03/07/2017");
@@ -281,6 +265,8 @@ void Mpi3RootDesktop::initializeState(){
 
 
     resize(800, 600);
+
+
 }
 void Mpi3RootDesktop::initializeLayout(){
     setWindowTitle("Mpi3MediaPlayer");
@@ -693,15 +679,9 @@ void Mpi3RootDesktop::objDuplicate(){}
 
 void Mpi3RootDesktop::closeEvent(QCloseEvent *event){
 
-//    QSettings *settings = new QSettings("C:/Users/mablodgett/Desktop/test.ini", QSettings::IniFormat);
+    QSettings *settings = new QSettings(QDir::currentPath()  + "/profile.xml", XmlSettingsFormat);
+    settings->setValue("geometry", "7");
 
-//    QSettings *settings = new QSettings(":/desktop/mpi3media/test.ini", QSettings::IniFormat, this);
-    QSettings *settings = new QSettings(QCoreApplication::applicationDirPath() + "profile.ini", QSettings::IniFormat);
-//    settings->setPath(QSettings::IniFormat, QSettings::UserScope, ":/desktop/mpi3media/test.ini");
-
-//    settings.setPath(QSettings::IniFormat, QSettings::UserScope, "C:/Users/mablodgett/Desktop/test.ini");
-//    settings.setPath(QSettings::IniFormat, QSettings::SystemScope, "C:/Users/mablodgett/Desktop/test.ini");
-    settings->setValue("geometry", "8");
     QMainWindow::closeEvent(event);
 }
 void Mpi3RootDesktop::paintEvent(QPaintEvent *event){

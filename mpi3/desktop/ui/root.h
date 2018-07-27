@@ -15,12 +15,6 @@ class Mpi3TreeView;
 class Mpi3Library;
 class Mpi3Style;
 
-//#include <QSettings>
-
-//bool readXmlFile(QIODevice &device, QSettings::SettingsMap &map);
-//bool writeXmlFile(QIODevice &device, const QSettings::SettingsMap &map);
-
-
 
 class Mpi3RootDesktop : public QMainWindow
 {
