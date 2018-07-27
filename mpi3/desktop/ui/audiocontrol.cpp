@@ -1,4 +1,4 @@
-#include "pplayback.h"
+#include "audiocontrol.h"
 
 #include <QGridLayout>
 #include <QStyleOption>

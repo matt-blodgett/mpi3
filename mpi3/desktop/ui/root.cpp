@@ -1,9 +1,9 @@
 ﻿#include "root.h"
-#include "plibrary.h"
-#include "pplayback.h"
+#include "librarydisplay.h"
+#include "audiocontrol.h"
 
-#include "mvc/mlibmodel.h"
-#include "mvc/mtreeview.h"
+#include "mvc/libmodel.h"
+#include "mvc/libview.h"
 
 #include "util/uistyle.h"
 #include "util/mpi3library.h"
@@ -28,81 +28,12 @@
 Mpi3RootDesktop::Mpi3RootDesktop(){}
 Mpi3RootDesktop::~Mpi3RootDesktop(){}
 
-void Mpi3RootDesktop::initialize(){    
+void Mpi3RootDesktop::initialize(){
     initializeObjects();
-    initializeSharedActions();
+    initializeActions();
     initializeMainMenu();
-    initializeLibrary();
-
-    QWidget *windowMain = new QWidget;
-    setCentralWidget(windowMain);
-
-    QGridLayout *layoutMain = new QGridLayout;
-    layoutMain->addWidget(m_panelPlayback, 0, 0, 1, 1);
-    layoutMain->addWidget(m_panelLibview, 1, 0, 1, 1);
-    layoutMain->setColumnStretch(0, 1);
-    layoutMain->setRowStretch(1, 1);
-    layoutMain->setMargin(0);
-    layoutMain->setHorizontalSpacing(0);
-    layoutMain->setVerticalSpacing(0);
-
-    windowMain->setLayout(layoutMain);
-
-
-    m_audioOutput->setAudioRole(QAudio::MusicRole);
-
-    m_panelPlayback->setState(m_audioOutput->state());
-    m_panelPlayback->setVolume(m_audioOutput->volume());
-
-    connect(m_panelPlayback, &PanelPlayback::play, m_audioOutput, &QMediaPlayer::play);
-    connect(m_panelPlayback, &PanelPlayback::pause, m_audioOutput, &QMediaPlayer::pause);
-    connect(m_panelPlayback, &PanelPlayback::stop, m_audioOutput, &QMediaPlayer::stop);
-//    connect(m_playback, &PanelPlayback::next, m_playlist, &QMediaPlaylist::next);
-//    connect(m_playback, &PanelPlayback::previous, this, &PanelPlayback::previousClicked);
-    connect(m_panelPlayback, &PanelPlayback::changeVolume, m_audioOutput, &QMediaPlayer::setVolume);
-
-    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &PanelPlayback::setState);
-    connect(m_audioOutput, &QMediaPlayer::volumeChanged, m_panelPlayback, &PanelPlayback::setVolume);
-    connect(m_audioOutput, &QMediaPlayer::mutedChanged, m_panelPlayback, &PanelPlayback::setMuted);
-
-
-    connect(m_panelLibview, &PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
-
-
-//  QString p("file:///C:/Users/Matt/Desktop/Prayer in C.mp3");
-//  QString p("C:/Users/Matt/Desktop/Prayer in C.mp3");
-//    QString p("C:/Users/Matt/Desktop/Calm Down.wav");
-    QString p("C:/Users/Matt/Desktop/Calm Down.wav");
-    m_audioOutput->setMedia(QUrl(p));
-//    this->m_audio->setVolume(50);
-//    this->m_audio->play();
-
-    tree_songlist->setModel(m_modelSonglist);
-    tree_containers->setModel(m_modelContainers);
-    m_modelContainers->setLibrary(m_mediaLibrary);
-    m_modelSonglist->setLibrary(m_mediaLibrary);
-
-    tree_containers->expandAll();
-
-    connect(tree_containers, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::containersContextMenu);
-    connect(tree_songlist, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::songlistContextMenu);
-    connect(tree_songlist->header(), &QHeaderView::customContextMenuRequested, this, &Mpi3RootDesktop::headerContextMenu);
-
-    connect(tree_containers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
-    connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
-
-
-//    qDebug() << QDir::currentPath();
-//    QString qssPath = QDir::currentPath() + "/qss/default.qss";
-    setObjectName("Mpi3RootDesktop");
-
-    m_qssStyle->load(":/desktop/mpi3media/qss/default.qss");
-    setStyleSheet(m_qssStyle->qssStyle());
-
-
-    setWindowTitle("Mpi3MediaPlayer");
-    resize(800, 600);
-    windowMain->show();
+    initializeState();
+    initializeLayout();
 }
 
 void Mpi3RootDesktop::initializeObjects(){
@@ -118,8 +49,33 @@ void Mpi3RootDesktop::initializeObjects(){
 
     m_mediaLibrary = new Mpi3Library();
     m_qssStyle = new Mpi3Style();
+
+    connect(m_panelPlayback, &PanelPlayback::play, m_audioOutput, &QMediaPlayer::play);
+    connect(m_panelPlayback, &PanelPlayback::pause, m_audioOutput, &QMediaPlayer::pause);
+    connect(m_panelPlayback, &PanelPlayback::stop, m_audioOutput, &QMediaPlayer::stop);
+//    connect(m_playback, &PanelPlayback::next, m_playlist, &QMediaPlaylist::next);
+//    connect(m_playback, &PanelPlayback::previous, this, &PanelPlayback::previousClicked);
+    connect(m_panelPlayback, &PanelPlayback::changeVolume, m_audioOutput, &QMediaPlayer::setVolume);
+
+    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &PanelPlayback::setState);
+    connect(m_audioOutput, &QMediaPlayer::volumeChanged, m_panelPlayback, &PanelPlayback::setVolume);
+    connect(m_audioOutput, &QMediaPlayer::mutedChanged, m_panelPlayback, &PanelPlayback::setMuted);
+
+    connect(m_panelLibview, &PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
+
+    connect(tree_containers, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::containersContextMenu);
+    connect(tree_songlist, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::songlistContextMenu);
+    connect(tree_songlist->header(), &QHeaderView::customContextMenuRequested, this, &Mpi3RootDesktop::headerContextMenu);
+
+    connect(tree_containers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
+    connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
+
+    tree_songlist->setModel(m_modelSonglist);
+    tree_containers->setModel(m_modelContainers);
+    m_modelContainers->setLibrary(m_mediaLibrary);
+    m_modelSonglist->setLibrary(m_mediaLibrary);
 }
-void Mpi3RootDesktop::initializeSharedActions(){
+void Mpi3RootDesktop::initializeActions(){
     act_editCut = new QAction(this);
     act_editCopy = new QAction(this);
     act_editPaste = new QAction(this);
@@ -281,58 +237,41 @@ void Mpi3RootDesktop::initializeMainMenu(){
     menu_main->addMenu(menu_help);
     menu_help->addAction(act_helpAbout);
 }
-void Mpi3RootDesktop::initializeLibrary(){
+void Mpi3RootDesktop::initializeState(){
     m_mediaLibrary->modify(Mpi3Library::Name, "Main Library");
     m_mediaLibrary->modify(Mpi3Library::Added, "03/07/2017");
 
-//    //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
+    m_audioOutput->setAudioRole(QAudio::MusicRole);
+    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Calm Down.wav"));
+    m_audioOutput->setVolume(50);
 
-//    Mpi3Song *song_1 = m_library->newSong();
-//    song_1->name = "Me, Myself and I";
-//    song_1->artist = "G-Eazy";
-//    song_1->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Me, Myself  I (Ft. Bebe Rexha).mp3";
+    m_panelPlayback->setState(m_audioOutput->state());
+    m_panelPlayback->setVolume(m_audioOutput->volume());
 
-//    m_library->update(song_1);
+    tree_containers->expandAll();
 
-//    Mpi3Song *song_2 = m_library->newSong();
-//    song_2->name = "Been On";
-//    song_2->artist = "G-Eazy";
-//    song_2->path = "F:\\iTunes\\Music\\G-Eazy\\Unknown Album\\Been On.mp3";
-
-//    m_library->update(song_2);
-
-//    Mpi3Song *song_3 = m_library->newSong();
-//    song_3->name = "Change My Heart";
-//    song_3->artist = "Ozcan x Laurell";
-//    song_3->path = "F:\\iTunes\\Music\\Ozcan x Laurell\\Unknown Album\\Change My Heart.mp3";
-
-//    m_library->update(song_3);
-
-//    Mpi3Song *song_4 = m_library->newSong();
-//    song_4->name = "Little Moment";
-//    song_4->artist = "Omar LinX";
-//    song_4->path = "F:\\iTunes\\Music\\Omar LinX\\Unknown Album\\Little Moment.mp3";
-
-//    m_library->update(song_4);
-
-//    Mpi3Folder *fldr_1 = m_library->newFolder();
-//    fldr_1->name = "electric beat";
-
-//    Mpi3Folder *fldr_2 = m_library->newFolder();
-//    fldr_2->name = "party mix";
-
-//    Mpi3Folder *fldr_3 = m_library->newFolder(fldr_2);
-//    fldr_3->name = "party mix subfolder";
-
-//    Mpi3Playlist *plist_1 = m_library->newPlaylist();
-//    plist_1->name = "upbeat";
-
-//    Mpi3Playlist *plist_2 = m_library->newPlaylist(fldr_1);
-//    plist_2->name = "dance";
-
-//    plist_1->songs.push_back(song_3);
+    m_qssStyle->load(":/desktop/mpi3media/qss/default.qss");
+    setStyleSheet(m_qssStyle->qssStyle());
 
 
+    resize(800, 600);
+}
+void Mpi3RootDesktop::initializeLayout(){
+    setWindowTitle("Mpi3MediaPlayer");
+
+    QWidget *windowMain = new QWidget(this);
+    setCentralWidget(windowMain);
+
+    QGridLayout *layoutMain = new QGridLayout(windowMain);
+    layoutMain->addWidget(m_panelPlayback, 0, 0, 1, 1);
+    layoutMain->addWidget(m_panelLibview, 1, 0, 1, 1);
+    layoutMain->setColumnStretch(0, 1);
+    layoutMain->setRowStretch(1, 1);
+    layoutMain->setMargin(0);
+    layoutMain->setHorizontalSpacing(0);
+    layoutMain->setVerticalSpacing(0);
+    windowMain->setLayout(layoutMain);
+    windowMain->show();
 }
 
 void Mpi3RootDesktop::headerContextMenu(const QPoint &point){

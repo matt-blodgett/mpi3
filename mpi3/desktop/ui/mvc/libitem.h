@@ -1,5 +1,5 @@
-#ifndef MLIBITEM_H
-#define MLIBITEM_H
+#ifndef LIBITEM_H
+#define LIBITEM_H
 
 #include <QVariant>
 #include <QVector>

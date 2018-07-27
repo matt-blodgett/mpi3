@@ -1,4 +1,4 @@
-#include "mtreeview.h"
+#include "libview.h"
 
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
@@ -7,8 +7,45 @@
 
 #include <QHeaderView>
 
-
 #include <QDebug>
+
+
+Mpi3TreeViewStyle::Mpi3TreeViewStyle(QStyle* style) : QProxyStyle(style){}
+
+Mpi3TreeViewStyle::IndicatorStyle Mpi3TreeViewStyle::indicatorStyle() const{
+    return m_indicatorStyle;
+}
+void Mpi3TreeViewStyle::setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyle iStyle){
+    m_indicatorStyle = iStyle;
+}
+
+void Mpi3TreeViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const{
+    if(element == QStyle::PE_IndicatorItemViewItemDrop && !option->rect.isNull()){
+        QStyleOption opt(*option);
+        opt.rect.setLeft(0);
+
+        if(widget){
+            opt.rect.setRight(widget->width());
+        }
+
+        switch(m_indicatorStyle){
+            case Mpi3TreeViewStyle::IndicatorStyleMove:
+                opt.rect.setHeight(0);
+                break;
+            case Mpi3TreeViewStyle::IndicatorStyleDrop:
+                if(option->rect.y() % 21 > 0){
+                    opt.rect.setY(option->rect.y() - 21 + 1);
+                }
+                opt.rect.setHeight(21);
+                break;
+        }
+
+        QProxyStyle::drawPrimitive(element, &opt, painter, widget);
+        return;
+    }
+
+    QProxyStyle::drawPrimitive(element, option, painter, widget);
+}
 
 
 Mpi3TreeView::Mpi3TreeView(QWidget *parent) : QTreeView(parent){
@@ -112,39 +149,4 @@ void Mpi3TreeView::dropEvent(QDropEvent *event){
     event->accept();
 }
 
-Mpi3TreeViewStyle::Mpi3TreeViewStyle(QStyle* style) : QProxyStyle(style){}
 
-Mpi3TreeViewStyle::IndicatorStyle Mpi3TreeViewStyle::indicatorStyle() const{
-    return m_indicatorStyle;
-}
-void Mpi3TreeViewStyle::setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyle iStyle){
-    m_indicatorStyle = iStyle;
-}
-
-void Mpi3TreeViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const{
-    if(element == QStyle::PE_IndicatorItemViewItemDrop && !option->rect.isNull()){
-        QStyleOption opt(*option);
-        opt.rect.setLeft(0);
-
-        if(widget){
-            opt.rect.setRight(widget->width());
-        }
-
-        switch(m_indicatorStyle){
-            case Mpi3TreeViewStyle::IndicatorStyleMove:
-                opt.rect.setHeight(0);
-                break;
-            case Mpi3TreeViewStyle::IndicatorStyleDrop:
-                if(option->rect.y() % 21 > 0){
-                    opt.rect.setY(option->rect.y() - 21 + 1);
-                }
-                opt.rect.setHeight(21);
-                break;
-        }
-
-        QProxyStyle::drawPrimitive(element, &opt, painter, widget);
-        return;
-    }
-
-    QProxyStyle::drawPrimitive(element, option, painter, widget);
-}

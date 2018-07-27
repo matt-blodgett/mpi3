@@ -1,5 +1,5 @@
-#ifndef PLIBRARY_H
-#define PLIBRARY_H
+#ifndef LIBRARYDISPLAY_H
+#define LIBRARYDISPLAY_H
 
 #include <QWidget>
 

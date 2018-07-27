@@ -1,5 +1,5 @@
-#ifndef MLIBMODEL_H
-#define MLIBMODEL_H
+#ifndef LIBMODEL_H
+#define LIBMODEL_H
 
 #include <QAbstractItemModel>
 #include <QScopedPointer>

@@ -1,5 +1,5 @@
-#include "mlibmodel.h"
-#include "mlibitem.h"
+#include "libmodel.h"
+#include "libitem.h"
 #include "util/mpi3library.h"
 
 #include <QMimeData>

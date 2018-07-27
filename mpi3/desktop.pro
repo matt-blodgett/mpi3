@@ -15,21 +15,21 @@ RESOURCES += desktop/mpi3media
 
 SOURCES += desktop/main.cpp
 
-HEADERS += desktop/ui/root.h
-HEADERS += desktop/ui/plibrary.h
-HEADERS += desktop/ui/pplayback.h
-
 SOURCES += desktop/ui/root.cpp
-SOURCES += desktop/ui/plibrary.cpp
-SOURCES += desktop/ui/pplayback.cpp
+SOURCES += desktop/ui/audiocontrol.cpp
+SOURCES += desktop/ui/librarydisplay.cpp
 
-HEADERS += desktop/ui/mvc/mlibitem.h
-HEADERS += desktop/ui/mvc/mlibmodel.h
-HEADERS += desktop/ui/mvc/mtreeview.h
+HEADERS += desktop/ui/root.h
+HEADERS += desktop/ui/audiocontrol.h
+HEADERS += desktop/ui/librarydisplay.h
 
-SOURCES += desktop/ui/mvc/mlibitem.cpp
-SOURCES += desktop/ui/mvc/mlibmodel.cpp
-SOURCES += desktop/ui/mvc/mtreeview.cpp
+HEADERS += desktop/ui/mvc/libmodel.h
+HEADERS += desktop/ui/mvc/libview.h
+HEADERS += desktop/ui/mvc/libitem.h
+
+SOURCES += desktop/ui/mvc/libmodel.cpp
+SOURCES += desktop/ui/mvc/libview.cpp
+SOURCES += desktop/ui/mvc/libitem.cpp
 
 HEADERS += util/uistyle.h
 HEADERS += util/mpi3library.h

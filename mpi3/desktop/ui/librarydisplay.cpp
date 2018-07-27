@@ -1,5 +1,5 @@
-#include "plibrary.h"
-#include "mvc/mtreeview.h"
+#include "librarydisplay.h"
+#include "mvc/libview.h"
 
 #include <QGridLayout>
 #include <QStyleOption>

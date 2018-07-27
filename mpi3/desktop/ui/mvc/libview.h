@@ -1,11 +1,32 @@
-#ifndef MTREEVIEW_H
-#define MTREEVIEW_H
+#ifndef LIBVIEW_H
+#define LIBVIEW_H
 
 #include <QProxyStyle>
 #include <QTreeView>
 
-class Mpi3TreeView;
-class Mpi3TreeViewStyle;
+
+class Mpi3TreeViewStyle: public QProxyStyle
+{
+    Q_OBJECT
+
+public:
+    Mpi3TreeViewStyle(QStyle *style = nullptr);
+
+public:
+    enum IndicatorStyle {
+        IndicatorStyleMove,
+        IndicatorStyleDrop
+    };
+
+    IndicatorStyle indicatorStyle() const;
+    void setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyle iStyle);
+
+private:
+    IndicatorStyle m_indicatorStyle = Mpi3TreeViewStyle::IndicatorStyleDrop;
+
+public:
+    void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const;
+};
 
 
 class Mpi3TreeView : public QTreeView
@@ -37,29 +58,6 @@ private:
     void dropEvent(QDropEvent *event);
 };
 
-
-class Mpi3TreeViewStyle: public QProxyStyle
-{
-    Q_OBJECT
-
-public:
-    Mpi3TreeViewStyle(QStyle *style = nullptr);
-
-public:
-    enum IndicatorStyle {
-        IndicatorStyleMove,
-        IndicatorStyleDrop
-    };
-
-    IndicatorStyle indicatorStyle() const;
-    void setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyle iStyle);
-
-private:
-    IndicatorStyle m_indicatorStyle = Mpi3TreeViewStyle::IndicatorStyleDrop;
-
-public:
-    void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const;
-};
 
 
 #endif

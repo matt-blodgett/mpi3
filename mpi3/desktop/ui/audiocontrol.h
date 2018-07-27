@@ -1,5 +1,5 @@
-#ifndef PPLAYBACK_H
-#define PPLAYBACK_H
+#ifndef AUDIOCONTROL_H
+#define AUDIOCONTROL_H
 
 #include <QMediaPlayer>
 #include <QWidget>

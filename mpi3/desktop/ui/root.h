@@ -21,15 +21,16 @@ class Mpi3RootDesktop : public QMainWindow
     Q_OBJECT
 
 public:
-    Mpi3RootDesktop();
+    explicit Mpi3RootDesktop();
     ~Mpi3RootDesktop();
     void initialize();
 
 private:
     void initializeObjects();
-    void initializeSharedActions();
+    void initializeActions();
     void initializeMainMenu();
-    void initializeLibrary();
+    void initializeState();
+    void initializeLayout();
 
 private:
     void headerContextMenu(const QPoint &point);
