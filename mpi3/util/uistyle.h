@@ -4,12 +4,12 @@
 #include <QString>
 
 
-class Mpi3Theme
+class Mpi3Style
 {
 
 public:
-    Mpi3Theme();
-    ~Mpi3Theme();
+    Mpi3Style();
+    ~Mpi3Style();
 
 public:
     void load(const QString &path = QString());
@@ -20,13 +20,14 @@ private:
     QString removeComments(const QString &text);
 
 public:
-    QString& qssPath();
-    QString qssName;
-    QString qssStyle;
+    QString qssName() const;
+    QString qssStyle() const;
+    QString qssPath() const;
 
 private:
-    QString filepath;
-
+    QString m_name;
+    QString m_style;
+    QString m_filepath;
 };
 
 #endif

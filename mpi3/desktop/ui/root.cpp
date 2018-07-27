@@ -38,8 +38,8 @@ void Mpi3RootDesktop::initialize(){
     setCentralWidget(windowMain);
 
     QGridLayout *layoutMain = new QGridLayout;
-    layoutMain->addWidget(m_playback, 0, 0, 1, 1);
-    layoutMain->addWidget(m_libview, 1, 0, 1, 1);
+    layoutMain->addWidget(m_panelPlayback, 0, 0, 1, 1);
+    layoutMain->addWidget(m_panelLibview, 1, 0, 1, 1);
     layoutMain->setColumnStretch(0, 1);
     layoutMain->setRowStretch(1, 1);
     layoutMain->setMargin(0);
@@ -49,38 +49,38 @@ void Mpi3RootDesktop::initialize(){
     windowMain->setLayout(layoutMain);
 
 
-    m_audio->setAudioRole(QAudio::MusicRole);
+    m_audioOutput->setAudioRole(QAudio::MusicRole);
 
-    m_playback->setState(m_audio->state());
-    m_playback->setVolume(m_audio->volume());
+    m_panelPlayback->setState(m_audioOutput->state());
+    m_panelPlayback->setVolume(m_audioOutput->volume());
 
-    connect(m_playback, &PanelPlayback::play, m_audio, &QMediaPlayer::play);
-    connect(m_playback, &PanelPlayback::pause, m_audio, &QMediaPlayer::pause);
-    connect(m_playback, &PanelPlayback::stop, m_audio, &QMediaPlayer::stop);
+    connect(m_panelPlayback, &PanelPlayback::play, m_audioOutput, &QMediaPlayer::play);
+    connect(m_panelPlayback, &PanelPlayback::pause, m_audioOutput, &QMediaPlayer::pause);
+    connect(m_panelPlayback, &PanelPlayback::stop, m_audioOutput, &QMediaPlayer::stop);
 //    connect(m_playback, &PanelPlayback::next, m_playlist, &QMediaPlaylist::next);
 //    connect(m_playback, &PanelPlayback::previous, this, &PanelPlayback::previousClicked);
-    connect(m_playback, &PanelPlayback::changeVolume, m_audio, &QMediaPlayer::setVolume);
+    connect(m_panelPlayback, &PanelPlayback::changeVolume, m_audioOutput, &QMediaPlayer::setVolume);
 
-    connect(m_audio, &QMediaPlayer::stateChanged, m_playback, &PanelPlayback::setState);
-    connect(m_audio, &QMediaPlayer::volumeChanged, m_playback, &PanelPlayback::setVolume);
-    connect(m_audio, &QMediaPlayer::mutedChanged, m_playback, &PanelPlayback::setMuted);
+    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &PanelPlayback::setState);
+    connect(m_audioOutput, &QMediaPlayer::volumeChanged, m_panelPlayback, &PanelPlayback::setVolume);
+    connect(m_audioOutput, &QMediaPlayer::mutedChanged, m_panelPlayback, &PanelPlayback::setMuted);
 
 
-    connect(m_libview, &PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
+    connect(m_panelLibview, &PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
 
 
 //  QString p("file:///C:/Users/Matt/Desktop/Prayer in C.mp3");
 //  QString p("C:/Users/Matt/Desktop/Prayer in C.mp3");
 //    QString p("C:/Users/Matt/Desktop/Calm Down.wav");
     QString p("C:/Users/Matt/Desktop/Calm Down.wav");
-    m_audio->setMedia(QUrl(p));
+    m_audioOutput->setMedia(QUrl(p));
 //    this->m_audio->setVolume(50);
 //    this->m_audio->play();
 
     tree_songlist->setModel(m_modelSonglist);
     tree_containers->setModel(m_modelContainers);
-    m_modelContainers->setLibrary(m_library);
-    m_modelSonglist->setLibrary(m_library);
+    m_modelContainers->setLibrary(m_mediaLibrary);
+    m_modelSonglist->setLibrary(m_mediaLibrary);
 
     tree_containers->expandAll();
 
@@ -96,8 +96,8 @@ void Mpi3RootDesktop::initialize(){
 //    QString qssPath = QDir::currentPath() + "/qss/default.qss";
     setObjectName("Mpi3RootDesktop");
 
-    m_theme->load(":/desktop/mpi3media/qss/default.qss");
-    setStyleSheet(m_theme->qssStyle);
+    m_qssStyle->load(":/desktop/mpi3media/qss/default.qss");
+    setStyleSheet(m_qssStyle->qssStyle());
 
 
     setWindowTitle("Mpi3MediaPlayer");
@@ -106,18 +106,18 @@ void Mpi3RootDesktop::initialize(){
 }
 
 void Mpi3RootDesktop::initializeObjects(){
-    m_libview = new PanelLibrary(this);
-    m_playback = new PanelPlayback(this);
+    m_panelLibview = new PanelLibrary(this);
+    m_panelPlayback = new PanelPlayback(this);
 
     tree_containers = findChild<Mpi3TreeView*>("PlaylistsTreeview");
     tree_songlist = findChild<Mpi3TreeView*>("LibraryTreeview");
 
     m_modelContainers = new LibraryModel();
     m_modelSonglist = new SonglistModel();
-    m_audio = new QMediaPlayer(this);
+    m_audioOutput = new QMediaPlayer(this);
 
-    m_library = new Mpi3Library();
-    m_theme = new Mpi3Theme();
+    m_mediaLibrary = new Mpi3Library();
+    m_qssStyle = new Mpi3Style();
 }
 void Mpi3RootDesktop::initializeSharedActions(){
     act_editCut = new QAction(this);
@@ -282,8 +282,8 @@ void Mpi3RootDesktop::initializeMainMenu(){
     menu_help->addAction(act_helpAbout);
 }
 void Mpi3RootDesktop::initializeLibrary(){
-    m_library->modify(Mpi3Library::Name, "Main Library");
-    m_library->modify(Mpi3Library::Added, "03/07/2017");
+    m_mediaLibrary->modify(Mpi3Library::Name, "Main Library");
+    m_mediaLibrary->modify(Mpi3Library::Added, "03/07/2017");
 
 //    //    mpi3Lib->save("C:\\Users\\Matt\\Desktop\\lib.txt");
 
@@ -491,8 +491,8 @@ void Mpi3RootDesktop::containersContextMenu(const QPoint &point){
     Mpi3Playlist *playlist = nullptr;
     if(index.isValid()){
         QString pid = m_modelContainers->getPID(index);
-        folder = m_library->getFolder(pid);
-        playlist = m_library->getPlaylist(pid);
+        folder = m_mediaLibrary->getFolder(pid);
+        playlist = m_mediaLibrary->getPlaylist(pid);
     }
     else {
         tree_containers->clearSelection();
@@ -542,16 +542,16 @@ void Mpi3RootDesktop::containersContextMenu(const QPoint &point){
 }
 
 void Mpi3RootDesktop::libraryViewChanged(){
-    switch(m_libview->currentView()) {
+    switch(m_panelLibview->currentView()) {
 
         case PanelLibrary::ViewLibrary:
-            m_libview->setDisplay("Library");
+            m_panelLibview->setDisplay("Library");
             tree_songlist->setRootIsDecorated(false);
 //            m_modelSonglist->viewLibrarySonglist();
             break;
 
         case PanelLibrary::ViewArtists:
-            m_libview->setDisplay("Artists");
+            m_panelLibview->setDisplay("Artists");
             tree_songlist->setRootIsDecorated(true);
 //            m_modelSonglist->viewLibraryArtists();
             break;
@@ -559,10 +559,10 @@ void Mpi3RootDesktop::libraryViewChanged(){
         case PanelLibrary::ViewPlaylist:
             QModelIndex selectedIndex = tree_containers->selectionModel()->currentIndex();
             QString pid = m_modelContainers->getPID(selectedIndex);
-            Mpi3Playlist *playlist = m_library->getPlaylist(pid);
+            Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(pid);
 
             if(playlist){
-                m_libview->setDisplay(playlist->name());
+                m_panelLibview->setDisplay(playlist->name());
                 m_modelSonglist->setPlaylist(playlist);
             }
 
@@ -588,9 +588,9 @@ void Mpi3RootDesktop::libImport(){
 //        delete m_modelLibrary;
 //        delete m_modelPlaylists;
 
-        m_library->load(libFile);
+        m_mediaLibrary->load(libFile);
 //        m_modelSonglist->setLibrary(m_library);
-        m_modelContainers->setLibrary(m_library);
+        m_modelContainers->setLibrary(m_mediaLibrary);
 
 
         themeRefresh();
@@ -602,7 +602,7 @@ void Mpi3RootDesktop::libExport(){
     libFile = QFileDialog::getSaveFileName(this, "Export Mpi3Library File", pathDesktop, "Mpi3Lib Files (*.mpi3lib)");
 
     if(libFile != ""){
-        m_library->save(libFile);
+        m_mediaLibrary->save(libFile);
     }
 }
 
@@ -612,14 +612,14 @@ void Mpi3RootDesktop::themeSet(){
     qssFile = QFileDialog::getOpenFileName(this, "Open QSS Theme File", pathDesktop, "QSS Files (*.qss)");
 
     if(qssFile != ""){
-        m_theme->load(qssFile);
+        m_qssStyle->load(qssFile);
         themeRefresh();
     }
 }
 void Mpi3RootDesktop::themeRefresh(){
-    if (m_theme != nullptr){
-        m_theme->load();
-        this->setStyleSheet(m_theme->qssStyle);
+    if (m_qssStyle != nullptr){
+        m_qssStyle->load();
+        setStyleSheet(m_qssStyle->qssStyle());
     }
 }
 
@@ -648,36 +648,36 @@ void Mpi3RootDesktop::libNewFolder(){
     QModelIndex currentIndex = tree_containers->currentIndex();
     if(currentIndex.isValid()){
         QString pid = m_modelContainers->getPID(currentIndex);
-        Mpi3Playlist *currentPlaylist = m_library->getPlaylist(pid);
+        Mpi3Playlist *currentPlaylist = m_mediaLibrary->getPlaylist(pid);
 
         if(currentPlaylist){
             currentIndex = currentIndex.parent();
         }
     }
 
-    Mpi3Folder *parent = m_library->getFolder(m_modelContainers->getPID(currentIndex));
-    Mpi3Folder *folder = m_library->newFolder(true);
+    Mpi3Folder *parent = m_mediaLibrary->getFolder(m_modelContainers->getPID(currentIndex));
+    Mpi3Folder *folder = m_mediaLibrary->newFolder(true);
     int position = parent ? parent->folders.size() : -1;
 
-    m_library->insert(folder, parent, position);
+    m_mediaLibrary->insert(folder, parent, position);
     tree_containers->expand(currentIndex);
 }
 void Mpi3RootDesktop::libNewPlaylist(){
     QModelIndex currentIndex = tree_containers->currentIndex();
     if(currentIndex.isValid()){
         QString pid = m_modelContainers->getPID(currentIndex);
-        Mpi3Playlist *currentPlaylist = m_library->getPlaylist(pid);
+        Mpi3Playlist *currentPlaylist = m_mediaLibrary->getPlaylist(pid);
 
         if(currentPlaylist){
             currentIndex = currentIndex.parent();
         }
     }
 
-    Mpi3Folder *parent = m_library->getFolder(m_modelContainers->getPID(currentIndex));
-    Mpi3Playlist *playlist = m_library->newPlaylist(true);
+    Mpi3Folder *parent = m_mediaLibrary->getFolder(m_modelContainers->getPID(currentIndex));
+    Mpi3Playlist *playlist = m_mediaLibrary->newPlaylist(true);
     int position = parent ? parent->playlists.size() : -1;
 
-    m_library->insert(playlist, parent, position);
+    m_mediaLibrary->insert(playlist, parent, position);
     tree_containers->expand(currentIndex);
 }
 void Mpi3RootDesktop::libImportPlaylists(){}
@@ -692,13 +692,13 @@ void Mpi3RootDesktop::objDelete(){
         QModelIndex index = tree_containers->currentIndex();
         QString pid = m_modelContainers->getPID(index);
 
-        Mpi3Folder *folder = m_library->getFolder(pid);
-        Mpi3Playlist *playlist = m_library->getPlaylist(pid);
+        Mpi3Folder *folder = m_mediaLibrary->getFolder(pid);
+        Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(pid);
         if(folder){
-            m_library->remove(folder);
+            m_mediaLibrary->remove(folder);
         }
         else if(playlist){
-            m_library->remove(playlist);
+            m_mediaLibrary->remove(playlist);
         }
     }
     else if(tree_songlist->selectionModel()->selectedRows().size() > 0){
@@ -715,8 +715,8 @@ void Mpi3RootDesktop::objDelete(){
 
         for(int i = 0; i < pids.size(); i++){
             QString pid = pids.at(i);
-            Mpi3Song *song = m_library->getSong(pid);
-            m_library->remove(song);
+            Mpi3Song *song = m_mediaLibrary->getSong(pid);
+            m_mediaLibrary->remove(song);
         }
     }
 }

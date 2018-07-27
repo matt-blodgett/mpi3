@@ -13,7 +13,7 @@ class LibraryModel;
 class SonglistModel;
 class Mpi3TreeView;
 class Mpi3Library;
-class Mpi3Theme;
+class Mpi3Style;
 
 
 class Mpi3RootDesktop : public QMainWindow
@@ -37,18 +37,18 @@ private:
     void containersContextMenu(const QPoint &point);
 
 private:
-    PanelLibrary *m_libview = nullptr;
-    PanelPlayback *m_playback = nullptr;
+    PanelLibrary *m_panelLibview = nullptr;
+    PanelPlayback *m_panelPlayback = nullptr;
 
     Mpi3TreeView *tree_containers = nullptr;
     Mpi3TreeView *tree_songlist = nullptr;
 
     LibraryModel *m_modelContainers = nullptr;
     SonglistModel *m_modelSonglist = nullptr;
-    QMediaPlayer *m_audio = nullptr;
+    QMediaPlayer *m_audioOutput = nullptr;
 
-    Mpi3Library *m_library = nullptr;
-    Mpi3Theme *m_theme = nullptr;
+    Mpi3Library *m_mediaLibrary = nullptr;
+    Mpi3Style *m_qssStyle = nullptr;
 
 private:
     QAction *act_editCut;
