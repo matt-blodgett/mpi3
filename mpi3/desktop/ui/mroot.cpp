@@ -76,9 +76,6 @@ void Mpi3RootDesktop::initialize(){
 //    this->m_audio->setVolume(50);
 //    this->m_audio->play();
 
-
-
-
     tree_songlist->setModel(m_modelSonglist);
     tree_containers->setModel(m_modelContainers);
     m_modelContainers->setLibrary(m_library);
@@ -94,19 +91,15 @@ void Mpi3RootDesktop::initialize(){
     connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
 
 
-//    connect(tree_songlist, &SonglistTreeview::filesDropped, m_modelSonglist, &SonglistModel::dropExternalFiles);
-
-
-
-
 //    qDebug() << QDir::currentPath();
 //    QString qssPath = QDir::currentPath() + "/qss/default.qss";
-    m_theme->load(":/desktop/qss/default.qss");
-
-
-
     setObjectName("Mpi3RootDesktop");
+
+    m_theme->load(":/desktop/mpi3media/qss/default.qss");
     setStyleSheet(m_theme->qssStyle);
+
+
+    setWindowTitle("Mpi3MediaPlayer");
     resize(800, 600);
     windowMain->show();
 }

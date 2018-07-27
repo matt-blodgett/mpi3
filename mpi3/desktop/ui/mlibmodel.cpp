@@ -25,10 +25,10 @@ bool validMediaFiles(const QMimeData *data){
 
 
 LibraryModel::LibraryModel(QObject *parent) : QAbstractItemModel(parent){
-    rootItem = new LibraryItem();
+    m_rootItem = new LibraryItem();
 
     insertColumns(0, 1);
-    rootItem->setData(0, "Playlists");
+    m_rootItem->setData(0, "Playlists");
 
     QPixmap pix_folder(":/icons/treeview/folder.png");
     QPixmap pix_playlist(":/icons/treeview/playlist.png");
@@ -37,10 +37,14 @@ LibraryModel::LibraryModel(QObject *parent) : QAbstractItemModel(parent){
     icn_playlist.addPixmap(pix_playlist);
 }
 LibraryModel::~LibraryModel(){
-    delete rootItem;
+    delete m_rootItem;
 }
 
 Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const{
+    if(!index.isValid()){
+        return Qt::ItemIsDropEnabled;
+    }
+
     return Qt::ItemIsEditable
             | Qt::ItemIsDragEnabled
             | Qt::ItemIsDropEnabled
@@ -68,49 +72,48 @@ QMimeData* LibraryModel::mimeData(const QModelIndexList &indexes) const{
 }
 
 bool LibraryModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const {
-//    Q_UNUSED(data);
-    Q_UNUSED(action);
-//    Q_UNUSED(row);
-    Q_UNUSED(column);
-//    Q_UNUSED(parent);
 
-    qDebug() << row << column << parent.row() << parent.column() ;
+    if(action == Qt::CopyAction && validMediaFiles(data)){
 
-
-
-//    qDebug() << row << column;
-
-
-//    if(!parent.isValid()){
-//        return true;
-//    }
-
-
-    if(validMediaFiles(data)){
+//        qDebug() << row << column << parent.row() << parent.column();
 
 //        if(row == 0 && column == 0 && parent.row() == -1 && parent.column() == -1){
 //            return true;
 //        }
 
-//        if(row == -1 && column == -1 && parent.row() == -1 && parent.column() == -1){
-//            return true;
-//        }
+        if(row == -1 && column == -1 && parent.row() == -1 && parent.column() == -1){
+            return true;
+        }
 
         LibraryItem *parentItem = getItem(parent);
         LibraryItem *childItem = nullptr;
 
+//        if(row == -1 && column == -1){
+//            childItem = m_rootItem->child(parent.row());
+//        }
+//        else{
+//            childItem = parentItem->child(row);
+//        }
+
         if(row == -1 && column == -1){
-            childItem = rootItem->child(parent.row());
+            childItem = m_rootItem->child(parent.row());
+        }
+        else if(parent.row() == -1 && parent.column() == -1){
+            childItem = m_rootItem->child(row);
         }
         else{
             childItem = parentItem->child(row);
         }
 
-
         Mpi3Playlist *dropPlaylist = m_library->getPlaylist(getPID(childItem));
 
+        Mpi3Folder *dropFolder = m_library->getFolder(getPID(childItem));
+        if(dropFolder){
+//            qDebug() << dropFolder->name();
+        }
+
         if(dropPlaylist){
-            qDebug() << dropPlaylist->name();
+//            qDebug() << dropPlaylist->name();
             return true;
         }
         else {
@@ -135,7 +138,7 @@ int LibraryModel::rowCount(const QModelIndex &parent) const{
     return parentItem->childCount();
 }
 int LibraryModel::columnCount(const QModelIndex &) const{
-    return rootItem->columnCount();
+    return m_rootItem->columnCount();
 }
 
 QModelIndex LibraryModel::index(int row, int column, const QModelIndex &parent) const{
@@ -159,7 +162,7 @@ QModelIndex LibraryModel::parent(const QModelIndex &index) const{
 
     LibraryItem *childItem = getItem(index);
     LibraryItem *parentItem = childItem->parent();
-    if (parentItem == rootItem){
+    if (parentItem == m_rootItem){
         return QModelIndex();
     }
 
@@ -190,7 +193,7 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const{
 }
 QVariant LibraryModel::headerData(int section, Qt::Orientation orientation, int role) const{
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole){
-        return rootItem->data(section);
+        return m_rootItem->data(section);
     }
 
     return QVariant();
@@ -225,7 +228,7 @@ bool LibraryModel::setHeaderData(int section, Qt::Orientation orientation, const
         return false;
     }
 
-    bool result = rootItem->setData(section, value);
+    bool result = m_rootItem->setData(section, value);
 
     if (result){
         emit headerDataChanged(orientation, section, section);
@@ -239,7 +242,7 @@ bool LibraryModel::insertRows(int position, int count, const QModelIndex &parent
         LibraryItem *parentItem = getItem(parent);
 
         beginInsertRows(parent, position, position + count - 1);
-        bool success = parentItem->insertChildren(position, count, rootItem->columnCount());
+        bool success = parentItem->insertChildren(position, count, m_rootItem->columnCount());
         endInsertRows();
 
         return success;
@@ -250,7 +253,7 @@ bool LibraryModel::insertRows(int position, int count, const QModelIndex &parent
 bool LibraryModel::insertColumns(int position, int count, const QModelIndex &parent){
     if(count > 0){
         beginInsertColumns(parent, position, position + count - 1);
-        bool success = rootItem->insertColumns(position, count);
+        bool success = m_rootItem->insertColumns(position, count);
         endInsertColumns();
 
         return success;
@@ -275,10 +278,10 @@ bool LibraryModel::removeRows(int position, int count, const QModelIndex &parent
 bool LibraryModel::removeColumns(int position, int count, const QModelIndex &parent){
     if(count > 0){
         beginRemoveColumns(parent, position, position + count - 1);
-        bool success = rootItem->removeColumns(position, count);
+        bool success = m_rootItem->removeColumns(position, count);
         endRemoveColumns();
 
-        if (rootItem->columnCount() == 0){
+        if (m_rootItem->columnCount() == 0){
             removeRows(0, rowCount());
         }
 
@@ -314,17 +317,17 @@ LibraryItem *LibraryModel::getItem(const QModelIndex &index) const{
         }
     }
 
-    return rootItem;
+    return m_rootItem;
 }
 LibraryItem *LibraryModel::getItem(const QString &pid) const{
-    return pid.isNull() ? rootItem : libItems[pid];
+    return pid.isNull() ? m_rootItem : m_libItems[pid];
 }
 
 QString LibraryModel::getPID(const QModelIndex &index) const{
     return getPID(getItem(index));
 }
 QString LibraryModel::getPID(LibraryItem *item) const{
-    return libItems.key(item);
+    return m_libItems.key(item);
 }
 
 void LibraryModel::setLibrary(Mpi3Library *library){
@@ -381,7 +384,7 @@ void LibraryModel::playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *folder){
         position = folder->playlists.indexOf(playlist);
     }
     else {
-        item = rootItem;
+        item = m_rootItem;
         position = rowCount();
     }
 
@@ -391,7 +394,7 @@ void LibraryModel::playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *folder){
     child->setData(0, playlist->name());
     child->setIcon(icn_playlist);
 
-    libItems[playlist->pid()] = child;
+    m_libItems[playlist->pid()] = child;
 }
 void LibraryModel::folderInserted(Mpi3Folder *folder, Mpi3Folder *parent){
     QModelIndex idx;
@@ -404,7 +407,7 @@ void LibraryModel::folderInserted(Mpi3Folder *folder, Mpi3Folder *parent){
         position = parent->folders.indexOf(folder);
     }
     else {
-        item = rootItem;
+        item = m_rootItem;
         position = rowCount();
     }
 
@@ -414,7 +417,7 @@ void LibraryModel::folderInserted(Mpi3Folder *folder, Mpi3Folder *parent){
     child->setData(0, folder->name());
     child->setIcon(icn_folder);
 
-    libItems[folder->pid()] = child;
+    m_libItems[folder->pid()] = child;
 }
 
 void LibraryModel::elementModified(const QString &pidModified){

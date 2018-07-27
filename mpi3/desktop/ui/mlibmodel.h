@@ -67,9 +67,8 @@ private:
     QIcon icn_playlist;
 
 private:
-    LibraryItem *rootItem = nullptr;
-    QMap<QString, LibraryItem*> libItems;
-
+    LibraryItem *m_rootItem = nullptr;
+    QMap<QString, LibraryItem*> m_libItems;
     QScopedPointer<Mpi3Library> m_library;
 
 public:
@@ -141,7 +140,6 @@ private:
     QScopedPointer<Mpi3Library> m_library;
     Mpi3Playlist *m_playlist = nullptr;
     QStringList m_headers;
-
 
 public:
     QString getPID(const QModelIndex &index) const;

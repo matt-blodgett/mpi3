@@ -4,14 +4,11 @@ QT += gui
 QT += widgets
 QT += multimedia
 
-
-TARGET = desktop
+TARGET = Mpi3MediaPlayer
 TEMPLATE = app
-
 
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
-
 
 HEADERS += desktop/ui/mroot.h
 HEADERS += desktop/ui/mlibitem.h
@@ -34,10 +31,8 @@ SOURCES += util/mtheme.cpp
 HEADERS += util/medialib.h
 SOURCES += util/medialib.cpp
 
-RESOURCES += desktop/qss
+RESOURCES += desktop/mpi3media
 RESOURCES += desktop.qrc
-
-
 
 
 # EXTERNAL QRC BINARY RESOURCE

@@ -5,9 +5,6 @@
 #include <QDragLeaveEvent>
 #include <QDropEvent>
 
-#include <QMimeData>
-
-
 #include <QHeaderView>
 
 
@@ -62,111 +59,58 @@ bool Mpi3TreeView::eventFilter(QObject *object, QEvent *event){
     if(object == viewport()){
 
         if(event->type() == QEvent::DragEnter){
-
-//            QDragEnterEvent *sc_event = static_cast<QDragEnterEvent*>(event);
-
-//            int x = width() / 2;
-//            int y = sc_event->pos().y();
-
-//            qDebug() << sc_event->pos().x() << sc_event->pos().y() << "-" << x << y;
-
-//            sc_event->acceptProposedAction();
-//            QTreeView::dragEnterEvent(sc_event);
-//            return true;
+            QDragEnterEvent *sc_event = static_cast<QDragEnterEvent*>(event);
+            QModelIndex idx = indexAt(sc_event->pos());
+            if(!idx.isValid()){
+                sc_event->setDropAction(Qt::IgnoreAction);
+            }
+            else {
+                sc_event->setDropAction(Qt::CopyAction);
+            }
         }
         else if(event->type() == QEvent::DragMove){
-//            QDragMoveEvent *sc_event = static_cast<QDragMoveEvent*>(event);
-
-//            int x = width() / 2;
-//            int y = sc_event->pos().y();
-
-//            DropIndicatorPosition dropPos = dropIndicatorPosition();
-//            if(dropPos != QAbstractItemView::OnItem){
-//                double y_offset = round(21 / 4) + 1;
-//                if(dropPos == QAbstractItemView::AboveItem){
-//                    y += y_offset;
-//                }
-//                else if(dropPos == QAbstractItemView::BelowItem){
-//                    y -= y_offset;
-//                }
-//            }
-
-//            qDebug() << "";
-//            qDebug() << sc_event->pos().x() << sc_event->pos().y() << "-" << x << y;
-
-
-
-//            sc_event->setAccepted(false);
-
-
-
-////            sc_event->pos().setX(x);
-//            sc_event->pos().setY(y);
-
-//            sc_event->acceptProposedAction();
-//            QTreeView::dragMoveEvent(sc_event);
-//            return true;
+            QDragMoveEvent *sc_event = static_cast<QDragMoveEvent*>(event);
+            QModelIndex idx = indexAt(sc_event->pos());
+            if(!idx.isValid()){
+                sc_event->setDropAction(Qt::IgnoreAction);
+            }
+            else {
+                sc_event->setDropAction(Qt::CopyAction);
+            }
         }
     }
 
     return QTreeView::eventFilter(object, event);
 }
 
-//void Mpi3TreeView::dragEnterEvent(QDragEnterEvent *event){
-////    if(event->source() == this){
-////        event->setDropAction(Qt::MoveAction);
-////        m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleMove);
-////    }
-////    else {
-////        event->setDropAction(Qt::CopyAction);
-////        m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleDrop);
-////    }
+void Mpi3TreeView::dragEnterEvent(QDragEnterEvent *event){
+//    if(event->source() == this){
+//        event->setDropAction(Qt::MoveAction);
+//        m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleMove);
+//    }
+//    else {
+//        event->setDropAction(Qt::CopyAction);
+//        m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleDrop);
+//    }
 
-
-//    event->acceptProposedAction();
-////    qDebug() << "accept";
-////    event->acceptProposedAction();
-////    QTreeView::eventFilter(this, event);
-
-////    QWidget::dragEnterEvent(event);
-//}
-//void Mpi3TreeView::dragMoveEvent(QDragMoveEvent *event){
-
-////    qDebug() << "1234";
-
-////    int x = width() / 2;
-////    int y = event->pos().y();
-
-////    DropIndicatorPosition dropPos = dropIndicatorPosition();
-////    if(dropPos != QAbstractItemView::OnItem){
-////        double y_offset = round(21 / 4) + 1;
-////        if(dropPos == QAbstractItemView::AboveItem){
-////            y += y_offset;
-////        }
-////        else if(dropPos == QAbstractItemView::BelowItem){
-////            y -= y_offset;
-////        }
-
-////        qDebug() << y_offset;
-////    }
-
-////    event->pos().setX(x);
-////    event->pos().setY(y);
-
-
-////    qDebug() << "asdf";
-
-//    event->acceptProposedAction();
-////    QTreeView::dragMoveEvent(event);
-
-////    QTreeView::eventFilter(this, event);
-//}
-//void Mpi3TreeView::dragLeaveEvent(QDragLeaveEvent *event){
-//    QTreeView::dragLeaveEvent(event);
-//}
-//void Mpi3TreeView::dropEvent(QDropEvent *event){
-//    QTreeView::dropEvent(event);
-//}
+    QTreeView::dragEnterEvent(event);
+    if(event->dropAction() == Qt::CopyAction){
+        event->acceptProposedAction();
+    }
+}
+void Mpi3TreeView::dragMoveEvent(QDragMoveEvent *event){
+    QTreeView::dragMoveEvent(event);
+    event->acceptProposedAction();
+}
+void Mpi3TreeView::dragLeaveEvent(QDragLeaveEvent *event){
+    QTreeView::dragLeaveEvent(event);
+    event->accept();
+}
+void Mpi3TreeView::dropEvent(QDropEvent *event){
+    QTreeView::dropEvent(event);
+    event->acceptProposedAction();
+    event->accept();
+}
 
 Mpi3TreeViewStyle::Mpi3TreeViewStyle(QStyle* style) : QProxyStyle(style){}
 
