@@ -22,7 +22,7 @@ public:
 
 public:
     enum View {
-        ViewLibrary,
+        ViewAllSongs,
         ViewArtists,
         ViewPlaylist
     };

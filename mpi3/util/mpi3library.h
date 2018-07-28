@@ -1,7 +1,6 @@
 #ifndef MPI3LIBRARY_H
 #define MPI3LIBRARY_H
 
-#include <QVector>
 #include <QList>
 
 QT_BEGIN_NAMESPACE
@@ -24,7 +23,7 @@ class Mpi3Element : public QObject
 friend class Mpi3Library;
 
 public:
-    Mpi3Element();
+    explicit Mpi3Element();
 
 public:
     QString pid();
@@ -80,7 +79,7 @@ public:
 public:
     Mpi3Song *getSong(const QString &pid);
     Mpi3Folder *parent = nullptr;
-    QVector<Mpi3Song*> songs;
+    QList<Mpi3Song*> songs;
 
 };
 
@@ -99,8 +98,8 @@ public:
 
 public:
     Mpi3Folder *parent = nullptr;
-    QVector<Mpi3Folder*> folders;
-    QVector<Mpi3Playlist*> playlists;
+    QList<Mpi3Folder*> folders;
+    QList<Mpi3Playlist*> playlists;
 
 };
 
@@ -126,9 +125,9 @@ private:
     QString m_filepath;
 
 public:
-    QVector<Mpi3Song*> *libSongs = nullptr;
-    QVector<Mpi3Playlist*> *libPlaylists = nullptr;
-    QVector<Mpi3Folder*> *libFolders = nullptr;
+    QList<Mpi3Song*> *libSongs = nullptr;
+    QList<Mpi3Playlist*> *libPlaylists = nullptr;
+    QList<Mpi3Folder*> *libFolders = nullptr;
     QString filepath() const;
 
 private:

@@ -10,10 +10,8 @@
 #include "util/xmlsettings.h"
 
 #include <QApplication>
-#include <QDesktopWidget>
-
 #include <QMediaPlayer>
-
+#include <QDesktopWidget>
 #include <QHeaderView>
 #include <QMenuBar>
 
@@ -111,12 +109,15 @@ void Mpi3RootDesktop::initializeMainMenu(){
 
     QAction *act_libImport = new QAction(menu_main);
     QAction *act_libExport = new QAction(menu_main);
+    QAction *act_libReset = new QAction(menu_main);
 
     act_libImport->setText("Import Library");
     act_libExport->setText("Export Library");
+    act_libReset->setText("Reset Library");
 
     connect(act_libImport, &QAction::triggered, this, &Mpi3RootDesktop::libImport);
     connect(act_libExport, &QAction::triggered, this, &Mpi3RootDesktop::libExport);
+    connect(act_libReset, &QAction::triggered, this, &Mpi3RootDesktop::libReset);
 
     QAction *act_libNewFolder = new QAction(menu_main);
     QAction *act_libNewPlaylist = new QAction(menu_main);
@@ -207,6 +208,7 @@ void Mpi3RootDesktop::initializeMainMenu(){
 
     menu_library->addAction(act_libImport);
     menu_library->addAction(act_libExport);
+    menu_library->addAction(act_libReset);
     menu_library->addSeparator();
     menu_library->addAction(act_libNewFolder);
     menu_library->addAction(act_libNewPlaylist);
@@ -294,6 +296,7 @@ void Mpi3RootDesktop::initializeState(){
     m_mediaLibrary->load(lib_path);
     m_modelContainers->setLibrary(m_mediaLibrary);
     m_modelSonglist->setLibrary(m_mediaLibrary);
+    tree_containers->expandAll();
 
 //    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Calm Down.wav"));
     m_audioOutput->setVolume(val_volume);
@@ -321,6 +324,8 @@ void Mpi3RootDesktop::saveSettings(){
     settings->beginGroup("UserApplicationValues");
     settings->setValue("volume", m_audioOutput->volume());
     settings->endGroup();
+
+    m_mediaLibrary->save();
 }
 
 void Mpi3RootDesktop::headerContextMenu(const QPoint &point){
@@ -532,7 +537,7 @@ void Mpi3RootDesktop::containersContextMenu(const QPoint &point){
 void Mpi3RootDesktop::libraryViewChanged(){
     switch(m_panelLibview->currentView()) {
 
-        case PanelLibrary::ViewLibrary:
+        case PanelLibrary::ViewAllSongs:
             m_panelLibview->setDisplay("Library");
             tree_songlist->setRootIsDecorated(false);
 //            m_modelSonglist->viewLibrarySonglist();
@@ -573,14 +578,9 @@ void Mpi3RootDesktop::libImport(){
     libFile = QFileDialog::getOpenFileName(this, "Open Mpi3Library File", pathDesktop, "Mpi3Lib Files (*.mpi3lib)");
 
     if(libFile != ""){
-//        delete m_modelLibrary;
-//        delete m_modelPlaylists;
-
         m_mediaLibrary->load(libFile);
-//        m_modelSonglist->setLibrary(m_library);
         m_modelContainers->setLibrary(m_mediaLibrary);
-
-
+        m_modelSonglist->setLibrary(m_mediaLibrary);
         themeRefresh();
     }
 }
@@ -592,6 +592,15 @@ void Mpi3RootDesktop::libExport(){
     if(libFile != ""){
         m_mediaLibrary->save(libFile);
     }
+}
+void Mpi3RootDesktop::libReset(){
+    m_mediaLibrary->libSongs->clear();
+    m_mediaLibrary->libPlaylists->clear();
+    m_mediaLibrary->libFolders->clear();
+    m_mediaLibrary->save();
+
+    m_modelContainers->setLibrary(m_mediaLibrary);
+    m_modelSonglist->setLibrary(m_mediaLibrary);
 }
 
 void Mpi3RootDesktop::themeSet(){
@@ -611,7 +620,7 @@ void Mpi3RootDesktop::themeRefresh(){
     }
 }
 
-void Mpi3RootDesktop::setColumnVisibility(const int &column){
+void Mpi3RootDesktop::setColumnVisibility(int column){
     bool hidden = m_modelSonglist->columnVisibility[column];
     tree_songlist->setColumnHidden(column, !hidden);
     m_modelSonglist->columnVisibility[column] = !hidden;

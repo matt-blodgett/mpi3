@@ -5,9 +5,6 @@
 #include <QScopedPointer>
 #include <QIcon>
 #include <QMap>
-#include <QVector>
-#include <QUrl>
-#include <QList>
 
 QT_BEGIN_NAMESPACE
 class QMimeData;
@@ -67,23 +64,21 @@ private:
     QIcon icn_playlist;
 
 private:
-    LibraryItem *m_rootItem = nullptr;
+    QScopedPointer<Mpi3Library> m_mediaLibrary;
     QMap<QString, LibraryItem*> m_libItems;
-    QScopedPointer<Mpi3Library> m_library;
+    LibraryItem *m_rootItem = nullptr;
 
 public:
-    QModelIndex getIndex(const QString &pid, QModelIndex parent = QModelIndex());
-
+    QModelIndex getIndex(const QString &pid) const;
     LibraryItem *getItem(const QModelIndex &index) const;
     LibraryItem *getItem(const QString &pid) const;
-
     QString getPID(const QModelIndex &index) const;
     QString getPID(LibraryItem *item) const;
 
     void setLibrary(Mpi3Library *library);
-    void populate(Mpi3Folder *parentFolder = nullptr, QModelIndex parent = QModelIndex());
 
 private:
+    void populate(Mpi3Folder *parentFolder = nullptr, LibraryItem *parentItem = nullptr);
     void playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *folder);
     void folderInserted(Mpi3Folder *folder, Mpi3Folder *parent);
 
@@ -137,8 +132,8 @@ public:
     QMap<int, bool> columnVisibility;
 
 private:
-    QScopedPointer<Mpi3Library> m_library;
-    Mpi3Playlist *m_playlist = nullptr;
+    QScopedPointer<Mpi3Library> m_mediaLibrary;
+    QScopedPointer<Mpi3Playlist> m_playlist;
     QStringList m_headers;
 
 public:

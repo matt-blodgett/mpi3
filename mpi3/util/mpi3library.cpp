@@ -1,5 +1,6 @@
 #include "mpi3library.h"
 
+#include <QRandomGenerator>
 #include <QDomDocument>
 #include <QTextStream>
 #include <QFile>
@@ -39,9 +40,9 @@ Mpi3Song* Mpi3Playlist::getSong(const QString &pid){
 Mpi3Folder::Mpi3Folder() : Mpi3Element(){}
 
 Mpi3Library::Mpi3Library() : Mpi3Element(){
-    libSongs = new QVector<Mpi3Song*>;
-    libPlaylists = new QVector<Mpi3Playlist*>;
-    libFolders = new QVector<Mpi3Folder*>;
+    libSongs = new QList<Mpi3Song*>;
+    libPlaylists = new QList<Mpi3Playlist*>;
+    libFolders = new QList<Mpi3Folder*>;
 }
 Mpi3Library::~Mpi3Library(){
     delete libSongs;
@@ -65,45 +66,102 @@ void Mpi3Library::load(const QString &path){
         m_added = root.namedItem("added").toElement().text();
         m_filepath = path;
 
-        QDomNodeList songs = root.namedItem("songs").toElement().childNodes();
-        QDomNodeList playlists = root.namedItem("playlists").toElement().childNodes();
-        QDomNodeList folders = root.namedItem("folders").toElement().childNodes();
+        QDomNodeList xmlSongs = root.namedItem("songs").toElement().childNodes();
+        QDomNodeList xmlPlaylists = root.namedItem("playlists").toElement().childNodes();
+        QDomNodeList xmlFolders = root.namedItem("folders").toElement().childNodes();
 
-        for(int i = 0; i < songs.length(); i++){
-            Mpi3Song *s = new Mpi3Song();
-            s->m_pid = songs.at(i).namedItem("pid").toElement().text();
-            s->m_name = songs.at(i).namedItem("name").toElement().text();
-            s->m_added = songs.at(i).namedItem("added").toElement().text();
+        for(int i = 0; i < xmlSongs.length(); i++){
+            Mpi3Song *song = new Mpi3Song();
+            song->m_pid = xmlSongs.at(i).namedItem("pid").toElement().text();
+            song->m_name = xmlSongs.at(i).namedItem("name").toElement().text();
+            song->m_added = xmlSongs.at(i).namedItem("added").toElement().text();
 
-            s->artist = songs.at(i).namedItem("artist").toElement().text();
-            s->album = songs.at(i).namedItem("album").toElement().text();
-            s->time = songs.at(i).namedItem("time").toElement().text();
-            s->path = songs.at(i).namedItem("path").toElement().text();
-            s->kind = songs.at(i).namedItem("kind").toElement().text();
+            song->artist = xmlSongs.at(i).namedItem("artist").toElement().text();
+            song->album = xmlSongs.at(i).namedItem("album").toElement().text();
+            song->time = xmlSongs.at(i).namedItem("time").toElement().text();
+            song->path = xmlSongs.at(i).namedItem("path").toElement().text();
+            song->kind = xmlSongs.at(i).namedItem("kind").toElement().text();
 
-            s->size = songs.at(i).namedItem("size").toElement().text().toInt();
-            s->bitRate = songs.at(i).namedItem("bitRate").toElement().text().toInt();
-            s->sampleRate = songs.at(i).namedItem("sampleRate").toElement().text().toInt();
+            song->size = xmlSongs.at(i).namedItem("size").toElement().text().toInt();
+            song->bitRate = xmlSongs.at(i).namedItem("bitRate").toElement().text().toInt();
+            song->sampleRate = xmlSongs.at(i).namedItem("sampleRate").toElement().text().toInt();
 
-            libSongs->push_back(s);
+            libSongs->append(song);
         }
 
-        for(int i = 0; i < playlists.length(); i++){
-            Mpi3Playlist *p = new Mpi3Playlist();
-            p->m_pid = playlists.at(i).namedItem("pid").toElement().text();
-            p->m_name = playlists.at(i).namedItem("name").toElement().text();
-            p->m_added = playlists.at(i).namedItem("added").toElement().text();
+        QMap<QString, QStringList> childElementMap;
 
-            libPlaylists->push_back(p);
+        for(int i = 0; i < xmlPlaylists.length(); i++){
+            Mpi3Playlist *playlist = new Mpi3Playlist();
+            playlist->m_pid = xmlPlaylists.at(i).namedItem("pid").toElement().text();
+            playlist->m_name = xmlPlaylists.at(i).namedItem("name").toElement().text();
+            playlist->m_added = xmlPlaylists.at(i).namedItem("added").toElement().text();
+
+            QStringList childElements;
+            QDomNodeList childSongs = xmlPlaylists.at(i).namedItem("childSongs").childNodes();
+            for(int c_index = 0; c_index < childSongs.size(); c_index++){
+                childElements.append(childSongs.at(c_index).toElement().text());
+            }
+
+            if(childElements.size() > 0){
+                childElementMap[playlist->m_pid] = childElements;
+            }
+
+            libPlaylists->append(playlist);
         }
 
-        for(int i = 0; i < folders.length(); i++){
-            Mpi3Folder *f = new Mpi3Folder();
-            f->m_pid = folders.at(i).namedItem("pid").toElement().text();
-            f->m_name = folders.at(i).namedItem("name").toElement().text();
-            f->m_added = folders.at(i).namedItem("added").toElement().text();
+        for(int i = 0; i < xmlFolders.length(); i++){
+            Mpi3Folder *folder = new Mpi3Folder();
+            folder->m_pid = xmlFolders.at(i).namedItem("pid").toElement().text();
+            folder->m_name = xmlFolders.at(i).namedItem("name").toElement().text();
+            folder->m_added = xmlFolders.at(i).namedItem("added").toElement().text();
 
-            libFolders->push_back(f);
+            QStringList childElements;
+            QDomNodeList childFolders = xmlFolders.at(i).namedItem("childFolders").childNodes();
+            for(int c_index = 0; c_index < childFolders.size(); c_index++){
+                childElements.append(childFolders.at(c_index).toElement().text());
+            }
+
+            QDomNodeList childPlaylists = xmlFolders.at(i).namedItem("childPlaylists").childNodes();
+            for(int c_index = 0; c_index < childPlaylists.size(); c_index++){
+                childElements.append(childPlaylists.at(c_index).toElement().text());
+            }
+
+            if(childElements.size() > 0){
+                childElementMap[folder->m_pid] = childElements;
+            }
+
+            libFolders->append(folder);
+        }
+
+        for(int i = 0; i < childElementMap.keys().size(); i++){
+            QString pidParent = childElementMap.keys().at(i);
+            QStringList pidsChildren = childElementMap[pidParent];
+
+            Mpi3Folder *parentFolder = getFolder(pidParent);
+
+            if(!parentFolder){
+                Mpi3Playlist *parentPlaylist = getPlaylist(pidParent);
+                for(int c_index = 0; c_index < pidsChildren.size(); c_index++){
+                    parentPlaylist->songs.append(getSong(pidsChildren.at(c_index)));
+                }
+            }
+            else {
+                for(int c_index = 0; c_index < pidsChildren.size(); c_index++){
+                    Mpi3Folder *childFolder = getFolder(pidsChildren.at(c_index));
+                    if(childFolder){
+                        parentFolder->folders.append(childFolder);
+                        childFolder->parent = parentFolder;
+                    }
+                }
+                for(int c_index = 0; c_index < pidsChildren.size(); c_index++){
+                    Mpi3Playlist *childPlaylist = getPlaylist(pidsChildren.at(c_index));
+                    if(childPlaylist){
+                        parentFolder->playlists.append(childPlaylist);
+                        childPlaylist->parent = parentFolder;
+                    }
+                }
+            }
         }
     }
     else {
@@ -129,63 +187,76 @@ void Mpi3Library::save(const QString &path){
         xmlWriteElement(xml, root, "name", name());
         xmlWriteElement(xml, root, "added", added());
 
-        QDomElement songs = xml.createElement("songs");
-        QDomElement playlists = xml.createElement("playlists");
-        QDomElement folders = xml.createElement("folders");
+        QDomElement xmlSongs = xml.createElement("songs");
+        QDomElement xmlPlaylists = xml.createElement("playlists");
+        QDomElement xmlFolders = xml.createElement("folders");
 
-        root.appendChild(songs);
-        root.appendChild(playlists);
-        root.appendChild(folders);
+        root.appendChild(xmlSongs);
+        root.appendChild(xmlPlaylists);
+        root.appendChild(xmlFolders);
 
         for(int i = 0; i < libSongs->size(); i++){
-            Mpi3Song *s = libSongs->at(i);
-            QDomElement song = xml.createElement("song");
+            Mpi3Song *song = libSongs->at(i);
+            QDomElement songElement = xml.createElement("song");
 
-            xmlWriteElement(xml, song, "pid", s->pid());
-            xmlWriteElement(xml, song, "name", s->name());
-            xmlWriteElement(xml, song, "added", s->added());
+            xmlWriteElement(xml, songElement, "pid", song->pid());
+            xmlWriteElement(xml, songElement, "name", song->name());
+            xmlWriteElement(xml, songElement, "added", song->added());
 
-            xmlWriteElement(xml, song, "artist", s->artist);
-            xmlWriteElement(xml, song, "album", s->album);
-            xmlWriteElement(xml, song, "time", s->time);
-            xmlWriteElement(xml, song, "path", s->path);
-            xmlWriteElement(xml, song, "kind", s->kind);
+            xmlWriteElement(xml, songElement, "artist", song->artist);
+            xmlWriteElement(xml, songElement, "album", song->album);
+            xmlWriteElement(xml, songElement, "time", song->time);
+            xmlWriteElement(xml, songElement, "path", song->path);
+            xmlWriteElement(xml, songElement, "kind", song->kind);
 
-            xmlWriteElement(xml, song, "size", QString::number(s->size));
-            xmlWriteElement(xml, song, "bitRate", QString::number(s->bitRate));
-            xmlWriteElement(xml, song, "sampleRate", QString::number(s->sampleRate));
+            xmlWriteElement(xml, songElement, "size", QString::number(song->size));
+            xmlWriteElement(xml, songElement, "bitRate", QString::number(song->bitRate));
+            xmlWriteElement(xml, songElement, "sampleRate", QString::number(song->sampleRate));
 
-            songs.appendChild(song);
+            xmlSongs.appendChild(songElement);
         }
 
         for(int i = 0; i < libPlaylists->size(); i++){
-            Mpi3Playlist *p = libPlaylists->at(i);
-            QDomElement playlist = xml.createElement("playlist");
+            Mpi3Playlist *playlist = libPlaylists->at(i);
+            QDomElement playlistElement = xml.createElement("playlist");
 
-            xmlWriteElement(xml, playlist, "pid", p->pid());
-            xmlWriteElement(xml, playlist, "name", p->name());
-            xmlWriteElement(xml, playlist, "added", p->added());
+            xmlWriteElement(xml, playlistElement, "pid", playlist->pid());
+            xmlWriteElement(xml, playlistElement, "name", playlist->name());
+            xmlWriteElement(xml, playlistElement, "added", playlist->added());
 
-            if(p->parent){
-                xmlWriteElement(xml, playlist, "parent", p->parent->pid());
+            QDomElement playlistSongs = xml.createElement("childSongs");
+            for(int c_index = 0; c_index < playlist->songs.size(); c_index++){
+                Mpi3Song *childSong = playlist->songs.at(c_index);
+                xmlWriteElement(xml, playlistSongs, "pid", childSong->pid());
             }
 
-            playlists.appendChild(playlist);
+            playlistElement.appendChild(playlistSongs);
+            xmlPlaylists.appendChild(playlistElement);
         }
 
         for(int i = 0; i < libFolders->size(); i++){
-            Mpi3Folder *f = libFolders->at(i);
-            QDomElement folder = xml.createElement("folder");
+            Mpi3Folder *folder = libFolders->at(i);
+            QDomElement folderElement = xml.createElement("folder");
 
-            xmlWriteElement(xml, folder, "pid", f->pid());
-            xmlWriteElement(xml, folder, "name", f->name());
-            xmlWriteElement(xml, folder, "added", f->added());
+            xmlWriteElement(xml, folderElement, "pid", folder->pid());
+            xmlWriteElement(xml, folderElement, "name", folder->name());
+            xmlWriteElement(xml, folderElement, "added", folder->added());
 
-            if(f->parent){
-                xmlWriteElement(xml, folder, "parent", f->parent->pid());
+            QDomElement folderFolders = xml.createElement("childFolders");
+            for(int c_index = 0; c_index < folder->folders.size(); c_index++){
+                Mpi3Folder *childFolder = folder->folders.at(c_index);
+                xmlWriteElement(xml, folderFolders, "pid", childFolder->pid());
             }
 
-            folders.appendChild(folder);
+            QDomElement folderPlaylists = xml.createElement("childPlaylists");
+            for(int c_index = 0; c_index < folder->playlists.size(); c_index++){
+                Mpi3Playlist *childPlaylist = folder->playlists.at(c_index);
+                xmlWriteElement(xml, folderPlaylists, "pid", childPlaylist->pid());
+            }
+
+            folderElement.appendChild(folderFolders);
+            folderElement.appendChild(folderPlaylists);
+            xmlFolders.appendChild(folderElement);
         }
 
         QTextStream xmlStream(&saveFile);
@@ -199,14 +270,26 @@ QString Mpi3Library::filepath() const {
 
 QString Mpi3Library::generatePID(){
 
-    QString clist [36] = {"A", "B", "C", "D", "E", "F", "G",
-                          "H", "I", "J", "K", "L", "M", "N",
-                          "O", "P", "Q", "R", "S", "T", "U",
-                          "V", "W", "X", "Y", "Z", "0", "1",
-                          "2", "3", "4", "5", "6", "7", "8", "9"};
     QString pid;
+    QString clist = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     for (int i = 0; i < 16; i++){
-        pid += clist[rand() % 36];
+        pid += clist[QRandomGenerator().global()->bounded(0, 36)];
+    }
+
+    for(int i = 0; i < libSongs->size(); i++){
+        if(libSongs->at(i)->pid() == pid){
+            return generatePID();
+        }
+    }
+    for(int i = 0; i < libPlaylists->size(); i++){
+        if(libPlaylists->at(i)->pid() == pid){
+            return generatePID();
+        }
+    }
+    for(int i = 0; i < libFolders->size(); i++){
+        if(libFolders->at(i)->pid() == pid){
+            return generatePID();
+        }
     }
 
     return pid;
@@ -470,9 +553,8 @@ void Mpi3Library::insert(Mpi3Song *inSong, Mpi3Playlist *toPlaylist, int positio
     if(toPlaylist){
         toPlaylist->songs.insert(position, inSong);
     }
-
     if(!libSongs->contains(inSong)){
-        libSongs->push_back(inSong);
+        libSongs->append(inSong);
     }
 
     emit elementInserted(inSong->pid(), toPlaylist ? toPlaylist->pid() : QString());
@@ -484,7 +566,7 @@ void Mpi3Library::insert(Mpi3Playlist *inPlaylist, Mpi3Folder *toFolder, int pos
     }
 
     if(!libPlaylists->contains(inPlaylist)){
-        libPlaylists->push_back(inPlaylist);
+        libPlaylists->append(inPlaylist);
     }
 
     emit elementInserted(inPlaylist->pid(), toFolder ? toFolder->pid() : QString());
@@ -496,7 +578,7 @@ void Mpi3Library::insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder, int positio
     }
 
     if(!libFolders->contains(inFolder)){
-        libFolders->push_back(inFolder);
+        libFolders->append(inFolder);
     }
 
     emit elementInserted(inFolder->pid(), toFolder ? toFolder->pid() : QString());
@@ -567,30 +649,3 @@ void Mpi3Library::remove(Mpi3Folder *remFolder){
     emit elementRemoved(remFolder->pid(), parentFolder ? parentFolder->pid() : QString());
     delete remFolder;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

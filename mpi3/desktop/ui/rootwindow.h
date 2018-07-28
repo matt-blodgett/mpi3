@@ -64,11 +64,12 @@ private slots:
 
     void libImport();
     void libExport();
+    void libReset();
 
     void themeSet();
     void themeRefresh();
 
-    void setColumnVisibility(const int &column);
+    void setColumnVisibility(int column);
 
     void itemExpand();
     void itemCollapse();

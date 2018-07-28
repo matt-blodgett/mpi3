@@ -36,7 +36,7 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     btn_artists->setText("Artists");
     lbl_playlist->setText("Playlists");
 
-    connect(btn_songs, &QRadioButton::released, this, [this](){changeView(PanelLibrary::ViewLibrary);});
+    connect(btn_songs, &QRadioButton::released, this, [this](){changeView(PanelLibrary::ViewAllSongs);});
     connect(btn_artists, &QPushButton::released, this, [this](){changeView(PanelLibrary::ViewArtists);});
     connect(tree_containers, &QTreeView::clicked, this, &PanelLibrary::playlistClicked);
 
@@ -89,7 +89,7 @@ PanelLibrary::PanelLibrary(QWidget *parent) : QWidget(parent){
     setLayout(layoutMain);
 
 
-    changeView(PanelLibrary::ViewLibrary);
+    changeView(PanelLibrary::ViewAllSongs);
     setDisplay("Library");
     btn_songs->toggle();
 
@@ -123,7 +123,7 @@ void PanelLibrary::changeView(PanelLibrary::View view){
 
     switch(m_currentView){
 
-        case PanelLibrary::ViewLibrary:
+        case PanelLibrary::ViewAllSongs:
             tree_containers->clearSelection();
             break;
 
