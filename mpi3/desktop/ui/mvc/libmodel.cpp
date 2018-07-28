@@ -673,16 +673,20 @@ void SonglistModel::setDisplay(SonglistModel::Display display){
 
     beginResetModel();
     removeRows(0, rowCount());
+    m_currentSonglist.clear();
 
     switch(m_currentDisplay){
         case SonglistModel::DisplayAllSongs: {
+            m_pidParentContainer = m_mediaLibrary->pid();
             m_currentSonglist = *m_mediaLibrary->libSongs;
             break;
         }
         case SonglistModel::DisplayArtists: {
+            m_pidParentContainer = m_mediaLibrary->pid();
             break;
         }
         case SonglistModel::DisplayAlbums: {
+            m_pidParentContainer = m_mediaLibrary->pid();
             break;
         }
         case SonglistModel::DisplayPlaylist: {
@@ -714,15 +718,8 @@ void SonglistModel::elementModified(const QString &pidModified){
     Q_UNUSED(pidModified);
 }
 void SonglistModel::elementInserted(const QString &pidInserted, const QString &pidParent){
-    if(!m_playlist){
-        return;
-    }
-
-    if(m_playlist->pid() == pidParent){
-        Mpi3Song *song = m_playlist->getSong(pidInserted);
-//        qDebug() << m_playlist->songs.indexOf(song);
-        insertRows(m_playlist->songs.indexOf(song), 1);
-    }
+    Q_UNUSED(pidInserted);
+    Q_UNUSED(pidParent);
 }
 void SonglistModel::elementRemoved(const QString &pidRemoved, const QString &pidParent){
     Q_UNUSED(pidRemoved);
