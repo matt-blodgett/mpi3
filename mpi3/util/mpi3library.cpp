@@ -15,17 +15,43 @@ Mpi3Element::Mpi3Element() : QObject(nullptr){}
 QString Mpi3Element::pid(){
     return m_pid;
 }
-
 QString Mpi3Element::name(){
     return m_name;
 }
-
 QString Mpi3Element::added(){
     return m_added;
 }
 
 
 Mpi3Song::Mpi3Song() : Mpi3Element(){}
+
+QString Mpi3Song::artist() const{
+    return m_artist;
+}
+QString Mpi3Song::album() const{
+    return m_album;
+}
+QString Mpi3Song::time() const{
+    return m_time;
+}
+QString Mpi3Song::path() const{
+    return m_path;
+}
+QString Mpi3Song::kind() const{
+    return m_kind;
+}
+
+int Mpi3Song::size() const{
+    return m_size;
+}
+int Mpi3Song::bitRate() const{
+    return m_bitRate;
+}
+int Mpi3Song::sampleRate() const{
+    return m_sampleRate;
+}
+
+
 Mpi3Playlist::Mpi3Playlist() : Mpi3Element(){}
 
 Mpi3Song* Mpi3Playlist::getSong(const QString &pid){
@@ -39,7 +65,9 @@ Mpi3Song* Mpi3Playlist::getSong(const QString &pid){
     return nullptr;
 }
 
+
 Mpi3Folder::Mpi3Folder() : Mpi3Element(){}
+
 
 Mpi3Library::Mpi3Library() : Mpi3Element(){
     libSongs = new QList<Mpi3Song*>;
@@ -78,15 +106,15 @@ void Mpi3Library::load(const QString &path){
             song->m_name = xmlSongs.at(i).namedItem("name").toElement().text();
             song->m_added = xmlSongs.at(i).namedItem("added").toElement().text();
 
-            song->artist = xmlSongs.at(i).namedItem("artist").toElement().text();
-            song->album = xmlSongs.at(i).namedItem("album").toElement().text();
-            song->time = xmlSongs.at(i).namedItem("time").toElement().text();
-            song->path = xmlSongs.at(i).namedItem("path").toElement().text();
-            song->kind = xmlSongs.at(i).namedItem("kind").toElement().text();
+            song->m_artist = xmlSongs.at(i).namedItem("artist").toElement().text();
+            song->m_album = xmlSongs.at(i).namedItem("album").toElement().text();
+            song->m_time = xmlSongs.at(i).namedItem("time").toElement().text();
+            song->m_path = xmlSongs.at(i).namedItem("path").toElement().text();
+            song->m_kind = xmlSongs.at(i).namedItem("kind").toElement().text();
 
-            song->size = xmlSongs.at(i).namedItem("size").toElement().text().toInt();
-            song->bitRate = xmlSongs.at(i).namedItem("bitRate").toElement().text().toInt();
-            song->sampleRate = xmlSongs.at(i).namedItem("sampleRate").toElement().text().toInt();
+            song->m_size = xmlSongs.at(i).namedItem("size").toElement().text().toInt();
+            song->m_bitRate = xmlSongs.at(i).namedItem("bitRate").toElement().text().toInt();
+            song->m_sampleRate = xmlSongs.at(i).namedItem("sampleRate").toElement().text().toInt();
 
             libSongs->append(song);
         }
@@ -205,15 +233,15 @@ void Mpi3Library::save(const QString &path){
             xmlWriteElement(xml, songElement, "name", song->name());
             xmlWriteElement(xml, songElement, "added", song->added());
 
-            xmlWriteElement(xml, songElement, "artist", song->artist);
-            xmlWriteElement(xml, songElement, "album", song->album);
-            xmlWriteElement(xml, songElement, "time", song->time);
-            xmlWriteElement(xml, songElement, "path", song->path);
-            xmlWriteElement(xml, songElement, "kind", song->kind);
+            xmlWriteElement(xml, songElement, "artist", song->m_artist);
+            xmlWriteElement(xml, songElement, "album", song->m_album);
+            xmlWriteElement(xml, songElement, "time", song->m_time);
+            xmlWriteElement(xml, songElement, "path", song->m_path);
+            xmlWriteElement(xml, songElement, "kind", song->m_kind);
 
-            xmlWriteElement(xml, songElement, "size", QString::number(song->size));
-            xmlWriteElement(xml, songElement, "bitRate", QString::number(song->bitRate));
-            xmlWriteElement(xml, songElement, "sampleRate", QString::number(song->sampleRate));
+            xmlWriteElement(xml, songElement, "size", QString::number(song->m_size));
+            xmlWriteElement(xml, songElement, "bitRate", QString::number(song->m_bitRate));
+            xmlWriteElement(xml, songElement, "sampleRate", QString::number(song->m_sampleRate));
 
             xmlSongs.appendChild(songElement);
         }
@@ -353,20 +381,20 @@ void Mpi3Library::importItunesPlist(const QString &path){
             Mpi3Song *song = newSong();
             song->m_name = track["Name"].toString();
             song->m_added = track["Date Added"].toString();
-            song->artist = track["Artist"].toString();
-            song->album = track["Album"].toString();
-            song->time = track["Total Time"].toString();
-            song->path = track["Location"].toString();
-            song->kind = track["Kind"].toString();
-            song->size = track["Size"].toInt();
-            song->bitRate = track["Bit Rate"].toInt();
-            song->sampleRate = track["Sample Rate"].toInt();
+            song->m_artist = track["Artist"].toString();
+            song->m_album = track["Album"].toString();
+            song->m_time = track["Total Time"].toString();
+            song->m_path = track["Location"].toString();
+            song->m_kind = track["Kind"].toString();
+            song->m_size = track["Size"].toInt();
+            song->m_bitRate = track["Bit Rate"].toInt();
+            song->m_sampleRate = track["Sample Rate"].toInt();
 
-            song->path = QDir::toNativeSeparators(song->path);
-            song->path = QUrl(song->path).toLocalFile();
+            song->m_path = QDir::toNativeSeparators(song->m_path);
+            song->m_path = QUrl(song->m_path).toLocalFile();
             QString localHost = "\\\\localhost\\";
-            if(song->path.startsWith(localHost)){
-                song->path = song->path.right(song->path.size() - localHost.size());
+            if(song->m_path.startsWith(localHost)){
+                song->m_path = song->m_path.right(song->m_path.size() - localHost.size());
             }
 
             insert(song);
@@ -509,61 +537,42 @@ Mpi3Folder* Mpi3Library::newFolder(bool named){
     return folder;
 }
 
-void Mpi3Library::modify(Mpi3Library::Property property, const QString &value){
-    switch(property) {
-        case Mpi3Library::Name: {
-            m_name = value;
-            break;
+void Mpi3Library::modify(const QString &pid, const QString &value){
+    if(pid == m_pid){
+        m_name = value;
+    }
+    else {
+        Mpi3Folder *folder = getFolder(pid);
+        if(folder){
+            folder->m_name = value;
         }
-        case Mpi3Library::Added: {
-            m_added = value;
-            break;
+        else {
+            Mpi3Playlist *playlist = getPlaylist(pid);
+            if(playlist){
+                playlist->m_name = value;
+            }
         }
     }
 
-    emit elementModified(pid());
+    emit elementModified(pid);
 }
-void Mpi3Library::modify(Mpi3Song *song, Mpi3Song::Property property, const QString &value){
-    switch(property) {
-        case Mpi3Song::Name: {
+void Mpi3Library::modify(Mpi3Song *song, const QString &value, Mpi3Song::MutableProperty songProperty){
+    switch(songProperty){
+        case Mpi3Song::SongName: {
             song->m_name = value;
             break;
         }
-        case Mpi3Song::Added: {
-            song->m_added = value;
+        case Mpi3Song::SongArtist: {
+            song->m_artist = value;
+            break;
+        }
+        case Mpi3Song::SongAlbum: {
+            song->m_album = value;
             break;
         }
     }
 
     emit elementModified(song->pid());
-}
-void Mpi3Library::modify(Mpi3Playlist *playlist, Mpi3Playlist::Property property, const QString &value){
-    switch(property) {
-        case Mpi3Playlist::Name: {
-            playlist->m_name = value;
-            break;
-        }
-        case Mpi3Playlist::Added: {
-            playlist->m_added = value;
-            break;
-        }
-    }
-
-    emit elementModified(playlist->pid());
-}
-void Mpi3Library::modify(Mpi3Folder *folder, Mpi3Folder::Property property, const QString &value){
-    switch(property) {
-        case Mpi3Folder::Name: {
-            folder->m_name = value;
-            break;
-        }
-        case Mpi3Folder::Added: {
-            folder->m_added = value;
-            break;
-        }
-    }
-
-    emit elementModified(folder->pid());
 }
 
 void Mpi3Library::insert(Mpi3Song *inSong, Mpi3Playlist *toPlaylist, int position){

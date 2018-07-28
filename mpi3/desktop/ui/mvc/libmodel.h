@@ -136,9 +136,7 @@ public:
 private:
     QStringList m_headers;
     QScopedPointer<Mpi3Library> m_mediaLibrary;
-
     SonglistModel::Display m_currentDisplay;
-
     QList<Mpi3Song*> m_currentSonglist;
 
     QString m_pidParentContainer;

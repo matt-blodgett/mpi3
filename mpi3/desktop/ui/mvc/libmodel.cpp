@@ -199,18 +199,9 @@ bool LibraryModel::setData(const QModelIndex &index, const QVariant &value, int 
         LibraryItem *item = getItem(index);
         bool result = item->setData(index.column(), value);
 
-        QString pid = getPID(item);
-        Mpi3Folder *folder = m_mediaLibrary->getFolder(pid);
-        Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(pid);
-
-        if(folder){
-            m_mediaLibrary->modify(folder, Mpi3Folder::Name, value.toString());
-        }
-        else if (playlist){
-            m_mediaLibrary->modify(playlist, Mpi3Playlist::Name, value.toString());
-        }
-
         if(result){
+            QString pid = getPID(item);
+            m_mediaLibrary->modify(pid, value.toString());
             emit dataChanged(index, index);
         }
         return result;
@@ -563,8 +554,8 @@ QVariant SonglistModel::data(const QModelIndex &index, int role) const{
         Mpi3Song *song = m_currentSonglist.at(index.row());
         switch(index.column()){
             case 0: return song->name();
-            case 1: return song->artist;
-            case 2: return song->path;
+            case 1: return song->artist();
+            case 2: return song->path();
         }
     }
 
@@ -585,7 +576,7 @@ bool SonglistModel::setData(const QModelIndex &index, const QVariant &value, int
     if (role == Qt::EditRole){
         Mpi3Song *song = m_currentSonglist.at(index.row());
         if(index.column() == 0){
-            m_mediaLibrary->modify(song, Mpi3Song::Name, value.toString());
+            m_mediaLibrary->modify(song, value.toString(), Mpi3Song::SongName);
         }
 
         emit dataChanged(index, index);
