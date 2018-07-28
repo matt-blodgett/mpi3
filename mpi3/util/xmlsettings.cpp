@@ -27,7 +27,7 @@ bool readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map) {
 
     while(!xml.atEnd()) {
         switch(xml.readNext()) {
-            case QXmlStreamReader::StartElement:
+            case QXmlStreamReader::StartElement: {
                 if(curNode != nullptr){
                     curNode = new XmlNode(xml.name().toString(), QString(), curNode);
                 }
@@ -38,8 +38,8 @@ bool readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map) {
                     return false;
                 }
                 break;
-
-            case QXmlStreamReader::EndElement:
+            }
+            case QXmlStreamReader::EndElement: {
                 if(!curNode->parent()) {
                     delete curNode;
                     return true;
@@ -48,20 +48,21 @@ bool readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map) {
                     curNode = static_cast<XmlNode*>(QScopedPointer<XmlNode>(curNode)->parent());
                 }
                 break;
-
-            case QXmlStreamReader::Characters:
+            }
+            case QXmlStreamReader::Characters: {
                 if(!xml.isWhitespace()){
                     map[curNode->fullPath()] = xml.text().toString();
                 }
                 break;
-            case QXmlStreamReader::NoToken: break;
-            case QXmlStreamReader::Invalid: break;
-            case QXmlStreamReader::StartDocument: break;
-            case QXmlStreamReader::EndDocument: break;
-            case QXmlStreamReader::Comment: break;
-            case QXmlStreamReader::DTD: break;
-            case QXmlStreamReader::EntityReference: break;
-            case QXmlStreamReader::ProcessingInstruction: break;
+            }
+            case QXmlStreamReader::NoToken: {break;}
+            case QXmlStreamReader::Invalid: {break;}
+            case QXmlStreamReader::StartDocument: {break;}
+            case QXmlStreamReader::EndDocument: {break;}
+            case QXmlStreamReader::Comment: {break;}
+            case QXmlStreamReader::DTD: {break;}
+            case QXmlStreamReader::EntityReference: {break;}
+            case QXmlStreamReader::ProcessingInstruction: {break;}
         }
     }
 

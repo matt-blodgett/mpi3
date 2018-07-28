@@ -502,48 +502,56 @@ Mpi3Folder* Mpi3Library::newFolder(bool named){
 
 void Mpi3Library::modify(Mpi3Library::Property property, const QString &value){
     switch(property) {
-        case Mpi3Library::Name:
+        case Mpi3Library::Name: {
             m_name = value;
             break;
-        case Mpi3Library::Added:
+        }
+        case Mpi3Library::Added: {
             m_added = value;
             break;
+        }
     }
 
     emit elementModified(pid());
 }
 void Mpi3Library::modify(Mpi3Song *song, Mpi3Song::Property property, const QString &value){
     switch(property) {
-        case Mpi3Song::Name:
+        case Mpi3Song::Name: {
             song->m_name = value;
             break;
-        case Mpi3Song::Added:
+        }
+        case Mpi3Song::Added: {
             song->m_added = value;
             break;
+        }
     }
 
     emit elementModified(song->pid());
 }
 void Mpi3Library::modify(Mpi3Playlist *playlist, Mpi3Playlist::Property property, const QString &value){
     switch(property) {
-        case Mpi3Playlist::Name:
+        case Mpi3Playlist::Name: {
             playlist->m_name = value;
             break;
-        case Mpi3Playlist::Added:
+        }
+        case Mpi3Playlist::Added: {
             playlist->m_added = value;
             break;
+        }
     }
 
     emit elementModified(playlist->pid());
 }
 void Mpi3Library::modify(Mpi3Folder *folder, Mpi3Folder::Property property, const QString &value){
     switch(property) {
-        case Mpi3Folder::Name:
+        case Mpi3Folder::Name: {
             folder->m_name = value;
             break;
-        case Mpi3Folder::Added:
+        }
+        case Mpi3Folder::Added: {
             folder->m_added = value;
             break;
+        }
     }
 
     emit elementModified(folder->pid());

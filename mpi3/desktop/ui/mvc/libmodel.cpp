@@ -459,10 +459,9 @@ void LibraryModel::elementRemoved(const QString &pidRemoved, const QString &pidP
 SonglistModel::SonglistModel(QObject *parent) : QAbstractItemModel(parent){
     m_headers << "Name" << "Artist" << "Path";
 
-    for(int i = 0; i < this->columnCount(); i++){
+    for(int i = 0; i < columnCount(); i++){
         columnVisibility[i] = false;
     }
-
 }
 SonglistModel::~SonglistModel(){}
 
@@ -508,70 +507,60 @@ bool SonglistModel::canDropMimeData(const QMimeData *data, Qt::DropAction action
     Q_UNUSED(parent);
 
     return true;
-//    if(data->hasUrls()){
-//        return validMediaFiles(data->urls());
-//    }
-
-//    return false;
 }
 bool SonglistModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent){
-    //    Q_UNUSED(data);
+        Q_UNUSED(data);
         Q_UNUSED(action);
-    //    Q_UNUSED(row);
+        Q_UNUSED(row);
         Q_UNUSED(column);
         Q_UNUSED(parent);
 
-    if(!m_playlist){
-        return false;
-    }
+//    if(!m_playlist){
+//        return false;
+//    }
 
-    if(data->hasUrls()){
-        for(int i = 0; i < data->urls().size(); i++){
-            QUrl file = data->urls().at(i);
-            Mpi3Song *song = m_mediaLibrary->newSong();
-            m_mediaLibrary->insert(song, m_playlist.data(), qMax(0, row));
-            song->path = file.toString();
-            m_mediaLibrary->modify(song, Mpi3Song::Name, file.fileName());
-        }
+//    if(data->hasUrls()){
+//        for(int i = 0; i < data->urls().size(); i++){
+//            QUrl file = data->urls().at(i);
+//            Mpi3Song *song = m_mediaLibrary->newSong();
+//            m_mediaLibrary->insert(song, m_playlist.data(), qMax(0, row));
+//            song->path = file.toString();
+//            m_mediaLibrary->modify(song, Mpi3Song::Name, file.fileName());
+//        }
 
-        return true;
-    }
+//        return true;
+//    }
 
     return false;
 }
 
 int SonglistModel::rowCount(const QModelIndex &) const{
-    return m_playlist ? m_playlist->songs.size() : 0;
+    return m_currentSonglist.size();
 }
 int SonglistModel::columnCount(const QModelIndex &) const{
-    return m_headers.count();
+    return m_headers.size();
 }
 
-QModelIndex SonglistModel::index(int row, int column, const QModelIndex &parent) const{
-    Q_UNUSED(parent);
+QModelIndex SonglistModel::index(int row, int column, const QModelIndex &) const{
     return createIndex(row, column);
 }
-QModelIndex SonglistModel::parent(const QModelIndex &index) const{
-    Q_UNUSED(index);
+QModelIndex SonglistModel::parent(const QModelIndex &) const{
     return QModelIndex();
 }
 
 QVariant SonglistModel::data(const QModelIndex &index, int role) const{
-    if(!m_playlist){
+    if(!index.isValid()){
         return QVariant();
     }
 
-    if (!index.isValid()){
-        return QVariant();
-    }
 //    Qt::FontRole
 //    Qt::TextAlignmentRole
 //    Qt::BackgroundRole
 //    Qt::ForegroundRole
 //    Qt::CheckStateRole
 
-    if (role == Qt::DisplayRole || role == Qt::EditRole){
-        Mpi3Song *song = m_playlist->songs.at(index.row());
+    if(role == Qt::DisplayRole || role == Qt::EditRole){
+        Mpi3Song *song = m_currentSonglist.at(index.row());
         switch(index.column()){
             case 0: return song->name();
             case 1: return song->artist;
@@ -589,12 +578,12 @@ QVariant SonglistModel::headerData(int section, Qt::Orientation orientation, int
 }
 
 bool SonglistModel::setData(const QModelIndex &index, const QVariant &value, int role){
-    if(!m_playlist){
+    if(!index.isValid()){
         return false;
     }
 
     if (role == Qt::EditRole){
-        Mpi3Song *song = m_playlist->songs.at(index.row());
+        Mpi3Song *song = m_currentSonglist.at(index.row());
         if(index.column() == 0){
             m_mediaLibrary->modify(song, Mpi3Song::Name, value.toString());
         }
@@ -650,7 +639,7 @@ bool SonglistModel::removeColumns(int position, int count, const QModelIndex &pa
 }
 
 QString SonglistModel::getPID(const QModelIndex &index) const{
-    return m_playlist->songs.at(index.row())->pid();
+    return m_currentSonglist.at(index.row())->pid();
 }
 
 void SonglistModel::setLibrary(Mpi3Library *library){
@@ -675,16 +664,50 @@ void SonglistModel::setLibrary(Mpi3Library *library){
 
     endResetModel();
 }
-void SonglistModel::setPlaylist(Mpi3Playlist *playlist){
+
+SonglistModel::Display SonglistModel::currentDisplay() const{
+    return m_currentDisplay;
+}
+void SonglistModel::setDisplay(SonglistModel::Display display){
+    m_currentDisplay = display;
+
     beginResetModel();
-
-    m_playlist.take();
-    m_playlist.reset(playlist);
-
     removeRows(0, rowCount());
-    insertRows(0, m_playlist->songs.size());
 
+    switch(m_currentDisplay){
+        case SonglistModel::DisplayAllSongs: {
+            m_currentSonglist = *m_mediaLibrary->libSongs;
+            break;
+        }
+        case SonglistModel::DisplayArtists: {
+            break;
+        }
+        case SonglistModel::DisplayAlbums: {
+            break;
+        }
+        case SonglistModel::DisplayPlaylist: {
+            Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(m_pidParentContainer);
+            m_currentSonglist = playlist->songs;
+            break;
+        }
+        case SonglistModel::DisplayFolder: {
+            Mpi3Folder *folder = m_mediaLibrary->getFolder(m_pidParentContainer);
+            qDebug() << folder->name();
+            break;
+        }
+    }
+
+    insertRows(0, m_currentSonglist.size());
     endResetModel();
+}
+
+void SonglistModel::setContainer(Mpi3Playlist *playlist){
+    m_pidParentContainer = playlist->pid();
+    setDisplay(SonglistModel::DisplayPlaylist);
+}
+void SonglistModel::setContainer(Mpi3Folder *folder){
+    m_pidParentContainer = folder->pid();
+    setDisplay(SonglistModel::DisplayFolder);
 }
 
 void SonglistModel::elementModified(const QString &pidModified){
@@ -705,3 +728,21 @@ void SonglistModel::elementRemoved(const QString &pidRemoved, const QString &pid
     Q_UNUSED(pidRemoved);
     Q_UNUSED(pidParent);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

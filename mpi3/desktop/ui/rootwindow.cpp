@@ -300,6 +300,9 @@ void Mpi3RootDesktop::initializeState(){
 
 //    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Calm Down.wav"));
     m_audioOutput->setVolume(val_volume);
+
+
+    m_panelLibview->changeView(PanelLibrary::ViewAllSongs);
 }
 void Mpi3RootDesktop::saveSettings(){
     QString appDir = QApplication::applicationDirPath();
@@ -537,29 +540,39 @@ void Mpi3RootDesktop::containersContextMenu(const QPoint &point){
 void Mpi3RootDesktop::libraryViewChanged(){
     switch(m_panelLibview->currentView()) {
 
-        case PanelLibrary::ViewAllSongs:
+        case PanelLibrary::ViewAllSongs: {
             m_panelLibview->setDisplay("Library");
-            tree_songlist->setRootIsDecorated(false);
-//            m_modelSonglist->viewLibrarySonglist();
+            m_modelSonglist->setDisplay(SonglistModel::DisplayAllSongs);
             break;
+        }
+        case PanelLibrary::ViewArtists: {
+                m_panelLibview->setDisplay("Artists");
+                m_modelSonglist->setDisplay(SonglistModel::DisplayArtists);
+                break;
+        }
+        case PanelLibrary::ViewAlbums: {
+                m_panelLibview->setDisplay("Albums");
+                m_modelSonglist->setDisplay(SonglistModel::DisplayArtists);
+                break;
+        }
+        case PanelLibrary::ViewContainer: {
+                QModelIndex selectedIndex = tree_containers->selectionModel()->currentIndex();
+                QString pidContainer = m_modelContainers->getPID(selectedIndex);
 
-        case PanelLibrary::ViewArtists:
-            m_panelLibview->setDisplay("Artists");
-            tree_songlist->setRootIsDecorated(true);
-//            m_modelSonglist->viewLibraryArtists();
-            break;
+                Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(pidContainer);
+                Mpi3Folder *folder = m_mediaLibrary->getFolder(pidContainer);
 
-        case PanelLibrary::ViewPlaylist:
-            QModelIndex selectedIndex = tree_containers->selectionModel()->currentIndex();
-            QString pid = m_modelContainers->getPID(selectedIndex);
-            Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(pid);
+                if(playlist){
+                    m_panelLibview->setDisplay(playlist->name());
+                    m_modelSonglist->setContainer(playlist);
+                }
+                else if(folder){
+                    m_panelLibview->setDisplay(folder->name());
+                    m_modelSonglist->setContainer(folder);
+                }
 
-            if(playlist){
-                m_panelLibview->setDisplay(playlist->name());
-                m_modelSonglist->setPlaylist(playlist);
-            }
-
-            break;
+                break;
+        }
     }
 }
 void Mpi3RootDesktop::selectionChanged(){

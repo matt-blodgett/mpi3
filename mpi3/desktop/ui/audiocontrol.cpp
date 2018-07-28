@@ -150,13 +150,17 @@ void PanelPlayback::clickPlay(){
     this->btn_play->setIcon(this->icn_paus);
 
     switch (m_playerState) {
-    case QMediaPlayer::StoppedState:
-    case QMediaPlayer::PausedState:
-        emit play();
-        break;
-    case QMediaPlayer::PlayingState:
-        emit pause();
-        break;
+        case QMediaPlayer::StoppedState: {
+            break;
+        }
+        case QMediaPlayer::PausedState: {
+            emit play();
+            break;
+        }
+        case QMediaPlayer::PlayingState: {
+            emit pause();
+            break;
+        }
     }
 }
 void PanelPlayback::clickMute(){
@@ -187,18 +191,21 @@ void PanelPlayback::setState(QMediaPlayer::State state)
         m_playerState = state;
 
         switch (state) {
-        case QMediaPlayer::StoppedState:
-//            btn_stop->setEnabled(false);
-//            btn_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-            break;
-        case QMediaPlayer::PlayingState:
-//            btn_stop->setEnabled(true);
-//            btn_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-            break;
-        case QMediaPlayer::PausedState:
-//            btn_stop->setEnabled(true);
-//            btn_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-            break;
+            case QMediaPlayer::StoppedState: {
+    //            btn_stop->setEnabled(false);
+    //            btn_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+                break;
+            }
+            case QMediaPlayer::PlayingState: {
+    //            btn_stop->setEnabled(true);
+    //            btn_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+                break;
+            }
+            case QMediaPlayer::PausedState: {
+    //            btn_stop->setEnabled(true);
+    //            btn_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+                break;
+            }
         }
     }
 }
@@ -231,36 +238,3 @@ void PanelPlayback::paintEvent(QPaintEvent *event){
 
     QWidget::paintEvent(event);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

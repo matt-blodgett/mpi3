@@ -33,8 +33,6 @@ public:
     Qt::DropActions supportedDragActions() const override;
     Qt::DropActions supportedDropActions() const override;
 
-//    bool match(const QModelIndex &start, int role, const QVariant &value, int hits, Qt::MatchFlags flags) const override;
-
     QStringList mimeTypes() const override;
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
 
@@ -98,11 +96,18 @@ public:
     ~SonglistModel() override;
 
 public:
+    enum Display {
+        DisplayAllSongs,
+        DisplayArtists,
+        DisplayAlbums,
+        DisplayPlaylist,
+        DisplayFolder
+    };
+
+public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     Qt::DropActions supportedDragActions() const override;
     Qt::DropActions supportedDropActions() const override;
-
-//    bool match(const QModelIndex &start, int role, const QVariant &value, int hits, Qt::MatchFlags flags) const override;
 
     QStringList mimeTypes() const override;
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
@@ -128,19 +133,29 @@ public:
     bool removeRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
     bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
 
+private:
+    QStringList m_headers;
+    QScopedPointer<Mpi3Library> m_mediaLibrary;
+
+    SonglistModel::Display m_currentDisplay;
+
+    QList<Mpi3Song*> m_currentSonglist;
+
+    QString m_pidParentContainer;
+    QStringList m_pidChildContainers;
+
 public:
     QMap<int, bool> columnVisibility;
-
-private:
-    QScopedPointer<Mpi3Library> m_mediaLibrary;
-    QScopedPointer<Mpi3Playlist> m_playlist;
-    QStringList m_headers;
-
-public:
     QString getPID(const QModelIndex &index) const;
 
+public:
     void setLibrary(Mpi3Library *library);
-    void setPlaylist(Mpi3Playlist *playlist);
+
+    SonglistModel::Display currentDisplay() const;
+    void setDisplay(SonglistModel::Display display);
+
+    void setContainer(Mpi3Playlist *playlist);
+    void setContainer(Mpi3Folder *folder);
 
 public slots:
     void elementModified(const QString &pidModified);

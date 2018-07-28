@@ -24,14 +24,17 @@ public:
     enum View {
         ViewAllSongs,
         ViewArtists,
-        ViewPlaylist
+        ViewAlbums,
+        ViewContainer
     };
 
-public:
-    View currentView();
+    PanelLibrary::View currentView() const;
+    void changeView(PanelLibrary::View view);
     void setDisplay(const QString &title);
 
 private:
+    PanelLibrary::View m_currentView;
+
     Mpi3TreeView *tree_songlist = nullptr;
     Mpi3TreeView *tree_containers = nullptr;
 
@@ -41,15 +44,13 @@ private:
 
     QRadioButton *btn_songs = nullptr;
     QRadioButton *btn_artists = nullptr;
+    QRadioButton *btn_albums = nullptr;
 
     QLabel *lbl_playlist = nullptr;
     QLabel *lbl_view = nullptr;
 
-    View m_currentView;
-
 private slots:
-    void changeView(PanelLibrary::View view);
-    void playlistClicked(const QModelIndex &index);
+    void containerClicked(const QModelIndex &index);
 
 signals:
     void viewChanged();

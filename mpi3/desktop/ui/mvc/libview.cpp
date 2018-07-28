@@ -29,15 +29,19 @@ void Mpi3TreeViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOpti
         }
 
         switch(m_indicatorStyle){
-            case Mpi3TreeViewStyle::IndicatorStyleMove:
+
+            case Mpi3TreeViewStyle::IndicatorStyleMove: {
                 opt.rect.setHeight(0);
                 break;
-            case Mpi3TreeViewStyle::IndicatorStyleDrop:
+            }
+
+            case Mpi3TreeViewStyle::IndicatorStyleDrop: {
                 if(option->rect.y() % 21 > 0){
                     opt.rect.setY(option->rect.y() - 21 + 1);
                 }
                 opt.rect.setHeight(21);
                 break;
+            }
         }
 
         QProxyStyle::drawPrimitive(element, &opt, painter, widget);
@@ -73,21 +77,24 @@ void Mpi3TreeView::setDisplayStyle(Mpi3TreeView::DisplayStyle dStyle){
     m_displayStyle = dStyle;
 
     switch(m_displayStyle){
-        case Mpi3TreeView::DisplayStyleSonglist:
+
+        case Mpi3TreeView::DisplayStyleSonglist: {
             setSelectionMode(QAbstractItemView::ExtendedSelection);
             setAlternatingRowColors(true);
             setRootIsDecorated(false);
             setHeaderHidden(false);
             setIndentation(12);
             break;
+        }
 
-        case Mpi3TreeView::DisplayStyleContainers:
+        case Mpi3TreeView::DisplayStyleContainers: {
             setSelectionMode(QAbstractItemView::SingleSelection);
             setAlternatingRowColors(false);
             setRootIsDecorated(true);
             setHeaderHidden(true);
             setIndentation(12);
             break;
+        }
     }
 }
 
@@ -148,5 +155,3 @@ void Mpi3TreeView::dropEvent(QDropEvent *event){
     event->acceptProposedAction();
     event->accept();
 }
-
-
