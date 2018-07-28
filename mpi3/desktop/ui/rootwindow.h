@@ -53,10 +53,10 @@ private:
     Mpi3Style *m_qssStyle = nullptr;
 
 private:
-    QAction *act_editCut;
-    QAction *act_editCopy;
-    QAction *act_editPaste;
-    QAction *act_editDelete;
+    QAction *act_editCut = nullptr;
+    QAction *act_editCopy = nullptr;
+    QAction *act_editPaste = nullptr;
+    QAction *act_editDelete = nullptr;
 
 private slots:
     void libraryViewChanged();

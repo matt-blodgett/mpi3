@@ -7,6 +7,7 @@
 QT_BEGIN_NAMESPACE
 class QDomDocument;
 class QDomElement;
+class QDomNode;
 QT_END_NAMESPACE
 
 class Mpi3Element;
@@ -108,6 +109,7 @@ class Mpi3Library : public Mpi3Element
 {
     Q_OBJECT
 
+
 public:    
     enum Property{
         Name,
@@ -132,8 +134,11 @@ public:
 private:
     QString generatePID();
     void xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text);
+    QMap<QString, QVariant> plistDict(const QDomNode &parentNode);
 
 public:
+    void importItunesPlist(const QString &path);
+
     QList<Mpi3Folder*> childFolders(Mpi3Folder *parent = nullptr);
     QList<Mpi3Playlist*> childPlaylists(Mpi3Folder *parent = nullptr);
 

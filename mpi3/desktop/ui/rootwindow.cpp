@@ -9,8 +9,13 @@
 #include "util/mpi3library.h"
 #include "util/xmlsettings.h"
 
-#include <QCoreApplication>
+#include <QApplication>
+#include <QDesktopWidget>
+
 #include <QMediaPlayer>
+
+#include <QHeaderView>
+#include <QMenuBar>
 
 #include <QGridLayout>
 #include <QStyleOption>
@@ -19,9 +24,6 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QDir>
-
-#include <QHeaderView>
-#include <QMenuBar>
 
 
 #include <QDebug>
@@ -255,12 +257,15 @@ void Mpi3RootDesktop::initializeLayout(){
     setMinimumWidth(100);
 }
 void Mpi3RootDesktop::initializeState(){
-    QString appDir = QCoreApplication::applicationDirPath();
+    QString appDir = QApplication::applicationDirPath();
     QSettings settings(appDir + "/profile.xml", XmlSettingsFormat);
 
     settings.beginGroup("RootWindow");
-    int wnd_rootx = settings.value("rootx", qMax(cursor().pos().x() - 100, 0)).toInt();
-    int wnd_rooty = settings.value("rooty", qMax(cursor().pos().y() - 100, 0)).toInt();
+    QRect screenSize = QApplication::desktop()->availableGeometry(this);
+    int d_rootx = (screenSize.width() / 2) - 400;
+    int d_rooty = (screenSize.height() / 2) - 300;
+    int wnd_rootx = settings.value("rootx", d_rootx).toInt();
+    int wnd_rooty = settings.value("rooty", d_rooty).toInt();
     int wnd_width = settings.value("width", 800).toInt();
     int wnd_height = settings.value("height", 600).toInt();
     bool wnd_maximized = settings.value("maximized").toBool();
@@ -294,7 +299,7 @@ void Mpi3RootDesktop::initializeState(){
     m_audioOutput->setVolume(val_volume);
 }
 void Mpi3RootDesktop::saveSettings(){
-    QString appDir = QCoreApplication::applicationDirPath();
+    QString appDir = QApplication::applicationDirPath();
     QDir().remove(appDir + "/profile.xml");
     QSettings *settings = new QSettings(appDir + "/profile.xml", XmlSettingsFormat);
 
@@ -490,8 +495,8 @@ void Mpi3RootDesktop::containersContextMenu(const QPoint &point){
     connect(act_newPlaylist, &QAction::triggered, this, &Mpi3RootDesktop::libNewPlaylist);
     connect(act_newFolder, &QAction::triggered, this, &Mpi3RootDesktop::libNewFolder);
 
-//    connect(act_importPlaylists, &QAction::triggered, this, &Mpi3RootDesktop::libImportPlaylists);
-//    connect(act_importSongs, &QAction::triggered, this, &Mpi3RootDesktop::libImportSongs);
+    connect(act_importPlaylists, &QAction::triggered, this, &Mpi3RootDesktop::libImportPlaylists);
+    connect(act_importSongs, &QAction::triggered, this, &Mpi3RootDesktop::libImportSongs);
     connect(act_objEdit, &QAction::triggered, this, &Mpi3RootDesktop::objEdit);
     connect(act_objDetails, &QAction::triggered, this, &Mpi3RootDesktop::objDetails);
     connect(act_objDuplicate, &QAction::triggered, this, &Mpi3RootDesktop::objDuplicate);
@@ -663,9 +668,17 @@ void Mpi3RootDesktop::libNewPlaylist(){
     m_mediaLibrary->insert(playlist, parent, position);
     tree_containers->expand(currentIndex);
 }
-void Mpi3RootDesktop::libImportPlaylists(){}
-void Mpi3RootDesktop::libImportSongs() {}
-void Mpi3RootDesktop::libDownloadSongs() {}
+void Mpi3RootDesktop::libImportPlaylists(){
+    QString plistFile;
+    QString pathDesktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+    plistFile = QFileDialog::getOpenFileName(this, "Open Itunes Plist File", pathDesktop, "XML Files (*.xml)");
+
+    if(plistFile != ""){
+        m_mediaLibrary->importItunesPlist(plistFile);
+    }
+}
+void Mpi3RootDesktop::libImportSongs(){}
+void Mpi3RootDesktop::libDownloadSongs(){}
 
 void Mpi3RootDesktop::objPlay(){}
 void Mpi3RootDesktop::objEdit(){}

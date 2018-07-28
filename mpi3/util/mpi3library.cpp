@@ -151,9 +151,9 @@ void Mpi3Library::save(const QString &path){
             xmlWriteElement(xml, song, "path", s->path);
             xmlWriteElement(xml, song, "kind", s->kind);
 
-            xmlWriteElement(xml, song, "size", QString(s->size));
-            xmlWriteElement(xml, song, "bitRate", QString(s->bitRate));
-            xmlWriteElement(xml, song, "sampleRate", QString(s->sampleRate));
+            xmlWriteElement(xml, song, "size", QString::number(s->size));
+            xmlWriteElement(xml, song, "bitRate", QString::number(s->bitRate));
+            xmlWriteElement(xml, song, "sampleRate", QString::number(s->sampleRate));
 
             songs.appendChild(song);
         }
@@ -216,6 +216,88 @@ void Mpi3Library::xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QS
     QDomText t = xml.createTextNode(text);
     e.appendChild(t);
     elem.appendChild(e);
+}
+QMap<QString, QVariant> Mpi3Library::plistDict(const QDomNode &parentNode){
+
+    QMap<QString, QVariant> dict;
+
+    for(int i = 0; i < parentNode.childNodes().size(); i++){
+        QDomNode childNode = parentNode.childNodes().at(i);
+
+        if(childNode.toElement().tagName() == "key"){
+
+            QDomElement keyNode = childNode.toElement();
+            QDomElement valueNode = parentNode.childNodes().at(i + 1).toElement();
+
+            if(valueNode.tagName() == "dict"){
+                dict[keyNode.text()] = plistDict(valueNode);
+            }
+            else if(valueNode.tagName() == "array"){
+                QList<QVariant> arrayItems;
+                for(int cnode = 0; cnode < valueNode.childNodes().size(); cnode++){
+                    arrayItems.append(plistDict(valueNode.childNodes().at(cnode)));
+                }
+                dict[keyNode.text()] = arrayItems;
+            }
+            else {
+                dict[keyNode.text()] = parentNode.childNodes().at(i + 1).toElement().text();
+            }
+
+        }
+    }
+
+    return dict;
+}
+
+void Mpi3Library::importItunesPlist(const QString &path){
+    QFile loadFile(path);
+    if(loadFile.open(QIODevice::ReadOnly)){
+
+        QDomDocument xml;
+        xml.setContent(loadFile.readAll());
+
+        QDomNode root = xml.documentElement().childNodes().at(0);
+        QMap<QString, QVariant> rootDict = plistDict(root);
+
+        QMap<QString, Mpi3Song*> songs;
+        QMap<QString, QVariant> plistTracks = rootDict["Tracks"].toMap();
+        for(int i = 0; i < plistTracks.keys().size(); i++){
+            QString key = plistTracks.keys().at(i);
+            QMap<QString, QVariant> track = plistTracks[key].toMap();
+
+            Mpi3Song *song = newSong();
+            song->m_name = track["Name"].toString();
+            song->m_added = track["Date Added"].toString();
+            song->artist = track["Artist"].toString();
+            song->album = track["Album"].toString();
+            song->time = track["Total Time"].toString();
+            song->path = track["Location"].toString();
+            song->kind = track["Kind"].toString();
+            song->size = track["Size"].toInt();
+            song->bitRate = track["Bit Rate"].toInt();
+            song->sampleRate = track["Sample Rate"].toInt();
+            insert(song);
+
+            songs[key] = song;
+        }
+
+        QList<QVariant> plistPlaylists = rootDict["Playlists"].toList();
+        for(int i = 0; i < plistPlaylists.size(); i++){
+            QMap<QString, QVariant> itunesPlaylist = plistPlaylists.at(i).toMap();
+
+            Mpi3Playlist *playlist = newPlaylist();
+            playlist->m_name = itunesPlaylist["Name"].toString();
+            playlist->m_added = "";
+            insert(playlist);
+
+            QList<QVariant> playlistTrackIDs = itunesPlaylist["Playlist Items"].toList();
+            for(int j = 0; j < playlistTrackIDs.size(); j++){
+                QMap<QString, QVariant> trackID = playlistTrackIDs.at(j).toMap();
+                insert(songs[trackID["Track ID"].toString()], playlist, j);
+            }
+
+        }
+    }
 }
 
 QList<Mpi3Folder*> Mpi3Library::childFolders(Mpi3Folder *parent){
@@ -485,6 +567,7 @@ void Mpi3Library::remove(Mpi3Folder *remFolder){
     emit elementRemoved(remFolder->pid(), parentFolder ? parentFolder->pid() : QString());
     delete remFolder;
 }
+
 
 
 
