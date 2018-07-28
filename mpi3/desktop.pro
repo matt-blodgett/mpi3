@@ -1,5 +1,6 @@
-DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
+DEFINES += QT_DEPRECATED_WARNINGS=1
+DEFINES += QT_DEBUG_PLUGINS=1
 
 QT += core
 QT += xml
@@ -7,19 +8,17 @@ QT += gui
 QT += widgets
 QT += multimedia
 
-TARGET = Mpi3MediaPlayer
+TARGET = mpi3
 TEMPLATE = app
-
 RESOURCES += desktop.qrc
-RESOURCES += desktop/mpi3media
 
 SOURCES += desktop/main.cpp
 
-SOURCES += desktop/ui/root.cpp
+SOURCES += desktop/ui/rootwindow.cpp
 SOURCES += desktop/ui/audiocontrol.cpp
 SOURCES += desktop/ui/librarydisplay.cpp
 
-HEADERS += desktop/ui/root.h
+HEADERS += desktop/ui/rootwindow.h
 HEADERS += desktop/ui/audiocontrol.h
 HEADERS += desktop/ui/librarydisplay.h
 

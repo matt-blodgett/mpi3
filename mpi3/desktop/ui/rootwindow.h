@@ -1,5 +1,5 @@
-#ifndef ROOT_H
-#define ROOT_H
+#ifndef ROOTWINDOW_H
+#define ROOTWINDOW_H
 
 #include <QMainWindow>
 
@@ -29,8 +29,9 @@ private:
     void initializeObjects();
     void initializeActions();
     void initializeMainMenu();
-    void initializeState();
     void initializeLayout();
+    void initializeState();
+    void saveSettings();
 
 private:
     void headerContextMenu(const QPoint &point);
@@ -91,8 +92,8 @@ private slots:
     void objDuplicate();
 
 private:
-    void closeEvent(QCloseEvent *event);
     void paintEvent(QPaintEvent *event);
+    void closeEvent(QCloseEvent *event);
 };
 
 

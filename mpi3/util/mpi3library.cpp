@@ -50,13 +50,12 @@ Mpi3Library::~Mpi3Library(){
 }
 
 void Mpi3Library::load(const QString &path){
-    libFolders->clear();
-    libPlaylists->clear();
-    libSongs->clear();
-
     QFile loadFile(path);
-
     if (loadFile.open(QIODevice::ReadOnly)){
+        libFolders->clear();
+        libPlaylists->clear();
+        libSongs->clear();
+
         QDomDocument xml;
         xml.setContent(loadFile.readAll());
 
@@ -64,7 +63,7 @@ void Mpi3Library::load(const QString &path){
         m_pid = root.namedItem("pid").toElement().text();
         m_name = root.namedItem("name").toElement().text();
         m_added = root.namedItem("added").toElement().text();
-        filepath = path;
+        m_filepath = path;
 
         QDomNodeList songs = root.namedItem("songs").toElement().childNodes();
         QDomNodeList playlists = root.namedItem("playlists").toElement().childNodes();
@@ -107,13 +106,20 @@ void Mpi3Library::load(const QString &path){
             libFolders->push_back(f);
         }
     }
+    else {
+        m_pid = generatePID();
+        m_name = "New Library";
+        m_added = "03/07/2018";
+        m_filepath = path;
+        save();
+    }
 }
 void Mpi3Library::save(const QString &path){
-    if(path != nullptr){
-        this->filepath = path;
+    if(!path.isNull()){
+        m_filepath = path;
     }
 
-    QFile saveFile(this->filepath);
+    QFile saveFile(m_filepath);
     if(saveFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)){
         QDomDocument xml("Mpi3Library");
         QDomElement root = xml.createElement("library");
@@ -187,6 +193,10 @@ void Mpi3Library::save(const QString &path){
     }
 }
 
+QString Mpi3Library::filepath() const {
+    return m_filepath;
+}
+
 QString Mpi3Library::generatePID(){
 
     QString clist [36] = {"A", "B", "C", "D", "E", "F", "G",
@@ -201,7 +211,7 @@ QString Mpi3Library::generatePID(){
 
     return pid;
 }
-void Mpi3Library::xmlWriteElement(QDomDocument xml, QDomElement elem, QString tagname, QString text){
+void Mpi3Library::xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text){
     QDomElement e = xml.createElement(tagname);
     QDomText t = xml.createTextNode(text);
     e.appendChild(t);

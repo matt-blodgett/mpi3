@@ -3,7 +3,7 @@
 #include <QXmlStreamReader>
 
 
-static const QString rootName = "config";
+static const QString rootName = "mpi3config";
 
 XmlNode::XmlNode(const QString &name, const QString &text, QObject *parent) : QObject(parent){
     tagName = name;
@@ -15,7 +15,7 @@ QString XmlNode::fullPath() const {
     QString path = tagName;
 
     while((cur = static_cast<XmlNode*>(cur->parent())) != nullptr){
-        path.prepend(cur->tagName + "\\");
+        path.prepend(cur->tagName + "/");
     }
     return path.mid(rootName.size() + 1);
 }

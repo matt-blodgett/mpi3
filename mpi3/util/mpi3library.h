@@ -1,7 +1,6 @@
 #ifndef MPI3LIBRARY_H
 #define MPI3LIBRARY_H
 
-#include <QObject>
 #include <QVector>
 #include <QList>
 
@@ -118,18 +117,21 @@ public:
     explicit Mpi3Library();
     ~Mpi3Library();
 
-    void load(const QString &path);
-    void save(const QString &path);
+    void load(const QString &path = QString());
+    void save(const QString &path = QString());
 
 private:
-    QString generatePID();
-    void xmlWriteElement(QDomDocument xml, QDomElement elem, QString tagname, QString text);
+    QString m_filepath;
 
 public:
-    QString filepath;
     QVector<Mpi3Song*> *libSongs = nullptr;
     QVector<Mpi3Playlist*> *libPlaylists = nullptr;
     QVector<Mpi3Folder*> *libFolders = nullptr;
+    QString filepath() const;
+
+private:
+    QString generatePID();
+    void xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text);
 
 public:
     QList<Mpi3Folder*> childFolders(Mpi3Folder *parent = nullptr);

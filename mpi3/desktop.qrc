@@ -11,4 +11,7 @@
         <file alias="folder.png">desktop/icons/treeview/folder.png</file>
         <file alias="playlist.png">desktop/icons/treeview/playlist.png</file>
     </qresource>
+    <qresource prefix="/styles">
+        <file alias="default.qss">desktop/qss/default.qss</file>
+    </qresource>
 </RCC>

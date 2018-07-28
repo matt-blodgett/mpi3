@@ -1,4 +1,4 @@
-﻿#include "root.h"
+﻿#include "rootwindow.h"
 #include "librarydisplay.h"
 #include "audiocontrol.h"
 
@@ -9,6 +9,7 @@
 #include "util/mpi3library.h"
 #include "util/xmlsettings.h"
 
+#include <QCoreApplication>
 #include <QMediaPlayer>
 
 #include <QGridLayout>
@@ -19,8 +20,8 @@
 #include <QFileDialog>
 #include <QDir>
 
-#include <QMenuBar>
 #include <QHeaderView>
+#include <QMenuBar>
 
 
 #include <QDebug>
@@ -33,8 +34,9 @@ void Mpi3RootDesktop::initialize(){
     initializeObjects();
     initializeActions();
     initializeMainMenu();
-    initializeState();
     initializeLayout();
+    initializeState();
+    centralWidget()->show();
 }
 
 void Mpi3RootDesktop::initializeObjects(){
@@ -51,15 +53,9 @@ void Mpi3RootDesktop::initializeObjects(){
     m_mediaLibrary = new Mpi3Library();
     m_qssStyle = new Mpi3Style();
 
-
-
+    m_audioOutput->setAudioRole(QAudio::MusicRole);
     tree_songlist->setModel(m_modelSonglist);
     tree_containers->setModel(m_modelContainers);
-    m_modelContainers->setLibrary(m_mediaLibrary);
-    m_modelSonglist->setLibrary(m_mediaLibrary);
-
-    connect(tree_containers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
-    connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
 
     connect(m_panelPlayback, &PanelPlayback::play, m_audioOutput, &QMediaPlayer::play);
     connect(m_panelPlayback, &PanelPlayback::pause, m_audioOutput, &QMediaPlayer::pause);
@@ -78,6 +74,8 @@ void Mpi3RootDesktop::initializeObjects(){
     connect(tree_songlist, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::songlistContextMenu);
     connect(tree_songlist->header(), &QHeaderView::customContextMenuRequested, this, &Mpi3RootDesktop::headerContextMenu);
 
+    connect(tree_containers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
+    connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
 }
 void Mpi3RootDesktop::initializeActions(){
     act_editCut = new QAction(this);
@@ -241,39 +239,8 @@ void Mpi3RootDesktop::initializeMainMenu(){
     menu_main->addMenu(menu_help);
     menu_help->addAction(act_helpAbout);
 }
-void Mpi3RootDesktop::initializeState(){
-
-    QSettings settings(QDir::currentPath()  + "/profile.xml", XmlSettingsFormat);
-    QString a = settings.value("geometry").toString();
-    qDebug() << a;
-
-    m_mediaLibrary->modify(Mpi3Library::Name, "Main Library");
-    m_mediaLibrary->modify(Mpi3Library::Added, "03/07/2017");
-
-    m_audioOutput->setAudioRole(QAudio::MusicRole);
-    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Calm Down.wav"));
-    m_audioOutput->setVolume(50);
-
-    m_panelPlayback->setState(m_audioOutput->state());
-    m_panelPlayback->setVolume(m_audioOutput->volume());
-
-    tree_containers->expandAll();
-
-    m_qssStyle->load(":/desktop/mpi3media/qss/default.qss");
-    setStyleSheet(m_qssStyle->qssStyle());
-
-
-
-    resize(800, 600);
-
-
-}
 void Mpi3RootDesktop::initializeLayout(){
-    setWindowTitle("Mpi3MediaPlayer");
-
     QWidget *windowMain = new QWidget(this);
-    setCentralWidget(windowMain);
-
     QGridLayout *layoutMain = new QGridLayout(windowMain);
     layoutMain->addWidget(m_panelPlayback, 0, 0, 1, 1);
     layoutMain->addWidget(m_panelLibview, 1, 0, 1, 1);
@@ -283,7 +250,72 @@ void Mpi3RootDesktop::initializeLayout(){
     layoutMain->setHorizontalSpacing(0);
     layoutMain->setVerticalSpacing(0);
     windowMain->setLayout(layoutMain);
-    windowMain->show();
+    setCentralWidget(windowMain);
+    setMinimumHeight(100);
+    setMinimumWidth(100);
+}
+void Mpi3RootDesktop::initializeState(){
+    QString appDir = QCoreApplication::applicationDirPath();
+    QSettings settings(appDir + "/profile.xml", XmlSettingsFormat);
+
+    settings.beginGroup("RootWindow");
+    int wnd_rootx = settings.value("rootx", qMax(cursor().pos().x() - 100, 0)).toInt();
+    int wnd_rooty = settings.value("rooty", qMax(cursor().pos().y() - 100, 0)).toInt();
+    int wnd_width = settings.value("width", 800).toInt();
+    int wnd_height = settings.value("height", 600).toInt();
+    bool wnd_maximized = settings.value("maximized").toBool();
+    settings.endGroup();
+
+    settings.beginGroup("UserApplicationPaths");
+    QString qss_path = settings.value("style", ":/styles/default.qss").toString();
+    QString lib_path = settings.value("library", appDir + "/newlibrary.mpi3lib").toString();
+    settings.endGroup();
+
+    settings.beginGroup("UserApplicationValues");
+    int val_volume = settings.value("volume", 50).toInt();
+    settings.endGroup();
+
+    if(wnd_maximized){
+        showMaximized();
+    }
+    else{
+        move(wnd_rootx, wnd_rooty);
+        resize(wnd_width, wnd_height);
+    }
+
+    m_qssStyle->load(qss_path);
+    setStyleSheet(m_qssStyle->qssStyle());
+
+    m_mediaLibrary->load(lib_path);
+    m_modelContainers->setLibrary(m_mediaLibrary);
+    m_modelSonglist->setLibrary(m_mediaLibrary);
+
+//    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Calm Down.wav"));
+    m_audioOutput->setVolume(val_volume);
+}
+void Mpi3RootDesktop::saveSettings(){
+    QString appDir = QCoreApplication::applicationDirPath();
+    QDir().remove(appDir + "/profile.xml");
+    QSettings *settings = new QSettings(appDir + "/profile.xml", XmlSettingsFormat);
+
+    settings->beginGroup("RootWindow");
+    settings->setValue("rootx", x());
+    settings->setValue("rooty", y());
+    settings->setValue("width", width());
+    settings->setValue("height", height());
+    settings->setValue("maximized", isMaximized());
+    settings->endGroup();
+
+    settings->beginGroup("UserApplicationPaths");
+    settings->setValue("style", m_qssStyle->qssPath());
+    settings->setValue("library", m_mediaLibrary->filepath());
+    settings->setValue("media", "");
+    settings->setValue("downloads", "");
+    settings->endGroup();
+
+    settings->beginGroup("UserApplicationValues");
+    settings->setValue("volume", m_audioOutput->volume());
+    settings->endGroup();
 }
 
 void Mpi3RootDesktop::headerContextMenu(const QPoint &point){
@@ -677,13 +709,6 @@ void Mpi3RootDesktop::objMoveTo(){}
 void Mpi3RootDesktop::objRemoveFrom(){}
 void Mpi3RootDesktop::objDuplicate(){}
 
-void Mpi3RootDesktop::closeEvent(QCloseEvent *event){
-
-    QSettings *settings = new QSettings(QDir::currentPath()  + "/profile.xml", XmlSettingsFormat);
-    settings->setValue("geometry", "7");
-
-    QMainWindow::closeEvent(event);
-}
 void Mpi3RootDesktop::paintEvent(QPaintEvent *event){
     QStyleOption opt;
     opt.init(this);
@@ -692,4 +717,8 @@ void Mpi3RootDesktop::paintEvent(QPaintEvent *event){
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     QWidget::paintEvent(event);
+}
+void Mpi3RootDesktop::closeEvent(QCloseEvent *event){
+    saveSettings();
+    QMainWindow::closeEvent(event);
 }
