@@ -5,6 +5,8 @@
 #include <QTextStream>
 #include <QFile>
 
+#include <QDir>
+
 #include <QDebug>
 
 
@@ -359,8 +361,15 @@ void Mpi3Library::importItunesPlist(const QString &path){
             song->size = track["Size"].toInt();
             song->bitRate = track["Bit Rate"].toInt();
             song->sampleRate = track["Sample Rate"].toInt();
-            insert(song);
 
+            song->path = QDir::toNativeSeparators(song->path);
+            song->path = QUrl(song->path).toLocalFile();
+            QString localHost = "\\\\localhost\\";
+            if(song->path.startsWith(localHost)){
+                song->path = song->path.right(song->path.size() - localHost.size());
+            }
+
+            insert(song);
             songs[key] = song;
         }
 
