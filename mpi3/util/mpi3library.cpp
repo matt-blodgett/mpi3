@@ -4,7 +4,7 @@
 #include <QDomDocument>
 #include <QTextStream>
 #include <QFile>
-
+#include <QUrl>
 #include <QDir>
 
 #include <QDebug>
@@ -70,9 +70,9 @@ Mpi3Folder::Mpi3Folder() : Mpi3Element(){}
 
 
 Mpi3Library::Mpi3Library() : Mpi3Element(){
-    libSongs = new QList<Mpi3Song*>;
-    libPlaylists = new QList<Mpi3Playlist*>;
-    libFolders = new QList<Mpi3Folder*>;
+    libSongs = new QVector<Mpi3Song*>;
+    libPlaylists = new QVector<Mpi3Playlist*>;
+    libFolders = new QVector<Mpi3Folder*>;
 }
 Mpi3Library::~Mpi3Library(){
     delete libSongs;
@@ -420,8 +420,8 @@ void Mpi3Library::importItunesPlist(const QString &path){
     }
 }
 
-QList<Mpi3Folder*> Mpi3Library::childFolders(Mpi3Folder *parent){
-    QList<Mpi3Folder*> folders;
+QVector<Mpi3Folder*> Mpi3Library::childFolders(Mpi3Folder *parent){
+    QVector<Mpi3Folder*> folders;
     for(int i = 0; i < libFolders->size(); i++){
         Mpi3Folder *f = libFolders->at(i);
         if(f->parent == parent){
@@ -431,8 +431,8 @@ QList<Mpi3Folder*> Mpi3Library::childFolders(Mpi3Folder *parent){
 
     return folders;
 }
-QList<Mpi3Playlist*> Mpi3Library::childPlaylists(Mpi3Folder *parent){
-    QList<Mpi3Playlist*> playlists;
+QVector<Mpi3Playlist*> Mpi3Library::childPlaylists(Mpi3Folder *parent){
+    QVector<Mpi3Playlist*> playlists;
     for(int i = 0; i < libPlaylists->size(); i++){
         Mpi3Playlist *p = libPlaylists->at(i);
         if(p->parent == parent){

@@ -1,7 +1,8 @@
 #ifndef MPI3LIBRARY_H
 #define MPI3LIBRARY_H
 
-#include <QList>
+#include <QObject>
+#include <QVector>
 
 QT_BEGIN_NAMESPACE
 class QDomDocument;
@@ -28,7 +29,7 @@ public:
     QString name();
     QString added();
 
-private:
+protected:
     QString m_pid;
     QString m_name;
     QString m_added;
@@ -85,7 +86,7 @@ public:
 
 public:
     Mpi3Folder *parent = nullptr;
-    QList<Mpi3Song*> songs;
+    QVector<Mpi3Song*> songs;
 
 public:
     Mpi3Song *getSong(const QString &pid);
@@ -103,8 +104,8 @@ public:
 
 public:
     Mpi3Folder *parent = nullptr;
-    QList<Mpi3Folder*> folders;
-    QList<Mpi3Playlist*> playlists;
+    QVector<Mpi3Folder*> folders;
+    QVector<Mpi3Playlist*> playlists;
 };
 
 
@@ -123,9 +124,9 @@ private:
     QString m_filepath;
 
 public:
-    QList<Mpi3Song*> *libSongs = nullptr;
-    QList<Mpi3Playlist*> *libPlaylists = nullptr;
-    QList<Mpi3Folder*> *libFolders = nullptr;
+    QVector<Mpi3Song*> *libSongs = nullptr;
+    QVector<Mpi3Playlist*> *libPlaylists = nullptr;
+    QVector<Mpi3Folder*> *libFolders = nullptr;
     QString filepath() const;
 
 private:
@@ -136,8 +137,8 @@ private:
 public:
     void importItunesPlist(const QString &path);
 
-    QList<Mpi3Folder*> childFolders(Mpi3Folder *parent = nullptr);
-    QList<Mpi3Playlist*> childPlaylists(Mpi3Folder *parent = nullptr);
+    QVector<Mpi3Folder*> childFolders(Mpi3Folder *parent = nullptr);
+    QVector<Mpi3Playlist*> childPlaylists(Mpi3Folder *parent = nullptr);
 
     Mpi3Song *getSong(const QString &pid);
     Mpi3Playlist *getPlaylist(const QString &pid);

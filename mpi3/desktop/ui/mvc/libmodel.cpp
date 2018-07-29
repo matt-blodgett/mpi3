@@ -334,8 +334,8 @@ void LibraryModel::setLibrary(Mpi3Library *library){
 }
 
 void LibraryModel::populate(Mpi3Folder *parentFolder, LibraryItem *parentItem){
-    QList<Mpi3Folder*> childFolders = parentFolder ? parentFolder->folders : m_mediaLibrary->childFolders();
-    QList<Mpi3Playlist*> childPlaylists = parentFolder ? parentFolder->playlists : m_mediaLibrary->childPlaylists();
+    QVector<Mpi3Folder*> childFolders = parentFolder ? parentFolder->folders : m_mediaLibrary->childFolders();
+    QVector<Mpi3Playlist*> childPlaylists = parentFolder ? parentFolder->playlists : m_mediaLibrary->childPlaylists();
 
     if(!parentItem){
         parentItem = m_rootItem;
@@ -652,6 +652,7 @@ void SonglistModel::setLibrary(Mpi3Library *library){
     }
 
     removeRows(0, rowCount());
+    m_currentSonglist.clear();
 
     endResetModel();
 }
@@ -682,12 +683,16 @@ void SonglistModel::setDisplay(SonglistModel::Display display){
         }
         case SonglistModel::DisplayPlaylist: {
             Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(m_pidParentContainer);
-            m_currentSonglist = playlist->songs;
+            if(playlist){
+                m_currentSonglist = playlist->songs;
+            }
             break;
         }
         case SonglistModel::DisplayFolder: {
             Mpi3Folder *folder = m_mediaLibrary->getFolder(m_pidParentContainer);
-            qDebug() << folder->name();
+            if(folder){
+                qDebug() << folder->name();
+            }
             break;
         }
     }
@@ -709,8 +714,7 @@ void SonglistModel::elementModified(const QString &pidModified){
     Q_UNUSED(pidModified);
 }
 void SonglistModel::elementInserted(const QString &pidInserted, const QString &pidParent){
-    Q_UNUSED(pidInserted);
-    Q_UNUSED(pidParent);
+    qDebug() << pidInserted << pidParent;
 }
 void SonglistModel::elementRemoved(const QString &pidRemoved, const QString &pidParent){
     Q_UNUSED(pidRemoved);

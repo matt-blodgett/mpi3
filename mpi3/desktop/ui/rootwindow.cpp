@@ -614,6 +614,7 @@ void Mpi3RootDesktop::libReset(){
 
     m_modelContainers->setLibrary(m_mediaLibrary);
     m_modelSonglist->setLibrary(m_mediaLibrary);
+    m_panelLibview->changeView(PanelLibrary::ViewAllSongs);
 }
 
 void Mpi3RootDesktop::themeSet(){
