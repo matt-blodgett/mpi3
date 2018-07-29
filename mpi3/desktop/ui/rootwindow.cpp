@@ -546,32 +546,32 @@ void Mpi3RootDesktop::libraryViewChanged(){
             break;
         }
         case PanelLibrary::ViewArtists: {
-                m_panelLibview->setDisplay("Artists");
-                m_modelSonglist->setDisplay(SonglistModel::DisplayArtists);
-                break;
+            m_panelLibview->setDisplay("Artists");
+            m_modelSonglist->setDisplay(SonglistModel::DisplayArtists);
+            break;
         }
         case PanelLibrary::ViewAlbums: {
-                m_panelLibview->setDisplay("Albums");
-                m_modelSonglist->setDisplay(SonglistModel::DisplayArtists);
-                break;
+            m_panelLibview->setDisplay("Albums");
+            m_modelSonglist->setDisplay(SonglistModel::DisplayArtists);
+            break;
         }
         case PanelLibrary::ViewContainer: {
-                QModelIndex selectedIndex = tree_containers->selectionModel()->currentIndex();
-                QString pidContainer = m_modelContainers->getPID(selectedIndex);
+            QModelIndex selectedIndex = tree_containers->selectionModel()->currentIndex();
+            QString pidContainer = m_modelContainers->getPID(selectedIndex);
 
-                Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(pidContainer);
-                Mpi3Folder *folder = m_mediaLibrary->getFolder(pidContainer);
+            Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(pidContainer);
+            Mpi3Folder *folder = m_mediaLibrary->getFolder(pidContainer);
 
-                if(playlist){
-                    m_panelLibview->setDisplay(playlist->name());
-                    m_modelSonglist->setContainer(playlist);
-                }
-                else if(folder){
-                    m_panelLibview->setDisplay(folder->name());
-                    m_modelSonglist->setContainer(folder);
-                }
+            if(playlist){
+                m_panelLibview->setDisplay(playlist->name());
+                m_modelSonglist->setContainer(playlist);
+            }
+            else if(folder){
+                m_panelLibview->setDisplay(folder->name());
+                m_modelSonglist->setContainer(folder);
+            }
 
-                break;
+            break;
         }
     }
 }
@@ -714,10 +714,10 @@ void Mpi3RootDesktop::objDelete(){
         Mpi3Folder *folder = m_mediaLibrary->getFolder(pid);
         Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(pid);
         if(folder){
-            m_mediaLibrary->remove(folder);
+            m_mediaLibrary->discard(folder);
         }
         else if(playlist){
-            m_mediaLibrary->remove(playlist);
+            m_mediaLibrary->discard(playlist);
         }
     }
     else if(tree_songlist->selectionModel()->selectedRows().size() > 0){
@@ -735,7 +735,7 @@ void Mpi3RootDesktop::objDelete(){
         for(int i = 0; i < pids.size(); i++){
             QString pid = pids.at(i);
             Mpi3Song *song = m_mediaLibrary->getSong(pid);
-            m_mediaLibrary->remove(song);
+            m_mediaLibrary->discard(song);
         }
     }
 }

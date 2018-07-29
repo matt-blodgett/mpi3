@@ -11,6 +11,7 @@ class QMimeData;
 QT_END_NAMESPACE
 
 class LibraryItem;
+class Mpi3Element;
 class Mpi3Library;
 class Mpi3Folder;
 class Mpi3Playlist;
@@ -77,13 +78,14 @@ public:
 
 private:
     void populate(Mpi3Folder *parentFolder = nullptr, LibraryItem *parentItem = nullptr);
-    void playlistInserted(Mpi3Playlist *playlist, Mpi3Folder *folder);
-    void folderInserted(Mpi3Folder *folder, Mpi3Folder *parent);
+    void playlistInserted(Mpi3Playlist *childPlaylist, Mpi3Element *parentElement);
+    void folderInserted(Mpi3Folder *childFolder, Mpi3Element *parentElement);
 
-public slots:
-    void elementModified(const QString &pidModified);
-    void elementInserted(const QString &pidInserted, const QString &pidParent);
-    void elementRemoved(const QString &pidRemoved, const QString &pidParent);
+private slots:
+    void elementModified(Mpi3Element *elemModifed);
+    void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
+    void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);
+    void elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren);
 };
 
 
@@ -155,10 +157,11 @@ public:
     void setContainer(Mpi3Playlist *playlist);
     void setContainer(Mpi3Folder *folder);
 
-public slots:
-    void elementModified(const QString &pidModified);
-    void elementInserted(const QString &pidInserted, const QString &pidParent);
-    void elementRemoved(const QString &pidRemoved, const QString &pidParent);
+private slots:
+    void elementModified(Mpi3Element *elemModifed);
+    void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
+    void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);
+    void elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren);
 };
 
 

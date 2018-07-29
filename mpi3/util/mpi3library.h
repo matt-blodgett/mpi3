@@ -22,7 +22,16 @@ class Mpi3Element : public QObject
     Q_OBJECT
 
 public:
+    enum ElementType {
+        BaseElement,
+        SongElement,
+        PlaylistElement,
+        FolderElement,
+        LibraryElement
+    };
+
     explicit Mpi3Element();
+    virtual Mpi3Element::ElementType type() const;
 
 public:
     QString pid();
@@ -44,8 +53,9 @@ friend class Mpi3Library;
 
 public:
     explicit Mpi3Song();
+    Mpi3Element::ElementType type() const override;
 
-    enum MutableProperty{
+    enum MutableProperty {
         SongName,
         SongArtist,
         SongAlbum,
@@ -69,9 +79,9 @@ private:
     QString m_path;
     QString m_kind;
 
-    int m_size = 0;
-    int m_bitRate = 0;
-    int m_sampleRate = 0;
+    int m_size = -1;
+    int m_bitRate = -1;
+    int m_sampleRate = -1;
 };
 
 
@@ -83,6 +93,7 @@ friend class Mpi3Library;
 
 public:
     explicit Mpi3Playlist();
+    Mpi3Element::ElementType type() const override;
 
 public:
     Mpi3Folder *parent = nullptr;
@@ -101,11 +112,16 @@ friend class Mpi3Library;
 
 public:
     explicit Mpi3Folder();
+    Mpi3Element::ElementType type() const override;
 
 public:
     Mpi3Folder *parent = nullptr;
     QVector<Mpi3Folder*> folders;
     QVector<Mpi3Playlist*> playlists;
+
+public:
+    Mpi3Playlist *getPlaylist(const QString &pid);
+    Mpi3Folder *getFolder(const QString &pid);
 };
 
 
@@ -115,7 +131,8 @@ class Mpi3Library : public Mpi3Element
 
 public:    
     explicit Mpi3Library();
-    ~Mpi3Library();
+    ~Mpi3Library() override;
+    Mpi3Element::ElementType type() const override;
 
     void load(const QString &path = QString());
     void save(const QString &path = QString());
@@ -124,10 +141,10 @@ private:
     QString m_filepath;
 
 public:
+    QString filepath() const;
     QVector<Mpi3Song*> *libSongs = nullptr;
     QVector<Mpi3Playlist*> *libPlaylists = nullptr;
     QVector<Mpi3Folder*> *libFolders = nullptr;
-    QString filepath() const;
 
 private:
     QString generatePID();
@@ -137,14 +154,19 @@ private:
 public:
     void importItunesPlist(const QString &path);
 
-    QVector<Mpi3Folder*> childFolders(Mpi3Folder *parent = nullptr);
-    QVector<Mpi3Playlist*> childPlaylists(Mpi3Folder *parent = nullptr);
+public:
+    QVector<Mpi3Folder*> childFolders(Mpi3Folder *parentFolder = nullptr);
+    QVector<Mpi3Playlist*> childPlaylists(Mpi3Folder *parentFolder = nullptr);
 
+    QVector<Mpi3Song*> allChildSongs(Mpi3Folder *parentFolder = nullptr);
+    QVector<Mpi3Playlist*> allChildPlaylists(Mpi3Folder *parentFolder = nullptr);
+    QVector<Mpi3Folder*> allChildFolders(Mpi3Folder *parentFolder = nullptr);
+
+public:
     Mpi3Song *getSong(const QString &pid);
     Mpi3Playlist *getPlaylist(const QString &pid);
     Mpi3Folder *getFolder(const QString &pid);
 
-public:
     Mpi3Song* newSong();
     Mpi3Playlist* newPlaylist(bool named = false);
     Mpi3Folder* newFolder(bool named = false);
@@ -161,18 +183,19 @@ public:
     void remove(Mpi3Playlist *remPlaylist, Mpi3Folder *fromFolder);
     void remove(Mpi3Folder *remFolder, Mpi3Folder *fromFolder);
 
-    void remove(Mpi3Song *remSong);
-    void remove(Mpi3Playlist *remPlaylist);
-    void remove(Mpi3Folder *remFolder);
-
     void move(Mpi3Song *moveSong, Mpi3Playlist *inPlaylist, int position);
     void move(Mpi3Playlist *movePlaylist, Mpi3Folder *inFolder, int position);
     void move(Mpi3Folder *moveFolder, Mpi3Folder *inFolder, int position);
 
+    void discard(Mpi3Song *remSong);
+    void discard(Mpi3Playlist *remPlaylist);
+    void discard(Mpi3Folder *remFolder);
+
 signals:
-    void elementModified(const QString &pidModified);
-    void elementInserted(const QString &pidInserted, const QString &pidParent);
-    void elementRemoved(const QString &pidRemoved, const QString &pidParent);
+    void elementModified(Mpi3Element *elemModifed);
+    void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
+    void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);
+    void elementDeleted(const QString &pidDeleted, Mpi3Element::ElementType elemType, QVector<QString> pidChildren = QVector<QString>());
 };
 
 
