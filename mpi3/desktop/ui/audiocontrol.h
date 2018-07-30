@@ -12,13 +12,13 @@ class QPushButton;
 QT_END_NAMESPACE
 
 
-class PanelPlayback : public QWidget
+class Mpi3PanelPlayback : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit PanelPlayback(QWidget *parent=nullptr);
-    ~PanelPlayback();
+    explicit Mpi3PanelPlayback(QWidget *parent=nullptr);
+    ~Mpi3PanelPlayback();
 
 public:
     QMediaPlayer *m_audio = nullptr;
@@ -58,12 +58,12 @@ signals:
     void changeVolume(int volume);
     void changeMuting(bool muting);
 
-public slots:
+public:
     void setState(QMediaPlayer::State state);
     void setVolume(int volume);
     void setMuted(bool muted);
 
-private slots:
+private:
     void clickPlay();
     void clickMute();
     void onVolumeSliderValueChanged();

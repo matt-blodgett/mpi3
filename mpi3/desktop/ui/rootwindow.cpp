@@ -35,7 +35,6 @@ Mpi3RootDesktop::~Mpi3RootDesktop(){}
 
 void Mpi3RootDesktop::initialize(){
     initializeObjects();
-    initializeActions();
     initializeMainMenu();
     initializeLayout();
     initializeState();
@@ -43,14 +42,14 @@ void Mpi3RootDesktop::initialize(){
 }
 
 void Mpi3RootDesktop::initializeObjects(){
-    m_panelLibview = new PanelLibrary(this);
-    m_panelPlayback = new PanelPlayback(this);
+    m_panelLibview = new Mpi3PanelLibrary(this);
+    m_panelPlayback = new Mpi3PanelPlayback(this);
 
     tree_containers = findChild<Mpi3TreeView*>("PlaylistsTreeview");
     tree_songlist = findChild<Mpi3TreeView*>("LibraryTreeview");
 
-    m_modelContainers = new LibraryModel();
-    m_modelSonglist = new SonglistModel();
+    m_modelContainers = new Mpi3ModelContainers();
+    m_modelSonglist = new Mpi3ModelSonglist();
     m_audioOutput = new QMediaPlayer(this);
 
     m_mediaLibrary = new Mpi3Library();
@@ -60,40 +59,22 @@ void Mpi3RootDesktop::initializeObjects(){
     tree_songlist->setModel(m_modelSonglist);
     tree_containers->setModel(m_modelContainers);
 
-    connect(m_panelPlayback, &PanelPlayback::play, m_audioOutput, &QMediaPlayer::play);
-    connect(m_panelPlayback, &PanelPlayback::pause, m_audioOutput, &QMediaPlayer::pause);
-    connect(m_panelPlayback, &PanelPlayback::stop, m_audioOutput, &QMediaPlayer::stop);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::play, m_audioOutput, &QMediaPlayer::play);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::pause, m_audioOutput, &QMediaPlayer::pause);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::stop, m_audioOutput, &QMediaPlayer::stop);
 //    connect(m_playback, &PanelPlayback::next, m_playlist, &QMediaPlaylist::next);
 //    connect(m_playback, &PanelPlayback::previous, this, &PanelPlayback::previousClicked);
-    connect(m_panelPlayback, &PanelPlayback::changeVolume, m_audioOutput, &QMediaPlayer::setVolume);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, m_audioOutput, &QMediaPlayer::setVolume);
 
-    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &PanelPlayback::setState);
-    connect(m_audioOutput, &QMediaPlayer::volumeChanged, m_panelPlayback, &PanelPlayback::setVolume);
-    connect(m_audioOutput, &QMediaPlayer::mutedChanged, m_panelPlayback, &PanelPlayback::setMuted);
+    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &Mpi3PanelPlayback::setState);
+    connect(m_audioOutput, &QMediaPlayer::volumeChanged, m_panelPlayback, &Mpi3PanelPlayback::setVolume);
+    connect(m_audioOutput, &QMediaPlayer::mutedChanged, m_panelPlayback, &Mpi3PanelPlayback::setMuted);
 
-    connect(m_panelLibview, &PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
+    connect(m_panelLibview, &Mpi3PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
 
     connect(tree_containers, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::containersContextMenu);
     connect(tree_songlist, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::songlistContextMenu);
     connect(tree_songlist->header(), &QHeaderView::customContextMenuRequested, this, &Mpi3RootDesktop::headerContextMenu);
-
-    connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){selectionChanged();});
-}
-void Mpi3RootDesktop::initializeActions(){
-    act_editCut = new QAction(this);
-    act_editCopy = new QAction(this);
-    act_editPaste = new QAction(this);
-    act_editDelete = new QAction(this);
-
-    act_editCut->setText("Cut");
-    act_editCopy->setText("Copy");
-    act_editPaste->setText("Paste");
-    act_editDelete->setText("Delete");
-
-    act_editCut->setDisabled(true);
-    act_editCopy->setDisabled(true);
-    act_editPaste->setDisabled(true);
-    act_editDelete->setDisabled(true);
 }
 void Mpi3RootDesktop::initializeMainMenu(){
     QMenuBar *menu_main = menuBar();
@@ -117,6 +98,11 @@ void Mpi3RootDesktop::initializeMainMenu(){
 
     QAction *act_editUndo = new QAction(menu_main);
     QAction *act_editRedo = new QAction(menu_main);
+
+    QAction *act_editCut = new QAction(this);
+    QAction *act_editCopy = new QAction(this);
+    QAction *act_editPaste = new QAction(this);
+    QAction *act_editDelete = new QAction(this);
 
     QAction *act_viewMaximize = new QAction(menu_main);
 
@@ -144,6 +130,10 @@ void Mpi3RootDesktop::initializeMainMenu(){
 
     act_editUndo->setText("Undo");
     act_editRedo->setText("Redo");
+    act_editCut->setText("Cut");
+    act_editCopy->setText("Copy");
+    act_editPaste->setText("Paste");
+    act_editDelete->setText("Delete");
 
     act_viewMaximize->setText("Maximize");
 
@@ -225,7 +215,7 @@ void Mpi3RootDesktop::initializeMainMenu(){
     connect(act_libNewFolder, &QAction::triggered, this, &Mpi3RootDesktop::libNewFolder);
     connect(act_libNewPlaylist, &QAction::triggered, this, &Mpi3RootDesktop::libNewPlaylist);
     connect(act_libImportPlaylists, &QAction::triggered, this, &Mpi3RootDesktop::libImportPlaylists);
-    connect(act_libImportSongs, &QAction::triggered, this, &Mpi3RootDesktop::libImportSongs);
+    connect(act_libImportSongs, &QAction::triggered, this, [this](){libImportSongs(tree_containers);});
     connect(act_libDownloadSongs, &QAction::triggered, this, &Mpi3RootDesktop::libDownloadSongs);
 
     connect(act_themeSet, &QAction::triggered, this, &Mpi3RootDesktop::themeSet);
@@ -241,6 +231,14 @@ void Mpi3RootDesktop::initializeMainMenu(){
 //    connect(act_toolsOptions
 
 //    connect(act_helpAbout
+
+    connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, act_editCut, [=](){act_editCut->setDisabled(tree_songlist->selectionModel()->selectedRows().size() == 0);});
+    connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, act_editCopy, [=](){act_editCut->setDisabled(tree_songlist->selectionModel()->selectedRows().size() == 0);});
+    connect(tree_songlist->selectionModel(), &QItemSelectionModel::selectionChanged, act_editDelete, [=](){act_editCut->setDisabled(tree_songlist->selectionModel()->selectedRows().size() == 0);});
+
+    act_editCut->setDisabled(true);
+    act_editCopy->setDisabled(true);
+    act_editDelete->setDisabled(true);
 }
 void Mpi3RootDesktop::initializeLayout(){
     QWidget *windowMain = new QWidget(this);
@@ -301,7 +299,7 @@ void Mpi3RootDesktop::initializeState(){
     m_audioOutput->setVolume(val_volume);
 
 
-    m_panelLibview->changeView(PanelLibrary::ViewAllSongs);
+    m_panelLibview->changeView(Mpi3PanelLibrary::ViewAllSongs);
 }
 void Mpi3RootDesktop::saveSettings(){
     QString appDir = QApplication::applicationDirPath();
@@ -353,6 +351,9 @@ void Mpi3RootDesktop::songlistContextMenu(const QPoint &point){
     QAction *act_objEdit = new QAction(menu_context);
     QAction *act_objDetails = new QAction(menu_context);
     QMenu *menu_addto = new QMenu(menu_context);
+    QAction *act_editCut = new QAction(menu_context);
+    QAction *act_editCopy = new QAction(menu_context);
+    QAction *act_editPaste = new QAction(menu_context);
     QAction *act_objOpenFileLocation = new QAction(menu_context);
     QAction *act_treeSelectAll = new QAction(menu_context);
     QAction *act_treeSelectNone = new QAction(menu_context);
@@ -365,6 +366,9 @@ void Mpi3RootDesktop::songlistContextMenu(const QPoint &point){
     act_objEdit->setText("Edit");
     act_objDetails->setText("Details");
     menu_addto->setTitle("Add to Playlist...");
+    act_editCut->setText("Cut");
+    act_editCopy->setText("Copy");
+    act_editPaste->setText("Paste");
     act_objOpenFileLocation->setText("Open File Location");
     act_treeSelectAll->setText("Select All");
     act_treeSelectNone->setText("Select None");
@@ -409,7 +413,7 @@ void Mpi3RootDesktop::songlistContextMenu(const QPoint &point){
         act_objOpenFileLocation->setDisabled(true);
     }
 
-    if(m_modelSonglist->currentDisplay() != SonglistModel::DisplayPlaylist){
+    if(m_modelSonglist->currentDisplay() != Mpi3ModelSonglist::DisplayPlaylist){
         act_objRemove->setDisabled(true);
     }
 
@@ -417,10 +421,10 @@ void Mpi3RootDesktop::songlistContextMenu(const QPoint &point){
     connect(act_objEdit, &QAction::triggered, this, &Mpi3RootDesktop::objEdit);
     connect(act_objDetails, &QAction::triggered, this, &Mpi3RootDesktop::objDetails);
 
-    Mpi3Song *song = m_modelSonglist->getSongAt(index);
-    if(song){
-        connect(act_objOpenFileLocation, &QAction::triggered, this, [=](){openFileLocation(song->path());});
-    }
+//    connect(act_editCut, &QAction::triggered,
+//    connect(act_editCopy, &QAction::triggered,
+//    connect(act_editPaste, &QAction::triggered,
+    connect(act_objOpenFileLocation, &QAction::triggered, this, [this](){objOpenFileLocation(tree_songlist);});
 
     connect(act_treeSelectAll, &QAction::triggered, tree_songlist, &QTreeView::selectAll);
     connect(act_treeSelectNone, &QAction::triggered, this, [this](){tree_songlist->selectionModel()->clear();});
@@ -429,7 +433,7 @@ void Mpi3RootDesktop::songlistContextMenu(const QPoint &point){
 //    connect(act_libDownloadSongs, &QAction::triggered, this, &Mpi3RootDesktop::libDownloadSongs);
 
 //    connect(act_objRemove, &QAction::triggered, this, &Mpi3RootDesktop::objRemoveFrom);
-    connect(act_objDelete, &QAction::triggered, this, &Mpi3RootDesktop::objDelete);
+    connect(act_objDelete, &QAction::triggered, this, [this](){objDelete(tree_songlist);});
 
     menu_context->exec(tree_songlist->mapToGlobal(point));
     delete menu_context;
@@ -499,9 +503,10 @@ void Mpi3RootDesktop::containersContextMenu(const QPoint &point){
     else if(element->type() == Mpi3Element::PlaylistElement){
         act_itemExpand->setDisabled(true);
         act_itemCollapse->setDisabled(true);
-
     }
-    else if(element->type() == Mpi3Element::FolderElement) {
+    else if(element->type() == Mpi3Element::FolderElement){
+        act_libImportSongs->setDisabled(true);
+        act_libDownloadSongs->setDisabled(true);
         act_objDuplicate->setDisabled(true);
     }
 
@@ -514,17 +519,26 @@ void Mpi3RootDesktop::containersContextMenu(const QPoint &point){
     connect(act_libNewFolder, &QAction::triggered, this, &Mpi3RootDesktop::libNewFolder);
 
     connect(act_libImportPlaylists, &QAction::triggered, this, &Mpi3RootDesktop::libImportPlaylists);
-//    connect(act_libImportSongs, &QAction::triggered, this, &Mpi3RootDesktop::libImportSongs);
-//    connect(act_libDownloadSongs, &QAction::triggered, this, &Mpi3RootDesktop::libDownloadSongs);
+    connect(act_libImportSongs, &QAction::triggered, this, [this](){libImportSongs(tree_containers);});
+    connect(act_libDownloadSongs, &QAction::triggered, this, [this](){libDownloadSongs(tree_containers);});
 
 //    connect(act_objDuplicate, &QAction::triggered, this, &Mpi3RootDesktop::objDuplicate);
 //    connect(act_objEdit, &QAction::triggered, this, &Mpi3RootDesktop::objEdit);
 //    connect(act_objDetails, &QAction::triggered, this, &Mpi3RootDesktop::objDetails);
 
-    connect(act_objDelete, &QAction::triggered, this, &Mpi3RootDesktop::objDelete);
+    connect(act_objDelete, &QAction::triggered, this, [this](){objDelete(tree_containers);});
 
     menu_context->exec(tree_containers->mapToGlobal(point));
     delete menu_context;
+
+
+//    else if (pid != m_mediaLibrary->pid()){
+//        tree_containers->setCurrentIndex(m_modelContainers->getIndex(pid));
+//        m_panelLibview->changeView(PanelLibrary::ViewContainer);
+//    }
+//    else {
+//        tree_containers->selectionModel()->clear();
+//    }
 }
 
 void Mpi3RootDesktop::setColumnVisibility(int column){
@@ -541,39 +555,32 @@ void Mpi3RootDesktop::openFileLocation(const QString &path){
 void Mpi3RootDesktop::libraryViewChanged(){
     switch(m_panelLibview->currentView()) {
 
-        case PanelLibrary::ViewAllSongs: {
+        case Mpi3PanelLibrary::ViewAllSongs: {
             m_panelLibview->setDisplay("Library");
-            m_modelSonglist->setDisplay(SonglistModel::DisplayAllSongs);
+            m_modelSonglist->setDisplay(Mpi3ModelSonglist::DisplayAllSongs);
             break;
         }
-        case PanelLibrary::ViewArtists: {
+        case Mpi3PanelLibrary::ViewArtists: {
             m_panelLibview->setDisplay("Artists");
-            m_modelSonglist->setDisplay(SonglistModel::DisplayArtists);
+            m_modelSonglist->setDisplay(Mpi3ModelSonglist::DisplayArtists);
             break;
         }
-        case PanelLibrary::ViewAlbums: {
+        case Mpi3PanelLibrary::ViewAlbums: {
             m_panelLibview->setDisplay("Albums");
-            m_modelSonglist->setDisplay(SonglistModel::DisplayArtists);
+            m_modelSonglist->setDisplay(Mpi3ModelSonglist::DisplayArtists);
             break;
         }
-        case PanelLibrary::ViewContainer: {
+        case Mpi3PanelLibrary::ViewContainer: {
             QModelIndex selectedIndex = tree_containers->selectionModel()->currentIndex();
             QString pidContainer = m_modelContainers->getPID(selectedIndex);
             Mpi3Element *element = m_mediaLibrary->getElement(pidContainer);
-            m_panelLibview->setDisplay(element->name());
-            m_modelSonglist->setDisplay(element);
+            if(element){
+                m_panelLibview->setDisplay(element->name());
+                m_modelSonglist->setDisplay(element);
+            }
             break;
         }
     }
-}
-void Mpi3RootDesktop::selectionChanged(){
-    int selectedSongs = tree_songlist->selectionModel()->selectedIndexes().size();
-    bool disable = selectedSongs == 0;
-
-    act_editCut->setDisabled(disable);
-    act_editCopy->setDisabled(disable);
-    act_editPaste->setDisabled(disable);
-    act_editDelete->setDisabled(disable);
 }
 
 void Mpi3RootDesktop::libImport(){
@@ -605,7 +612,7 @@ void Mpi3RootDesktop::libReset(){
 
     m_modelContainers->setLibrary(m_mediaLibrary);
     m_modelSonglist->setLibrary(m_mediaLibrary);
-    m_panelLibview->changeView(PanelLibrary::ViewAllSongs);
+    m_panelLibview->changeView(Mpi3PanelLibrary::ViewAllSongs);
 }
 
 void Mpi3RootDesktop::themeSet(){
@@ -651,14 +658,81 @@ void Mpi3RootDesktop::libImportPlaylists(){
         tree_containers->expand(currentIndex);
     }
 }
-void Mpi3RootDesktop::libImportSongs(){}
-void Mpi3RootDesktop::libDownloadSongs(){}
+void Mpi3RootDesktop::libImportSongs(Mpi3TreeView *treeParent){
+    QStringList songFiles;
+    QString pathDesktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+    songFiles = QFileDialog::getOpenFileNames(this, "Add Media Files", pathDesktop, "All Files (*.*)");
+
+    if(songFiles.size() < 1){
+        return;
+    }
+
+    Mpi3Playlist *parentPlaylist = nullptr;
+    if(treeParent == tree_containers){
+        parentPlaylist = m_mediaLibrary->getPlaylist(m_modelContainers->getPID(tree_containers->currentIndex()));
+    }
+    else if(treeParent == tree_songlist && m_modelSonglist->currentDisplay() == Mpi3ModelSonglist::DisplayPlaylist){
+        parentPlaylist = m_mediaLibrary->getPlaylist(m_modelSonglist->currentContainer());
+    }
+
+    for(int i = 0; i < songFiles.size(); i++){
+        Mpi3Song *addedSong = m_mediaLibrary->newSong(songFiles.at(i));
+        m_mediaLibrary->insert(addedSong, parentPlaylist);
+    }
+}
+void Mpi3RootDesktop::libDownloadSongs(Mpi3TreeView *treeParent){
+    if(treeParent == tree_containers){
+        libImportSongs(treeParent);
+    }
+}
 
 void Mpi3RootDesktop::objPlay(){}
 void Mpi3RootDesktop::objEdit(){}
 void Mpi3RootDesktop::objDetails(){}
-void Mpi3RootDesktop::objDelete(){
-    if(tree_songlist->selectionModel()->selectedRows().size() > 0){
+
+void Mpi3RootDesktop::objAddTo(){}
+void Mpi3RootDesktop::objRemoveFrom(){}
+void Mpi3RootDesktop::objDuplicate(){}
+void Mpi3RootDesktop::objOpenFileLocation(Mpi3TreeView *treeParent){
+    if(treeParent == tree_songlist && tree_songlist->selectionModel()->selectedRows().size() == 1){
+        Mpi3Song *song = m_modelSonglist->getSongAt(treeParent->currentIndex());
+        if(song){
+            openFileLocation(song->path());
+        }
+    }
+}
+
+void Mpi3RootDesktop::actUndo(){}
+void Mpi3RootDesktop::actRedo(){}
+
+void Mpi3RootDesktop::objCut(){}
+void Mpi3RootDesktop::objCopy(){}
+void Mpi3RootDesktop::objPaste(){}
+void Mpi3RootDesktop::objDelete(Mpi3TreeView *treeParent){
+    if(treeParent == tree_containers && tree_containers->selectionModel()->selectedRows().size() > 0){
+        QModelIndex index = tree_containers->currentIndex();
+        QString pid = m_modelContainers->getPID(index);
+
+        Mpi3Element *element = m_mediaLibrary->getElement(pid);
+        if(!element){
+            return;
+        }
+        else if(element->type() == Mpi3Element::FolderElement){
+            m_mediaLibrary->discard(static_cast<Mpi3Folder*>(element));
+        }
+        else if(element->type() == Mpi3Element::PlaylistElement){
+            m_mediaLibrary->discard(static_cast<Mpi3Playlist*>(element));
+        }
+
+        QString pidCurrentContainer = m_modelSonglist->currentContainer();
+        if(pidCurrentContainer.isNull()){
+            m_panelLibview->changeView(Mpi3PanelLibrary::ViewAllSongs);
+        }
+        else if(pidCurrentContainer == m_mediaLibrary->pid()){
+            tree_containers->selectionModel()->clear();
+        }
+    }
+    else if(treeParent == tree_songlist && tree_songlist->selectionModel()->selectedRows().size() > 0){
         QModelIndexList currentIndexes = tree_songlist->selectionModel()->selectedIndexes();
 
         for(int i = 0; i < currentIndexes.size(); i++){
@@ -667,23 +741,7 @@ void Mpi3RootDesktop::objDelete(){
             m_mediaLibrary->discard(song);
         }
     }
-    else if(tree_containers->selectionModel()->selectedRows().size() > 0){
-        QModelIndex index = tree_containers->currentIndex();
-        QString pid = m_modelContainers->getPID(index);
-
-        Mpi3Element *element = m_mediaLibrary->getElement(pid);
-        if(element->type() == Mpi3Element::FolderElement){
-            m_mediaLibrary->discard(static_cast<Mpi3Folder*>(element));
-        }
-        else if(element->type() == Mpi3Element::PlaylistElement){
-            m_mediaLibrary->discard(static_cast<Mpi3Playlist*>(element));
-        }
-    }
 }
-
-void Mpi3RootDesktop::objAddTo(){}
-void Mpi3RootDesktop::objRemoveFrom(){}
-void Mpi3RootDesktop::objDuplicate(){}
 
 void Mpi3RootDesktop::paintEvent(QPaintEvent *event){
     QStyleOption opt;

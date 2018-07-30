@@ -10,7 +10,7 @@
 #include <QDebug>
 
 
-PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent){
+Mpi3PanelPlayback::Mpi3PanelPlayback(QWidget *parent) : QWidget(parent){
     frm_volume = new QWidget(this);
     frm_controls = new QWidget(this);
     frm_searchbar = new QWidget(this);
@@ -129,12 +129,12 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent){
 
 
 
-    connect(btn_play, &QAbstractButton::clicked, this, &PanelPlayback::clickPlay);
+    connect(btn_play, &QAbstractButton::clicked, this, &Mpi3PanelPlayback::clickPlay);
 //    connect(m_stopButton, &QAbstractButton::clicked, this, &PlayerControls::stop);
-    connect(btn_next, &QAbstractButton::clicked, this, &PanelPlayback::next);
-    connect(btn_prev, &QAbstractButton::clicked, this, &PanelPlayback::previous);
+    connect(btn_next, &QAbstractButton::clicked, this, &Mpi3PanelPlayback::next);
+    connect(btn_prev, &QAbstractButton::clicked, this, &Mpi3PanelPlayback::previous);
 //    connect(m_muteButton, &QAbstractButton::clicked, this, &PlayerControls::muteClicked);
-    connect(sld_volume, &QSlider::valueChanged, this, &PanelPlayback::onVolumeSliderValueChanged);
+    connect(sld_volume, &QSlider::valueChanged, this, &Mpi3PanelPlayback::onVolumeSliderValueChanged);
 
     btn_next->setObjectName("ButtonNext");
     btn_prev->setObjectName("ButtonPrev");
@@ -144,9 +144,9 @@ PanelPlayback::PanelPlayback(QWidget *parent) : QWidget(parent){
     sld_volume->setObjectName("SliderVolume");
     this->setObjectName("PanelPlayback");
 }
-PanelPlayback::~PanelPlayback(){}
+Mpi3PanelPlayback::~Mpi3PanelPlayback(){}
 
-void PanelPlayback::clickPlay(){
+void Mpi3PanelPlayback::clickPlay(){
     this->btn_play->setIcon(this->icn_paus);
 
     switch (m_playerState) {
@@ -163,17 +163,17 @@ void PanelPlayback::clickPlay(){
         }
     }
 }
-void PanelPlayback::clickMute(){
+void Mpi3PanelPlayback::clickMute(){
     emit changeMuting(!m_playerMuted);
 }
-void PanelPlayback::onVolumeSliderValueChanged(){
+void Mpi3PanelPlayback::onVolumeSliderValueChanged(){
     emit changeVolume(volume());
 }
 
-QMediaPlayer::State PanelPlayback::state() const{
+QMediaPlayer::State Mpi3PanelPlayback::state() const{
     return m_playerState;
 }
-int PanelPlayback::volume() const{
+int Mpi3PanelPlayback::volume() const{
     qreal linearVolume =  QAudio::convertVolume(
                 sld_volume->value() / qreal(100),
                 QAudio::LogarithmicVolumeScale,
@@ -181,11 +181,11 @@ int PanelPlayback::volume() const{
 
     return qRound(linearVolume * 100);
 }
-bool PanelPlayback::isMuted() const{
+bool Mpi3PanelPlayback::isMuted() const{
     return m_playerMuted;
 }
 
-void PanelPlayback::setState(QMediaPlayer::State state)
+void Mpi3PanelPlayback::setState(QMediaPlayer::State state)
 {
     if (state != m_playerState) {
         m_playerState = state;
@@ -209,7 +209,7 @@ void PanelPlayback::setState(QMediaPlayer::State state)
         }
     }
 }
-void PanelPlayback::setVolume(int volume){
+void Mpi3PanelPlayback::setVolume(int volume){
     qreal logarithmicVolume = QAudio::convertVolume(
                 volume / qreal(100),
                 QAudio::LinearVolumeScale,
@@ -217,19 +217,19 @@ void PanelPlayback::setVolume(int volume){
 
     sld_volume->setValue(qRound(logarithmicVolume * 100));
 }
-void PanelPlayback::setMuted(bool muted){
+void Mpi3PanelPlayback::setMuted(bool muted){
     if (muted != m_playerMuted) {
         m_playerMuted = muted;
     }
 }
 
-void PanelPlayback::resizeEvent(QResizeEvent *event){
+void Mpi3PanelPlayback::resizeEvent(QResizeEvent *event){
     Q_UNUSED(event);
 
     int x = (this->width() / 2) - (frm_controls->width() / 2);
     frm_controls->move(x, 0);
 }
-void PanelPlayback::paintEvent(QPaintEvent *event){
+void Mpi3PanelPlayback::paintEvent(QPaintEvent *event){
     QStyleOption opt;
     opt.init(this);
 

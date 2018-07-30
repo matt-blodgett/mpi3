@@ -12,13 +12,13 @@ QT_END_NAMESPACE
 class Mpi3TreeView;
 
 
-class PanelLibrary : public QWidget
+class Mpi3PanelLibrary : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit PanelLibrary(QWidget *parent = nullptr);
-    ~PanelLibrary();
+    explicit Mpi3PanelLibrary(QWidget *parent = nullptr);
+    ~Mpi3PanelLibrary();
 
 public:
     enum View {
@@ -28,12 +28,12 @@ public:
         ViewContainer
     };
 
-    PanelLibrary::View currentView() const;
-    void changeView(PanelLibrary::View view);
+    Mpi3PanelLibrary::View currentView() const;
     void setDisplay(const QString &title);
+    void changeView(Mpi3PanelLibrary::View view);
 
 private:
-    PanelLibrary::View m_currentView;
+    Mpi3PanelLibrary::View m_currentView;
 
     Mpi3TreeView *tree_songlist = nullptr;
     Mpi3TreeView *tree_containers = nullptr;
@@ -49,7 +49,7 @@ private:
     QLabel *lbl_playlist = nullptr;
     QLabel *lbl_view = nullptr;
 
-private slots:
+private:
     void containerClicked(const QModelIndex &index);
 
 signals:

@@ -21,13 +21,13 @@ class Mpi3Song;
 bool validMediaFiles(const QMimeData *data);
 
 
-class LibraryModel : public QAbstractItemModel
+class Mpi3ModelContainers : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    explicit LibraryModel(QObject *parent = nullptr);
-    ~LibraryModel() override;
+    explicit Mpi3ModelContainers(QObject *parent = nullptr);
+    ~Mpi3ModelContainers() override;
 
 public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
@@ -83,7 +83,7 @@ private:
     void playlistInserted(Mpi3Playlist *childPlaylist, Mpi3Element *parentElement);
     void folderInserted(Mpi3Folder *childFolder, Mpi3Element *parentElement);
 
-private slots:
+private:
     void elementModified(Mpi3Element *elemModified);
     void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
     void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);
@@ -91,13 +91,13 @@ private slots:
 };
 
 
-class SonglistModel : public QAbstractItemModel
+class Mpi3ModelSonglist : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    explicit SonglistModel(QObject *parent = nullptr);
-    ~SonglistModel() override;
+    explicit Mpi3ModelSonglist(QObject *parent = nullptr);
+    ~Mpi3ModelSonglist() override;
 
 public:
     enum Display {
@@ -140,9 +140,9 @@ public:
 private:
     QStringList m_headers;
     QScopedPointer<Mpi3Library> m_mediaLibrary;
-    SonglistModel::Display m_currentDisplay;
+    Mpi3ModelSonglist::Display m_currentDisplay;
     QVector<Mpi3Song*> m_currentSonglist;
-    Mpi3Element *m_parentContainer = nullptr;
+    QString m_currentContainer;
 
 public:
     QMap<int, bool> columnVisibility;
@@ -151,11 +151,12 @@ public:
 public:
     void setLibrary(Mpi3Library *library);
 
-    SonglistModel::Display currentDisplay() const;
-    void setDisplay(SonglistModel::Display display);
+    QString currentContainer() const;
+    Mpi3ModelSonglist::Display currentDisplay() const;
+    void setDisplay(Mpi3ModelSonglist::Display display);
     void setDisplay(Mpi3Element *container);
 
-private slots:
+private:
     void elementModified(Mpi3Element *elemModified);
     void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
     void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);

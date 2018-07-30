@@ -7,10 +7,10 @@ QT_BEGIN_NAMESPACE
 class QMediaPlayer;
 QT_END_NAMESPACE
 
-class PanelLibrary;
-class PanelPlayback;
-class LibraryModel;
-class SonglistModel;
+class Mpi3PanelLibrary;
+class Mpi3PanelPlayback;
+class Mpi3ModelContainers;
+class Mpi3ModelSonglist;
 class Mpi3TreeView;
 class Mpi3Library;
 class Mpi3Style;
@@ -27,7 +27,6 @@ public:
 
 private:
     void initializeObjects();
-    void initializeActions();
     void initializeMainMenu();
     void initializeLayout();
     void initializeState();
@@ -39,31 +38,23 @@ private:
     void containersContextMenu(const QPoint &point);
 
 private:
-    PanelLibrary *m_panelLibview = nullptr;
-    PanelPlayback *m_panelPlayback = nullptr;
+    Mpi3PanelLibrary *m_panelLibview = nullptr;
+    Mpi3PanelPlayback *m_panelPlayback = nullptr;
 
     Mpi3TreeView *tree_containers = nullptr;
     Mpi3TreeView *tree_songlist = nullptr;
 
-    LibraryModel *m_modelContainers = nullptr;
-    SonglistModel *m_modelSonglist = nullptr;
+    Mpi3ModelContainers *m_modelContainers = nullptr;
+    Mpi3ModelSonglist *m_modelSonglist = nullptr;
 
     QMediaPlayer *m_audioOutput = nullptr;
     Mpi3Library *m_mediaLibrary = nullptr;
     Mpi3Style *m_qssStyle = nullptr;
 
 private:
-    QAction *act_editCut = nullptr;
-    QAction *act_editCopy = nullptr;
-    QAction *act_editPaste = nullptr;
-    QAction *act_editDelete = nullptr;
-
-private:
     void setColumnVisibility(int column);
     void openFileLocation(const QString &path);
-
     void libraryViewChanged();
-    void selectionChanged();
 
     void libImport();
     void libExport();
@@ -75,17 +66,25 @@ private:
     void libNewFolder();
     void libNewPlaylist();
     void libImportPlaylists();
-    void libImportSongs();
-    void libDownloadSongs();
+    void libImportSongs(Mpi3TreeView *treeParent);
+    void libDownloadSongs(Mpi3TreeView *treeParent);
 
     void objPlay();
     void objEdit();
     void objDetails();
-    void objDelete();
 
     void objAddTo();
     void objRemoveFrom();
     void objDuplicate();
+    void objOpenFileLocation(Mpi3TreeView *treeParent);
+
+    void actUndo();
+    void actRedo();
+
+    void objCut();
+    void objCopy();
+    void objPaste();
+    void objDelete(Mpi3TreeView *treeParent);
 
 private:
     void paintEvent(QPaintEvent *event);
