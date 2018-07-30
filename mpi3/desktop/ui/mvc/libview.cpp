@@ -99,8 +99,7 @@ void Mpi3TreeView::setDisplayStyle(Mpi3TreeView::DisplayStyle dStyle){
 }
 
 bool Mpi3TreeView::eventFilter(QObject *object, QEvent *event){
-
-    if(object == viewport()){
+    if(object == viewport() && m_displayStyle == Mpi3TreeView::DisplayStyleContainers){
 
         if(event->type() == QEvent::DragEnter){
             QDragEnterEvent *sc_event = static_cast<QDragEnterEvent*>(event);
@@ -128,30 +127,30 @@ bool Mpi3TreeView::eventFilter(QObject *object, QEvent *event){
 }
 
 void Mpi3TreeView::dragEnterEvent(QDragEnterEvent *event){
-//    if(event->source() == this){
-//        event->setDropAction(Qt::MoveAction);
-//        m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleMove);
-//    }
-//    else {
-//        event->setDropAction(Qt::CopyAction);
-//        m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleDrop);
-//    }
+    if(event->source() == this){
+        event->setDropAction(Qt::MoveAction);
+        m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleMove);
+    }
+    else {
+        event->setDropAction(Qt::CopyAction);
+        m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleDrop);
+    }
 
     QTreeView::dragEnterEvent(event);
-    if(event->dropAction() == Qt::CopyAction){
-        event->acceptProposedAction();
-    }
+//    if(event->dropAction() == Qt::CopyAction){
+//        event->acceptProposedAction();
+//    }
 }
 void Mpi3TreeView::dragMoveEvent(QDragMoveEvent *event){
     QTreeView::dragMoveEvent(event);
-    event->acceptProposedAction();
+//    event->acceptProposedAction();
 }
 void Mpi3TreeView::dragLeaveEvent(QDragLeaveEvent *event){
     QTreeView::dragLeaveEvent(event);
-    event->accept();
+//    event->accept();
 }
 void Mpi3TreeView::dropEvent(QDropEvent *event){
     QTreeView::dropEvent(event);
-    event->acceptProposedAction();
-    event->accept();
+//    event->acceptProposedAction();
+//    event->accept();
 }

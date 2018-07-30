@@ -74,7 +74,7 @@ public:
     QString getPID(const QModelIndex &index) const;
     QString getPID(LibraryItem *item) const;
 
-    Mpi3Folder *getParentFolder(const QModelIndex &index);
+    Mpi3Folder *getParentFolderAt(const QModelIndex &index);
 
     void setLibrary(Mpi3Library *library);
 
@@ -146,7 +146,7 @@ private:
 
 public:
     QMap<int, bool> columnVisibility;
-    QString getPID(const QModelIndex &index) const;
+    Mpi3Song *getSongAt(const QModelIndex &index) const;
 
 public:
     void setLibrary(Mpi3Library *library);

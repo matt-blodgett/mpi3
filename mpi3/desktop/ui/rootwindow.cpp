@@ -417,7 +417,7 @@ void Mpi3RootDesktop::songlistContextMenu(const QPoint &point){
     connect(act_objEdit, &QAction::triggered, this, &Mpi3RootDesktop::objEdit);
     connect(act_objDetails, &QAction::triggered, this, &Mpi3RootDesktop::objDetails);
 
-    Mpi3Song *song = m_mediaLibrary->getSong(m_modelSonglist->getPID(index));
+    Mpi3Song *song = m_modelSonglist->getSongAt(index);
     if(song){
         connect(act_objOpenFileLocation, &QAction::triggered, this, [=](){openFileLocation(song->path());});
     }
@@ -627,14 +627,14 @@ void Mpi3RootDesktop::themeRefresh(){
 
 void Mpi3RootDesktop::libNewFolder(){
     QModelIndex currentIndex = tree_containers->currentIndex();
-    Mpi3Folder *parentFolder = m_modelContainers->getParentFolder(currentIndex);
+    Mpi3Folder *parentFolder = m_modelContainers->getParentFolderAt(currentIndex);
     Mpi3Folder *insertFolder = m_mediaLibrary->newFolder(true);
     m_mediaLibrary->insert(insertFolder, parentFolder);
     tree_containers->expand(currentIndex);
 }
 void Mpi3RootDesktop::libNewPlaylist(){
     QModelIndex currentIndex = tree_containers->currentIndex();
-    Mpi3Folder *parentFolder = m_modelContainers->getParentFolder(currentIndex);
+    Mpi3Folder *parentFolder = m_modelContainers->getParentFolderAt(currentIndex);
     Mpi3Playlist *insertPlaylist = m_mediaLibrary->newPlaylist(true);
     m_mediaLibrary->insert(insertPlaylist, parentFolder);
     tree_containers->expand(currentIndex);
@@ -646,7 +646,7 @@ void Mpi3RootDesktop::libImportPlaylists(){
 
     if(plistFile != ""){
         QModelIndex currentIndex = tree_containers->currentIndex();
-        Mpi3Folder *parentFolder = m_modelContainers->getParentFolder(currentIndex);
+        Mpi3Folder *parentFolder = m_modelContainers->getParentFolderAt(currentIndex);
         m_mediaLibrary->importItunesPlist(plistFile, parentFolder);
         tree_containers->expand(currentIndex);
     }
@@ -660,19 +660,10 @@ void Mpi3RootDesktop::objDetails(){}
 void Mpi3RootDesktop::objDelete(){
     if(tree_songlist->selectionModel()->selectedRows().size() > 0){
         QModelIndexList currentIndexes = tree_songlist->selectionModel()->selectedIndexes();
-        QStringList pids;
 
         for(int i = 0; i < currentIndexes.size(); i++){
             QModelIndex index = currentIndexes.at(i);
-            QString pid = m_modelSonglist->getPID(index);
-            if(!pids.contains(pid)){
-                pids.append(pid);
-            }
-        }
-
-        for(int i = 0; i < pids.size(); i++){
-            QString pid = pids.at(i);
-            Mpi3Song *song = m_mediaLibrary->getSong(pid);
+            Mpi3Song *song = m_modelSonglist->getSongAt(index);
             m_mediaLibrary->discard(song);
         }
     }
@@ -680,13 +671,12 @@ void Mpi3RootDesktop::objDelete(){
         QModelIndex index = tree_containers->currentIndex();
         QString pid = m_modelContainers->getPID(index);
 
-        Mpi3Folder *folder = m_mediaLibrary->getFolder(pid);
-        Mpi3Playlist *playlist = m_mediaLibrary->getPlaylist(pid);
-        if(folder){
-            m_mediaLibrary->discard(folder);
+        Mpi3Element *element = m_mediaLibrary->getElement(pid);
+        if(element->type() == Mpi3Element::FolderElement){
+            m_mediaLibrary->discard(static_cast<Mpi3Folder*>(element));
         }
-        else if(playlist){
-            m_mediaLibrary->discard(playlist);
+        else if(element->type() == Mpi3Element::PlaylistElement){
+            m_mediaLibrary->discard(static_cast<Mpi3Playlist*>(element));
         }
     }
 }

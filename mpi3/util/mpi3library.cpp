@@ -568,7 +568,10 @@ QVector<Mpi3Folder*> Mpi3Library::allChildFolders(Mpi3Folder *parentFolder){
 }
 
 Mpi3Element* Mpi3Library::getElement(const QString &pid){
-    if(pid.startsWith(Mpi3Element::SongPrefix)){
+    if(pid.isNull()){
+        return nullptr;
+    }
+    else if(pid.startsWith(Mpi3Element::SongPrefix)){
         for(int i = 0; i < libSongs->size(); i++){
             if(libSongs->at(i)->pid() == pid){
                 return libSongs->at(i);
@@ -635,9 +638,14 @@ Mpi3Folder* Mpi3Library::getFolder(const QString &pid){
     return nullptr;
 }
 
-Mpi3Song* Mpi3Library::newSong(){
+Mpi3Song* Mpi3Library::newSong(const QString &path){
     Mpi3Song *song = new Mpi3Song();
     song->m_pid = generatePID(Mpi3Element::SongElement);
+
+    if(!path.isNull()){
+        song->m_name = QUrl(path).fileName();
+        song->m_path = path;
+    }
 
     return song;
 }

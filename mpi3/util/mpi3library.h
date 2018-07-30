@@ -177,7 +177,7 @@ public:
     Mpi3Playlist *getPlaylist(const QString &pid);
     Mpi3Folder *getFolder(const QString &pid);
 
-    Mpi3Song* newSong();
+    Mpi3Song* newSong(const QString &path = QString());
     Mpi3Playlist* newPlaylist(bool named = false);
     Mpi3Folder* newFolder(bool named = false);
 
