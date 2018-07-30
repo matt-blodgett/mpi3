@@ -74,6 +74,8 @@ public:
     QString getPID(const QModelIndex &index) const;
     QString getPID(LibraryItem *item) const;
 
+    Mpi3Folder *getParentFolder(const QModelIndex &index);
+
     void setLibrary(Mpi3Library *library);
 
 private:
@@ -82,7 +84,7 @@ private:
     void folderInserted(Mpi3Folder *childFolder, Mpi3Element *parentElement);
 
 private slots:
-    void elementModified(Mpi3Element *elemModifed);
+    void elementModified(Mpi3Element *elemModified);
     void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
     void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);
     void elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren);
@@ -140,9 +142,7 @@ private:
     QScopedPointer<Mpi3Library> m_mediaLibrary;
     SonglistModel::Display m_currentDisplay;
     QVector<Mpi3Song*> m_currentSonglist;
-
-    QString m_pidParentContainer;
-    QStringList m_pidChildContainers;
+    Mpi3Element *m_parentContainer = nullptr;
 
 public:
     QMap<int, bool> columnVisibility;
@@ -153,12 +153,10 @@ public:
 
     SonglistModel::Display currentDisplay() const;
     void setDisplay(SonglistModel::Display display);
-
-    void setContainer(Mpi3Playlist *playlist);
-    void setContainer(Mpi3Folder *folder);
+    void setDisplay(Mpi3Element *container);
 
 private slots:
-    void elementModified(Mpi3Element *elemModifed);
+    void elementModified(Mpi3Element *elemModified);
     void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
     void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);
     void elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren);

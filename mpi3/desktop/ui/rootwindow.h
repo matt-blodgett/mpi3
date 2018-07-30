@@ -47,8 +47,8 @@ private:
 
     LibraryModel *m_modelContainers = nullptr;
     SonglistModel *m_modelSonglist = nullptr;
-    QMediaPlayer *m_audioOutput = nullptr;
 
+    QMediaPlayer *m_audioOutput = nullptr;
     Mpi3Library *m_mediaLibrary = nullptr;
     Mpi3Style *m_qssStyle = nullptr;
 
@@ -58,7 +58,10 @@ private:
     QAction *act_editPaste = nullptr;
     QAction *act_editDelete = nullptr;
 
-private slots:
+private:
+    void setColumnVisibility(int column);
+    void openFileLocation(const QString &path);
+
     void libraryViewChanged();
     void selectionChanged();
 
@@ -68,13 +71,6 @@ private slots:
 
     void themeSet();
     void themeRefresh();
-
-    void setColumnVisibility(int column);
-
-    void itemExpand();
-    void itemCollapse();
-    void itemExpandAll();
-    void itemCollapseAll();
 
     void libNewFolder();
     void libNewPlaylist();
@@ -88,7 +84,6 @@ private slots:
     void objDelete();
 
     void objAddTo();
-    void objMoveTo();
     void objRemoveFrom();
     void objDuplicate();
 
