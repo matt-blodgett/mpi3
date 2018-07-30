@@ -814,19 +814,19 @@ void Mpi3Library::insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder, int positio
     }
 }
 
-void Mpi3Library::move(Mpi3Song *moveSong, Mpi3Playlist *inPlaylist, int position){
+void Mpi3Library::move(Mpi3Song* moveSong, Mpi3Playlist *inPlaylist, int position){
     Q_UNUSED(moveSong);
     Q_UNUSED(inPlaylist);
     Q_UNUSED(position);
 }
-void Mpi3Library::move(Mpi3Playlist *movePlaylist, Mpi3Folder *inFolder, int position){
+void Mpi3Library::move(Mpi3Playlist *movePlaylist, Mpi3Folder *toFolder, int position){
     Q_UNUSED(movePlaylist);
-    Q_UNUSED(inFolder);
+    Q_UNUSED(toFolder);
     Q_UNUSED(position);
 }
-void Mpi3Library::move(Mpi3Folder *moveFolder, Mpi3Folder *inFolder, int position){
+void Mpi3Library::move(Mpi3Folder *moveFolder, Mpi3Folder *toFolder, int position){
     Q_UNUSED(moveFolder);
-    Q_UNUSED(inFolder);
+    Q_UNUSED(toFolder);
     Q_UNUSED(position);
 }
 

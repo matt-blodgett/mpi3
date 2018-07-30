@@ -200,8 +200,8 @@ public:
     void remove(Mpi3Folder *remFolder, Mpi3Folder *fromFolder);
 
     void move(Mpi3Song *moveSong, Mpi3Playlist *inPlaylist, int position);
-    void move(Mpi3Playlist *movePlaylist, Mpi3Folder *inFolder, int position);
-    void move(Mpi3Folder *moveFolder, Mpi3Folder *inFolder, int position);
+    void move(Mpi3Playlist *movePlaylist, Mpi3Folder *toFolder, int position);
+    void move(Mpi3Folder *moveFolder, Mpi3Folder *toFolder, int position);
 
     void discard(Mpi3Song *remSong);
     void discard(Mpi3Playlist *remPlaylist);

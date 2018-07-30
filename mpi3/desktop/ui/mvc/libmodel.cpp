@@ -586,6 +586,7 @@ bool Mpi3ModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction actio
             for(int i = 0; i < droppedSongs.size(); i++){
                 m_mediaLibrary->move(droppedSongs.at(i), parentPlaylist, row);
             }
+//            m_mediaLibrary->move(droppedSongs, parentPlaylist, row);
         }
     }
     else if(m_mediaLibrary->validMediaFiles(data->urls()) && action == Qt::CopyAction){
