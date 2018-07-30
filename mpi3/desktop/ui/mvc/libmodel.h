@@ -18,9 +18,6 @@ class Mpi3Playlist;
 class Mpi3Song;
 
 
-bool validMediaFiles(const QMimeData *data);
-
-
 class Mpi3ModelContainers : public QAbstractItemModel
 {
     Q_OBJECT

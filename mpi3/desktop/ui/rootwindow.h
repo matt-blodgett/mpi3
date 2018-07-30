@@ -78,12 +78,12 @@ private:
     void objDuplicate();
     void objOpenFileLocation(Mpi3TreeView *treeParent);
 
-    void actUndo();
-    void actRedo();
+    void editUndo();
+    void editRedo();
 
-    void objCut();
-    void objCopy();
-    void objPaste();
+    void objCut(Mpi3TreeView *treeParent);
+    void objCopy(Mpi3TreeView *treeParent);
+    void objPaste(Mpi3TreeView *treeParent);
     void objDelete(Mpi3TreeView *treeParent);
 
 private:

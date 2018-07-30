@@ -36,6 +36,7 @@ public:
     virtual Mpi3Element::ElementType type() const;
 
 private:
+    static const int PersistentIDLength;
     static const QString BasePrefix;
     static const QString SongPrefix;
     static const QString PlaylistPrefix;
@@ -162,6 +163,11 @@ private:
 
 public:
     void importItunesPlist(const QString &path, Mpi3Folder *parentFolder = nullptr);
+
+    bool validMediaFiles(QUrl mediaUrl);
+    bool validMediaFiles(QList<QUrl> mediaUrls);
+
+    QVector<Mpi3Song*> songsFromData(QByteArray pidBytes) const;
 
 public:
     QVector<Mpi3Folder*> childFolders(Mpi3Folder *parentFolder = nullptr) const;

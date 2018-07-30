@@ -15,6 +15,7 @@ Mpi3Element::ElementType Mpi3Element::type() const {
     return Mpi3Element::BaseElement;
 }
 
+int const Mpi3Element::PersistentIDLength = 18;
 QString const Mpi3Element::BasePrefix = "E:";
 QString const Mpi3Element::SongPrefix = "S:";
 QString const Mpi3Element::PlaylistPrefix = "P:";
@@ -363,7 +364,7 @@ QString Mpi3Library::generatePID(Mpi3Element::ElementType elemType) const{
     }
 
     QString clist = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    for (int i = 0; i < 16; i++){
+    while(pid.size() < Mpi3Element::PersistentIDLength){
         pid += clist[QRandomGenerator().global()->bounded(0, 36)];
     }
 
@@ -484,6 +485,48 @@ void Mpi3Library::importItunesPlist(const QString &path, Mpi3Folder *parentFolde
             }
         }
     }
+}
+
+bool Mpi3Library::validMediaFiles(QUrl mediaUrl){
+    if(mediaUrl.toString().endsWith(".mp3") || mediaUrl.toString().endsWith(".wav")){
+        return true;
+    }
+
+    return false;
+}
+bool Mpi3Library::validMediaFiles(QList<QUrl> mediaUrls){
+    if(mediaUrls.size() == 0){
+        return false;
+    }
+
+    for(int i = 0; i < mediaUrls.size(); i++){
+        if(!validMediaFiles(mediaUrls.at(i))){
+            return false;
+        }
+    }
+
+    return true;
+}
+
+QVector<Mpi3Song*> Mpi3Library::songsFromData(QByteArray pidBytes) const {
+    QStringList pidStrings;
+
+    int i = 0;
+    int length = Mpi3Element::PersistentIDLength;
+    while(i + length <= pidBytes.size()){
+        pidStrings.append(pidBytes.mid(i, length));
+        i += length;
+    }
+
+    QVector<Mpi3Song*> extractedSongs;
+    for(int i = 0; i < pidStrings.size(); i++){
+        Mpi3Song *song = getSong(pidStrings.at(i));
+        if(song && !extractedSongs.contains(song)){
+            extractedSongs.append(song);
+        }
+    }
+
+    return extractedSongs;
 }
 
 QVector<Mpi3Folder*> Mpi3Library::childFolders(Mpi3Folder *parentFolder) const{

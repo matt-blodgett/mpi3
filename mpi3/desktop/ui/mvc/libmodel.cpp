@@ -9,21 +9,6 @@
 #include <QDebug>
 
 
-bool validMediaFiles(const QMimeData *data){
-    if(!data->hasUrls()){
-        return false;
-    }
-    for(int i = 0; i < data->urls().size(); i++){
-        QUrl file = data->urls().at(i);
-        if(!file.toString().endsWith(".mp3") && !file.toString().endsWith(".wav")){
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
 Mpi3ModelContainers::Mpi3ModelContainers(QObject *parent) : QAbstractItemModel(parent){
     m_rootItem = new LibraryItem();
 
@@ -59,66 +44,71 @@ Qt::DropActions Mpi3ModelContainers::supportedDropActions() const{
 
 QStringList Mpi3ModelContainers::mimeTypes() const {
     QStringList mTypes;
-    mTypes << "text/plain";
+    mTypes << QMetaType::typeName(qMetaTypeId<QStringList>());
     return mTypes;
 }
 QMimeData* Mpi3ModelContainers::mimeData(const QModelIndexList &indexes) const{
-    QMimeData *mimeData = new QMimeData();
+    QMimeData *mData = new QMimeData();
     if(indexes.size() == 1){
-        QString pid = getPID(indexes.at(0));
-        mimeData->setText(pid);
+
     }
-    return mimeData;
+    return mData;
 }
 
 bool Mpi3ModelContainers::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const {
-    if(action == Qt::CopyAction && validMediaFiles(data)){
 
-//        qDebug() << row << column << parent.row() << parent.column();
+    Q_UNUSED(data);
+    Q_UNUSED(action);
+    Q_UNUSED(row);
+    Q_UNUSED(column);
+    Q_UNUSED(parent);
+    //    if(action == Qt::CopyAction && m_mediaLibrary->validMediaFiles(data->urls())){
 
-//        if(row == 0 && column == 0 && parent.row() == -1 && parent.column() == -1){
+////        qDebug() << row << column << parent.row() << parent.column();
+
+////        if(row == 0 && column == 0 && parent.row() == -1 && parent.column() == -1){
+////            return true;
+////        }
+
+//        if(row == -1 && column == -1 && parent.row() == -1 && parent.column() == -1){
 //            return true;
 //        }
 
-        if(row == -1 && column == -1 && parent.row() == -1 && parent.column() == -1){
-            return true;
-        }
+//        LibraryItem *parentItem = getItem(parent);
+//        LibraryItem *childItem = nullptr;
 
-        LibraryItem *parentItem = getItem(parent);
-        LibraryItem *childItem = nullptr;
+////        if(row == -1 && column == -1){
+////            childItem = m_rootItem->child(parent.row());
+////        }
+////        else{
+////            childItem = parentItem->child(row);
+////        }
 
 //        if(row == -1 && column == -1){
 //            childItem = m_rootItem->child(parent.row());
+//        }
+//        else if(parent.row() == -1 && parent.column() == -1){
+//            childItem = m_rootItem->child(row);
 //        }
 //        else{
 //            childItem = parentItem->child(row);
 //        }
 
-        if(row == -1 && column == -1){
-            childItem = m_rootItem->child(parent.row());
-        }
-        else if(parent.row() == -1 && parent.column() == -1){
-            childItem = m_rootItem->child(row);
-        }
-        else{
-            childItem = parentItem->child(row);
-        }
+//        Mpi3Playlist *dropPlaylist = m_mediaLibrary->getPlaylist(getPID(childItem));
 
-        Mpi3Playlist *dropPlaylist = m_mediaLibrary->getPlaylist(getPID(childItem));
+//        Mpi3Folder *dropFolder = m_mediaLibrary->getFolder(getPID(childItem));
+//        if(dropFolder){
+////            qDebug() << dropFolder->name();
+//        }
 
-        Mpi3Folder *dropFolder = m_mediaLibrary->getFolder(getPID(childItem));
-        if(dropFolder){
-//            qDebug() << dropFolder->name();
-        }
-
-        if(dropPlaylist){
-//            qDebug() << dropPlaylist->name();
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+//        if(dropPlaylist){
+////            qDebug() << dropPlaylist->name();
+//            return true;
+//        }
+//        else {
+//            return false;
+//        }
+//    }
 
     return false;
 }
@@ -129,7 +119,7 @@ bool Mpi3ModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction act
     Q_UNUSED(column);
     Q_UNUSED(parent);
 
-    return true;
+    return false;
 }
 
 int Mpi3ModelContainers::rowCount(const QModelIndex &parent) const{
@@ -505,6 +495,13 @@ Mpi3ModelSonglist::Mpi3ModelSonglist(QObject *parent) : QAbstractItemModel(paren
     for(int i = 0; i < columnCount(); i++){
         columnVisibility[i] = false;
     }
+
+//    qDebug() << qMetaTypeId<Mpi3ElementList>();
+//    qDebug() << QMetaType::typeName(qMetaTypeId<Mpi3ElementList>());
+//    qDebug() << "";
+    qDebug() << qMetaTypeId<QStringList>();
+    qDebug() << QMetaType::typeName(qMetaTypeId<QStringList>());
+    qDebug() << "";
 }
 Mpi3ModelSonglist::~Mpi3ModelSonglist(){}
 
@@ -526,21 +523,31 @@ Qt::DropActions Mpi3ModelSonglist::supportedDropActions() const{
 
 QStringList Mpi3ModelSonglist::mimeTypes() const {
     QStringList mTypes;
-    mTypes << "text/plain";
+    mTypes << QMetaType::typeName(qMetaTypeId<QStringList>());
     return mTypes;
 }
 QMimeData* Mpi3ModelSonglist::mimeData(const QModelIndexList &indexes) const{
-    QMimeData *mimeData = new QMimeData();
+    QMimeData *mData = new QMimeData();
 
-    QString pids;
+    QVector<Mpi3Song*> selectedSongs;
     for(int i = 0; i < indexes.size(); i++){
-        QModelIndex index = indexes.at(i);
-        pids += ";" + getSongAt(index)->pid();
-
+        Mpi3Song *song = getSongAt(indexes.at(i));
+        if(song && !selectedSongs.contains(song)){
+            selectedSongs.append(song);
+        }
     }
 
-    mimeData->setText(pids);
-    return mimeData;
+    QByteArray pidBytes;
+    QList<QUrl> songUrls;
+    for(int i = 0; i < selectedSongs.size(); i++){
+        Mpi3Song *song = selectedSongs.at(i);
+        pidBytes.append(song->pid());
+        songUrls.append(song->path());
+    }
+
+    mData->setData(QMetaType::typeName(qMetaTypeId<QStringList>()), pidBytes);
+    mData->setUrls(songUrls);
+    return mData;
 }
 
 bool Mpi3ModelSonglist::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const {
@@ -548,18 +555,40 @@ bool Mpi3ModelSonglist::canDropMimeData(const QMimeData *data, Qt::DropAction ac
     Q_UNUSED(column);
     Q_UNUSED(parent);
 
-    if(validMediaFiles(data) && action == Qt::CopyAction && m_currentDisplay != Mpi3ModelSonglist::DisplayFolder){
+    if(m_currentDisplay != Mpi3ModelSonglist::DisplayPlaylist || m_currentDisplay != Mpi3ModelSonglist::DisplayAllSongs){
+        return false;
+    }
+    else if(data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()))){
+        return true;
+    }
+    else if(m_mediaLibrary->validMediaFiles(data->urls()) && action == Qt::CopyAction){
         return true;
     }
 
     return false;
 }
 bool Mpi3ModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent){
-    Q_UNUSED(row);
     Q_UNUSED(column);
     Q_UNUSED(parent);
 
-    if(validMediaFiles(data) && action == Qt::CopyAction && m_currentDisplay != Mpi3ModelSonglist::DisplayFolder){
+    if(m_currentDisplay != Mpi3ModelSonglist::DisplayPlaylist || m_currentDisplay != Mpi3ModelSonglist::DisplayAllSongs){
+        return false;
+    }
+    else if(data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()))){
+        QByteArray pidBytes = data->data(QMetaType::typeName(qMetaTypeId<QStringList>()));
+        QVector<Mpi3Song*> droppedSongs = m_mediaLibrary->songsFromData(pidBytes);
+
+        if(action == Qt::CopyAction){
+
+        }
+        else if(action == Qt::MoveAction && m_currentDisplay == Mpi3ModelSonglist::DisplayPlaylist){
+            Mpi3Playlist *parentPlaylist = m_mediaLibrary->getPlaylist(m_currentContainer);
+            for(int i = 0; i < droppedSongs.size(); i++){
+                m_mediaLibrary->move(droppedSongs.at(i), parentPlaylist, row);
+            }
+        }
+    }
+    else if(m_mediaLibrary->validMediaFiles(data->urls()) && action == Qt::CopyAction){
         Mpi3Playlist *parentPlaylist = m_mediaLibrary->getPlaylist(m_currentContainer);
         for(int i = 0; i < data->urls().size(); i++){
             Mpi3Song *droppedSong = m_mediaLibrary->newSong(data->urls().at(i).toString());
