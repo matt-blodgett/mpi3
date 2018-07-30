@@ -43,9 +43,9 @@ private:
     static const QString LibraryPrefix;
 
 public:
-    QString pid();
-    QString name();
-    QString added();
+    QString pid() const;
+    QString name() const;
+    QString added() const;
 
 protected:
     QString m_pid;
@@ -109,7 +109,7 @@ public:
     QVector<Mpi3Song*> songs;
 
 public:
-    Mpi3Song *getSong(const QString &pid);
+    Mpi3Song *getSong(const QString &pid) const;
 };
 
 
@@ -129,8 +129,8 @@ public:
     QVector<Mpi3Playlist*> playlists;
 
 public:
-    Mpi3Playlist *getPlaylist(const QString &pid);
-    Mpi3Folder *getFolder(const QString &pid);
+    Mpi3Playlist *getPlaylist(const QString &pid) const;
+    Mpi3Folder *getFolder(const QString &pid) const;
 };
 
 
@@ -156,30 +156,30 @@ public:
     QVector<Mpi3Folder*> *libFolders = nullptr;
 
 private:
-    QString generatePID(Mpi3Element::ElementType elemType);
-    void xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text);
-    QMap<QString, QVariant> plistDict(const QDomNode &parentNode);
+    QString generatePID(Mpi3Element::ElementType elemType) const;
+    void xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text) const;
+    QMap<QString, QVariant> plistDict(const QDomNode &parentNode) const;
 
 public:
     void importItunesPlist(const QString &path, Mpi3Folder *parentFolder = nullptr);
 
 public:
-    QVector<Mpi3Folder*> childFolders(Mpi3Folder *parentFolder = nullptr);
-    QVector<Mpi3Playlist*> childPlaylists(Mpi3Folder *parentFolder = nullptr);
+    QVector<Mpi3Folder*> childFolders(Mpi3Folder *parentFolder = nullptr) const;
+    QVector<Mpi3Playlist*> childPlaylists(Mpi3Folder *parentFolder = nullptr) const;
 
-    QVector<Mpi3Song*> allChildSongs(Mpi3Folder *parentFolder = nullptr);
-    QVector<Mpi3Playlist*> allChildPlaylists(Mpi3Folder *parentFolder = nullptr);
-    QVector<Mpi3Folder*> allChildFolders(Mpi3Folder *parentFolder = nullptr);
+    QVector<Mpi3Song*> allChildSongs(Mpi3Folder *parentFolder = nullptr) const;
+    QVector<Mpi3Playlist*> allChildPlaylists(Mpi3Folder *parentFolder = nullptr) const;
+    QVector<Mpi3Folder*> allChildFolders(Mpi3Folder *parentFolder = nullptr) const;
 
 public:
-    Mpi3Element *getElement(const QString &pid);
-    Mpi3Song *getSong(const QString &pid);
-    Mpi3Playlist *getPlaylist(const QString &pid);
-    Mpi3Folder *getFolder(const QString &pid);
+    Mpi3Element *getElement(const QString &pid) const;
+    Mpi3Song *getSong(const QString &pid) const;
+    Mpi3Playlist *getPlaylist(const QString &pid) const;
+    Mpi3Folder *getFolder(const QString &pid) const;
 
-    Mpi3Song* newSong(const QString &path = QString());
-    Mpi3Playlist* newPlaylist(bool named = false);
-    Mpi3Folder* newFolder(bool named = false);
+    Mpi3Song* newSong(const QString &path = QString()) const;
+    Mpi3Playlist* newPlaylist(bool named = false) const;
+    Mpi3Folder* newFolder(bool named = false) const;
 
 public:
     void modify(const QString &pid, const QString &value);

@@ -21,13 +21,13 @@ QString const Mpi3Element::PlaylistPrefix = "P:";
 QString const Mpi3Element::FolderPrefix = "F:";
 QString const Mpi3Element::LibraryPrefix = "L:";
 
-QString Mpi3Element::pid(){
+QString Mpi3Element::pid() const{
     return m_pid;
 }
-QString Mpi3Element::name(){
+QString Mpi3Element::name() const{
     return m_name;
 }
-QString Mpi3Element::added(){
+QString Mpi3Element::added() const{
     return m_added;
 }
 
@@ -69,7 +69,7 @@ Mpi3Element::ElementType Mpi3Playlist::type() const {
     return Mpi3Element::PlaylistElement;
 }
 
-Mpi3Song* Mpi3Playlist::getSong(const QString &pid){
+Mpi3Song* Mpi3Playlist::getSong(const QString &pid) const{
     for(int i = 0; i < songs.size(); i++){
         Mpi3Song *song = songs.at(i);
         if(song->pid() == pid){
@@ -86,7 +86,7 @@ Mpi3Element::ElementType Mpi3Folder::type() const {
     return Mpi3Element::FolderElement;
 }
 
-Mpi3Playlist *Mpi3Folder::getPlaylist(const QString &pid){
+Mpi3Playlist *Mpi3Folder::getPlaylist(const QString &pid) const{
     for(int i = 0; i < playlists.size(); i++){
         if(playlists.at(i)->pid() == pid){
             return playlists.at(i);
@@ -95,7 +95,7 @@ Mpi3Playlist *Mpi3Folder::getPlaylist(const QString &pid){
 
     return nullptr;
 }
-Mpi3Folder *Mpi3Folder::getFolder(const QString &pid){
+Mpi3Folder *Mpi3Folder::getFolder(const QString &pid) const{
     for(int i = 0; i < folders.size(); i++){
         if(folders.at(i)->pid() == pid){
             return folders.at(i);
@@ -337,7 +337,7 @@ QString Mpi3Library::filepath() const {
     return m_filepath;
 }
 
-QString Mpi3Library::generatePID(Mpi3Element::ElementType elemType){
+QString Mpi3Library::generatePID(Mpi3Element::ElementType elemType) const{
     QString pid;
     switch(elemType){
         case Mpi3Element::BaseElement: {
@@ -391,13 +391,13 @@ QString Mpi3Library::generatePID(Mpi3Element::ElementType elemType){
 
     return pid;
 }
-void Mpi3Library::xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text){
+void Mpi3Library::xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text) const{
     QDomElement e = xml.createElement(tagname);
     QDomText t = xml.createTextNode(text);
     e.appendChild(t);
     elem.appendChild(e);
 }
-QMap<QString, QVariant> Mpi3Library::plistDict(const QDomNode &parentNode){
+QMap<QString, QVariant> Mpi3Library::plistDict(const QDomNode &parentNode) const{
 
     QMap<QString, QVariant> dict;
 
@@ -486,7 +486,7 @@ void Mpi3Library::importItunesPlist(const QString &path, Mpi3Folder *parentFolde
     }
 }
 
-QVector<Mpi3Folder*> Mpi3Library::childFolders(Mpi3Folder *parentFolder){
+QVector<Mpi3Folder*> Mpi3Library::childFolders(Mpi3Folder *parentFolder) const{
     QVector<Mpi3Folder*> folders;
     for(int i = 0; i < libFolders->size(); i++){
         Mpi3Folder *f = libFolders->at(i);
@@ -497,7 +497,7 @@ QVector<Mpi3Folder*> Mpi3Library::childFolders(Mpi3Folder *parentFolder){
 
     return folders;
 }
-QVector<Mpi3Playlist*> Mpi3Library::childPlaylists(Mpi3Folder *parentFolder){
+QVector<Mpi3Playlist*> Mpi3Library::childPlaylists(Mpi3Folder *parentFolder) const{
     QVector<Mpi3Playlist*> playlists;
     for(int i = 0; i < libPlaylists->size(); i++){
         Mpi3Playlist *p = libPlaylists->at(i);
@@ -509,7 +509,7 @@ QVector<Mpi3Playlist*> Mpi3Library::childPlaylists(Mpi3Folder *parentFolder){
     return playlists;
 }
 
-QVector<Mpi3Song*> Mpi3Library::allChildSongs(Mpi3Folder *parentFolder){
+QVector<Mpi3Song*> Mpi3Library::allChildSongs(Mpi3Folder *parentFolder) const{
     if(!parentFolder){
         return *libSongs;
     }
@@ -528,7 +528,7 @@ QVector<Mpi3Song*> Mpi3Library::allChildSongs(Mpi3Folder *parentFolder){
 
     return songs;
 }
-QVector<Mpi3Playlist*> Mpi3Library::allChildPlaylists(Mpi3Folder *parentFolder){
+QVector<Mpi3Playlist*> Mpi3Library::allChildPlaylists(Mpi3Folder *parentFolder) const{
     if(!parentFolder){
         return *libPlaylists;
     }
@@ -548,7 +548,7 @@ QVector<Mpi3Playlist*> Mpi3Library::allChildPlaylists(Mpi3Folder *parentFolder){
 
     return playlists;
 }
-QVector<Mpi3Folder*> Mpi3Library::allChildFolders(Mpi3Folder *parentFolder){
+QVector<Mpi3Folder*> Mpi3Library::allChildFolders(Mpi3Folder *parentFolder) const{
     if(!parentFolder){
         return *libFolders;
     }
@@ -567,7 +567,7 @@ QVector<Mpi3Folder*> Mpi3Library::allChildFolders(Mpi3Folder *parentFolder){
     return folders;
 }
 
-Mpi3Element* Mpi3Library::getElement(const QString &pid){
+Mpi3Element* Mpi3Library::getElement(const QString &pid) const{
     if(pid.isNull()){
         return nullptr;
     }
@@ -595,7 +595,7 @@ Mpi3Element* Mpi3Library::getElement(const QString &pid){
 
     return nullptr;
 }
-Mpi3Song* Mpi3Library::getSong(const QString &pid){
+Mpi3Song* Mpi3Library::getSong(const QString &pid) const{
     if(pid.isNull()){
         return nullptr;
     }
@@ -609,7 +609,7 @@ Mpi3Song* Mpi3Library::getSong(const QString &pid){
 
     return nullptr;
 }
-Mpi3Playlist* Mpi3Library::getPlaylist(const QString &pid){
+Mpi3Playlist* Mpi3Library::getPlaylist(const QString &pid) const{
     if(pid.isNull()){
         return nullptr;
     }
@@ -623,7 +623,7 @@ Mpi3Playlist* Mpi3Library::getPlaylist(const QString &pid){
 
     return nullptr;
 }
-Mpi3Folder* Mpi3Library::getFolder(const QString &pid){
+Mpi3Folder* Mpi3Library::getFolder(const QString &pid) const{
     if(pid.isNull()){
         return nullptr;
     }
@@ -638,7 +638,7 @@ Mpi3Folder* Mpi3Library::getFolder(const QString &pid){
     return nullptr;
 }
 
-Mpi3Song* Mpi3Library::newSong(const QString &path){
+Mpi3Song* Mpi3Library::newSong(const QString &path) const{
     Mpi3Song *song = new Mpi3Song();
     song->m_pid = generatePID(Mpi3Element::SongElement);
 
@@ -649,7 +649,7 @@ Mpi3Song* Mpi3Library::newSong(const QString &path){
 
     return song;
 }
-Mpi3Playlist* Mpi3Library::newPlaylist(bool named){
+Mpi3Playlist* Mpi3Library::newPlaylist(bool named) const{
     Mpi3Playlist *playlist = new Mpi3Playlist();
     playlist->m_pid = generatePID(Mpi3Element::PlaylistElement);
 
@@ -671,7 +671,7 @@ Mpi3Playlist* Mpi3Library::newPlaylist(bool named){
 
     return playlist;
 }
-Mpi3Folder* Mpi3Library::newFolder(bool named){
+Mpi3Folder* Mpi3Library::newFolder(bool named) const{
     Mpi3Folder *folder = new Mpi3Folder();
     folder->m_pid = generatePID(Mpi3Element::FolderElement);
 
