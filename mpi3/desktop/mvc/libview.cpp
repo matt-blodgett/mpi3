@@ -1,5 +1,7 @@
 #include "libview.h"
 
+#include "desktop/ui/uistyle.h"
+
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
 #include <QDragLeaveEvent>

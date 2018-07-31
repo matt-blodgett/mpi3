@@ -17,13 +17,14 @@ SOURCES += desktop/main.cpp
 SOURCES += desktop/rootwindow.cpp
 HEADERS += desktop/rootwindow.h
 
-SOURCES += desktop/ui/uistyle.cpp
-SOURCES += desktop/ui/audiocontrol.cpp
-SOURCES += desktop/ui/librarydisplay.cpp
-
 HEADERS += desktop/ui/uistyle.h
-HEADERS += desktop/ui/audiocontrol.h
-HEADERS += desktop/ui/librarydisplay.h
+SOURCES += desktop/ui/uistyle.cpp
+
+SOURCES += desktop/panels/audiocontrol.cpp
+SOURCES += desktop/panels/librarydisplay.cpp
+
+HEADERS += desktop/panels/audiocontrol.h
+HEADERS += desktop/panels/librarydisplay.h
 
 HEADERS += desktop/mvc/libmodel.h
 HEADERS += desktop/mvc/libview.h
