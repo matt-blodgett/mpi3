@@ -1,15 +1,10 @@
 #include "uistyle.h"
 
-#include <QFile>
-
-
 #include <QStyleOption>
 #include <QPainter>
 
+#include <QFile>
 
-#include <QPalette>
-
-#include <QDebug>
 
 Mpi3StyleSheet::Mpi3StyleSheet(){}
 Mpi3StyleSheet::~Mpi3StyleSheet(){}
@@ -117,115 +112,10 @@ void Mpi3Style::drawPrimitive(PrimitiveElement element, const QStyleOption *opti
     if(element == QStyle::PE_IndicatorRadioButton){
         return;
     }
-
-
-//    if(widget->objectName() == "ContainersTreeview"){
-//        qDebug() << element;
-//    }
-
-    if(element == QStyle::PE_Widget){
-        if(noDraw){
-            return;
-        }
-    }
-
-    if(element == QStyle::PE_PanelItemViewRow || element == QStyle::PE_PanelItemViewItem){
-        if(noDraw){
-            if(painter){
-
-                qDebug() << "style row";
-
-                QStyleOption opt(*option);
-                opt.rect.setLeft(0);
-
-                QColor red(250, 42, 63, 255);
-                opt.palette.setColor(QPalette::Active, QPalette::WindowText, red);
-                opt.palette.setColor(QPalette::Active, QPalette::Button, red);
-                opt.palette.setColor(QPalette::Active, QPalette::Text, red);
-                opt.palette.setColor(QPalette::Active, QPalette::ButtonText, red);
-                opt.palette.setColor(QPalette::Active, QPalette::Base, red);
-                opt.palette.setColor(QPalette::Active, QPalette::Window, red);
-                opt.palette.setColor(QPalette::Active, QPalette::Highlight, red);
-                opt.palette.setColor(QPalette::Active, QPalette::HighlightedText, red);
-
-                opt.palette.setColor(QPalette::Disabled, QPalette::WindowText, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::Button, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::Text, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::ButtonText, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::Base, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::Window, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::Highlight, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::HighlightedText, red);
-
-                opt.palette.setColor(QPalette::Inactive, QPalette::WindowText, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::Button, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::Text, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::ButtonText, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::Base, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::Window, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::Highlight, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::HighlightedText, red);
-
-//                painter->setBackground()
-
-                QProxyStyle::drawPrimitive(element, &opt, painter, widget);
-
-                return;
-            }
-        }
-    }
-
-    if(element == QStyle::PE_IndicatorItemViewItemDrop && !option->rect.isNull()){
-
-
-
+    else if(element == QStyle::PE_IndicatorItemViewItemDrop && !option->rect.isNull()){
         if(painter){
             QStyleOption opt(*option);
             opt.rect.setLeft(0);
-
-//            qDebug() << "";
-//            qDebug() << opt.palette;
-
-
-            if(noDraw){
-                qDebug() << "draw tv indicator" << "no draw == TRUE";
-
-                QColor red(250, 42, 63, 255);
-                opt.palette.setColor(QPalette::Active, QPalette::WindowText, red);
-                opt.palette.setColor(QPalette::Active, QPalette::Button, red);
-                opt.palette.setColor(QPalette::Active, QPalette::Text, red);
-                opt.palette.setColor(QPalette::Active, QPalette::ButtonText, red);
-                opt.palette.setColor(QPalette::Active, QPalette::Base, red);
-                opt.palette.setColor(QPalette::Active, QPalette::Window, red);
-                opt.palette.setColor(QPalette::Active, QPalette::Highlight, red);
-                opt.palette.setColor(QPalette::Active, QPalette::HighlightedText, red);
-
-                opt.palette.setColor(QPalette::Disabled, QPalette::WindowText, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::Button, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::Text, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::ButtonText, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::Base, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::Window, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::Highlight, red);
-                opt.palette.setColor(QPalette::Disabled, QPalette::HighlightedText, red);
-
-                opt.palette.setColor(QPalette::Inactive, QPalette::WindowText, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::Button, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::Text, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::ButtonText, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::Base, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::Window, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::Highlight, red);
-                opt.palette.setColor(QPalette::Inactive, QPalette::HighlightedText, red);
-
-//                QTreeWidget::branch::!has-children:selected {background-color: rgb(255, 255, 255);}
-//                QTreeWidget::branch::!has-children:selected:alternate {background-color: rgb(0, 0, 0);}
-//                qDebug() << opt.palette;
-            }
-            else {
-                qDebug() << "draw tv indicator" << "no draw == FALSE";
-            }
-
 
             if(widget){
                 opt.rect.setRight(widget->width());

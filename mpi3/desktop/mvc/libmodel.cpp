@@ -28,10 +28,11 @@ Qt::ItemFlags Mpi3ModelContainers::flags(const QModelIndex &index) const{
         return Qt::ItemIsEditable
                 | Qt::ItemIsDragEnabled
                 | Qt::ItemIsDropEnabled
-                | QAbstractItemModel::flags(index);
+                | Qt::ItemIsSelectable
+                | Qt::ItemIsEnabled;
     }
 
-    return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
+    return Qt::ItemIsDropEnabled;
 }
 Qt::DropActions Mpi3ModelContainers::supportedDragActions() const{
     return Qt::MoveAction;
@@ -578,17 +579,18 @@ Qt::ItemFlags Mpi3ModelSonglist::flags(const QModelIndex &index) const{
             return Qt::ItemIsEditable
                     | Qt::ItemIsDragEnabled
                     | Qt::ItemIsDropEnabled
-                    | QAbstractItemModel::flags(index);
+                    | Qt::ItemIsSelectable
+                    | Qt::ItemIsEnabled;
         }
         else{
             return Qt::ItemIsEditable
                     | Qt::ItemIsDropEnabled
-                    | QAbstractItemModel::flags(index);
+                    | Qt::ItemIsSelectable
+                    | Qt::ItemIsEnabled;
         }
-
     }
 
-    return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
+    return Qt::ItemIsDropEnabled;
 }
 Qt::DropActions Mpi3ModelSonglist::supportedDragActions() const{
     return Qt::CopyAction;

@@ -223,8 +223,10 @@ QWidget#PanelViewsButton:pushed {
 }
 
 QWidget#PanelViewsButton:checked {
-    background-color: #777777;
     font: 14px bold;
+    background: #FFFFFF;
+    color: #000000;
+    border: 0px;
 }
 
 // --------------------------------------------------
@@ -279,20 +281,35 @@ QWidget#ContainersTreeview::item:hover {
     border: 0px;
 }
 
-QWidget#ContainersTreeview::item:selected {
-    background: #777777;
-    border: 0px;
+QWidget#ContainersTreeview::item:selected  {
+    background: #FFFFFF;
+    color: #000000;
+    border-image: none;
 }
 
-QTreeView::branch {
-    border: 0px;
+QWidget#ContainersTreeview::branch:selected {
+    background: #FFFFFF;
+    color: #000000;
     border-image: none;
+}
+
+QWidget#ContainersTreeview::branch:has-siblings:!adjoins-item {
+    border-image: url(:/icons/treeview/branch_vline.png) 0;
+}
+
+QWidget#ContainersTreeview::branch:has-siblings:adjoins-item {
+    border-image: url(:/icons/treeview/branch_more.png) 0;
+}
+
+QWidget#ContainersTreeview::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: url(:/icons/treeview/branch_end.png) 0;
 }
 
 QWidget#ContainersTreeview::branch:has-children:!has-siblings:closed {
     border-image: none;
     image: url(:/icons/treeview/folder_closed.png);
 }
+
 QWidget#ContainersTreeview::branch:closed:has-children:has-siblings {
     border-image: none;
     image: url(:/icons/treeview/folder_closed.png);
@@ -302,6 +319,7 @@ QWidget#ContainersTreeview::branch:open:has-children:!has-siblings{
     border-image: none;
     image: url(:/icons/treeview/folder_open.png);
 }
+
 QWidget#ContainersTreeview::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:/icons/treeview/folder_open.png);

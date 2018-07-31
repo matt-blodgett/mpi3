@@ -1,7 +1,6 @@
 #ifndef UISTYLE_H
 #define UISTYLE_H
 
-#include <QString>
 #include <QProxyStyle>
 
 
@@ -47,8 +46,6 @@ public:
 
     TV_IndicatorStyle currentTVIndicatorStyle() const;
     void setTVIndicatorStyle(TV_IndicatorStyle tvIndicatorStyle);
-
-    bool noDraw = false;
 
 private:
     TV_IndicatorStyle m_currentTVIndicatorStyle = Mpi3Style::TV_IndicatorStyleDrop;

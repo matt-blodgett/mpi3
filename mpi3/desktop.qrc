@@ -6,10 +6,13 @@
         <file alias="prev.png">assets/desktop/icons/playback/prev.png</file>
     </qresource>
     <qresource prefix="/icons/treeview">
-        <file alias="folder_open.png">assets/desktop/icons/treeview/folder_open.png</file>
-        <file alias="folder_closed.png">assets/desktop/icons/treeview/folder_closed.png</file>
         <file alias="folder.png">assets/desktop/icons/treeview/folder.png</file>
         <file alias="playlist.png">assets/desktop/icons/treeview/playlist.png</file>
+        <file alias="folder_open.png">assets/desktop/icons/treeview/folder_open.png</file>
+        <file alias="folder_closed.png">assets/desktop/icons/treeview/folder_closed.png</file>
+        <file alias="branch_end.png">assets/desktop/icons/treeview/branch_end.png</file>
+        <file alias="branch_more.png">assets/desktop/icons/treeview/branch_more.png</file>
+        <file alias="branch_vline.png">assets/desktop/icons/treeview/branch_vline.png</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default.qss">assets/desktop/qss/default.qss</file>
