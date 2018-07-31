@@ -1,10 +1,9 @@
 #include "librarydisplay.h"
-#include "mvc/libview.h"
+#include "desktop/ui/uistyle.h"
+
+#include "desktop/mvc/libview.h"
 
 #include <QGridLayout>
-#include <QStyleOption>
-#include <QPainter>
-
 #include <QHeaderView>
 #include <QPushButton>
 #include <QRadioButton>
@@ -78,9 +77,9 @@ Mpi3PanelLibrary::Mpi3PanelLibrary(QWidget *parent) : QWidget(parent){
     m_btnAlbums->setText("Albums");
     m_lblPlaylist->setText("Playlists");
 
-    m_btnSongs->setStyle(new Mpi3RadioButtonStyle(m_btnSongs->style()));
-    m_btnArtists->setStyle(new Mpi3RadioButtonStyle(m_btnArtists->style()));
-    m_btnAlbums->setStyle(new Mpi3RadioButtonStyle(m_btnAlbums->style()));
+    m_btnSongs->setStyle(new Mpi3Style(m_btnSongs->style()));
+    m_btnArtists->setStyle(new Mpi3Style(m_btnArtists->style()));
+    m_btnAlbums->setStyle(new Mpi3Style(m_btnAlbums->style()));
 
     connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewAllSongs);});
     connect(m_btnArtists, &QPushButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewArtists);});
@@ -157,23 +156,3 @@ void Mpi3PanelLibrary::showEvent(QShowEvent *event){
     m_frmLibrary->setSizes({180, width()-180});
     QWidget::showEvent(event);
 }
-void Mpi3PanelLibrary::paintEvent(QPaintEvent *event){
-    QStyleOption opt;
-    opt.init(this);
-
-    QPainter p(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-
-    QWidget::paintEvent(event);
-}
-
-Mpi3RadioButtonStyle::Mpi3RadioButtonStyle(QStyle *style) : QProxyStyle(style){}
-
-void Mpi3RadioButtonStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const{
-    if(element == QStyle::PE_IndicatorRadioButton){
-        return;
-    }
-
-    QProxyStyle::drawPrimitive(element, option, painter, widget);
-}
-

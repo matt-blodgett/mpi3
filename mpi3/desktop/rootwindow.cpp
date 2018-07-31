@@ -1,6 +1,7 @@
 ﻿#include "rootwindow.h"
-#include "librarydisplay.h"
-#include "audiocontrol.h"
+
+#include "ui/librarydisplay.h"
+#include "ui/audiocontrol.h"
 
 #include "mvc/libmodel.h"
 #include "mvc/libview.h"

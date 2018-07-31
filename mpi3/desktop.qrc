@@ -1,17 +1,17 @@
 <RCC>
     <qresource prefix="/icons/playback">
-        <file alias="next.png">desktop/icons/playback/next.png</file>
-        <file alias="paus.png">desktop/icons/playback/paus.png</file>
-        <file alias="play.png">desktop/icons/playback/play.png</file>
-        <file alias="prev.png">desktop/icons/playback/prev.png</file>
+        <file alias="next.png">assets/desktop/icons/playback/next.png</file>
+        <file alias="paus.png">assets/desktop/icons/playback/paus.png</file>
+        <file alias="play.png">assets/desktop/icons/playback/play.png</file>
+        <file alias="prev.png">assets/desktop/icons/playback/prev.png</file>
     </qresource>
     <qresource prefix="/icons/treeview">
-        <file alias="folder_closed.png">desktop/icons/treeview/folder_closed.png</file>
-        <file alias="folder_open.png">desktop/icons/treeview/folder_open.png</file>
-        <file alias="folder.png">desktop/icons/treeview/folder.png</file>
-        <file alias="playlist.png">desktop/icons/treeview/playlist.png</file>
+        <file alias="folder_open.png">assets/desktop/icons/treeview/folder_open.png</file>
+        <file alias="folder_closed.png">assets/desktop/icons/treeview/folder_closed.png</file>
+        <file alias="folder.png">assets/desktop/icons/treeview/folder.png</file>
+        <file alias="playlist.png">assets/desktop/icons/treeview/playlist.png</file>
     </qresource>
     <qresource prefix="/styles">
-        <file alias="default.qss">desktop/qss/default.qss</file>
+        <file alias="default.qss">assets/desktop/qss/default.qss</file>
     </qresource>
 </RCC>

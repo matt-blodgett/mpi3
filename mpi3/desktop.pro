@@ -14,22 +14,24 @@ TEMPLATE = app
 RESOURCES += desktop.qrc
 
 SOURCES += desktop/main.cpp
+SOURCES += desktop/rootwindow.cpp
+HEADERS += desktop/rootwindow.h
 
-SOURCES += desktop/ui/rootwindow.cpp
+SOURCES += desktop/ui/uistyle.cpp
 SOURCES += desktop/ui/audiocontrol.cpp
 SOURCES += desktop/ui/librarydisplay.cpp
 
-HEADERS += desktop/ui/rootwindow.h
+HEADERS += desktop/ui/uistyle.h
 HEADERS += desktop/ui/audiocontrol.h
 HEADERS += desktop/ui/librarydisplay.h
 
-HEADERS += desktop/ui/mvc/libmodel.h
-HEADERS += desktop/ui/mvc/libview.h
-HEADERS += desktop/ui/mvc/libitem.h
+HEADERS += desktop/mvc/libmodel.h
+HEADERS += desktop/mvc/libview.h
+HEADERS += desktop/mvc/libitem.h
 
-SOURCES += desktop/ui/mvc/libmodel.cpp
-SOURCES += desktop/ui/mvc/libview.cpp
-SOURCES += desktop/ui/mvc/libitem.cpp
+SOURCES += desktop/mvc/libmodel.cpp
+SOURCES += desktop/mvc/libview.cpp
+SOURCES += desktop/mvc/libitem.cpp
 
 HEADERS += util/uistylesheet.h
 HEADERS += util/mpi3library.h

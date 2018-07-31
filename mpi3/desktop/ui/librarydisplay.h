@@ -2,7 +2,6 @@
 #define LIBRARYDISPLAY_H
 
 #include <QWidget>
-#include <QProxyStyle>
 
 QT_BEGIN_NAMESPACE
 class QRadioButton;
@@ -59,20 +58,6 @@ signals:
 
 private:
     void showEvent(QShowEvent *event);
-    void paintEvent(QPaintEvent *event);
 };
-
-
-class Mpi3RadioButtonStyle: public QProxyStyle
-{
-    Q_OBJECT
-
-public:
-    Mpi3RadioButtonStyle(QStyle *style = nullptr);
-
-public:
-    void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const;
-};
-
 
 #endif
