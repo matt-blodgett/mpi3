@@ -63,15 +63,16 @@ bool LibraryItem::insertChildren(int position, int count, int columns){
     return true;
 }
 bool LibraryItem::insertColumns(int position, int columns){
-    if (position < 0 || position > itemData.size()){
+    if(position < 0 || position > itemData.size()){
         return false;
     }
 
-    for (int column = 0; column < columns; ++column){
+    for(int column = 0; column < columns; ++column){
         itemData.insert(position, QVariant());
     }
 
-    foreach (LibraryItem *child, childItems){
+    for(int i = 0; i < childItems.size(); i++){
+        LibraryItem *child = childItems.at(i);
         child->insertColumns(position, columns);
     }
 
@@ -98,7 +99,8 @@ bool LibraryItem::removeColumns(int position, int columns){
         itemData.remove(position);
     }
 
-    foreach (LibraryItem *child, childItems){
+    for(int i = 0; i < childItems.size(); i++){
+        LibraryItem *child = childItems.at(i);
         child->removeColumns(position, columns);
     }
 

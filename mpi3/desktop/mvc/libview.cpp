@@ -2,15 +2,11 @@
 
 #include "desktop/ui/uistyle.h"
 
-#include <QDragEnterEvent>
-#include <QDragMoveEvent>
-#include <QDragLeaveEvent>
+#include <QHeaderView>
 #include <QDropEvent>
 
-#include <QHeaderView>
 
 #include <QDebug>
-
 
 
 Mpi3TreeView::Mpi3TreeView(QWidget *parent) : QTreeView(parent){
@@ -37,80 +33,69 @@ Mpi3TreeViewContainers::Mpi3TreeViewContainers(QWidget *parent) : Mpi3TreeView(p
     setRootIsDecorated(true);
     setHeaderHidden(true);
     setIndentation(12);
+
+    m_drawStyle->setTVIndicatorStyle(Mpi3Style::TV_IndicatorStyleDrop);
 }
 
 void Mpi3TreeViewContainers::dragEnterEvent(QDragEnterEvent *event){
-    if(event->source() == this){
-        m_drawStyle->setTVIndicatorStyle(Mpi3Style::TV_IndicatorStyleMove);
-    }
-    else {
-        m_drawStyle->setTVIndicatorStyle(Mpi3Style::TV_IndicatorStyleDrop);
-    }
 
-//    Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
-//    QModelIndex dropIndex = indexAt(event->pos());
-//    if(model()->canDropMimeData(event->mimeData(), action, dropIndex.row(), dropIndex.column(), dropIndex.parent())){
-//        qDebug() << "tree: drag enter - accepted";
-////        event->acceptProposedAction();
-////        event->accept();
-//    }
-//    else {
-//        qDebug() << "tree: drag enter - NOT accepted";
-//    }
 
     Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
-
     QModelIndex dropIndex = currentIndex();
     if(model()->canDropMimeData(event->mimeData(), action, dropIndex.row(), dropIndex.column(), dropIndex.parent())){
-        qDebug() << "tree: drag enter - accepted" << action << dropIndex.row() << dropIndex.column() << dropIndex.parent().row() << dropIndex.parent().column();
-//        event->acceptProposedAction();
-//        event->accept();
+//        qDebug() << "tree: drag enter - accepted" << action << dropIndex.row() << dropIndex.column() << dropIndex.parent().row() << dropIndex.parent().column();
+
     }
     else {
-        qDebug() << "tree: drag enter - NOT accepted" << action << dropIndex.row() << dropIndex.column() << dropIndex.parent().row() << dropIndex.parent().column();;
+//        qDebug() << "tree: drag enter - NOT accepted" << action << dropIndex.row() << dropIndex.column() << dropIndex.parent().row() << dropIndex.parent().column();;
 
     }
     qDebug() << "";
 
+
     QTreeView::dragEnterEvent(event);
     event->acceptProposedAction();
+
+
+
 }
 void Mpi3TreeViewContainers::dragMoveEvent(QDragMoveEvent *event){
+
+
+
+
     Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
-
-//    QModelIndex dropIndex = currentIndex();
-
     QModelIndex dropIndex = indexAt(event->pos());
 
-//    if(model()->canDropMimeData(event->mimeData(), action, dropIndex.row(), dropIndex.column(), dropIndex.parent())){
-//        qDebug() << "tree: drag move - accepted" << action << dropIndex.row() << dropIndex.column() << dropIndex.parent().row() << dropIndex.parent().column();;
-////        event->acceptProposedAction();
-////        event->accept();
-//    }
-//    else {
-//        qDebug() << "tree: drag move - NOT accepted" << action << dropIndex.row() << dropIndex.column() << dropIndex.parent().row() << dropIndex.parent().column();;
 
-//    }
-
-
-    QTreeView::dragMoveEvent(event);
-
-
+//    qDebug() << "";
     if(model()->canDropMimeData(event->mimeData(), action, dropIndex.row(), dropIndex.column(), dropIndex.parent())){
-        qDebug() << "tree: drag move - accepted" << action << dropIndex.row() << dropIndex.column() << dropIndex.parent().row() << dropIndex.parent().column();;
-        event->acceptProposedAction();
+//        qDebug() << "tree: drag move - accepted" << action << dropIndex.row() << dropIndex.column() << dropIndex.parent().row() << dropIndex.parent().column();
+
+        m_drawStyle->noDraw = false;
+
+//        event->acceptProposedAction();
 //        event->accept();
     }
     else {
-        qDebug() << "tree: drag move - NOT accepted" << action << dropIndex.row() << dropIndex.column() << dropIndex.parent().row() << dropIndex.parent().column();;
+//        qDebug() << "tree: drag move - NOT accepted" << action << dropIndex.row() << dropIndex.column() << dropIndex.parent().row() << dropIndex.parent().column();
+
+
+        m_drawStyle->noDraw = true;
+
+
+//        setDropIndicatorShown(false);
 
     }
 
-//    qDebug() << "";
 
-//    event->acceptProposedAction();
+    QTreeView::dragMoveEvent(event);
+    event->acceptProposedAction();
+
+
 
 }
+
 void Mpi3TreeViewContainers::dropEvent(QDropEvent *event){
     Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
     QModelIndex dropIndex = indexAt(event->pos());
@@ -127,8 +112,6 @@ void Mpi3TreeViewContainers::dropEvent(QDropEvent *event){
 
     }
 
-    qDebug() << "";
-    update();
 
 }
 

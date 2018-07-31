@@ -48,8 +48,8 @@ void Mpi3RootDesktop::initializeObjects(){
     m_panelLibview = new Mpi3PanelLibrary(this);
     m_panelPlayback = new Mpi3PanelPlayback(this);
 
-    m_treeContainers = findChild<Mpi3TreeViewContainers*>("PlaylistsTreeview");
-    m_treeSonglist = findChild<Mpi3TreeViewSonglist*>("LibraryTreeview");
+    m_treeContainers = findChild<Mpi3TreeViewContainers*>("ContainersTreeview");
+    m_treeSonglist = findChild<Mpi3TreeViewSonglist*>("SonglistTreeview");
 
     m_modelContainers = new Mpi3ModelContainers();
     m_modelSonglist = new Mpi3ModelSonglist();
@@ -766,10 +766,10 @@ void Mpi3RootDesktop::objDelete(QTreeView *treeParent){
 
 void Mpi3RootDesktop::paintEvent(QPaintEvent *event){
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
 
-    QPainter p(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+    QPainter painter(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 
     QWidget::paintEvent(event);
 }

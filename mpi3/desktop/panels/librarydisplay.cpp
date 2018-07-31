@@ -93,10 +93,10 @@ Mpi3PanelLibrary::Mpi3PanelLibrary(QWidget *parent) : QWidget(parent){
     m_btnAlbums->setObjectName("PanelViewsButton");
     m_lblView->setObjectName("PanelTreesTitle");
     m_lblPlaylist->setObjectName("PanelViewsLabel");
-    m_treeSonglist->setObjectName("LibraryTreeview");
-    m_treeContainers->setObjectName("PlaylistsTreeview");
-    m_treeSonglist->header()->setObjectName("LibraryTreeviewHeader");
-    m_treeContainers->header()->setObjectName("PlaylistsTreeviewHeader");
+    m_treeSonglist->setObjectName("SonglistTreeview");
+    m_treeContainers->setObjectName("ContainersTreeview");
+    m_treeSonglist->header()->setObjectName("SonglistTreeviewHeader");
+    m_treeContainers->header()->setObjectName("ContainersTreeviewHeader");
 }
 Mpi3PanelLibrary::~Mpi3PanelLibrary(){}
 

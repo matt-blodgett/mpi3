@@ -84,11 +84,11 @@ bool Mpi3ModelContainers::canDropMimeData(const QMimeData *data, Qt::DropAction 
 }
 bool Mpi3ModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent){
 
-    Q_UNUSED(data);
-    Q_UNUSED(action);
-    Q_UNUSED(row);
-    Q_UNUSED(column);
-    Q_UNUSED(parent);
+//    Q_UNUSED(data);
+//    Q_UNUSED(action);
+//    Q_UNUSED(row);
+//    Q_UNUSED(column);
+//    Q_UNUSED(parent);
 
     qDebug() << "model: drop mime data" << action << row << column << parent.row() << parent.column();
 
@@ -97,6 +97,9 @@ bool Mpi3ModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction act
     if(dataIsContainer){
         qDebug() << "is container";
     }
+
+    return false;
+
 //    bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
 //    bool dataIsContainer = data->hasFormat(QMetaType::typeName(qMetaTypeId<QString>()));
 //    bool dataIsValidMediaFiles = data->hasUrls() ? m_mediaLibrary->validMediaFiles(data->urls()) : false;
@@ -183,7 +186,7 @@ bool Mpi3ModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction act
 //        }
 //    }
 
-    return false;
+//    return false;
 }
 
 int Mpi3ModelContainers::rowCount(const QModelIndex &parent) const{

@@ -6,8 +6,6 @@
 #include <QList>
 #include <QIcon>
 
-#include <QModelIndex>
-
 
 class LibraryItem
 {
@@ -35,8 +33,6 @@ public:
 
     bool removeChildren(int position, int count);
     bool removeColumns(int position, int columns);
-
-    QModelIndex index;
 
 private:
     QList<LibraryItem*> childItems;

@@ -259,9 +259,9 @@ QWidget#PanelTreesTitle {
 
 
 // --------------------------------------------------
-// * PlaylistsTreeview *
+// * ContainersTreeview *
 // --------------------------------------------------
-QWidget#PlaylistsTreeview {
+QWidget#ContainersTreeview {
     background-color: #A3A3A3;
     border-top: 0px;
     border-left: 0px;
@@ -274,12 +274,12 @@ QWidget#PlaylistsTreeview {
     show-decoration-selected: 1;
 }
 
-QWidget#PlaylistsTreeview::item:hover {
+QWidget#ContainersTreeview::item:hover {
     background: #777777;
     border: 0px;
 }
 
-QWidget#PlaylistsTreeview::item:selected {
+QWidget#ContainersTreeview::item:selected {
     background: #777777;
     border: 0px;
 }
@@ -289,29 +289,29 @@ QTreeView::branch {
     border-image: none;
 }
 
-QWidget#PlaylistsTreeview::branch:has-children:!has-siblings:closed {
+QWidget#ContainersTreeview::branch:has-children:!has-siblings:closed {
     border-image: none;
     image: url(:/icons/treeview/folder_closed.png);
 }
-QWidget#PlaylistsTreeview::branch:closed:has-children:has-siblings {
+QWidget#ContainersTreeview::branch:closed:has-children:has-siblings {
     border-image: none;
     image: url(:/icons/treeview/folder_closed.png);
 }
 
-QWidget#PlaylistsTreeview::branch:open:has-children:!has-siblings{
+QWidget#ContainersTreeview::branch:open:has-children:!has-siblings{
     border-image: none;
     image: url(:/icons/treeview/folder_open.png);
 }
-QWidget#PlaylistsTreeview::branch:open:has-children:has-siblings  {
+QWidget#ContainersTreeview::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:/icons/treeview/folder_open.png);
 }
 
 
 // --------------------------------------------------
-// * LibraryTreeview *
+// * SonglistTreeview *
 // --------------------------------------------------
-QWidget#LibraryTreeview {
+QWidget#SonglistTreeview {
     background-color: #F2F2F2;
     color: #000000;
     border-top: 1px solid #000000;

@@ -8,7 +8,6 @@
 
 QT_BEGIN_NAMESPACE
 class QMimeData;
-//class QDropAction;
 QT_END_NAMESPACE
 
 class LibraryItem;

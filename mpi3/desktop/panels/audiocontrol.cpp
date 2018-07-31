@@ -230,10 +230,10 @@ void Mpi3PanelPlayback::resizeEvent(QResizeEvent *event){
 }
 void Mpi3PanelPlayback::paintEvent(QPaintEvent *event){
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
 
-    QPainter p(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+    QPainter painter(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 
     QWidget::paintEvent(event);
 }
