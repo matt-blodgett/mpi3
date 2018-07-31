@@ -9,57 +9,12 @@
 
 #include <QHeaderView>
 
-#include <QPainter>
-#include <QPaintEngine>
 #include <QDebug>
 
 
-Mpi3TreeViewStyle::Mpi3TreeViewStyle(QStyle* style) : QProxyStyle(style){}
-
-Mpi3TreeViewStyle::IndicatorStyle Mpi3TreeViewStyle::indicatorStyle() const{
-    return m_indicatorStyle;
-}
-void Mpi3TreeViewStyle::setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyle iStyle){
-    m_indicatorStyle = iStyle;
-}
-
-void Mpi3TreeViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const{
-    if(element == QStyle::PE_IndicatorItemViewItemDrop && !option->rect.isNull()){
-        if(painter){
-            QStyleOption opt(*option);
-            opt.rect.setLeft(0);
-
-            if(widget){
-                opt.rect.setRight(widget->width());
-            }
-
-            switch(m_indicatorStyle){
-
-                case Mpi3TreeViewStyle::IndicatorStyleMove: {
-                    opt.rect.setHeight(0);
-                    break;
-                }
-
-                case Mpi3TreeViewStyle::IndicatorStyleDrop: {
-                    if(option->rect.y() % 21 > 0){
-                        opt.rect.setY(option->rect.y() - 21 + 1);
-                    }
-                    opt.rect.setHeight(21);
-                    break;
-                }
-            }
-
-            QProxyStyle::drawPrimitive(element, &opt, painter, widget);
-        }
-        return;
-    }
-
-    QProxyStyle::drawPrimitive(element, option, painter, widget);
-}
-
 
 Mpi3TreeView::Mpi3TreeView(QWidget *parent) : QTreeView(parent){
-    m_drawStyle = new Mpi3TreeViewStyle(style());
+    m_drawStyle = new Mpi3Style(style());
     setStyle(m_drawStyle);
 
     setDragEnabled(true);
@@ -86,10 +41,10 @@ Mpi3TreeViewContainers::Mpi3TreeViewContainers(QWidget *parent) : Mpi3TreeView(p
 
 void Mpi3TreeViewContainers::dragEnterEvent(QDragEnterEvent *event){
     if(event->source() == this){
-        m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleMove);
+        m_drawStyle->setTVIndicatorStyle(Mpi3Style::TV_IndicatorStyleMove);
     }
     else {
-        m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleDrop);
+        m_drawStyle->setTVIndicatorStyle(Mpi3Style::TV_IndicatorStyleDrop);
     }
 
 //    Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
@@ -184,7 +139,7 @@ Mpi3TreeViewSonglist::Mpi3TreeViewSonglist(QWidget *parent) : Mpi3TreeView(paren
     setHeaderHidden(false);
     setIndentation(12);
 
-    m_drawStyle->setIndicatorStyle(Mpi3TreeViewStyle::IndicatorStyleMove);
+    m_drawStyle->setTVIndicatorStyle(Mpi3Style::TV_IndicatorStyleMove);
 }
 
 void Mpi3TreeViewSonglist::dropEvent(QDropEvent *event){
