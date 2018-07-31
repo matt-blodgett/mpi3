@@ -1,6 +1,5 @@
 #include "libview.h"
-
-#include "desktop/ui/uistyle.h"
+#include "util/uistyle.h"
 
 #include <QHeaderView>
 #include <QDropEvent>

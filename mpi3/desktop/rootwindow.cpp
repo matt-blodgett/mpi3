@@ -6,7 +6,7 @@
 #include "mvc/libmodel.h"
 #include "mvc/libview.h"
 
-#include "util/uistylesheet.h"
+#include "util/uistyle.h"
 #include "util/mpi3library.h"
 #include "util/xmlsettings.h"
 

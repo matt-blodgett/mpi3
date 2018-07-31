@@ -13,12 +13,14 @@ TARGET = mpi3
 TEMPLATE = app
 RESOURCES += desktop.qrc
 
-SOURCES += desktop/main.cpp
+SOURCES += desktop/main.cpp \
+    util/uistyle.cpp
 SOURCES += desktop/rootwindow.cpp
-HEADERS += desktop/rootwindow.h
+HEADERS += desktop/rootwindow.h \
+    util/uistyle.h
 
-HEADERS += desktop/ui/uistyle.h
-SOURCES += desktop/ui/uistyle.cpp
+HEADERS +=
+SOURCES +=
 
 SOURCES += desktop/panels/audiocontrol.cpp
 SOURCES += desktop/panels/librarydisplay.cpp
@@ -34,10 +36,10 @@ SOURCES += desktop/mvc/libmodel.cpp
 SOURCES += desktop/mvc/libview.cpp
 SOURCES += desktop/mvc/libitem.cpp
 
-HEADERS += util/uistylesheet.h
+HEADERS +=
 HEADERS += util/mpi3library.h
 HEADERS += util/xmlsettings.h
 
-SOURCES += util/uistylesheet.cpp
+SOURCES +=
 SOURCES += util/mpi3library.cpp
 SOURCES += util/xmlsettings.cpp

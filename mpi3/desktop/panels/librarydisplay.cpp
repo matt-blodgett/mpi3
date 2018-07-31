@@ -1,7 +1,6 @@
 #include "librarydisplay.h"
-#include "desktop/ui/uistyle.h"
-
 #include "desktop/mvc/libview.h"
+#include "util/uistyle.h"
 
 #include <QGridLayout>
 #include <QHeaderView>
