@@ -8,6 +8,7 @@
 
 QT_BEGIN_NAMESPACE
 class QMimeData;
+//class QDropAction;
 QT_END_NAMESPACE
 
 class LibraryItem;
@@ -36,6 +37,8 @@ public:
 
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+
+//    bool hasChildren(const QModelIndex &parent = QModelIndex()) const override;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -71,7 +74,7 @@ public:
     QString getPID(const QModelIndex &index) const;
     QString getPID(LibraryItem *item) const;
 
-    Mpi3Folder *getParentFolderAt(const QModelIndex &index);
+    Mpi3Folder *getParentFolderAt(const QModelIndex &index) const;
 
     void setLibrary(Mpi3Library *library);
 
@@ -98,6 +101,7 @@ public:
 
 public:
     enum Display {
+        DisplayNone,
         DisplayAllSongs,
         DisplayArtists,
         DisplayAlbums,
@@ -157,6 +161,7 @@ private:
     void elementModified(Mpi3Element *elemModified);
     void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
     void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);
+    void elementMoved(Mpi3Element *elemMoved, Mpi3Element *elemParent);
     void elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren);
 };
 

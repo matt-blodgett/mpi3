@@ -2,6 +2,7 @@
 #define LIBRARYDISPLAY_H
 
 #include <QWidget>
+#include <QProxyStyle>
 
 QT_BEGIN_NAMESPACE
 class QRadioButton;
@@ -9,7 +10,8 @@ class QSplitter;
 class QLabel;
 QT_END_NAMESPACE
 
-class Mpi3TreeView;
+class Mpi3TreeViewContainers;
+class Mpi3TreeViewSonglist;
 
 
 class Mpi3PanelLibrary : public QWidget
@@ -35,19 +37,19 @@ public:
 private:
     Mpi3PanelLibrary::View m_currentView;
 
-    Mpi3TreeView *tree_songlist = nullptr;
-    Mpi3TreeView *tree_containers = nullptr;
+    Mpi3TreeViewContainers *m_treeContainers = nullptr;
+    Mpi3TreeViewSonglist *m_treeSonglist = nullptr;
 
-    QSplitter *frm_library = nullptr;
-    QWidget *frm_views = nullptr;
-    QWidget *frm_trees = nullptr;
+    QSplitter *m_frmLibrary = nullptr;
+    QWidget *m_frmViews = nullptr;
+    QWidget *m_frmTrees = nullptr;
 
-    QRadioButton *btn_songs = nullptr;
-    QRadioButton *btn_artists = nullptr;
-    QRadioButton *btn_albums = nullptr;
+    QRadioButton *m_btnSongs = nullptr;
+    QRadioButton *m_btnArtists = nullptr;
+    QRadioButton *m_btnAlbums = nullptr;
 
-    QLabel *lbl_playlist = nullptr;
-    QLabel *lbl_view = nullptr;
+    QLabel *m_lblPlaylist = nullptr;
+    QLabel *m_lblView = nullptr;
 
 private:
     void containerClicked(const QModelIndex &index);
@@ -58,7 +60,18 @@ signals:
 private:
     void showEvent(QShowEvent *event);
     void paintEvent(QPaintEvent *event);
+};
 
+
+class Mpi3RadioButtonStyle: public QProxyStyle
+{
+    Q_OBJECT
+
+public:
+    Mpi3RadioButtonStyle(QStyle *style = nullptr);
+
+public:
+    void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const;
 };
 
 

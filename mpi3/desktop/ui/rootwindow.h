@@ -5,13 +5,15 @@
 
 QT_BEGIN_NAMESPACE
 class QMediaPlayer;
+class QTreeView;
 QT_END_NAMESPACE
 
 class Mpi3PanelLibrary;
 class Mpi3PanelPlayback;
 class Mpi3ModelContainers;
 class Mpi3ModelSonglist;
-class Mpi3TreeView;
+class Mpi3TreeViewContainers;
+class Mpi3TreeViewSonglist;
 class Mpi3Library;
 class Mpi3Style;
 
@@ -41,8 +43,8 @@ private:
     Mpi3PanelLibrary *m_panelLibview = nullptr;
     Mpi3PanelPlayback *m_panelPlayback = nullptr;
 
-    Mpi3TreeView *tree_containers = nullptr;
-    Mpi3TreeView *tree_songlist = nullptr;
+    Mpi3TreeViewContainers *m_treeContainers = nullptr;
+    Mpi3TreeViewSonglist *m_treeSonglist = nullptr;
 
     Mpi3ModelContainers *m_modelContainers = nullptr;
     Mpi3ModelSonglist *m_modelSonglist = nullptr;
@@ -66,8 +68,8 @@ private:
     void libNewFolder();
     void libNewPlaylist();
     void libImportPlaylists();
-    void libImportSongs(Mpi3TreeView *treeParent);
-    void libDownloadSongs(Mpi3TreeView *treeParent);
+    void libImportSongs(QTreeView *treeParent);
+    void libDownloadSongs(QTreeView *treeParent);
 
     void objPlay();
     void objEdit();
@@ -76,15 +78,15 @@ private:
     void objAddTo();
     void objRemoveFrom();
     void objDuplicate();
-    void objOpenFileLocation(Mpi3TreeView *treeParent);
+    void objOpenFileLocation(QTreeView *treeParent);
 
     void editUndo();
     void editRedo();
 
-    void objCut(Mpi3TreeView *treeParent);
-    void objCopy(Mpi3TreeView *treeParent);
-    void objPaste(Mpi3TreeView *treeParent);
-    void objDelete(Mpi3TreeView *treeParent);
+    void objCut(QTreeView *treeParent);
+    void objCopy(QTreeView *treeParent);
+    void objPaste(QTreeView *treeParent);
+    void objDelete(QTreeView *treeParent);
 
 private:
     void paintEvent(QPaintEvent *event);

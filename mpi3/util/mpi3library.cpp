@@ -487,14 +487,14 @@ void Mpi3Library::importItunesPlist(const QString &path, Mpi3Folder *parentFolde
     }
 }
 
-bool Mpi3Library::validMediaFiles(QUrl mediaUrl){
+bool Mpi3Library::validMediaFiles(QUrl mediaUrl) const{
     if(mediaUrl.toString().endsWith(".mp3") || mediaUrl.toString().endsWith(".wav")){
         return true;
     }
 
     return false;
 }
-bool Mpi3Library::validMediaFiles(QList<QUrl> mediaUrls){
+bool Mpi3Library::validMediaFiles(QList<QUrl> mediaUrls) const{
     if(mediaUrls.size() == 0){
         return false;
     }
@@ -508,6 +508,14 @@ bool Mpi3Library::validMediaFiles(QList<QUrl> mediaUrls){
     return true;
 }
 
+QList<QUrl> Mpi3Library::songsToPaths(QVector<Mpi3Song*> songObjects) const {
+    QList<QUrl> songUrls;
+    for(int i = 0; i < songObjects.size(); i++){
+        songUrls.append(songObjects.at(i)->path());
+    }
+
+    return songUrls;
+}
 QVector<Mpi3Song*> Mpi3Library::songsFromData(QByteArray pidBytes) const {
     QStringList pidStrings;
 
@@ -528,23 +536,31 @@ QVector<Mpi3Song*> Mpi3Library::songsFromData(QByteArray pidBytes) const {
 
     return extractedSongs;
 }
+QByteArray Mpi3Library::songsToData(QVector<Mpi3Song*> songObjects) const{
+    QByteArray pidBytes;
+    for(int i = 0; i < songObjects.size(); i++){
+        pidBytes.append(songObjects.at(i)->pid());
+    }
 
-QVector<Mpi3Folder*> Mpi3Library::childFolders(Mpi3Folder *parentFolder) const{
+    return pidBytes;
+}
+
+QVector<Mpi3Folder*> Mpi3Library::childFolders() const{
     QVector<Mpi3Folder*> folders;
     for(int i = 0; i < libFolders->size(); i++){
         Mpi3Folder *f = libFolders->at(i);
-        if(f->parent == parentFolder){
+        if(!f->parent){
             folders.append(f);
         }
     }
 
     return folders;
 }
-QVector<Mpi3Playlist*> Mpi3Library::childPlaylists(Mpi3Folder *parentFolder) const{
+QVector<Mpi3Playlist*> Mpi3Library::childPlaylists() const{
     QVector<Mpi3Playlist*> playlists;
     for(int i = 0; i < libPlaylists->size(); i++){
         Mpi3Playlist *p = libPlaylists->at(i);
-        if(p->parent == parentFolder){
+        if(!p->parent){
             playlists.append(p);
         }
     }
@@ -610,7 +626,7 @@ QVector<Mpi3Folder*> Mpi3Library::allChildFolders(Mpi3Folder *parentFolder) cons
     return folders;
 }
 
-Mpi3Element* Mpi3Library::getElement(const QString &pid) const{
+Mpi3Element* Mpi3Library::getElement(const QString &pid){
     if(pid.isNull()){
         return nullptr;
     }
@@ -634,6 +650,9 @@ Mpi3Element* Mpi3Library::getElement(const QString &pid) const{
                 return libFolders->at(i);
             }
         }
+    }
+    else if(pid.startsWith(Mpi3Element::LibraryElement)){
+        return this;
     }
 
     return nullptr;
@@ -776,10 +795,9 @@ void Mpi3Library::modify(Mpi3Song *song, const QString &value, Mpi3Song::Mutable
     emit elementModified(song);
 }
 
-void Mpi3Library::insert(Mpi3Song *inSong, Mpi3Playlist *toPlaylist, int position){
+void Mpi3Library::insert(Mpi3Song *inSong, Mpi3Playlist *toPlaylist, int atPosition){
     if(toPlaylist){
-        int index = position == -1 ? toPlaylist->songs.size() : position;
-        toPlaylist->songs.insert(index, inSong);
+        toPlaylist->songs.insert(qBound(0, atPosition, toPlaylist->songs.size()), inSong);
         emit elementInserted(inSong, toPlaylist);
     }
     if(!libSongs->contains(inSong)){
@@ -787,10 +805,9 @@ void Mpi3Library::insert(Mpi3Song *inSong, Mpi3Playlist *toPlaylist, int positio
         emit elementInserted(inSong, this);
     }
 }
-void Mpi3Library::insert(Mpi3Playlist *inPlaylist, Mpi3Folder *toFolder, int position){
+void Mpi3Library::insert(Mpi3Playlist *inPlaylist, Mpi3Folder *toFolder, int atPosition){
     if(toFolder){
-        int index = position == -1 ? toFolder->playlists.size() : position;
-        toFolder->playlists.insert(index, inPlaylist);
+        toFolder->playlists.insert(qBound(0, atPosition, toFolder->playlists.size()), inPlaylist);
         inPlaylist->parent = toFolder;
         emit elementInserted(inPlaylist, toFolder);
     }
@@ -800,10 +817,9 @@ void Mpi3Library::insert(Mpi3Playlist *inPlaylist, Mpi3Folder *toFolder, int pos
         emit elementInserted(inPlaylist, this);
     }
 }
-void Mpi3Library::insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder, int position){
+void Mpi3Library::insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder, int atPosition){
     if(toFolder){
-        int index = position == -1 ? toFolder->folders.size() : position;
-        toFolder->folders.insert(index, inFolder);
+        toFolder->folders.insert(qBound(0, atPosition, toFolder->folders.size()), inFolder);
         inFolder->parent = toFolder;
         emit elementInserted(inFolder, toFolder);
     }
@@ -812,22 +828,6 @@ void Mpi3Library::insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder, int positio
         libFolders->append(inFolder);
         emit elementInserted(inFolder, this);
     }
-}
-
-void Mpi3Library::move(Mpi3Song* moveSong, Mpi3Playlist *inPlaylist, int position){
-    Q_UNUSED(moveSong);
-    Q_UNUSED(inPlaylist);
-    Q_UNUSED(position);
-}
-void Mpi3Library::move(Mpi3Playlist *movePlaylist, Mpi3Folder *toFolder, int position){
-    Q_UNUSED(movePlaylist);
-    Q_UNUSED(toFolder);
-    Q_UNUSED(position);
-}
-void Mpi3Library::move(Mpi3Folder *moveFolder, Mpi3Folder *toFolder, int position){
-    Q_UNUSED(moveFolder);
-    Q_UNUSED(toFolder);
-    Q_UNUSED(position);
 }
 
 void Mpi3Library::remove(Mpi3Song *remSong, Mpi3Playlist *fromPlaylist){
@@ -843,6 +843,41 @@ void Mpi3Library::remove(Mpi3Folder *remFolder, Mpi3Folder *fromFolder){
     emit elementRemoved(remFolder, fromFolder);
 }
 
+void Mpi3Library::move(Mpi3Song* moveSong, Mpi3Playlist *parentPlaylist, int toPosition){
+    int fromPosition = parentPlaylist->songs.indexOf(moveSong);
+    parentPlaylist->songs.move(fromPosition, qBound(0, toPosition, parentPlaylist->songs.size()));
+
+    qDebug() << "move:" << moveSong->name() << "from" << fromPosition << "to" << toPosition;
+    emit elementMoved(moveSong, parentPlaylist);
+}
+void Mpi3Library::move(Mpi3Playlist *movePlaylist, Mpi3Folder *toFolder, int toPosition){
+    Mpi3Folder *parentFolder = movePlaylist->parent;
+    if(parentFolder){
+        parentFolder->playlists.removeAll(movePlaylist);
+    }
+
+    movePlaylist->parent = toFolder;
+
+    if(toFolder){
+        toFolder->playlists.insert(qBound(0, toPosition, toFolder->playlists.size()), movePlaylist);
+    }
+    emit elementMoved(movePlaylist, toFolder);
+}
+void Mpi3Library::move(Mpi3Folder *moveFolder, Mpi3Folder *toFolder, int toPosition){
+    Mpi3Folder *parentFolder = moveFolder->parent;
+    if(parentFolder){
+        parentFolder->folders.removeAll(moveFolder);
+    }
+
+    moveFolder->parent = toFolder;
+
+    if(toFolder){
+        toFolder->folders.insert(qBound(0, toPosition, toFolder->playlists.size()), moveFolder);
+    }
+
+    emit elementMoved(moveFolder, toFolder);
+}
+
 void Mpi3Library::discard(Mpi3Song *remSong){
     for(int i = 0; i < libPlaylists->size(); i++){
         Mpi3Playlist *playlist = libPlaylists->at(i);
@@ -853,7 +888,7 @@ void Mpi3Library::discard(Mpi3Song *remSong){
 
     libSongs->removeAll(remSong);
     emit elementDeleted(remSong->pid(), Mpi3Element::SongElement);
-    delete remSong;
+//    delete remSong;
 }
 void Mpi3Library::discard(Mpi3Playlist *remPlaylist){
     if(remPlaylist->parent){
@@ -867,7 +902,7 @@ void Mpi3Library::discard(Mpi3Playlist *remPlaylist){
 
     libPlaylists->removeAll(remPlaylist);
     emit elementDeleted(remPlaylist->pid(), Mpi3Element::PlaylistElement, pidChildren);
-    delete remPlaylist;
+//    delete remPlaylist;
 }
 void Mpi3Library::discard(Mpi3Folder *remFolder){
     if(remFolder->parent){
@@ -882,17 +917,17 @@ void Mpi3Library::discard(Mpi3Folder *remFolder){
         Mpi3Playlist *playlist = nestedPlaylists.at(i);
         pidChildren.append(playlist->pid());
         libPlaylists->removeAll(playlist);
-        delete playlist;
+//        delete playlist;
     }
 
     for(int i = 0; i < nestedFolders.size(); i++){
         Mpi3Folder *folder = nestedFolders.at(i);
         pidChildren.append(folder->pid());
         libFolders->removeAll(folder);
-        delete folder;
+//        delete folder;
     }
 
     libFolders->removeAll(remFolder);
     emit elementDeleted(remFolder->pid(), Mpi3Element::FolderElement, pidChildren);
-    delete remFolder;
+//    delete remFolder;
 }

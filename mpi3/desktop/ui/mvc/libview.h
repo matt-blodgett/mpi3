@@ -36,28 +36,33 @@ class Mpi3TreeView : public QTreeView
 public:
     explicit Mpi3TreeView(QWidget *parent = nullptr);
 
-public:
-    enum DisplayStyle{
-        DisplayStyleSonglist,
-        DisplayStyleContainers
-    };
-
-    DisplayStyle displayStyle() const;
-    void setDisplayStyle(Mpi3TreeView::DisplayStyle dStyle);
-
-private:
-    DisplayStyle m_displayStyle = Mpi3TreeView::DisplayStyleSonglist;
+protected:
     Mpi3TreeViewStyle *m_drawStyle = nullptr;
+};
+
+class Mpi3TreeViewContainers : public Mpi3TreeView
+{
+    Q_OBJECT
+
+public:
+    explicit Mpi3TreeViewContainers(QWidget *parent = nullptr);
 
 private:
-    bool eventFilter(QObject *object, QEvent *event);
-
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
-    void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
 };
 
+class Mpi3TreeViewSonglist : public Mpi3TreeView
+{
+    Q_OBJECT
+
+public:
+    explicit Mpi3TreeViewSonglist(QWidget *parent = nullptr);
+
+private:
+    void dropEvent(QDropEvent *event);
+};
 
 
 #endif

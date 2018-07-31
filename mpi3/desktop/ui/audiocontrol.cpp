@@ -11,106 +11,106 @@
 
 
 Mpi3PanelPlayback::Mpi3PanelPlayback(QWidget *parent) : QWidget(parent){
-    frm_volume = new QWidget(this);
-    frm_controls = new QWidget(this);
-    frm_searchbar = new QWidget(this);
+    m_frmVolume = new QWidget(this);
+    m_frmControls = new QWidget(this);
+    m_frmSearchbar = new QWidget(this);
 
-    btn_next = new QPushButton(frm_controls);
-    btn_prev = new QPushButton(frm_controls);
-    btn_play = new QPushButton(frm_controls);
-    sld_position = new QSlider(frm_controls);
+    m_btnNext = new QPushButton(m_frmControls);
+    m_btnPrev = new QPushButton(m_frmControls);
+    m_btnPlay = new QPushButton(m_frmControls);
+    m_sldPosition = new QSlider(m_frmControls);
 
     QPixmap pixmapNext(":/icons/playback/next.png");
     QPixmap pixmapPrev(":/icons/playback/prev.png");
     QPixmap pixmapPlay(":/icons/playback/play.png");
     QPixmap pixmapPaus(":/icons/playback/paus.png");
 
-    icn_next.addPixmap(pixmapNext);
-    icn_prev.addPixmap(pixmapPrev);
-    icn_play.addPixmap(pixmapPlay);
-    icn_paus.addPixmap(pixmapPaus);
+    m_icnNext.addPixmap(pixmapNext);
+    m_icnPrev.addPixmap(pixmapPrev);
+    m_icnPlay.addPixmap(pixmapPlay);
+    m_icnPaus.addPixmap(pixmapPaus);
 
-    btn_next->setIcon(icn_next);
-    btn_prev->setIcon(icn_prev);
-    btn_play->setIcon(icn_play);
+    m_btnNext->setIcon(m_icnNext);
+    m_btnPrev->setIcon(m_icnPrev);
+    m_btnPlay->setIcon(m_icnPlay);
 
-    btn_next->setIconSize(pixmapNext.rect().size());
-    btn_prev->setIconSize(pixmapPrev.rect().size());
-    btn_play->setIconSize(pixmapPlay.rect().size());
+    m_btnNext->setIconSize(pixmapNext.rect().size());
+    m_btnPrev->setIconSize(pixmapPrev.rect().size());
+    m_btnPlay->setIconSize(pixmapPlay.rect().size());
 
-    sld_position->setOrientation(Qt::Horizontal);
+    m_sldPosition->setOrientation(Qt::Horizontal);
 
-    btn_next->setFlat(true);
-    btn_prev->setFlat(true);
-    btn_play->setFlat(true);
+    m_btnNext->setFlat(true);
+    m_btnPrev->setFlat(true);
+    m_btnPlay->setFlat(true);
 
     int h = 60;
     int w = 350;
     int w_btn = 50;
 
-    frm_controls->setFixedHeight(h);
-    frm_controls->setFixedWidth(w);
+    m_frmControls->setFixedHeight(h);
+    m_frmControls->setFixedWidth(w);
 
-    btn_next->setFixedHeight(h-1);
-    btn_prev->setFixedHeight(h-1);
-    btn_play->setFixedHeight(h-20);
+    m_btnNext->setFixedHeight(h-1);
+    m_btnPrev->setFixedHeight(h-1);
+    m_btnPlay->setFixedHeight(h-20);
 
-    btn_next->setFixedWidth(w_btn);
-    btn_prev->setFixedWidth(w_btn);
-    btn_play->setFixedWidth(w-(w_btn*2));
+    m_btnNext->setFixedWidth(w_btn);
+    m_btnPrev->setFixedWidth(w_btn);
+    m_btnPlay->setFixedWidth(w-(w_btn*2));
 
-    btn_prev->move(0, 0);
-    btn_next->move(w-w_btn, 0);
-    btn_play->move(w_btn, 0);
+    m_btnPrev->move(0, 0);
+    m_btnNext->move(w-w_btn, 0);
+    m_btnPlay->move(w_btn, 0);
 
-    sld_position->setFixedWidth(w-(w_btn*2));
-    sld_position->setFixedHeight(12);
-    sld_position->move(w_btn, 45);
-
-
+    m_sldPosition->setFixedWidth(w-(w_btn*2));
+    m_sldPosition->setFixedHeight(12);
+    m_sldPosition->move(w_btn, 45);
 
 
 
-    sld_volume = new QSlider(frm_volume);
-    sld_volume->setOrientation(Qt::Horizontal);
-    sld_volume->setFixedWidth(120);
+
+
+    m_sldVolume = new QSlider(m_frmVolume);
+    m_sldVolume->setOrientation(Qt::Horizontal);
+    m_sldVolume->setFixedWidth(120);
 
     QGridLayout *layoutVolume = new QGridLayout(this);
 
-    layoutVolume->addWidget(sld_volume, 0, 0, 1, 1);
+    layoutVolume->addWidget(m_sldVolume, 0, 0, 1, 1);
     layoutVolume->setColumnStretch(1, 1);
 
-    frm_volume->setLayout(layoutVolume);
+    m_frmVolume->setLayout(layoutVolume);
 
 
 
 
-    box_search = new QLineEdit(frm_searchbar);
-    btn_search = new QPushButton(frm_searchbar);
+    m_boxSearch = new QLineEdit(m_frmSearchbar);
+    m_btnSearch = new QPushButton(m_frmSearchbar);
 
-    box_search->setFixedWidth(100);
-    btn_search->setText("S");
-    btn_search->setFixedWidth(20);
+    m_boxSearch->setFixedWidth(100);
+    m_btnSearch->setText("S");
+    m_btnSearch->setFixedWidth(20);
 
     QGridLayout *layoutSearchbar = new QGridLayout(this);
 
-    layoutSearchbar->addWidget(box_search, 0, 1, 1, 1);
-    layoutSearchbar->addWidget(btn_search, 0, 2, 1, 1);
+    layoutSearchbar->addWidget(m_boxSearch, 0, 1, 1, 1);
+    layoutSearchbar->addWidget(m_btnSearch, 0, 2, 1, 1);
     layoutSearchbar->setColumnStretch(0, 1);
     layoutSearchbar->setMargin(0);
     layoutSearchbar->setVerticalSpacing(0);
     layoutSearchbar->setHorizontalSpacing(0);
 
-    frm_searchbar->setLayout(layoutSearchbar);
+    m_frmSearchbar->setLayout(layoutSearchbar);
 
 
 
 
     QGridLayout *layoutMain = new QGridLayout(this);
 
-    layoutMain->addWidget(frm_volume, 0, 0, 1, 1);
-    layoutMain->addWidget(frm_controls, 0, 1, 1, 1);
-    layoutMain->addWidget(frm_searchbar, 0, 2, 1, 1);
+    layoutMain->addWidget(m_frmVolume, 0, 0, 1, 1);
+    layoutMain->addWidget(m_frmControls, 0, 1, 1, 1);
+    layoutMain->addWidget(m_frmSearchbar, 0, 2, 1, 1);
 
     layoutMain->setColumnStretch(1, 1);
     layoutMain->setColumnMinimumWidth(0, 150);
@@ -124,30 +124,30 @@ Mpi3PanelPlayback::Mpi3PanelPlayback(QWidget *parent) : QWidget(parent){
 
 
 
-    int x = frm_volume->width() + frm_controls->width();
-    frm_controls->move(x, 0);
+    int x = m_frmVolume->width() + m_frmControls->width();
+    m_frmControls->move(x, 0);
 
 
 
-    connect(btn_play, &QAbstractButton::clicked, this, &Mpi3PanelPlayback::clickPlay);
+    connect(m_btnPlay, &QAbstractButton::clicked, this, &Mpi3PanelPlayback::clickPlay);
 //    connect(m_stopButton, &QAbstractButton::clicked, this, &PlayerControls::stop);
-    connect(btn_next, &QAbstractButton::clicked, this, &Mpi3PanelPlayback::next);
-    connect(btn_prev, &QAbstractButton::clicked, this, &Mpi3PanelPlayback::previous);
+    connect(m_btnNext, &QAbstractButton::clicked, this, &Mpi3PanelPlayback::next);
+    connect(m_btnPrev, &QAbstractButton::clicked, this, &Mpi3PanelPlayback::previous);
 //    connect(m_muteButton, &QAbstractButton::clicked, this, &PlayerControls::muteClicked);
-    connect(sld_volume, &QSlider::valueChanged, this, &Mpi3PanelPlayback::onVolumeSliderValueChanged);
+    connect(m_sldVolume, &QSlider::valueChanged, this, &Mpi3PanelPlayback::onVolumeSliderValueChanged);
 
-    btn_next->setObjectName("ButtonNext");
-    btn_prev->setObjectName("ButtonPrev");
-    btn_play->setObjectName("ButtonPlay");
-    sld_position->setObjectName("SliderPosition");
-    frm_controls->setObjectName("PlaybackControl");
-    sld_volume->setObjectName("SliderVolume");
+    m_btnNext->setObjectName("ButtonNext");
+    m_btnPrev->setObjectName("ButtonPrev");
+    m_btnPlay->setObjectName("ButtonPlay");
+    m_sldPosition->setObjectName("SliderPosition");
+    m_frmControls->setObjectName("PlaybackControl");
+    m_sldVolume->setObjectName("SliderVolume");
     this->setObjectName("PanelPlayback");
 }
 Mpi3PanelPlayback::~Mpi3PanelPlayback(){}
 
 void Mpi3PanelPlayback::clickPlay(){
-    this->btn_play->setIcon(this->icn_paus);
+    this->m_btnPlay->setIcon(this->m_icnPaus);
 
     switch (m_playerState) {
         case QMediaPlayer::StoppedState: {
@@ -175,7 +175,7 @@ QMediaPlayer::State Mpi3PanelPlayback::state() const{
 }
 int Mpi3PanelPlayback::volume() const{
     qreal linearVolume =  QAudio::convertVolume(
-                sld_volume->value() / qreal(100),
+                m_sldVolume->value() / qreal(100),
                 QAudio::LogarithmicVolumeScale,
                 QAudio::LinearVolumeScale);
 
@@ -215,7 +215,7 @@ void Mpi3PanelPlayback::setVolume(int volume){
                 QAudio::LinearVolumeScale,
                 QAudio::LogarithmicVolumeScale);
 
-    sld_volume->setValue(qRound(logarithmicVolume * 100));
+    m_sldVolume->setValue(qRound(logarithmicVolume * 100));
 }
 void Mpi3PanelPlayback::setMuted(bool muted){
     if (muted != m_playerMuted) {
@@ -224,10 +224,9 @@ void Mpi3PanelPlayback::setMuted(bool muted){
 }
 
 void Mpi3PanelPlayback::resizeEvent(QResizeEvent *event){
-    Q_UNUSED(event);
-
-    int x = (this->width() / 2) - (frm_controls->width() / 2);
-    frm_controls->move(x, 0);
+    int x = (this->width() / 2) - (m_frmControls->width() / 2);
+    m_frmControls->move(x, 0);
+    QWidget::resizeEvent(event);
 }
 void Mpi3PanelPlayback::paintEvent(QPaintEvent *event){
     QStyleOption opt;

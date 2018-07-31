@@ -6,9 +6,9 @@
 #include <QIcon>
 
 QT_BEGIN_NAMESPACE
-class QLineEdit;
 class QAbstractSlider;
 class QPushButton;
+class QLineEdit;
 QT_END_NAMESPACE
 
 
@@ -31,23 +31,23 @@ private:
     bool m_playerMuted = false;
 
 private:
-    QWidget *frm_volume = nullptr;
-    QWidget *frm_controls = nullptr;
-    QWidget *frm_searchbar = nullptr;
+    QWidget *m_frmVolume = nullptr;
+    QWidget *m_frmControls = nullptr;
+    QWidget *m_frmSearchbar = nullptr;
 
-    QPushButton *btn_next = nullptr;
-    QPushButton *btn_prev = nullptr;
-    QPushButton *btn_play = nullptr;
-    QAbstractSlider *sld_position = nullptr;
+    QPushButton *m_btnNext = nullptr;
+    QPushButton *m_btnPrev = nullptr;
+    QPushButton *m_btnPlay = nullptr;
+    QAbstractSlider *m_sldPosition = nullptr;
 
-    QIcon icn_next;
-    QIcon icn_prev;
-    QIcon icn_play;
-    QIcon icn_paus;
+    QIcon m_icnNext;
+    QIcon m_icnPrev;
+    QIcon m_icnPlay;
+    QIcon m_icnPaus;
 
-    QLineEdit *box_search = nullptr;
-    QPushButton *btn_search = nullptr;
-    QAbstractSlider *sld_volume = nullptr;
+    QLineEdit *m_boxSearch = nullptr;
+    QPushButton *m_btnSearch = nullptr;
+    QAbstractSlider *m_sldVolume = nullptr;
 
 signals:
     void play();
