@@ -1,28 +1,28 @@
-#ifndef UISTYLE_H
-#define UISTYLE_H
+#ifndef UISTYLESHEET_H
+#define UISTYLESHEET_H
 
 #include <QString>
 
 
-class Mpi3Style
+class Mpi3StyleSheet
 {
 
 public:
-    Mpi3Style();
-    ~Mpi3Style();
+    Mpi3StyleSheet();
+    ~Mpi3StyleSheet();
 
 public:
     void load(const QString &path = QString());
     void save(const QString &path = QString());
 
-private:
-    void setProperty(const QString &line);
-    QString removeComments(const QString &text);
-
 public:
     QString qssName() const;
     QString qssStyle() const;
     QString qssPath() const;
+
+private:
+    void setProperty(const QString &line);
+    QString removeComments(const QString &text);
 
 private:
     QString m_name;

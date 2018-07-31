@@ -1,12 +1,12 @@
-#include "uistyle.h"
+#include "uistylesheet.h"
 
 #include <QFile>
 
 
-Mpi3Style::Mpi3Style(){}
-Mpi3Style::~Mpi3Style(){}
+Mpi3StyleSheet::Mpi3StyleSheet(){}
+Mpi3StyleSheet::~Mpi3StyleSheet(){}
 
-void Mpi3Style::load(const QString &path){
+void Mpi3StyleSheet::load(const QString &path){
     if(!path.isNull()){
         m_filepath = path;
     }
@@ -41,7 +41,7 @@ void Mpi3Style::load(const QString &path){
         }
     }
 }
-void Mpi3Style::save(const QString &path){
+void Mpi3StyleSheet::save(const QString &path){
     if(!path.isNull()){
         m_filepath = path;
     }
@@ -52,7 +52,17 @@ void Mpi3Style::save(const QString &path){
     }
 }
 
-void Mpi3Style::setProperty(const QString &line){
+QString Mpi3StyleSheet::qssName() const {
+    return m_name;
+}
+QString Mpi3StyleSheet::qssStyle() const {
+    return m_style;
+}
+QString Mpi3StyleSheet::qssPath() const {
+    return m_filepath;
+}
+
+void Mpi3StyleSheet::setProperty(const QString &line){
     int split = line.indexOf("=", 0);
 
     QString pName = line.mid(1, split-1);
@@ -62,7 +72,7 @@ void Mpi3Style::setProperty(const QString &line){
         m_name = pValue;
     }
 }
-QString Mpi3Style::removeComments(const QString &text){
+QString Mpi3StyleSheet::removeComments(const QString &text){
     QString parsed;
 
     int i = 0;
@@ -85,12 +95,3 @@ QString Mpi3Style::removeComments(const QString &text){
     return parsed;
 }
 
-QString Mpi3Style::qssName() const {
-    return m_name;
-}
-QString Mpi3Style::qssStyle() const {
-    return m_style;
-}
-QString Mpi3Style::qssPath() const {
-    return m_filepath;
-}

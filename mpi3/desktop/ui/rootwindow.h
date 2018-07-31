@@ -14,8 +14,8 @@ class Mpi3ModelContainers;
 class Mpi3ModelSonglist;
 class Mpi3TreeViewContainers;
 class Mpi3TreeViewSonglist;
+class Mpi3StyleSheet;
 class Mpi3Library;
-class Mpi3Style;
 
 
 class Mpi3RootDesktop : public QMainWindow
@@ -49,9 +49,10 @@ private:
     Mpi3ModelContainers *m_modelContainers = nullptr;
     Mpi3ModelSonglist *m_modelSonglist = nullptr;
 
+    Mpi3StyleSheet *m_qssStyle = nullptr;
+
     QMediaPlayer *m_audioOutput = nullptr;
     Mpi3Library *m_mediaLibrary = nullptr;
-    Mpi3Style *m_qssStyle = nullptr;
 
 private:
     void setColumnVisibility(int column);

@@ -31,10 +31,10 @@ SOURCES += desktop/ui/mvc/libmodel.cpp
 SOURCES += desktop/ui/mvc/libview.cpp
 SOURCES += desktop/ui/mvc/libitem.cpp
 
-HEADERS += util/uistyle.h
+HEADERS += util/uistylesheet.h
 HEADERS += util/mpi3library.h
 HEADERS += util/xmlsettings.h
 
-SOURCES += util/uistyle.cpp
+SOURCES += util/uistylesheet.cpp
 SOURCES += util/mpi3library.cpp
 SOURCES += util/xmlsettings.cpp

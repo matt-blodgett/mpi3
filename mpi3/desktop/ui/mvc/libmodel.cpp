@@ -57,9 +57,6 @@ QMimeData* Mpi3ModelContainers::mimeData(const QModelIndexList &indexes) const{
 
 bool Mpi3ModelContainers::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const {
 
-//    qDebug() << "";
-//    qDebug() << "model: can drop?" << action << row << column << parent.row() << parent.column();
-
     bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
     bool dataIsContainer = data->hasFormat(QMetaType::typeName(qMetaTypeId<QString>()));
     bool dataIsValidMediaFiles = data->hasUrls() ? m_mediaLibrary->validMediaFiles(data->urls()) : false;
@@ -81,8 +78,6 @@ bool Mpi3ModelContainers::canDropMimeData(const QMimeData *data, Qt::DropAction 
 //        qDebug() << "folder:" << childElement->name();
         return actionIsMoveAction && dataIsContainer;
     }
-
-
 
     return false;
 }

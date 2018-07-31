@@ -40,6 +40,7 @@ protected:
     Mpi3TreeViewStyle *m_drawStyle = nullptr;
 };
 
+
 class Mpi3TreeViewContainers : public Mpi3TreeView
 {
     Q_OBJECT
@@ -52,6 +53,7 @@ private:
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
 };
+
 
 class Mpi3TreeViewSonglist : public Mpi3TreeView
 {

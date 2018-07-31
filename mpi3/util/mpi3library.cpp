@@ -651,7 +651,7 @@ Mpi3Element* Mpi3Library::getElement(const QString &pid){
             }
         }
     }
-    else if(pid.startsWith(Mpi3Element::LibraryElement)){
+    else if(pid.startsWith(Mpi3Element::LibraryPrefix)){
         return this;
     }
 
@@ -846,8 +846,6 @@ void Mpi3Library::remove(Mpi3Folder *remFolder, Mpi3Folder *fromFolder){
 void Mpi3Library::move(Mpi3Song* moveSong, Mpi3Playlist *parentPlaylist, int toPosition){
     int fromPosition = parentPlaylist->songs.indexOf(moveSong);
     parentPlaylist->songs.move(fromPosition, qBound(0, toPosition, parentPlaylist->songs.size()));
-
-    qDebug() << "move:" << moveSong->name() << "from" << fromPosition << "to" << toPosition;
     emit elementMoved(moveSong, parentPlaylist);
 }
 void Mpi3Library::move(Mpi3Playlist *movePlaylist, Mpi3Folder *toFolder, int toPosition){

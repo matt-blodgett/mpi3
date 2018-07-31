@@ -5,7 +5,7 @@
 #include "mvc/libmodel.h"
 #include "mvc/libview.h"
 
-#include "util/uistyle.h"
+#include "util/uistylesheet.h"
 #include "util/mpi3library.h"
 #include "util/xmlsettings.h"
 
@@ -52,10 +52,12 @@ void Mpi3RootDesktop::initializeObjects(){
 
     m_modelContainers = new Mpi3ModelContainers();
     m_modelSonglist = new Mpi3ModelSonglist();
-    m_audioOutput = new QMediaPlayer(this);
 
+    m_qssStyle = new Mpi3StyleSheet();
+
+    m_audioOutput = new QMediaPlayer(this);
     m_mediaLibrary = new Mpi3Library();
-    m_qssStyle = new Mpi3Style();
+
 
     m_audioOutput->setAudioRole(QAudio::MusicRole);
     m_treeSonglist->setModel(m_modelSonglist);
