@@ -1,4 +1,4 @@
-#include "uistyle.h"
+#include "mstyle.h"
 
 #include <QStyleOption>
 #include <QPainter>
@@ -6,10 +6,12 @@
 #include <QFile>
 
 
-Mpi3StyleSheet::Mpi3StyleSheet(){}
-Mpi3StyleSheet::~Mpi3StyleSheet(){}
+using namespace Mpi3;
 
-void Mpi3StyleSheet::load(const QString &path){
+
+MStyleSheet::MStyleSheet(){}
+
+void MStyleSheet::load(const QString &path){
     if(!path.isNull()){
         m_filepath = path;
     }
@@ -44,7 +46,7 @@ void Mpi3StyleSheet::load(const QString &path){
         }
     }
 }
-void Mpi3StyleSheet::save(const QString &path){
+void MStyleSheet::save(const QString &path){
     if(!path.isNull()){
         m_filepath = path;
     }
@@ -55,17 +57,17 @@ void Mpi3StyleSheet::save(const QString &path){
     }
 }
 
-QString Mpi3StyleSheet::qssName() const {
+QString MStyleSheet::qssName() const {
     return m_name;
 }
-QString Mpi3StyleSheet::qssStyle() const {
+QString MStyleSheet::qssStyle() const {
     return m_style;
 }
-QString Mpi3StyleSheet::qssPath() const {
+QString MStyleSheet::qssPath() const {
     return m_filepath;
 }
 
-void Mpi3StyleSheet::setProperty(const QString &line){
+void MStyleSheet::setProperty(const QString &line){
     int split = line.indexOf("=", 0);
 
     QString pName = line.mid(1, split-1);
@@ -75,7 +77,7 @@ void Mpi3StyleSheet::setProperty(const QString &line){
         m_name = pValue;
     }
 }
-QString Mpi3StyleSheet::removeComments(const QString &text){
+QString MStyleSheet::removeComments(const QString &text){
     QString parsed;
 
     int i = 0;
@@ -99,16 +101,19 @@ QString Mpi3StyleSheet::removeComments(const QString &text){
 }
 
 
-Mpi3Style::Mpi3Style(QStyle *style) : QProxyStyle(style){}
+MStyle::MStyle(QStyle *style) : QProxyStyle(style){}
 
-Mpi3Style::TV_IndicatorStyle Mpi3Style::currentTVIndicatorStyle() const{
+MStyle::TV_IndicatorStyle MStyle::currentTVIndicatorStyle() const{
     return m_currentTVIndicatorStyle;
 }
-void Mpi3Style::setTVIndicatorStyle(Mpi3Style::TV_IndicatorStyle tvIndicatorStyle){
+void MStyle::setTVIndicatorStyle(MStyle::TV_IndicatorStyle tvIndicatorStyle){
     m_currentTVIndicatorStyle = tvIndicatorStyle;
 }
 
-void Mpi3Style::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const{
+void MStyle::drawPrimitive(
+        PrimitiveElement element, const QStyleOption *option,
+        QPainter *painter, const QWidget *widget) const{
+
     if(element == QStyle::PE_IndicatorRadioButton){
         return;
     }
@@ -123,12 +128,12 @@ void Mpi3Style::drawPrimitive(PrimitiveElement element, const QStyleOption *opti
 
             switch(m_currentTVIndicatorStyle){
 
-                case Mpi3Style::TV_IndicatorStyleMove: {
+                case MStyle::TV_IndicatorStyleMove: {
                     opt.rect.setHeight(0);
                     break;
                 }
 
-                case Mpi3Style::TV_IndicatorStyleDrop: {
+                case MStyle::TV_IndicatorStyleDrop: {
                     if(option->rect.y() % 21 > 0){
                         opt.rect.setY(option->rect.y() - 21 + 1);
                     }

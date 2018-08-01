@@ -1,5 +1,5 @@
-#ifndef XMLSETTINGS_H
-#define XMLSETTINGS_H
+#ifndef MSETTINGS_H
+#define MSETTINGS_H
 
 #include <QSettings>
 
@@ -8,12 +8,15 @@ class QIODevice;
 QT_END_NAMESPACE
 
 
-class Mpi3Settings : public QSettings
+namespace Mpi3
+{
+
+class MSettingsXml : public QSettings
 {
     Q_OBJECT
 
 public:
-    explicit Mpi3Settings(const QString &settingsPath);
+    explicit MSettingsXml(const QString &settingsPath);
 
 public:
     static const QSettings::Format XmlSettingsFormat;
@@ -23,12 +26,14 @@ public:
 };
 
 
-class XmlNode : public QObject
+class MSettingsXmlNode : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit XmlNode(const QString &name, const QString &text = QString(), QObject *parent = nullptr);
+    explicit MSettingsXmlNode(
+            const QString &name, const QString
+            &text = QString(), QObject *parent = nullptr);
 
 public:
     QString fullPath() const;
@@ -36,5 +41,6 @@ public:
     QString subtext;
 };
 
+};
 
 #endif

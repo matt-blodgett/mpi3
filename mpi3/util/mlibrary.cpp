@@ -1,4 +1,4 @@
-#include "mpi3library.h"
+#include "mlibrary.h"
 
 #include <QRandomGenerator>
 #include <QDomDocument>

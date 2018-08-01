@@ -1,5 +1,5 @@
-#ifndef ROOTWINDOW_H
-#define ROOTWINDOW_H
+#ifndef MROOT_H
+#define MROOT_H
 
 #include <QMainWindow>
 
@@ -14,8 +14,12 @@ class Mpi3ModelContainers;
 class Mpi3ModelSonglist;
 class Mpi3TreeViewContainers;
 class Mpi3TreeViewSonglist;
-class Mpi3StyleSheet;
 class Mpi3Library;
+
+
+namespace Mpi3{
+class MStyleSheet;
+};
 
 
 class Mpi3RootDesktop : public QMainWindow
@@ -49,7 +53,7 @@ private:
     Mpi3ModelContainers *m_modelContainers = nullptr;
     Mpi3ModelSonglist *m_modelSonglist = nullptr;
 
-    Mpi3StyleSheet *m_qssStyle = nullptr;
+    Mpi3::MStyleSheet *m_qssStyle = nullptr;
 
     QMediaPlayer *m_audioOutput = nullptr;
     Mpi3Library *m_mediaLibrary = nullptr;

@@ -1,14 +1,14 @@
-﻿#include "rootwindow.h"
+﻿#include "mroot.h"
 
-#include "panels/librarydisplay.h"
-#include "panels/audiocontrol.h"
+#include "ui/mlibrarydisplay.h"
+#include "ui/maudiocontrol.h"
 
-#include "mvc/libmodel.h"
-#include "mvc/libview.h"
+#include "ui/mvc/mlibmodel.h"
+#include "ui/mvc/mlibview.h"
 
-#include "util/uistyle.h"
-#include "util/mpi3library.h"
-#include "util/xmlsettings.h"
+#include "util/mstyle.h"
+#include "util/mlibrary.h"
+#include "util/msettings.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -54,7 +54,7 @@ void Mpi3RootDesktop::initializeObjects(){
     m_modelContainers = new Mpi3ModelContainers();
     m_modelSonglist = new Mpi3ModelSonglist();
 
-    m_qssStyle = new Mpi3StyleSheet();
+    m_qssStyle = new Mpi3::MStyleSheet();
 
     m_audioOutput = new QMediaPlayer(this);
     m_mediaLibrary = new Mpi3Library();
@@ -263,7 +263,7 @@ void Mpi3RootDesktop::initializeLayout(){
 }
 void Mpi3RootDesktop::initializeState(){
     QString appDir = QApplication::applicationDirPath();
-    Mpi3Settings settings(appDir + "/profile.xml");
+    Mpi3::MSettingsXml settings(appDir + "/profile.xml");
 
     settings.beginGroup("RootWindow");
     QRect screenSize = QApplication::desktop()->availableGeometry(this);
@@ -304,13 +304,12 @@ void Mpi3RootDesktop::initializeState(){
 //    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Calm Down.wav"));
     m_audioOutput->setVolume(val_volume);
 
-
     m_panelLibview->changeView(Mpi3PanelLibrary::ViewAllSongs);
 }
 void Mpi3RootDesktop::saveSettings(){
     QString appDir = QApplication::applicationDirPath();
     QDir().remove(appDir + "/profile.xml");
-    Mpi3Settings *settings = new Mpi3Settings(appDir + "/profile.xml");
+    Mpi3::MSettingsXml *settings = new Mpi3::MSettingsXml(appDir + "/profile.xml");
 
     settings->beginGroup("RootWindow");
     settings->setValue("rootx", x());

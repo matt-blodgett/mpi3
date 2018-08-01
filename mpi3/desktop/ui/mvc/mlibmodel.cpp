@@ -1,7 +1,7 @@
-#include "libmodel.h"
-#include "libitem.h"
+#include "mlibmodel.h"
+#include "mlibitem.h"
 
-#include "util/mpi3library.h"
+#include "util/mlibrary.h"
 
 #include <QMimeData>
 #include <QPixmap>
@@ -16,8 +16,8 @@ Mpi3ModelContainers::Mpi3ModelContainers(QObject *parent) : QAbstractItemModel(p
     m_rootItem->setData(0, "Playlists");
     insertColumns(0, 1);
 
-    icn_folder.addPixmap(QPixmap(":/icons/treeview/folder.png"));
-    icn_playlist.addPixmap(QPixmap(":/icons/treeview/playlist.png"));
+    m_icnFolder.addPixmap(QPixmap(":/icons/treeview/folder.png"));
+    m_icnPlaylist.addPixmap(QPixmap(":/icons/treeview/playlist.png"));
 }
 Mpi3ModelContainers::~Mpi3ModelContainers(){
     delete m_rootItem;
@@ -437,7 +437,7 @@ void Mpi3ModelContainers::populate(Mpi3Folder *parentFolder, LibraryItem *parent
         LibraryItem *childItem = parentItem->child(i);
 
         childItem->setData(0, childFolder->name());
-        childItem->setIcon(icn_folder);
+        childItem->setIcon(m_icnFolder);
 
         m_libItems[childFolder->pid()] = childItem;
 
@@ -449,7 +449,7 @@ void Mpi3ModelContainers::populate(Mpi3Folder *parentFolder, LibraryItem *parent
         LibraryItem *childItem = parentItem->child(i + childFolders.size());
 
         childItem->setData(0, childPlaylist->name());
-        childItem->setIcon(icn_playlist);
+        childItem->setIcon(m_icnPlaylist);
 
         m_libItems[childPlaylist->pid()] = childItem;
     }
@@ -479,7 +479,7 @@ void Mpi3ModelContainers::playlistInserted(Mpi3Playlist *childPlaylist, Mpi3Elem
 
     LibraryItem *childItem = parentItem->child(position);
     childItem->setData(0, childPlaylist->name());
-    childItem->setIcon(icn_playlist);
+    childItem->setIcon(m_icnPlaylist);
 
     m_libItems[childPlaylist->pid()] = childItem;
 }
@@ -506,7 +506,7 @@ void Mpi3ModelContainers::folderInserted(Mpi3Folder *childFolder, Mpi3Element *p
 
     LibraryItem *childItem = parentItem->child(position);
     childItem->setData(0, childFolder->name());
-    childItem->setIcon(icn_folder);
+    childItem->setIcon(m_icnFolder);
 
     m_libItems[childFolder->pid()] = childItem;
 
@@ -595,13 +595,15 @@ Qt::ItemFlags Mpi3ModelSonglist::flags(const QModelIndex &index) const{
                     | Qt::ItemIsDragEnabled
                     | Qt::ItemIsDropEnabled
                     | Qt::ItemIsSelectable
-                    | Qt::ItemIsEnabled;
+                    | Qt::ItemIsEnabled
+                    | Qt::ItemNeverHasChildren;
         }
         else{
             return Qt::ItemIsEditable
                     | Qt::ItemIsDropEnabled
                     | Qt::ItemIsSelectable
-                    | Qt::ItemIsEnabled;
+                    | Qt::ItemIsEnabled
+                    | Qt::ItemNeverHasChildren;
         }
     }
 

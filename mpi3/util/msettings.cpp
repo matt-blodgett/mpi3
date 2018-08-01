@@ -1,16 +1,21 @@
-#include "xmlsettings.h"
+#include "msettings.h"
 
 #include <QXmlStreamReader>
 
 
+using namespace Mpi3;
+
+
+typedef class MSettingsXmlNode XmlNode;
 static const QString RootName = "mpi3config";
 
 
-Mpi3Settings::Mpi3Settings(const QString &settingsPath) : QSettings (settingsPath, XmlSettingsFormat){}
+MSettingsXml::MSettingsXml(const QString &settingsPath) : QSettings (settingsPath, XmlSettingsFormat){}
 
-const QSettings::Format Mpi3Settings::XmlSettingsFormat = QSettings::registerFormat("xml", &Mpi3Settings::readSettingsXml, &Mpi3Settings::writeSettingsXml);
+const QSettings::Format MSettingsXml::XmlSettingsFormat = QSettings::registerFormat(
+            "xml", &MSettingsXml::readSettingsXml, &MSettingsXml::writeSettingsXml);
 
-bool Mpi3Settings::readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map) {
+bool MSettingsXml::readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map) {
     QXmlStreamReader xml(&device);
     XmlNode *curNode = nullptr;
 
@@ -53,7 +58,7 @@ bool Mpi3Settings::readSettingsXml(QIODevice &device, QMap<QString, QVariant> &m
     map.clear();
     return false;
 }
-bool Mpi3Settings::writeSettingsXml(QIODevice &device, const QMap<QString, QVariant> &map) {
+bool MSettingsXml::writeSettingsXml(QIODevice &device, const QMap<QString, QVariant> &map) {
     XmlNode *root = new XmlNode(RootName);
 
     QMap<QString, QVariant>::const_iterator unsplitKey;
@@ -123,12 +128,12 @@ bool Mpi3Settings::writeSettingsXml(QIODevice &device, const QMap<QString, QVari
 }
 
 
-XmlNode::XmlNode(const QString &name, const QString &text, QObject *parent) : QObject(parent){
+MSettingsXmlNode::MSettingsXmlNode(const QString &name, const QString &text, QObject *parent) : QObject(parent){
     tagName = name;
     subtext = text;
 }
 
-QString XmlNode::fullPath() const {
+QString MSettingsXmlNode::fullPath() const {
     const XmlNode *cur = this;
     QString path = tagName;
 

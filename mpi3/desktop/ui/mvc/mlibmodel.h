@@ -1,5 +1,5 @@
-#ifndef LIBMODEL_H
-#define LIBMODEL_H
+#ifndef MLIBMODEL_H
+#define MLIBMODEL_H
 
 #include <QAbstractItemModel>
 #include <QScopedPointer>
@@ -58,8 +58,8 @@ public:
     bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
 
 private:
-    QIcon icn_folder;
-    QIcon icn_playlist;
+    QIcon m_icnFolder;
+    QIcon m_icnPlaylist;
 
 private:
     QScopedPointer<Mpi3Library> m_mediaLibrary;

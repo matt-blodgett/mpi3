@@ -1,4 +1,4 @@
-#include "audiocontrol.h"
+#include "maudiocontrol.h"
 
 #include <QGridLayout>
 #include <QStyleOption>

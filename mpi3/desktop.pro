@@ -17,33 +17,33 @@ win32:VERSION = 1.0.0.1
 else:VERSION = 1.0.0
 
 TARGET = mpi3
-QMAKE_TARGET_PRODUCT = "mpi3_desktop"
+QMAKE_TARGET_PRODUCT = "Mpi3Desktop"
 QMAKE_TARGET_DESCRIPTION = "Mpi3 Media Player"
 
 RESOURCES += desktop.qrc
 SOURCES += desktop/main.cpp
 
-SOURCES += desktop/rootwindow.cpp
-HEADERS += desktop/rootwindow.h
+SOURCES += desktop/mroot.cpp
+HEADERS += desktop/mroot.h
 
-SOURCES += desktop/panels/audiocontrol.cpp
-SOURCES += desktop/panels/librarydisplay.cpp
+SOURCES += desktop/ui/maudiocontrol.cpp
+SOURCES += desktop/ui/mlibrarydisplay.cpp
 
-HEADERS += desktop/panels/audiocontrol.h
-HEADERS += desktop/panels/librarydisplay.h
+HEADERS += desktop/ui/maudiocontrol.h
+HEADERS += desktop/ui/mlibrarydisplay.h
 
-HEADERS += desktop/mvc/libmodel.h
-HEADERS += desktop/mvc/libview.h
-HEADERS += desktop/mvc/libitem.h
+HEADERS += desktop/ui/mvc/mlibmodel.h
+HEADERS += desktop/ui/mvc/mlibview.h
+HEADERS += desktop/ui/mvc/mlibitem.h
 
-SOURCES += desktop/mvc/libmodel.cpp
-SOURCES += desktop/mvc/libview.cpp
-SOURCES += desktop/mvc/libitem.cpp
+SOURCES += desktop/ui/mvc/mlibmodel.cpp
+SOURCES += desktop/ui/mvc/mlibview.cpp
+SOURCES += desktop/ui/mvc/mlibitem.cpp
 
-HEADERS += util/uistyle.h
-HEADERS += util/mpi3library.h
-HEADERS += util/xmlsettings.h
+HEADERS += util/mstyle.h
+HEADERS += util/mlibrary.h
+HEADERS += util/msettings.h
 
-SOURCES += util/uistyle.cpp
-SOURCES += util/mpi3library.cpp
-SOURCES += util/xmlsettings.cpp
+SOURCES += util/mstyle.cpp
+SOURCES += util/mlibrary.cpp
+SOURCES += util/msettings.cpp

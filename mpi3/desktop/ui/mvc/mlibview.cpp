@@ -1,14 +1,15 @@
-#include "libview.h"
-#include "util/uistyle.h"
+#include "mlibview.h"
+#include "util/mstyle.h"
 
 #include <QHeaderView>
 
 #include <QDropEvent>
 #include <QMimeData>
 
+using namespace Mpi3;
 
 Mpi3TreeView::Mpi3TreeView(QWidget *parent) : QTreeView(parent){
-    m_drawStyle = new Mpi3Style(style());
+    m_drawStyle = new MStyle(style());
     setStyle(m_drawStyle);
 
     setDragEnabled(true);
@@ -31,7 +32,7 @@ Mpi3TreeViewContainers::Mpi3TreeViewContainers(QWidget *parent) : Mpi3TreeView(p
     setRootIsDecorated(true);
     setHeaderHidden(true);
 
-    m_drawStyle->setTVIndicatorStyle(Mpi3Style::TV_IndicatorStyleDrop);
+    m_drawStyle->setTVIndicatorStyle(MStyle::TV_IndicatorStyleDrop);
 }
 
 void Mpi3TreeViewContainers::dragEnterEvent(QDragEnterEvent *event){
@@ -114,7 +115,7 @@ Mpi3TreeViewSonglist::Mpi3TreeViewSonglist(QWidget *parent) : Mpi3TreeView(paren
     setRootIsDecorated(false);
     setHeaderHidden(false);
 
-    m_drawStyle->setTVIndicatorStyle(Mpi3Style::TV_IndicatorStyleMove);
+    m_drawStyle->setTVIndicatorStyle(MStyle::TV_IndicatorStyleMove);
 }
 
 void Mpi3TreeViewSonglist::dropEvent(QDropEvent *event){

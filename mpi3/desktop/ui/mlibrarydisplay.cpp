@@ -1,6 +1,6 @@
-#include "librarydisplay.h"
-#include "desktop/mvc/libview.h"
-#include "util/uistyle.h"
+#include "mlibrarydisplay.h"
+#include "mvc/mlibview.h"
+#include "util/mstyle.h"
 
 #include <QGridLayout>
 #include <QHeaderView>
@@ -76,9 +76,9 @@ Mpi3PanelLibrary::Mpi3PanelLibrary(QWidget *parent) : QWidget(parent){
     m_btnAlbums->setText("Albums");
     m_lblPlaylist->setText("Playlists");
 
-    m_btnSongs->setStyle(new Mpi3Style(m_btnSongs->style()));
-    m_btnArtists->setStyle(new Mpi3Style(m_btnArtists->style()));
-    m_btnAlbums->setStyle(new Mpi3Style(m_btnAlbums->style()));
+    m_btnSongs->setStyle(new Mpi3::MStyle(m_btnSongs->style()));
+    m_btnArtists->setStyle(new Mpi3::MStyle(m_btnArtists->style()));
+    m_btnAlbums->setStyle(new Mpi3::MStyle(m_btnAlbums->style()));
 
     connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewAllSongs);});
     connect(m_btnArtists, &QPushButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewArtists);});

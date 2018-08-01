@@ -1,5 +1,5 @@
-#ifndef AUDIOCONTROL_H
-#define AUDIOCONTROL_H
+#ifndef MAUDIOCONTROL_H
+#define MAUDIOCONTROL_H
 
 #include <QMediaPlayer>
 #include <QWidget>

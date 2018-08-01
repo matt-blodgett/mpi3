@@ -1,5 +1,5 @@
-#ifndef MPI3LIBRARY_H
-#define MPI3LIBRARY_H
+#ifndef MLIBRARY_H
+#define MLIBRARY_H
 
 #include <QObject>
 #include <QVector>
@@ -176,6 +176,9 @@ public:
 public:
 //    QVector<Mpi3Folder*> rootFolders;
 //    QVector<Mpi3Playlist*> rootPlaylist;
+//Q_DISABLE_COPY(Class)
+//Q_DECL_UNUSED
+//Q_REQUIRED_RESULT
 
     QVector<Mpi3Folder*> childFolders() const;
     QVector<Mpi3Playlist*> childPlaylists() const;
@@ -185,7 +188,7 @@ public:
     QVector<Mpi3Folder*> allChildFolders(Mpi3Folder *parentFolder = nullptr) const;
 
 public:
-    Mpi3Element *getElement(const QString &pid);
+    Q_REQUIRED_RESULT Mpi3Element *getElement(const QString &pid);
 
     Mpi3Song *getSong(const QString &pid) const;
     Mpi3Playlist *getPlaylist(const QString &pid) const;

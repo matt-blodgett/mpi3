@@ -1,9 +1,14 @@
-#ifndef LIBVIEW_H
-#define LIBVIEW_H
+#ifndef MLIBVIEW_H
+#define MLIBVIEW_H
 
 #include <QTreeView>
 
-class Mpi3Style;
+namespace Mpi3{
+
+class MStyle;
+
+};
+
 
 
 class Mpi3TreeView : public QTreeView
@@ -14,7 +19,7 @@ public:
     explicit Mpi3TreeView(QWidget *parent = nullptr);
 
 protected:
-    Mpi3Style *m_drawStyle = nullptr;
+    Mpi3::MStyle *m_drawStyle = nullptr;
 };
 
 

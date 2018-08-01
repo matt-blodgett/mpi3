@@ -1,5 +1,5 @@
-#ifndef LIBITEM_H
-#define LIBITEM_H
+#ifndef MLIBITEM_H
+#define MLIBITEM_H
 
 #include <QVariant>
 #include <QVector>
@@ -36,10 +36,10 @@ public:
 
 private:
     QList<LibraryItem*> m_childItems;
-    QVector<QVariant> m_itemData;
     LibraryItem *m_parentItem;
-    QIcon m_itemIcon;
 
+    QVector<QVariant> m_itemData;
+    QIcon m_itemIcon;
 };
 
 #endif
