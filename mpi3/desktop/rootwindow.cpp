@@ -263,7 +263,7 @@ void Mpi3RootDesktop::initializeLayout(){
 }
 void Mpi3RootDesktop::initializeState(){
     QString appDir = QApplication::applicationDirPath();
-    QSettings settings(appDir + "/profile.xml", XmlSettingsFormat);
+    Mpi3Settings settings(appDir + "/profile.xml");
 
     settings.beginGroup("RootWindow");
     QRect screenSize = QApplication::desktop()->availableGeometry(this);
@@ -310,7 +310,7 @@ void Mpi3RootDesktop::initializeState(){
 void Mpi3RootDesktop::saveSettings(){
     QString appDir = QApplication::applicationDirPath();
     QDir().remove(appDir + "/profile.xml");
-    QSettings *settings = new QSettings(appDir + "/profile.xml", XmlSettingsFormat);
+    Mpi3Settings *settings = new Mpi3Settings(appDir + "/profile.xml");
 
     settings->beginGroup("RootWindow");
     settings->setValue("rootx", x());

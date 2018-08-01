@@ -8,10 +8,19 @@ class QIODevice;
 QT_END_NAMESPACE
 
 
-bool readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map);
-bool writeSettingsXml(QIODevice &device, const QMap<QString, QVariant> &map);
+class Mpi3Settings : public QSettings
+{
+    Q_OBJECT
 
-static const QSettings::Format XmlSettingsFormat = QSettings::registerFormat("xml", &readSettingsXml, &writeSettingsXml);
+public:
+    explicit Mpi3Settings(const QString &settingsPath);
+
+public:
+    static const QSettings::Format XmlSettingsFormat;
+
+    static bool readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map);
+    static bool writeSettingsXml(QIODevice &device, const QMap<QString, QVariant> &map);
+};
 
 
 class XmlNode : public QObject
@@ -28,4 +37,4 @@ public:
 };
 
 
-#endif // XMLSETTINGS_H
+#endif
