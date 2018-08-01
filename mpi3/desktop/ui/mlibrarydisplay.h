@@ -21,6 +21,9 @@ public:
     explicit Mpi3PanelLibrary(QWidget *parent = nullptr);
     ~Mpi3PanelLibrary();
 
+private:
+    void initializeLayout();
+
 public:
     enum View {
         ViewAllSongs,
@@ -36,6 +39,7 @@ public:
 private:
     Mpi3PanelLibrary::View m_currentView;
 
+private:
     Mpi3TreeViewContainers *m_treeContainers = nullptr;
     Mpi3TreeViewSonglist *m_treeSonglist = nullptr;
 

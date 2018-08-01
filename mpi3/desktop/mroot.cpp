@@ -59,21 +59,18 @@ void Mpi3RootDesktop::initializeObjects(){
     m_audioOutput = new QMediaPlayer(this);
     m_mediaLibrary = new Mpi3Library();
 
-
     m_audioOutput->setAudioRole(QAudio::MusicRole);
     m_treeSonglist->setModel(m_modelSonglist);
     m_treeContainers->setModel(m_modelContainers);
 
-    connect(m_panelPlayback, &Mpi3PanelPlayback::play, m_audioOutput, &QMediaPlayer::play);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::pause, m_audioOutput, &QMediaPlayer::pause);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::stop, m_audioOutput, &QMediaPlayer::stop);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::play, m_audioOutput, &QMediaPlayer::play);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::pause, m_audioOutput, &QMediaPlayer::pause);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::stop, m_audioOutput, &QMediaPlayer::stop);
 //    connect(m_playback, &PanelPlayback::next, m_playlist, &QMediaPlaylist::next);
 //    connect(m_playback, &PanelPlayback::previous, this, &PanelPlayback::previousClicked);
     connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, m_audioOutput, &QMediaPlayer::setVolume);
-
-    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &Mpi3PanelPlayback::setState);
+//    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &Mpi3PanelPlayback::setState);
     connect(m_audioOutput, &QMediaPlayer::volumeChanged, m_panelPlayback, &Mpi3PanelPlayback::setVolume);
-    connect(m_audioOutput, &QMediaPlayer::mutedChanged, m_panelPlayback, &Mpi3PanelPlayback::setMuted);
 
     connect(m_panelLibview, &Mpi3PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
 

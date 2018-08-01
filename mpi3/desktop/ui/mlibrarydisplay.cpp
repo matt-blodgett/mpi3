@@ -11,6 +11,37 @@
 
 
 Mpi3PanelLibrary::Mpi3PanelLibrary(QWidget *parent) : QWidget(parent){
+    initializeLayout();
+
+    m_btnSongs->setText("Songs");
+    m_btnArtists->setText("Artists");
+    m_btnAlbums->setText("Albums");
+    m_lblPlaylist->setText("Playlists");
+
+    m_btnSongs->setStyle(new Mpi3::MStyle(m_btnSongs->style()));
+    m_btnArtists->setStyle(new Mpi3::MStyle(m_btnArtists->style()));
+    m_btnAlbums->setStyle(new Mpi3::MStyle(m_btnAlbums->style()));
+
+    connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewAllSongs);});
+    connect(m_btnArtists, &QPushButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewArtists);});
+    connect(m_btnAlbums, &QPushButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewAlbums);});
+    connect(m_treeContainers, &QTreeView::clicked, this, &Mpi3PanelLibrary::containerClicked);
+
+    m_frmViews->setObjectName("PanelViews");
+    m_frmTrees->setObjectName("PanelTrees");
+    m_btnSongs->setObjectName("PanelViewsButton");
+    m_btnArtists->setObjectName("PanelViewsButton");
+    m_btnAlbums->setObjectName("PanelViewsButton");
+    m_lblView->setObjectName("PanelTreesTitle");
+    m_lblPlaylist->setObjectName("PanelViewsLabel");
+    m_treeSonglist->setObjectName("SonglistTreeview");
+    m_treeContainers->setObjectName("ContainersTreeview");
+    m_treeSonglist->header()->setObjectName("SonglistTreeviewHeader");
+    m_treeContainers->header()->setObjectName("ContainersTreeviewHeader");
+}
+Mpi3PanelLibrary::~Mpi3PanelLibrary(){}
+
+void Mpi3PanelLibrary::initializeLayout(){
     m_frmLibrary = new QSplitter(this);
 
     m_frmViews = new QWidget(this);
@@ -70,34 +101,7 @@ Mpi3PanelLibrary::Mpi3PanelLibrary(QWidget *parent) : QWidget(parent){
     m_frmLibrary->setHandleWidth(0);
     m_frmLibrary->setChildrenCollapsible(false);
     m_frmLibrary->setOrientation(Qt::Horizontal);
-
-    m_btnSongs->setText("Songs");
-    m_btnArtists->setText("Artists");
-    m_btnAlbums->setText("Albums");
-    m_lblPlaylist->setText("Playlists");
-
-    m_btnSongs->setStyle(new Mpi3::MStyle(m_btnSongs->style()));
-    m_btnArtists->setStyle(new Mpi3::MStyle(m_btnArtists->style()));
-    m_btnAlbums->setStyle(new Mpi3::MStyle(m_btnAlbums->style()));
-
-    connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewAllSongs);});
-    connect(m_btnArtists, &QPushButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewArtists);});
-    connect(m_btnAlbums, &QPushButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewAlbums);});
-    connect(m_treeContainers, &QTreeView::clicked, this, &Mpi3PanelLibrary::containerClicked);
-
-    m_frmViews->setObjectName("PanelViews");
-    m_frmTrees->setObjectName("PanelTrees");
-    m_btnSongs->setObjectName("PanelViewsButton");
-    m_btnArtists->setObjectName("PanelViewsButton");
-    m_btnAlbums->setObjectName("PanelViewsButton");
-    m_lblView->setObjectName("PanelTreesTitle");
-    m_lblPlaylist->setObjectName("PanelViewsLabel");
-    m_treeSonglist->setObjectName("SonglistTreeview");
-    m_treeContainers->setObjectName("ContainersTreeview");
-    m_treeSonglist->header()->setObjectName("SonglistTreeviewHeader");
-    m_treeContainers->header()->setObjectName("ContainersTreeviewHeader");
 }
-Mpi3PanelLibrary::~Mpi3PanelLibrary(){}
 
 Mpi3PanelLibrary::View Mpi3PanelLibrary::currentView() const{
     return m_currentView;

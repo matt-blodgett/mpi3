@@ -9,6 +9,8 @@ QT_BEGIN_NAMESPACE
 class QAbstractSlider;
 class QPushButton;
 class QLineEdit;
+
+class QTimer;
 QT_END_NAMESPACE
 
 
@@ -20,15 +22,18 @@ public:
     explicit Mpi3PanelPlayback(QWidget *parent=nullptr);
     ~Mpi3PanelPlayback();
 
+private:
+    void initializeLayout();
+
 public:
-    QMediaPlayer *m_audio = nullptr;
-    QMediaPlayer::State state() const;
     int volume() const;
-    bool isMuted() const;
+    void setVolume(int volume);
+
+    QMediaPlayer::State state() const;
+    void setState(QMediaPlayer::State state);
 
 private:
     QMediaPlayer::State m_playerState = QMediaPlayer::StoppedState;
-    bool m_playerMuted = false;
 
 private:
     QWidget *m_frmVolume = nullptr;
@@ -49,29 +54,26 @@ private:
     QPushButton *m_btnSearch = nullptr;
     QAbstractSlider *m_sldVolume = nullptr;
 
+    QTimer *m_btnPlayTimer = nullptr;
+
+private:
+    void clickPlay();
+    void onVolumeSliderValueChanged();
+
 signals:
     void play();
     void pause();
     void stop();
     void next();
-    void previous();
+    void prev();
     void changeVolume(int volume);
     void changeMuting(bool muting);
 
-public:
-    void setState(QMediaPlayer::State state);
-    void setVolume(int volume);
-    void setMuted(bool muted);
-
 private:
-    void clickPlay();
-    void clickMute();
-    void onVolumeSliderValueChanged();
+    bool eventFilter(QObject *object, QEvent *event);
 
-private:
     void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *event);
-
 };
 
 
