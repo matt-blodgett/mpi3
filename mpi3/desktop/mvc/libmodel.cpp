@@ -65,129 +65,133 @@ bool Mpi3ModelContainers::canDropMimeData(const QMimeData *data, Qt::DropAction 
     bool actionIsCopyAction = action == Qt::CopyAction;
     bool actionIsMoveAction = action == Qt::MoveAction;
 
-    QModelIndex childIndex = index(row, column, parent);
-    Mpi3Element *childElement = m_mediaLibrary->getElement(getPID(childIndex));
+    QModelIndex dropIndex = index(row, column, parent);
 
-    if(!childElement){
-//        qDebug() << "no child element";
-        return (actionIsMoveAction && dataIsContainer) || (actionIsCopyAction && dataIsValidMediaFiles);
+    if(actionIsMoveAction && dataIsContainer){
+        QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
+
+        Mpi3Folder *moveFolder = m_mediaLibrary->getFolder(pid);
+        Mpi3Playlist *movePlaylist = m_mediaLibrary->getPlaylist(pid);
+
+        Mpi3Folder *dropFolder = m_mediaLibrary->getFolder(getPID(dropIndex));
+        Mpi3Playlist *dropPlaylist = m_mediaLibrary->getPlaylist(getPID(dropIndex));
+
+        if(moveFolder && !dropFolder){
+            return moveFolder->parent || !dropPlaylist;
+        }
+        else if(movePlaylist && !dropFolder){
+            return movePlaylist->parent || !dropPlaylist;
+        }
+        else if(moveFolder && dropFolder){
+            return moveFolder != dropFolder && !m_mediaLibrary->allChildFolders(moveFolder).contains(dropFolder);
+        }
+        else if(movePlaylist && dropFolder){
+            return dropPlaylist->parent != dropFolder;
+        }
+
+        return false;
     }
-    else if(childElement->type() == Mpi3Element::PlaylistElement){
-//        qDebug() << "playlist:" << childElement->name();
+
+    Mpi3Element *dropElement = m_mediaLibrary->getElement(getPID(dropIndex));
+
+    if(!dropElement){
+        return (actionIsCopyAction && dataIsValidMediaFiles);
+    }
+    else if(dropElement->type() == Mpi3Element::PlaylistElement){
         return actionIsCopyAction && (dataIsSonglist || dataIsValidMediaFiles);
-    }
-    else if(childElement->type() == Mpi3Element::FolderElement){
-//        qDebug() << "folder:" << childElement->name();
-        return actionIsMoveAction && dataIsContainer;
     }
 
     return false;
 }
 bool Mpi3ModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent){
 
-//    Q_UNUSED(data);
-//    Q_UNUSED(action);
-//    Q_UNUSED(row);
-//    Q_UNUSED(column);
-//    Q_UNUSED(parent);
-
-    qDebug() << "model: drop mime data" << action << row << column << parent.row() << parent.column();
-
+    bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
     bool dataIsContainer = data->hasFormat(QMetaType::typeName(qMetaTypeId<QString>()));
+    bool dataIsValidMediaFiles = data->hasUrls() ? m_mediaLibrary->validMediaFiles(data->urls()) : false;
+    bool actionIsCopyAction = action == Qt::CopyAction;
+    bool actionIsMoveAction = action == Qt::MoveAction;
 
-    if(dataIsContainer){
-        qDebug() << "is container";
+    QModelIndex dropIndex = index(row, column, parent);
+    Mpi3Element *dropElement = m_mediaLibrary->getElement(getPID(dropIndex));
+
+    if(!dropElement){
+        if(actionIsMoveAction && dataIsContainer){
+            QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
+            Mpi3Element *moveElement = m_mediaLibrary->getElement(pid);
+
+            if(!moveElement){
+                return false;
+            }
+            else if(moveElement->type() == Mpi3Element::PlaylistElement){
+                Mpi3Playlist *movePlaylist = static_cast<Mpi3Playlist*>(moveElement);
+                m_mediaLibrary->move(movePlaylist, nullptr);
+                return true;
+            }
+            else if(moveElement->type() == Mpi3Element::FolderElement){
+                Mpi3Folder *moveFolder = static_cast<Mpi3Folder*>(moveElement);
+                m_mediaLibrary->move(moveFolder, nullptr);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if(actionIsCopyAction && dataIsValidMediaFiles){
+            for(int i = 0; i < data->urls().size(); i++){
+                Mpi3Song *droppedSong = m_mediaLibrary->newSong(data->urls().at(i).toString());
+                m_mediaLibrary->insert(droppedSong);
+            }
+            return true;
+        }
+    }
+    else if(dropElement->type() == Mpi3Element::PlaylistElement){
+        Mpi3Playlist *parentPlaylist = static_cast<Mpi3Playlist*>(dropElement);
+
+        if(actionIsCopyAction && dataIsSonglist){
+            QByteArray pidBytes = data->data(QMetaType::typeName(qMetaTypeId<QStringList>()));
+            QVector<Mpi3Song*> droppedSongs = m_mediaLibrary->songsFromData(pidBytes);
+
+            for(int i = 0; i < droppedSongs.size(); i++){
+                m_mediaLibrary->insert(droppedSongs.at(i), parentPlaylist);
+            }
+
+            return true;
+        }
+        else if(actionIsCopyAction && dataIsValidMediaFiles){
+            for(int i = 0; i < data->urls().size(); i++){
+                Mpi3Song *droppedSong = m_mediaLibrary->newSong(data->urls().at(i).toString());
+                m_mediaLibrary->insert(droppedSong, parentPlaylist);
+            }
+            return true;
+        }
+    }
+    else if(dropElement->type() == Mpi3Element::FolderElement){
+        if(actionIsMoveAction && dataIsContainer){
+            Mpi3Folder *parentFolder = static_cast<Mpi3Folder*>(dropElement);
+
+            QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
+            Mpi3Element *moveElement = m_mediaLibrary->getElement(pid);
+
+            if(!moveElement){
+                return false;
+            }
+            else if(moveElement->type() == Mpi3Element::PlaylistElement){
+                Mpi3Playlist *movePlaylist = static_cast<Mpi3Playlist*>(moveElement);
+                m_mediaLibrary->move(movePlaylist, parentFolder);
+                return true;
+            }
+            else if(moveElement->type() == Mpi3Element::FolderElement){
+                Mpi3Folder *moveFolder = static_cast<Mpi3Folder*>(moveElement);
+                m_mediaLibrary->move(moveFolder, parentFolder);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
     }
 
     return false;
-
-//    bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
-//    bool dataIsContainer = data->hasFormat(QMetaType::typeName(qMetaTypeId<QString>()));
-//    bool dataIsValidMediaFiles = data->hasUrls() ? m_mediaLibrary->validMediaFiles(data->urls()) : false;
-//    bool actionIsCopyAction = action == Qt::CopyAction;
-//    bool actionIsMoveAction = action == Qt::MoveAction;
-
-//    QModelIndex childIndex = index(row, column, parent);
-//    Mpi3Element *childElement = m_mediaLibrary->getElement(getPID(childIndex));
-
-//    if(!childElement){
-//        if(actionIsMoveAction && dataIsContainer){
-//            QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
-//            Mpi3Element *moveElement = m_mediaLibrary->getElement(pid);
-
-//            if(!moveElement){
-//                return false;
-//            }
-//            else if(moveElement->type() == Mpi3Element::PlaylistElement){
-//                Mpi3Playlist *movePlaylist = static_cast<Mpi3Playlist*>(moveElement);
-//                m_mediaLibrary->move(movePlaylist, nullptr);
-//                return true;
-//            }
-//            else if(moveElement->type() == Mpi3Element::FolderElement){
-//                Mpi3Folder *moveFolder = static_cast<Mpi3Folder*>(moveElement);
-//                m_mediaLibrary->move(moveFolder, nullptr);
-//                return true;
-//            }
-//            else {
-//                return false;
-//            }
-//        }
-//        else if(actionIsCopyAction && dataIsValidMediaFiles){
-//            for(int i = 0; i < data->urls().size(); i++){
-//                Mpi3Song *droppedSong = m_mediaLibrary->newSong(data->urls().at(i).toString());
-//                m_mediaLibrary->insert(droppedSong);
-//            }
-//            return true;
-//        }
-//    }
-//    else if(childElement->type() == Mpi3Element::PlaylistElement){
-//        Mpi3Playlist *parentPlaylist = static_cast<Mpi3Playlist*>(childElement);
-
-//        if(actionIsCopyAction && dataIsSonglist){
-//            QByteArray pidBytes = data->data(QMetaType::typeName(qMetaTypeId<QStringList>()));
-//            QVector<Mpi3Song*> droppedSongs = m_mediaLibrary->songsFromData(pidBytes);
-
-//            for(int i = 0; i < droppedSongs.size(); i++){
-//                m_mediaLibrary->insert(droppedSongs.at(i), parentPlaylist);
-//            }
-
-//            return true;
-//        }
-//        else if(actionIsCopyAction && dataIsValidMediaFiles){
-//            for(int i = 0; i < data->urls().size(); i++){
-//                Mpi3Song *droppedSong = m_mediaLibrary->newSong(data->urls().at(i).toString());
-//                m_mediaLibrary->insert(droppedSong, parentPlaylist);
-//            }
-//            return true;
-//        }
-//    }
-//    else if(childElement->type() == Mpi3Element::FolderElement){
-//        if(actionIsMoveAction && dataIsContainer){
-//            Mpi3Folder *parentFolder = static_cast<Mpi3Folder*>(childElement);
-
-//            QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
-//            Mpi3Element *moveElement = m_mediaLibrary->getElement(pid);
-
-//            if(!moveElement){
-//                return false;
-//            }
-//            else if(moveElement->type() == Mpi3Element::PlaylistElement){
-//                Mpi3Playlist *movePlaylist = static_cast<Mpi3Playlist*>(moveElement);
-//                m_mediaLibrary->move(movePlaylist, parentFolder);
-//                return true;
-//            }
-//            else if(moveElement->type() == Mpi3Element::FolderElement){
-//                Mpi3Folder *moveFolder = static_cast<Mpi3Folder*>(moveElement);
-//                m_mediaLibrary->move(moveFolder, parentFolder);
-//                return true;
-//            }
-//            else {
-//                return false;
-//            }
-//        }
-//    }
-
-//    return false;
 }
 
 int Mpi3ModelContainers::rowCount(const QModelIndex &parent) const{
@@ -357,7 +361,7 @@ LibraryItem *Mpi3ModelContainers::getItem(const QModelIndex &index) const{
     return m_rootItem;
 }
 LibraryItem *Mpi3ModelContainers::getItem(const QString &pid) const{
-    return pid.isNull() ? m_rootItem : m_libItems[pid];
+    return !m_libItems.keys().contains(pid) ? m_rootItem : m_libItems[pid];
 }
 QString Mpi3ModelContainers::getPID(const QModelIndex &index) const{
     return getPID(getItem(index));
@@ -397,6 +401,7 @@ void Mpi3ModelContainers::setLibrary(Mpi3Library *library){
         disconnect(m_mediaLibrary.data(), &Mpi3Library::elementModified, this, &Mpi3ModelContainers::elementModified);
         disconnect(m_mediaLibrary.data(), &Mpi3Library::elementInserted, this, &Mpi3ModelContainers::elementInserted);
         disconnect(m_mediaLibrary.data(), &Mpi3Library::elementRemoved, this, &Mpi3ModelContainers::elementRemoved);
+        disconnect(m_mediaLibrary.data(), &Mpi3Library::elementMoved, this, &Mpi3ModelContainers::elementMoved);
         disconnect(m_mediaLibrary.data(), &Mpi3Library::elementDeleted, this, &Mpi3ModelContainers::elementDeleted);
     }
 
@@ -407,6 +412,7 @@ void Mpi3ModelContainers::setLibrary(Mpi3Library *library){
         connect(m_mediaLibrary.data(), &Mpi3Library::elementModified, this, &Mpi3ModelContainers::elementModified);
         connect(m_mediaLibrary.data(), &Mpi3Library::elementInserted, this, &Mpi3ModelContainers::elementInserted);
         connect(m_mediaLibrary.data(), &Mpi3Library::elementRemoved, this, &Mpi3ModelContainers::elementRemoved);
+        connect(m_mediaLibrary.data(), &Mpi3Library::elementMoved, this, &Mpi3ModelContainers::elementMoved);
         connect(m_mediaLibrary.data(), &Mpi3Library::elementDeleted, this, &Mpi3ModelContainers::elementDeleted);
     }
 
@@ -450,27 +456,23 @@ void Mpi3ModelContainers::populate(Mpi3Folder *parentFolder, LibraryItem *parent
 }
 
 void Mpi3ModelContainers::playlistInserted(Mpi3Playlist *childPlaylist, Mpi3Element *parentElement){
-    if(parentElement->type() == Mpi3Element::LibraryElement && childPlaylist->parent){
+    if(!parentElement && childPlaylist->parent){
         return;
     }
 
     QModelIndex parentIndex;
-    LibraryItem *parentItem;
-    int position = 0;
+    LibraryItem *parentItem = m_rootItem;
+    int position = m_mediaLibrary->childPlaylists().size() - 1;
+    position += m_mediaLibrary->childFolders().size();
 
-    Mpi3Folder *parentFolder = nullptr;
-    if(parentElement->type() == Mpi3Element::FolderElement){
-        parentFolder = static_cast<Mpi3Folder*>(parentElement);
-    }
-
-    if(parentFolder){
-        parentIndex = getIndex(parentFolder->pid());
-        parentItem = getItem(parentFolder->pid());
-        position = parentFolder->playlists.indexOf(childPlaylist) + parentFolder->folders.size();
-    }
-    else {
-        parentItem = m_rootItem;
-        position = rowCount();
+    if(parentElement){
+        if(parentElement->type() == Mpi3Element::FolderElement){
+            Mpi3Folder *parentFolder = static_cast<Mpi3Folder*>(parentElement);
+            parentIndex = getIndex(parentFolder->pid());
+            parentItem = getItem(parentFolder->pid());
+            position = parentFolder->playlists.indexOf(childPlaylist);
+            position += parentFolder->folders.size();
+        }
     }
 
     insertRows(position, 1, parentIndex);
@@ -482,27 +484,22 @@ void Mpi3ModelContainers::playlistInserted(Mpi3Playlist *childPlaylist, Mpi3Elem
     m_libItems[childPlaylist->pid()] = childItem;
 }
 void Mpi3ModelContainers::folderInserted(Mpi3Folder *childFolder, Mpi3Element *parentElement){
-    if(parentElement->type() == Mpi3Element::LibraryElement && childFolder->parent){
+    if(!parentElement && childFolder->parent){
         return;
     }
 
     QModelIndex parentIndex;
-    LibraryItem *parentItem;
-    int position = 0;
+    LibraryItem *parentItem = m_rootItem;
+    int position = m_mediaLibrary->childFolders().size() - 1;
 
-    Mpi3Folder *parentFolder = nullptr;
-    if(parentElement->type() == Mpi3Element::FolderElement){
-        parentFolder = static_cast<Mpi3Folder*>(parentElement);
-    }
+    if(parentElement){
+        if(parentElement->type() == Mpi3Element::FolderElement){
+            Mpi3Folder *parentFolder = static_cast<Mpi3Folder*>(parentElement);
 
-    if(parentFolder){
-        parentIndex = getIndex(parentFolder->pid());
-        parentItem = getItem(parentFolder->pid());
-        position = parentFolder->folders.indexOf(childFolder);
-    }
-    else {
-        parentItem = m_rootItem;
-        position = m_mediaLibrary->childFolders().size() - 1;
+            parentIndex = getIndex(parentFolder->pid());
+            parentItem = getItem(parentFolder->pid());
+            position = parentFolder->folders.indexOf(childFolder);
+        }
     }
 
     insertRows(position, 1, parentIndex);
@@ -512,22 +509,26 @@ void Mpi3ModelContainers::folderInserted(Mpi3Folder *childFolder, Mpi3Element *p
     childItem->setIcon(icn_folder);
 
     m_libItems[childFolder->pid()] = childItem;
+
+    populate(childFolder, childItem);
 }
 
 void Mpi3ModelContainers::elementModified(Mpi3Element *elemModified){
-    if(elemModified->type() == Mpi3Element::PlaylistElement || elemModified->type() == Mpi3Element::FolderElement){
-        LibraryItem *item = getItem(elemModified->pid());
-        item->setData(0, elemModified->name());
+    if(m_libItems.keys().contains(elemModified->pid())){
+        m_libItems[elemModified->pid()]->setData(0, elemModified->name());
+
+        QModelIndex changedIndex = getIndex(elemModified->pid());
+        emit dataChanged(changedIndex, changedIndex);
     }
 }
 void Mpi3ModelContainers::elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent){
     if(elemInserted->type() == Mpi3Element::PlaylistElement){
-        Mpi3Playlist *sc_InsertedPlaylist = static_cast<Mpi3Playlist*>(elemInserted);
-        playlistInserted(sc_InsertedPlaylist, elemParent);
+        Mpi3Playlist *sc_insertedPlaylist = static_cast<Mpi3Playlist*>(elemInserted);
+        playlistInserted(sc_insertedPlaylist, elemParent);
     }
     else if(elemInserted->type() == Mpi3Element::FolderElement){
-        Mpi3Folder *sc_InsertedFolder = static_cast<Mpi3Folder*>(elemInserted);
-        folderInserted(sc_InsertedFolder, elemParent);
+        Mpi3Folder *sc_insertedFolder = static_cast<Mpi3Folder*>(elemInserted);
+        folderInserted(sc_insertedFolder, elemParent);
     }
 }
 void Mpi3ModelContainers::elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent){
@@ -539,6 +540,20 @@ void Mpi3ModelContainers::elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *
             removeRows(childIndex.row(), 1, parentIndex);
             m_libItems.remove(elemRemoved->pid());
         }
+    }
+}
+void Mpi3ModelContainers::elementMoved(Mpi3Element *elemMoved, Mpi3Element *elemParent){
+    QModelIndex moveIndex = getIndex(elemMoved->pid());
+    QModelIndex sourceIndex = moveIndex.parent();
+    removeRows(moveIndex.row(), 1, sourceIndex);
+
+    if(elemMoved->type() == Mpi3Element::PlaylistElement){
+        Mpi3Playlist *sc_movedPlaylist = static_cast<Mpi3Playlist*>(elemMoved);
+        playlistInserted(sc_movedPlaylist, elemParent);
+    }
+    else if(elemMoved->type() == Mpi3Element::FolderElement){
+        Mpi3Folder *sc_movedFolder = static_cast<Mpi3Folder*>(elemMoved);
+        folderInserted(sc_movedFolder, elemParent);
     }
 }
 void Mpi3ModelContainers::elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren){
@@ -886,46 +901,51 @@ void Mpi3ModelSonglist::setDisplay(Mpi3Element *container){
 
 void Mpi3ModelSonglist::elementModified(Mpi3Element *elemModified){
     if(elemModified->type() == Mpi3Element::SongElement){
-        Mpi3Song *song = static_cast<Mpi3Song*>(elemModified);
-        if(m_currentSonglist.contains(song)){
-            int position = m_currentSonglist.indexOf(song);
+        Mpi3Song *sc_songModified = static_cast<Mpi3Song*>(elemModified);
+
+        if(m_currentSonglist.contains(sc_songModified)){
+            int position = m_currentSonglist.indexOf(sc_songModified);
             emit dataChanged(index(position, 0), index(position, columnCount()));
         }
     }
 }
 void Mpi3ModelSonglist::elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent){
     if(elemInserted->type() == Mpi3Element::SongElement){
-        Mpi3Song *song = static_cast<Mpi3Song*>(elemInserted);
-        if(elemParent->type() == Mpi3Element::LibraryElement && elemParent->pid() == m_currentContainer){
-            if(m_currentDisplay == Mpi3ModelSonglist::DisplayAllSongs && !m_currentSonglist.contains(song)){
-                m_currentSonglist.push_back(song);
+        Mpi3Song *sc_songInserted = static_cast<Mpi3Song*>(elemInserted);
+
+        if(!elemParent){
+            if(m_currentDisplay == Mpi3ModelSonglist::DisplayAllSongs){
+                m_currentSonglist.push_back(sc_songInserted);
                 insertRows(rowCount(), 1);
             }
         }
         else if(elemParent->type() == Mpi3Element::PlaylistElement && elemParent->pid() == m_currentContainer){
-            Mpi3Playlist *currentPlaylist = static_cast<Mpi3Playlist*>(elemParent);
-            int position = currentPlaylist->songs.indexOf(song);
-            m_currentSonglist.insert(position, song);
+            Mpi3Playlist *sc_currentPlaylist = static_cast<Mpi3Playlist*>(elemParent);
+
+            int position = sc_currentPlaylist->songs.indexOf(sc_songInserted);
+            m_currentSonglist.insert(position, sc_songInserted);
             insertRows(position, 1);
         }
     }
 }
 void Mpi3ModelSonglist::elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent){
     if(elemRemoved->type() == Mpi3Element::SongElement){
-        Mpi3Song *song = static_cast<Mpi3Song*>(elemRemoved);
+        Mpi3Song *sc_songRemoved = static_cast<Mpi3Song*>(elemRemoved);
+
         if(elemParent->type() == Mpi3Element::PlaylistElement && elemParent->pid() == m_currentContainer){
-            removeRows(m_currentSonglist.indexOf(song), 1);
-            m_currentSonglist.removeAll(song);
+            removeRows(m_currentSonglist.indexOf(sc_songRemoved), 1);
+            m_currentSonglist.removeAll(sc_songRemoved);
         }
     }
 }
 void Mpi3ModelSonglist::elementMoved(Mpi3Element *elemMoved, Mpi3Element *elemParent){
     if(elemMoved->type() == Mpi3Element::SongElement && elemParent->type() == Mpi3Element::PlaylistElement){
         if(elemParent->pid() == m_currentContainer){
-            Mpi3Song *song = static_cast<Mpi3Song*>(elemMoved);
-            Mpi3Playlist *playist = static_cast<Mpi3Playlist*>(elemParent);
-            int fromPosition = m_currentSonglist.indexOf(song);
-            int toPosition = playist->songs.indexOf(song);
+            Mpi3Song *sc_songMoved = static_cast<Mpi3Song*>(elemMoved);
+            Mpi3Playlist *sc_parentPlaylist = static_cast<Mpi3Playlist*>(elemParent);
+
+            int fromPosition = m_currentSonglist.indexOf(sc_songMoved);
+            int toPosition = sc_parentPlaylist->songs.indexOf(sc_songMoved);
 
             m_currentSonglist.move(fromPosition, toPosition);
         }
@@ -934,10 +954,11 @@ void Mpi3ModelSonglist::elementMoved(Mpi3Element *elemMoved, Mpi3Element *elemPa
 void Mpi3ModelSonglist::elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren){
     if(elemType == Mpi3Element::SongElement){
         for(int i = 0; i < m_currentSonglist.size(); i++){
-            Mpi3Song *song = m_currentSonglist.at(i);
-            if(song->pid() == pidDeleted){
+            Mpi3Song *songDeleted = m_currentSonglist.at(i);
+
+            if(songDeleted->pid() == pidDeleted){
                 removeRows(i, 1);
-                m_currentSonglist.removeAll(song);
+                m_currentSonglist.removeAll(songDeleted);
             }
         }
     }

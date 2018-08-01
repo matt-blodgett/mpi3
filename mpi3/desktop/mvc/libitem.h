@@ -35,10 +35,10 @@ public:
     bool removeColumns(int position, int columns);
 
 private:
-    QList<LibraryItem*> childItems;
-    QVector<QVariant> itemData;
-    LibraryItem *parentItem;
-    QIcon itemIcon;
+    QList<LibraryItem*> m_childItems;
+    QVector<QVariant> m_itemData;
+    LibraryItem *m_parentItem;
+    QIcon m_itemIcon;
 
 };
 

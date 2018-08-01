@@ -288,9 +288,9 @@ QWidget#ContainersTreeview::item:selected  {
 }
 
 QWidget#ContainersTreeview::branch:selected {
+    border-image: none;
     background: #FFFFFF;
     color: #000000;
-    border-image: none;
 }
 
 QWidget#ContainersTreeview::branch:has-siblings:!adjoins-item {
@@ -306,25 +306,44 @@ QWidget#ContainersTreeview::branch:!has-children:!has-siblings:adjoins-item {
 }
 
 QWidget#ContainersTreeview::branch:has-children:!has-siblings:closed {
+    image: url(:/icons/treeview/folder_closed_light.png);
     border-image: none;
-    image: url(:/icons/treeview/folder_closed.png);
 }
 
 QWidget#ContainersTreeview::branch:closed:has-children:has-siblings {
+    image: url(:/icons/treeview/folder_closed_light.png);
     border-image: none;
-    image: url(:/icons/treeview/folder_closed.png);
 }
 
 QWidget#ContainersTreeview::branch:open:has-children:!has-siblings{
+    image: url(:/icons/treeview/folder_open_light.png);
     border-image: none;
-    image: url(:/icons/treeview/folder_open.png);
 }
 
 QWidget#ContainersTreeview::branch:open:has-children:has-siblings  {
+    image: url(:/icons/treeview/folder_open_light.png);
     border-image: none;
-    image: url(:/icons/treeview/folder_open.png);
 }
 
+QWidget#ContainersTreeview::branch:selected:has-children:!has-siblings:closed {
+    image: url(:/icons/treeview/folder_closed_dark.png);
+    border-image: none;
+}
+
+QWidget#ContainersTreeview::branch:selected:closed:has-children:has-siblings {
+    image: url(:/icons/treeview/folder_closed_dark.png);
+    border-image: none;
+}
+
+QWidget#ContainersTreeview::branch:selected:open:has-children:!has-siblings{
+    image: url(:/icons/treeview/folder_open_dark.png);
+    border-image: none;
+}
+
+QWidget#ContainersTreeview::branch:selected:open:has-children:has-siblings  {
+    image: url(:/icons/treeview/folder_open_dark.png);
+    border-image: none;
+}
 
 // --------------------------------------------------
 // * SonglistTreeview *

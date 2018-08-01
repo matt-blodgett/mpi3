@@ -81,13 +81,30 @@ void Mpi3TreeViewContainers::dropEvent(QDropEvent *event){
     int col = dropIndex.column();
 
     if(model()->canDropMimeData(event->mimeData(), action, row, col, parentIndex)){
-//        model()->dropMimeData(event->mimeData(), action, row, col, parentIndex);
+
+        QVector<QVariant> currentData;
+        for(int i = 0; i < model()->rowCount(dropIndex); i++){
+            currentData.append(model()->data(model()->index(i, 0, dropIndex)));
+        }
+
+        if(model()->dropMimeData(event->mimeData(), action, row, col, parentIndex)){
+            expand(dropIndex);
+
+            if(action == Qt::MoveAction){
+                for(int i = 0; i < model()->rowCount(dropIndex); i++){
+                    QModelIndex childIndex = model()->index(i, 0, dropIndex);
+                    QVariant indexData = model()->data(childIndex);
+
+                    if(!currentData.contains(indexData)){
+                        selectionModel()->select(childIndex, QItemSelectionModel::ClearAndSelect);
+                        expand(childIndex);
+                    }
+                }
+            }
+
+            return;
+        }
     }
-
-//    event->acceptProposedAction();
-//    event->accept();
-
-//    QTreeView::dropEvent(event);
 }
 
 

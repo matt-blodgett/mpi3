@@ -757,23 +757,10 @@ Mpi3Folder* Mpi3Library::newFolder(bool named) const{
 }
 
 void Mpi3Library::modify(const QString &pid, const QString &value){
-    if(pid == m_pid){
-        m_name = value;
-        emit elementModified(this);
-    }
-    else {
-        Mpi3Folder *folder = getFolder(pid);
-        if(folder){
-            folder->m_name = value;
-            emit elementModified(folder);
-        }
-        else {
-            Mpi3Playlist *playlist = getPlaylist(pid);
-            if(playlist){
-                playlist->m_name = value;
-                emit elementModified(playlist);
-            }
-        }
+    Mpi3Element *modifyElement = getElement(pid);
+    if(modifyElement){
+        modifyElement->m_name = value;
+        emit elementModified(modifyElement);
     }
 }
 void Mpi3Library::modify(Mpi3Song *song, const QString &value, Mpi3Song::MutableProperty songProperty){
@@ -802,7 +789,7 @@ void Mpi3Library::insert(Mpi3Song *inSong, Mpi3Playlist *toPlaylist, int atPosit
     }
     if(!libSongs->contains(inSong)){
         libSongs->append(inSong);
-        emit elementInserted(inSong, this);
+        emit elementInserted(inSong, nullptr);
     }
 }
 void Mpi3Library::insert(Mpi3Playlist *inPlaylist, Mpi3Folder *toFolder, int atPosition){
@@ -814,7 +801,7 @@ void Mpi3Library::insert(Mpi3Playlist *inPlaylist, Mpi3Folder *toFolder, int atP
 
     if(!libPlaylists->contains(inPlaylist)){
         libPlaylists->append(inPlaylist);
-        emit elementInserted(inPlaylist, this);
+        emit elementInserted(inPlaylist, nullptr);
     }
 }
 void Mpi3Library::insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder, int atPosition){
@@ -826,7 +813,7 @@ void Mpi3Library::insert(Mpi3Folder *inFolder, Mpi3Folder *toFolder, int atPosit
 
     if(!libFolders->contains(inFolder)){
         libFolders->append(inFolder);
-        emit elementInserted(inFolder, this);
+        emit elementInserted(inFolder, nullptr);
     }
 }
 
@@ -859,6 +846,15 @@ void Mpi3Library::move(Mpi3Playlist *movePlaylist, Mpi3Folder *toFolder, int toP
     if(toFolder){
         toFolder->playlists.insert(qBound(0, toPosition, toFolder->playlists.size()), movePlaylist);
     }
+
+    qDebug() << "";
+    qDebug() << "move" << movePlaylist->name();
+    if(toFolder){
+        qDebug() << "to" << toFolder->name();
+    }
+    else {
+        qDebug() << "to root";
+    }
     emit elementMoved(movePlaylist, toFolder);
 }
 void Mpi3Library::move(Mpi3Folder *moveFolder, Mpi3Folder *toFolder, int toPosition){
@@ -870,7 +866,17 @@ void Mpi3Library::move(Mpi3Folder *moveFolder, Mpi3Folder *toFolder, int toPosit
     moveFolder->parent = toFolder;
 
     if(toFolder){
-        toFolder->folders.insert(qBound(0, toPosition, toFolder->playlists.size()), moveFolder);
+        qDebug() << qBound(0, toPosition, toFolder->folders.size());
+        toFolder->folders.insert(qBound(0, toPosition, toFolder->folders.size()), moveFolder);
+    }
+
+    qDebug() << "";
+    qDebug() << "move" << moveFolder->name();
+    if(toFolder){
+        qDebug() << "to" << toFolder->name();
+    }
+    else {
+        qDebug() << "to root";
     }
 
     emit elementMoved(moveFolder, toFolder);

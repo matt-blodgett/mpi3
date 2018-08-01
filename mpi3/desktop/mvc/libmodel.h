@@ -86,6 +86,7 @@ private:
     void elementModified(Mpi3Element *elemModified);
     void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
     void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);
+    void elementMoved(Mpi3Element *elemMoved, Mpi3Element *elemParent);
     void elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren);
 };
 
