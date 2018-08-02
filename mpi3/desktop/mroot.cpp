@@ -33,6 +33,7 @@
 #include <QDebug>
 
 
+
 Mpi3RootDesktop::Mpi3RootDesktop(){}
 Mpi3RootDesktop::~Mpi3RootDesktop(){}
 
@@ -54,22 +55,21 @@ void Mpi3RootDesktop::initializeObjects(){
     m_modelContainers = new Mpi3ModelContainers();
     m_modelSonglist = new Mpi3ModelSonglist();
 
-    m_qssStyle = new Mpi3::MStyleSheet();
+    m_qssStyleSheet = new Mpi3::MStyleSheet();
 
     m_audioOutput = new QMediaPlayer(this);
     m_mediaLibrary = new Mpi3Library();
 
-    m_audioOutput->setAudioRole(QAudio::MusicRole);
     m_treeSonglist->setModel(m_modelSonglist);
     m_treeContainers->setModel(m_modelContainers);
 
-//    connect(m_panelPlayback, &Mpi3PanelPlayback::play, m_audioOutput, &QMediaPlayer::play);
-//    connect(m_panelPlayback, &Mpi3PanelPlayback::pause, m_audioOutput, &QMediaPlayer::pause);
-//    connect(m_panelPlayback, &Mpi3PanelPlayback::stop, m_audioOutput, &QMediaPlayer::stop);
+
+    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, m_audioOutput, &QMediaPlayer::play);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, m_audioOutput, &QMediaPlayer::pause);
 //    connect(m_playback, &PanelPlayback::next, m_playlist, &QMediaPlaylist::next);
 //    connect(m_playback, &PanelPlayback::previous, this, &PanelPlayback::previousClicked);
     connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, m_audioOutput, &QMediaPlayer::setVolume);
-//    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &Mpi3PanelPlayback::setState);
+    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &Mpi3PanelPlayback::setState);
     connect(m_audioOutput, &QMediaPlayer::volumeChanged, m_panelPlayback, &Mpi3PanelPlayback::setVolume);
 
     connect(m_panelLibview, &Mpi3PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
@@ -290,18 +290,23 @@ void Mpi3RootDesktop::initializeState(){
         resize(wnd_width, wnd_height);
     }
 
-    m_qssStyle->load(qss_path);
-    setStyleSheet(m_qssStyle->qssStyle());
+    m_qssStyleSheet->load(qss_path);
+    setStyleSheet(m_qssStyleSheet->qssStyle());
 
     m_mediaLibrary->load(lib_path);
     m_modelContainers->setLibrary(m_mediaLibrary);
     m_modelSonglist->setLibrary(m_mediaLibrary);
     m_treeContainers->expandAll();
 
-//    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Calm Down.wav"));
-    m_audioOutput->setVolume(val_volume);
 
+
+//    m_audioOutput->setAudioRole(QAudio::MusicRole);
+    m_audioOutput->setVolume(val_volume);
+//    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Calm Down.wav"));
+//    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Prayer in C.mp3"));
     m_panelLibview->changeView(Mpi3PanelLibrary::ViewAllSongs);
+
+
 }
 void Mpi3RootDesktop::saveSettings(){
     QString appDir = QApplication::applicationDirPath();
@@ -317,7 +322,7 @@ void Mpi3RootDesktop::saveSettings(){
     settings->endGroup();
 
     settings->beginGroup("UserApplicationPaths");
-    settings->setValue("style", m_qssStyle->qssPath());
+    settings->setValue("style", m_qssStyleSheet->qssPath());
     settings->setValue("library", m_mediaLibrary->filepath());
     settings->setValue("media", "");
     settings->setValue("downloads", "");
@@ -400,7 +405,7 @@ void Mpi3RootDesktop::songlistContextMenu(const QPoint &point){
 
     QModelIndex index = m_treeSonglist->indexAt(point);
     if(!index.isValid()){
-        act_objPlay->setDisabled(true);
+//        act_objPlay->setDisabled(true);
         act_objEdit->setDisabled(true);
         act_objDetails->setDisabled(true);
         menu_addto->setDisabled(true);
@@ -623,14 +628,14 @@ void Mpi3RootDesktop::themeSet(){
     qssFile = QFileDialog::getOpenFileName(this, "Open QSS Theme File", pathDesktop, "QSS Files (*.qss)");
 
     if(qssFile != ""){
-        m_qssStyle->load(qssFile);
+        m_qssStyleSheet->load(qssFile);
         themeRefresh();
     }
 }
 void Mpi3RootDesktop::themeRefresh(){
-    if(m_qssStyle){
-        m_qssStyle->load();
-        setStyleSheet(m_qssStyle->qssStyle());
+    if(m_qssStyleSheet){
+        m_qssStyleSheet->load();
+        setStyleSheet(m_qssStyleSheet->qssStyle());
     }
 }
 
@@ -688,7 +693,23 @@ void Mpi3RootDesktop::libDownloadSongs(QTreeView *treeParent){
     }
 }
 
-void Mpi3RootDesktop::objPlay(){}
+void Mpi3RootDesktop::objPlay(){
+
+
+
+//        QUrl song("file:///C:/Users/Matt/Desktop/Calm Down.wav");
+    QUrl song("file:///C:/Users/Matt/Desktop/Prayer in C.mp3");
+
+//    QMediaPlayer *player = new QMediaPlayer(this);
+
+//    player->setMedia(QMediaContent(song));
+
+//    player->play();
+
+
+
+
+}
 void Mpi3RootDesktop::objEdit(){}
 void Mpi3RootDesktop::objDetails(){}
 

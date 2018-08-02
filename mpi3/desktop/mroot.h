@@ -53,7 +53,7 @@ private:
     Mpi3ModelContainers *m_modelContainers = nullptr;
     Mpi3ModelSonglist *m_modelSonglist = nullptr;
 
-    Mpi3::MStyleSheet *m_qssStyle = nullptr;
+    Mpi3::MStyleSheet *m_qssStyleSheet = nullptr;
 
     QMediaPlayer *m_audioOutput = nullptr;
     Mpi3Library *m_mediaLibrary = nullptr;

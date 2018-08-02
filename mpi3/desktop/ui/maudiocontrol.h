@@ -1,15 +1,13 @@
 #ifndef MAUDIOCONTROL_H
 #define MAUDIOCONTROL_H
 
-#include <QMediaPlayer>
 #include <QWidget>
-#include <QIcon>
+#include <QMediaPlayer>
 
 QT_BEGIN_NAMESPACE
-class QAbstractSlider;
 class QPushButton;
 class QLineEdit;
-
+class QSlider;
 class QTimer;
 QT_END_NAMESPACE
 
@@ -17,13 +15,20 @@ QT_END_NAMESPACE
 class Mpi3PanelPlayback : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(double buttonOpacity READ getButtonOpacity WRITE setButtonOpacity)
 
 public:
-    explicit Mpi3PanelPlayback(QWidget *parent=nullptr);
+    explicit Mpi3PanelPlayback(QWidget *parent = nullptr);
     ~Mpi3PanelPlayback();
 
 private:
     void initializeLayout();
+
+private:
+    double getButtonOpacity() const;
+    void setButtonOpacity(double opacity);
+    void beginFadeButton();
+    double m_btnOpacity = 100.00;
 
 public:
     int volume() const;
@@ -43,37 +48,36 @@ private:
     QPushButton *m_btnNext = nullptr;
     QPushButton *m_btnPrev = nullptr;
     QPushButton *m_btnPlay = nullptr;
-    QAbstractSlider *m_sldPosition = nullptr;
+    QSlider *m_sldPosition = nullptr;
 
-    QIcon m_icnNext;
-    QIcon m_icnPrev;
-    QIcon m_icnPlay;
-    QIcon m_icnPaus;
+    QPixmap m_pixNext;
+    QPixmap m_pixPrev;
+    QPixmap m_pixPlay;
+    QPixmap m_pixPaus;
 
+    QTimer *m_fadeTimer = nullptr;
+
+    QSlider *m_sldVolume = nullptr;
     QLineEdit *m_boxSearch = nullptr;
     QPushButton *m_btnSearch = nullptr;
-    QAbstractSlider *m_sldVolume = nullptr;
-
-    QTimer *m_btnPlayTimer = nullptr;
 
 private:
-    void clickPlay();
-    void onVolumeSliderValueChanged();
+    void clickedPlay();
+    void clickedNext();
+    void clickedPrev();
+    void volumeSliderChanged();
 
 signals:
-    void play();
-    void pause();
-    void stop();
-    void next();
-    void prev();
+    void audioPlay();
+    void audioPause();
+    void navigateNext();
+    void navigatePrev();
     void changeVolume(int volume);
-    void changeMuting(bool muting);
 
 private:
-    bool eventFilter(QObject *object, QEvent *event);
-
-    void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *event);
+    void resizeEvent(QResizeEvent *event);
+    bool eventFilter(QObject *object, QEvent *event);
 };
 
 
