@@ -7,16 +7,15 @@
 #include "ui/mvc/mlibview.h"
 
 #include "util/mstyle.h"
-#include "util/mlibrary.h"
 #include "util/msettings.h"
+#include "util/mlibrary.h"
+#include "util/maudio.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QClipboard>
 #include <QMimeData>
 #include <QProcess>
-
-#include <QMediaPlayer>
 
 #include <QHeaderView>
 #include <QMenuBar>
@@ -28,6 +27,8 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QDir>
+
+
 
 
 #include <QDebug>
@@ -57,20 +58,20 @@ void Mpi3RootDesktop::initializeObjects(){
 
     m_qssStyleSheet = new Mpi3::MStyleSheet();
 
-    m_audioOutput = new QMediaPlayer(this);
+    m_audioOutput = new Mpi3::MAudioEngine(this);
     m_mediaLibrary = new Mpi3Library();
 
     m_treeSonglist->setModel(m_modelSonglist);
     m_treeContainers->setModel(m_modelContainers);
 
 
-    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, m_audioOutput, &QMediaPlayer::play);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, m_audioOutput, &QMediaPlayer::pause);
-//    connect(m_playback, &PanelPlayback::next, m_playlist, &QMediaPlaylist::next);
-//    connect(m_playback, &PanelPlayback::previous, this, &PanelPlayback::previousClicked);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, m_audioOutput, &QMediaPlayer::setVolume);
-    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &Mpi3PanelPlayback::setState);
-    connect(m_audioOutput, &QMediaPlayer::volumeChanged, m_panelPlayback, &Mpi3PanelPlayback::setVolume);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, m_audioOutput, &QMediaPlayer::play);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, m_audioOutput, &QMediaPlayer::pause);
+////    connect(m_playback, &PanelPlayback::next, m_playlist, &QMediaPlaylist::next);
+////    connect(m_playback, &PanelPlayback::previous, this, &PanelPlayback::previousClicked);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, m_audioOutput, &QMediaPlayer::setVolume);
+//    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &Mpi3PanelPlayback::setState);
+//    connect(m_audioOutput, &QMediaPlayer::volumeChanged, m_panelPlayback, &Mpi3PanelPlayback::setVolume);
 
     connect(m_panelLibview, &Mpi3PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
 

@@ -4,7 +4,6 @@
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-class QMediaPlayer;
 class QTreeView;
 QT_END_NAMESPACE
 
@@ -18,6 +17,7 @@ class Mpi3Library;
 
 
 namespace Mpi3{
+class MAudioEngine;
 class MStyleSheet;
 };
 
@@ -55,7 +55,7 @@ private:
 
     Mpi3::MStyleSheet *m_qssStyleSheet = nullptr;
 
-    QMediaPlayer *m_audioOutput = nullptr;
+    Mpi3::MAudioEngine *m_audioOutput = nullptr;
     Mpi3Library *m_mediaLibrary = nullptr;
 
 private:
