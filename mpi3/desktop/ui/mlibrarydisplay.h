@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MLIBRARYDISPLAY_H
 #define MLIBRARYDISPLAY_H
 
@@ -33,8 +35,8 @@ public:
     };
 
     Mpi3PanelLibrary::View currentView() const;
-    void setDisplay(const QString &title);
     void changeView(Mpi3PanelLibrary::View view);
+    void setDisplay(const QString &title);
 
 private:
     Mpi3PanelLibrary::View m_currentView;

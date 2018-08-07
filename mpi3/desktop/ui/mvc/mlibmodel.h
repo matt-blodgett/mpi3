@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MLIBMODEL_H
 #define MLIBMODEL_H
 

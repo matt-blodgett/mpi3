@@ -29,18 +29,11 @@ DEPENDPATH += $$PWD/lib/libao
 
 LIBS += $$PWD/lib/libav/avcodec.lib
 LIBS += $$PWD/lib/libav/avformat.lib
+LIBS += $$PWD/lib/libav/avresample.lib
 LIBS += $$PWD/lib/libav/avfilter.lib
 LIBS += $$PWD/lib/libav/avutil.lib
 INCLUDEPATH += $$PWD/lib/libav
 DEPENDPATH += $$PWD/lib/libav
-
-
-HEADERS += lib/libao/ao/ao.h
-
-HEADERS += lib/libav/libavcodec/avcodec.h
-HEADERS += lib/libav/libavformat/avformat.h
-HEADERS += lib/libav/libavfilter/avfilter.h
-
 
 
 RESOURCES += desktop.qrc

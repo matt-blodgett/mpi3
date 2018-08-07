@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MROOT_H
 #define MROOT_H
 
@@ -55,8 +57,17 @@ private:
 
     Mpi3::MStyleSheet *m_qssStyleSheet = nullptr;
 
-    Mpi3::MAudioEngine *m_audioOutput = nullptr;
+    Mpi3::MAudioEngine *m_audioEngine = nullptr;
     Mpi3Library *m_mediaLibrary = nullptr;
+
+private:
+    void mediaControlPlay();
+    void mediaControlPause();
+    void mediaControlNext();
+    void mediaControlPrev();
+    void mediaControlVolume(float vol);
+
+    void mediaControlPosition(double pos);
 
 private:
     void setColumnVisibility(int column);

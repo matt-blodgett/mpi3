@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MLIBVIEW_H
 #define MLIBVIEW_H
 
@@ -8,7 +10,6 @@ namespace Mpi3{
 class MStyle;
 
 };
-
 
 
 class Mpi3TreeView : public QTreeView

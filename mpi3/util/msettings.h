@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MSETTINGS_H
 #define MSETTINGS_H
 

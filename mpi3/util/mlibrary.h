@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MLIBRARY_H
 #define MLIBRARY_H
 
@@ -74,10 +76,10 @@ public:
 public:
     QString artist() const;
     QString album() const;
-    QString time() const;
     QString path() const;
     QString kind() const;
 
+    int time() const;
     int size() const;
     int bitRate() const;
     int sampleRate() const;
@@ -85,10 +87,10 @@ public:
 private:
     QString m_artist;
     QString m_album;
-    QString m_time;
     QString m_path;
     QString m_kind;
 
+    int m_time = -1;
     int m_size = -1;
     int m_bitRate = -1;
     int m_sampleRate = -1;

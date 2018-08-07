@@ -29,17 +29,24 @@ public:
     void start();
     void stop();
 
+    void play();
     void pause();
-    void pause(bool paus);
 
     void setVolume(float vol);
 
 public:
+    bool loaded();
+    bool active();
     bool paused();
     float volume();
     double position();
 
+signals:
+    void updatePosition(double position);
+
 private:
+    std::atomic<bool> m_loaded;
+    std::atomic<bool> m_active;
     std::atomic<bool> m_paused;
     std::atomic<float> m_volume;
     std::atomic<float> m_decibels;
@@ -52,13 +59,13 @@ private:
 private:
     void beginDecoding();
     std::thread m_decodeThread;
-    std::atomic<bool> m_continue;
+
 
 };
 
 };
 
-#endif // MAUDIO_H
+#endif
 
 
 

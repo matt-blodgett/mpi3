@@ -4,6 +4,7 @@
         <file alias="paus.png">assets/desktop/icons/playback/paus.png</file>
         <file alias="play.png">assets/desktop/icons/playback/play.png</file>
         <file alias="prev.png">assets/desktop/icons/playback/prev.png</file>
+        <file alias="search.png">assets/desktop/icons/playback/search.png</file>
     </qresource>
     <qresource prefix="/icons/treeview">
         <file alias="folder.png">assets/desktop/icons/treeview/folder.png</file>

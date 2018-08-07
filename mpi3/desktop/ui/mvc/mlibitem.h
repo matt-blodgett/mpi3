@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MLIBITEM_H
 #define MLIBITEM_H
 

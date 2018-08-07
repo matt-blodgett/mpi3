@@ -44,9 +44,6 @@ QString Mpi3Song::artist() const{
 QString Mpi3Song::album() const{
     return m_album;
 }
-QString Mpi3Song::time() const{
-    return m_time;
-}
 QString Mpi3Song::path() const{
     return m_path;
 }
@@ -54,6 +51,9 @@ QString Mpi3Song::kind() const{
     return m_kind;
 }
 
+int Mpi3Song::time() const{
+    return m_time;
+}
 int Mpi3Song::size() const{
     return m_size;
 }
@@ -148,10 +148,10 @@ void Mpi3Library::load(const QString &path){
 
             song->m_artist = xmlSongs.at(i).namedItem("artist").toElement().text();
             song->m_album = xmlSongs.at(i).namedItem("album").toElement().text();
-            song->m_time = xmlSongs.at(i).namedItem("time").toElement().text();
             song->m_path = xmlSongs.at(i).namedItem("path").toElement().text();
             song->m_kind = xmlSongs.at(i).namedItem("kind").toElement().text();
 
+            song->m_time = xmlSongs.at(i).namedItem("time").toElement().text().toInt();
             song->m_size = xmlSongs.at(i).namedItem("size").toElement().text().toInt();
             song->m_bitRate = xmlSongs.at(i).namedItem("bitRate").toElement().text().toInt();
             song->m_sampleRate = xmlSongs.at(i).namedItem("sampleRate").toElement().text().toInt();
@@ -275,10 +275,10 @@ void Mpi3Library::save(const QString &path){
 
             xmlWriteElement(xml, songElement, "artist", song->m_artist);
             xmlWriteElement(xml, songElement, "album", song->m_album);
-            xmlWriteElement(xml, songElement, "time", song->m_time);
             xmlWriteElement(xml, songElement, "path", song->m_path);
             xmlWriteElement(xml, songElement, "kind", song->m_kind);
 
+            xmlWriteElement(xml, songElement, "time", QString::number(song->m_time));
             xmlWriteElement(xml, songElement, "size", QString::number(song->m_size));
             xmlWriteElement(xml, songElement, "bitRate", QString::number(song->m_bitRate));
             xmlWriteElement(xml, songElement, "sampleRate", QString::number(song->m_sampleRate));
@@ -451,9 +451,10 @@ void Mpi3Library::importItunesPlist(const QString &path, Mpi3Folder *parentFolde
             song->m_added = track["Date Added"].toString();
             song->m_artist = track["Artist"].toString();
             song->m_album = track["Album"].toString();
-            song->m_time = track["Total Time"].toString();
             song->m_path = track["Location"].toString();
             song->m_kind = track["Kind"].toString();
+
+            song->m_time = track["Total Time"].toInt();
             song->m_size = track["Size"].toInt();
             song->m_bitRate = track["Bit Rate"].toInt();
             song->m_sampleRate = track["Sample Rate"].toInt();

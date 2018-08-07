@@ -5,10 +5,10 @@
 
 #include <lib/libao/ao/ao.h>
 
+
 extern "C" {
 #include <lib/libav/libavcodec/avcodec.h>
 #include <lib/libav/libavformat/avformat.h>
-#include <lib/libav/libavfilter/avfilter.h>
 }
 
 
@@ -23,25 +23,26 @@ using namespace Mpi3;
 
 
 MAudioEngine::MAudioEngine(QObject *parent) : QObject(parent){
-
-    m_continue = false;
+    m_loaded = false;
+    m_active = false;
     m_paused = false;
-
-    m_decibels = -2.0f;
-    m_volume = (1.0f * pow(10, (m_decibels / 20.f)));
+    m_volume = 0.0f;
+    m_decibels = -30.0f;
+    m_position = 0.0;
 
     av_register_all();
     avformat_network_init();
     ao_initialize();
+
+    av_log_set_level(AV_LOG_VERBOSE); // AV_LOG_QUIET
 }
 MAudioEngine::~MAudioEngine(){
 
-    m_continue = false;
+    m_active = false;
 
     if(m_decodeThread.joinable()){
         m_decodeThread.join();
     }
-
 
     if(m_formatCtx){
         avformat_close_input(&m_formatCtx);
@@ -55,15 +56,24 @@ MAudioEngine::~MAudioEngine(){
 
     avformat_network_deinit();
     ao_shutdown();
+
+    m_loaded = false;
 }
 
 bool MAudioEngine::load(std::string filepath){
 
-    int ret;
+    m_loaded = false;
+
+    if(m_active){
+        stop();
+    }
+
+
+    int error;
 
 
     //---------------------------------------------------------------------------
-    if(m_formatCtx){;
+    if(m_formatCtx){
         avformat_close_input(&m_formatCtx);
     }
 
@@ -71,22 +81,17 @@ bool MAudioEngine::load(std::string filepath){
         avcodec_close(m_codecCtx);
     }
 
-    ret = avformat_open_input(&m_formatCtx, filepath.c_str(), nullptr, nullptr);
-    if(ret < 0){
+    error = avformat_open_input(&m_formatCtx, filepath.c_str(), nullptr, nullptr);
+    if(error < 0){
         std::cerr << "ERROR: error opening input file";
         avformat_close_input(&m_formatCtx);
         return false;
     }
 
-    AVDictionaryEntry *tag;
-    while ((tag = av_dict_get(m_formatCtx->metadata, "", tag, AV_DICT_IGNORE_SUFFIX))){
-        std::cout << tag->key << " = " << tag->value << std::endl;
-    }
-
 
     //---------------------------------------------------------------------------
-    ret = avformat_find_stream_info(m_formatCtx, nullptr);
-    if(ret < 0){
+    error = avformat_find_stream_info(m_formatCtx, nullptr);
+    if(error < 0){
         std::cerr << "ERROR: error finding stream info" << std::endl;
         avformat_close_input(&m_formatCtx);
         return false;
@@ -118,8 +123,8 @@ bool MAudioEngine::load(std::string filepath){
 
 
     //---------------------------------------------------------------------------
-    ret = avcodec_open2(m_codecCtx, codec, nullptr);
-    if(ret < 0){
+    error = avcodec_open2(m_codecCtx, codec, nullptr);
+    if(error < 0){
         std::cerr << "ERROR: error opening codec";
         avformat_close_input(&m_formatCtx);
         return false;
@@ -135,12 +140,17 @@ bool MAudioEngine::load(std::string filepath){
 
     m_formatCtx->streams[m_streamIndex]->discard = AVDISCARD_DEFAULT;
 
+    m_loaded = true;
     return true;
 }
 
 void MAudioEngine::start(){
+    if(!m_loaded){
+        std::cerr << "ERROR: file or codec not loaded" << std::endl;
+        return;
+    }
 
-    if(m_continue){
+    if(m_active){
         std::cerr << "ERROR: already reading a file" << std::endl;
         return;
     }
@@ -155,27 +165,26 @@ void MAudioEngine::start(){
         return;
     }
 
-    if(!m_continue && m_decodeThread.joinable()){
+    if(!m_active && m_decodeThread.joinable()){
         m_decodeThread.join();
     }
 
-    m_continue = true;
     m_decodeThread = std::thread(&MAudioEngine::beginDecoding, this);
 }
 void MAudioEngine::stop(){
-
-    m_continue = false;
+    m_loaded = false;
+    m_active = false;
 
     if(m_decodeThread.joinable()){
         m_decodeThread.join();
     }
 }
 
-void MAudioEngine::pause(){
-    m_paused = !m_paused;
+void MAudioEngine::play(){
+    m_paused = false;
 }
-void MAudioEngine::pause(bool paus){
-    m_paused = paus;
+void MAudioEngine::pause(){
+    m_paused = true;
 }
 
 void MAudioEngine::setVolume(float vol){
@@ -183,6 +192,12 @@ void MAudioEngine::setVolume(float vol){
     m_decibels = av_clipf_c(10.0f * log(m_volume), VOL_DB_FLOOR, VOL_DB_CIEL);
 }
 
+bool MAudioEngine::loaded(){
+    return m_loaded;
+}
+bool MAudioEngine::active(){
+    return m_active;
+}
 bool MAudioEngine::paused(){
     return m_paused;
 }
@@ -194,32 +209,32 @@ double MAudioEngine::position(){
 }
 
 static int decode_audio_frame(
-        AVFrame *frame,
-        AVFormatContext *input_format_context,
-        AVCodecContext *input_codec_context,
-        int *finished) {
+        AVFrame *frame, AVFormatContext *format_ctx,
+        AVCodecContext *codec_ctx, int *finished) {
 
-    AVPacket input_packet;
-    av_init_packet(&input_packet);
+    AVPacket pckt;
+    av_init_packet(&pckt);
 
     int error;
-    if((error = av_read_frame(input_format_context, &input_packet)) < 0) {
+    if((error = av_read_frame(format_ctx, &pckt)) < 0) {
 
         if(error == AVERROR_EOF){
             *finished = 1;
         }
         else {
-            std::cerr << "ERROR: could not read frame (error " << error << ")" << std::endl;
+            std::cerr << "ERROR: could not read frame";
+            std::cerr << "(error " << error << ")" << std::endl;
             return error;
         }
     }
 
-    if((error = avcodec_send_packet(input_codec_context, &input_packet)) < 0) {
-        std::cerr << "ERROR: could not send packet for decoding (error " << error << ")" << std::endl;
+    if((error = avcodec_send_packet(codec_ctx, &pckt)) < 0) {
+        std::cerr << "ERROR: could not send packet for decoding";
+        std::cerr << "(error " << error << ")" << std::endl;
         return error;
     }
 
-    error = avcodec_receive_frame(input_codec_context, frame);
+    error = avcodec_receive_frame(codec_ctx, frame);
 
     if(error == AVERROR(EAGAIN)) {
         error = 0;
@@ -229,31 +244,29 @@ static int decode_audio_frame(
         error = 0;
     }
     else if(error < 0) {
-        std::cerr << "ERROR: could not decode frame (error " << error << ")" << std::endl;
+        std::cerr << "ERROR: could not decode frame";
+        std::cerr << "(error " << error << ")" << std::endl;
     }
 
-    av_packet_unref(&input_packet);
+    av_packet_unref(&pckt);
     return error;
 }
 
 void MAudioEngine::beginDecoding(){
 
-//    av_log_set_level(AV_LOG_QUIET);
-    av_log_set_level(AV_LOG_VERBOSE);
+    m_active = true;
+    m_position = 0.0;
+
+    int finished = 0;
+    int error = 0;
 
 
     //---------------------------------------------------------------------------
     avformat_seek_file(m_formatCtx, 0, 0, 0, 0, 0);
 
-    int finished = 0;
-    int error = 0;
-
     AVStream *stream = m_formatCtx->streams[m_streamIndex];
     AVFrame *frame = av_frame_alloc();
-    if(!frame){
-        std::cerr << "ERROR: error allocating frame" << std::endl;
-        return;
-    }
+
 
     //---------------------------------------------------------------------------
     int sample_rate = -1;
@@ -263,8 +276,14 @@ void MAudioEngine::beginDecoding(){
     }
 
     std::cout << "duration: " << stream->duration * av_q2d(stream->time_base) << std::endl;
-    std::cout << "sample rate set: " << sample_rate << std::endl;
+    std::cout << "sample rate: " << sample_rate << std::endl;
     std::cout << "bit rate: " << m_formatCtx->bit_rate << std::endl;
+
+    AVDictionaryEntry *tag;
+    while ((tag = av_dict_get(m_formatCtx->metadata, "", tag, AV_DICT_IGNORE_SUFFIX))){
+        std::cout << tag->key << " = " << tag->value << std::endl;
+    }
+
     std::cout << std::endl;
 
 
@@ -292,45 +311,35 @@ void MAudioEngine::beginDecoding(){
     //---------------------------------------------------------------------------
     int bps = av_get_bytes_per_sample(m_codecCtx->sample_fmt);
 
-    m_position = 0.0;
-    while((!finished && !error) && m_continue) {
+    while((!finished && !error) && m_active) {
 
         m_position = frame->pkt_dts * av_q2d(stream->time_base);
+        emit updatePosition(m_position);
 
-        while(m_paused && m_continue){
+        while(m_paused && m_active){
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
-        if(frame->sample_rate != sample_rate){
-            std::cerr << "ERROR: sample rate set to " << sample_rate << std::endl;
-            std::cerr << "ERROR: frame sample rate = " << frame->sample_rate << std::endl;
-            std::cerr << std::endl;
-        }
-
-        if(!m_continue || error){
+        if(!m_active || error){
             break;
         }
 
-        if(!error){
+        for (int i = 0; i < frame->nb_samples; i++){
 
-            for (int i = 0; i < frame->nb_samples; i++){
+            for (int ch = 0; ch < m_codecCtx->channels; ch++){
 
-                for (int ch = 0; ch < m_codecCtx->channels; ch++){
+                short *data_raw = reinterpret_cast<short*>(frame->data[ch] + bps*i);
+                float sample_raw = static_cast<float>(*data_raw) / static_cast<float>(BIT_RANGE);
 
-                    short *data_raw = reinterpret_cast<short*>(frame->data[ch] + bps*i);
-                    float sample_raw = static_cast<float>(*data_raw) / static_cast<float>(BIT_RANGE);
+                sample_raw *= m_volume;
+                sample_raw *= BIT_RANGE;
 
-                    sample_raw *= m_volume;
-                    sample_raw *= BIT_RANGE;
+                float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
+                short data_processed = static_cast<short>(sample_processed);
 
-                    float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
-                    short data_processed = static_cast<short>(sample_processed);
+                ao_play(ao_device, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
 
-                    ao_play(ao_device, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
-
-                }
             }
-
         }
 
         error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
@@ -353,7 +362,9 @@ void MAudioEngine::beginDecoding(){
 
     ao_close(ao_device);
 
-    m_continue = false;
+    m_loaded = false;
+    m_active = false;
+    m_position = 0.0;
 }
 
 

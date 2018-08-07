@@ -106,10 +106,6 @@ void Mpi3PanelLibrary::initializeLayout(){
 Mpi3PanelLibrary::View Mpi3PanelLibrary::currentView() const{
     return m_currentView;
 }
-void Mpi3PanelLibrary::setDisplay(const QString &title){
-    m_lblView->setText(title);
-}
-
 void Mpi3PanelLibrary::changeView(Mpi3PanelLibrary::View view){
     m_currentView = view;
 
@@ -148,6 +144,9 @@ void Mpi3PanelLibrary::changeView(Mpi3PanelLibrary::View view){
     }
 
     emit viewChanged();
+}
+void Mpi3PanelLibrary::setDisplay(const QString &title){
+    m_lblView->setText(title);
 }
 void Mpi3PanelLibrary::containerClicked(const QModelIndex &index){
     if(index.isValid()){

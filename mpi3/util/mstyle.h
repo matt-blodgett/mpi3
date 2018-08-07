@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MSTYLE_H
 #define MSTYLE_H
 

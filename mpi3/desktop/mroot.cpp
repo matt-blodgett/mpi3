@@ -30,7 +30,6 @@
 
 
 
-
 #include <QDebug>
 
 
@@ -43,10 +42,24 @@ void Mpi3RootDesktop::initialize(){
     initializeMainMenu();
     initializeLayout();
     initializeState();
+
+
+//    Mpi3Song *song = m_mediaLibrary->newSong("C:/Users/Matt/Desktop/songs/Prayer in C.mp3");
+//    m_mediaLibrary->insert(song);
+
+//    m_mediaLibrary->modify(song, "Prayer in C", Mpi3Song::SongName);
+//    m_mediaLibrary->modify(song, "Lilly Wood & The Prick (Ft.) Robin Schulz)", Mpi3Song::SongArtist);
+
+    Mpi3Song *song = m_mediaLibrary->libSongs->at(0);
+    m_panelPlayback->setDisplay(song);
+
+
     centralWidget()->show();
 }
 
 void Mpi3RootDesktop::initializeObjects(){
+    m_qssStyleSheet = new Mpi3::MStyleSheet();
+
     m_panelLibview = new Mpi3PanelLibrary(this);
     m_panelPlayback = new Mpi3PanelPlayback(this);
 
@@ -56,23 +69,20 @@ void Mpi3RootDesktop::initializeObjects(){
     m_modelContainers = new Mpi3ModelContainers();
     m_modelSonglist = new Mpi3ModelSonglist();
 
-    m_qssStyleSheet = new Mpi3::MStyleSheet();
-
-    m_audioOutput = new Mpi3::MAudioEngine(this);
+    m_audioEngine = new Mpi3::MAudioEngine(this);
     m_mediaLibrary = new Mpi3Library();
 
     m_treeSonglist->setModel(m_modelSonglist);
     m_treeContainers->setModel(m_modelContainers);
 
+    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, this, &Mpi3RootDesktop::mediaControlPlay);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, this, &Mpi3RootDesktop::mediaControlPause);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::navigateNext, this, &Mpi3RootDesktop::mediaControlNext);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::navigatePrev, this, &Mpi3RootDesktop::mediaControlPrev);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, this, &Mpi3RootDesktop::mediaControlVolume);
+//    connect(m_audioEngine, &Mpi3::MAudioEngine::updatePosition, this, &Mpi3RootDesktop::mediaControlPosition);
 
-//    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, m_audioOutput, &QMediaPlayer::play);
-//    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, m_audioOutput, &QMediaPlayer::pause);
-////    connect(m_playback, &PanelPlayback::next, m_playlist, &QMediaPlaylist::next);
-////    connect(m_playback, &PanelPlayback::previous, this, &PanelPlayback::previousClicked);
-//    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, m_audioOutput, &QMediaPlayer::setVolume);
-//    connect(m_audioOutput, &QMediaPlayer::stateChanged, m_panelPlayback, &Mpi3PanelPlayback::setState);
-//    connect(m_audioOutput, &QMediaPlayer::volumeChanged, m_panelPlayback, &Mpi3PanelPlayback::setVolume);
-
+    connect(m_mediaLibrary, &Mpi3Library::elementModified, m_panelPlayback, &Mpi3PanelPlayback::elementModified);
     connect(m_panelLibview, &Mpi3PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
 
     connect(m_treeContainers, &QTreeView::customContextMenuRequested, this, &Mpi3RootDesktop::containersContextMenu);
@@ -256,8 +266,8 @@ void Mpi3RootDesktop::initializeLayout(){
     layoutMain->setVerticalSpacing(0);
     windowMain->setLayout(layoutMain);
     setCentralWidget(windowMain);
-    setMinimumHeight(100);
-    setMinimumWidth(100);
+    setMinimumHeight(200);
+    setMinimumWidth(700);
 }
 void Mpi3RootDesktop::initializeState(){
     QString appDir = QApplication::applicationDirPath();
@@ -299,15 +309,8 @@ void Mpi3RootDesktop::initializeState(){
     m_modelSonglist->setLibrary(m_mediaLibrary);
     m_treeContainers->expandAll();
 
-
-
-//    m_audioOutput->setAudioRole(QAudio::MusicRole);
-    m_audioOutput->setVolume(val_volume);
-//    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Calm Down.wav"));
-//    m_audioOutput->setMedia(QUrl("C:/Users/Matt/Desktop/Prayer in C.mp3"));
     m_panelLibview->changeView(Mpi3PanelLibrary::ViewAllSongs);
-
-
+    m_panelPlayback->setVolume(val_volume);
 }
 void Mpi3RootDesktop::saveSettings(){
     QString appDir = QApplication::applicationDirPath();
@@ -330,7 +333,7 @@ void Mpi3RootDesktop::saveSettings(){
     settings->endGroup();
 
     settings->beginGroup("UserApplicationValues");
-    settings->setValue("volume", m_audioOutput->volume());
+    settings->setValue("volume", m_panelPlayback->volume());
     settings->endGroup();
 
     m_mediaLibrary->save();
@@ -549,6 +552,55 @@ void Mpi3RootDesktop::containersContextMenu(const QPoint &point){
 //    }
 }
 
+void Mpi3RootDesktop::mediaControlPlay(){
+
+    Mpi3Song *song = m_mediaLibrary->libSongs->at(0);
+
+    m_audioEngine->load(song->path().toStdString());
+    m_audioEngine->start();
+
+//    qDebug() << "check";
+
+//    if(!m_audioEngine->loaded()){
+//        Mpi3Song *song = m_mediaLibrary->libSongs->at(0);
+
+//        m_audioEngine->load(song->path().toStdString());
+
+//        if(m_audioEngine->loaded()){
+//            m_panelPlayback->setDisplay(song);
+//            m_panelPlayback->setPlaying(true);
+//            m_audioEngine->start();
+////            m_audioEngine->play();
+//        }
+//    }
+
+//    else if(m_audioEngine->paused()){
+//        m_panelPlayback->setPlaying(true);
+//        m_audioEngine->play();
+//    }
+
+}
+void Mpi3RootDesktop::mediaControlPause(){
+//    if(m_audioEngine->loaded() && !m_audioEngine->paused()){
+//        m_panelPlayback->setPlaying(false);
+        m_audioEngine->pause();
+//    }
+}
+void Mpi3RootDesktop::mediaControlNext(){
+
+}
+void Mpi3RootDesktop::mediaControlPrev(){
+
+}
+void Mpi3RootDesktop::mediaControlVolume(float vol){
+    m_audioEngine->setVolume(vol/100);
+}
+
+
+void Mpi3RootDesktop::mediaControlPosition(double pos){
+    qDebug() << pos;
+}
+
 void Mpi3RootDesktop::setColumnVisibility(int column){
     bool hidden = m_modelSonglist->columnVisibility[column];
     m_treeSonglist->setColumnHidden(column, !hidden);
@@ -694,23 +746,7 @@ void Mpi3RootDesktop::libDownloadSongs(QTreeView *treeParent){
     }
 }
 
-void Mpi3RootDesktop::objPlay(){
-
-
-
-//        QUrl song("file:///C:/Users/Matt/Desktop/Calm Down.wav");
-    QUrl song("file:///C:/Users/Matt/Desktop/Prayer in C.mp3");
-
-//    QMediaPlayer *player = new QMediaPlayer(this);
-
-//    player->setMedia(QMediaContent(song));
-
-//    player->play();
-
-
-
-
-}
+void Mpi3RootDesktop::objPlay(){}
 void Mpi3RootDesktop::objEdit(){}
 void Mpi3RootDesktop::objDetails(){}
 

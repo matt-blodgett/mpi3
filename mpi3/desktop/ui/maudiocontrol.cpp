@@ -1,5 +1,7 @@
 #include "maudiocontrol.h"
 
+#include "util/mlibrary.h"
+
 #include <QGridLayout>
 #include <QStyleOption>
 #include <QPainter>
@@ -8,6 +10,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QSlider>
+#include <QLabel>
 
 #include <QEvent>
 #include <QTimer>
@@ -19,11 +22,12 @@
 Mpi3PanelPlayback::Mpi3PanelPlayback(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
+    m_sldVolume->setRange(0, 100);
 
     m_fadeTimer = new QTimer(this);
     m_fadeTimer->setSingleShot(true);
 
-    m_btnPlay->installEventFilter(this);
+    m_btnFade->installEventFilter(this);
     m_frmControls->installEventFilter(this);
 
     connect(m_fadeTimer, &QTimer::timeout, this, [this](){beginFadeButton();});
@@ -31,14 +35,21 @@ Mpi3PanelPlayback::Mpi3PanelPlayback(QWidget *parent) : QWidget(parent){
     connect(m_btnPlay, &QPushButton::released, this, &Mpi3PanelPlayback::clickedPlay);
     connect(m_btnNext, &QPushButton::released, this, &Mpi3PanelPlayback::clickedNext);
     connect(m_btnPrev, &QPushButton::released, this, &Mpi3PanelPlayback::clickedPrev);
-    connect(m_sldVolume, &QSlider::valueChanged, this, &Mpi3PanelPlayback::volumeSliderChanged);
+    connect(m_sldVolume, &QSlider::valueChanged, this, &Mpi3PanelPlayback::volumeChanged);
 
+    m_lblTitle->setObjectName("SongDisplayLabelTitle");
+    m_lblArtist->setObjectName("SongDisplayLabelArtist");
+    m_lblPositionMax->setObjectName("SongDisplayLabelPosition");
+    m_lblPositionMin->setObjectName("SongDisplayLabelPosition");
     m_btnNext->setObjectName("ButtonNext");
     m_btnPrev->setObjectName("ButtonPrev");
     m_btnPlay->setObjectName("ButtonPlay");
+    m_btnFade->setObjectName("ButtonFade");
+    m_sldVolume->setObjectName("SliderVolume");
     m_sldPosition->setObjectName("SliderPosition");
     m_frmControls->setObjectName("PlaybackControl");
-    m_sldVolume->setObjectName("SliderVolume");
+    m_btnSearch->setObjectName("ButtonSearch");
+    m_boxSearch->setObjectName("BoxSearch");
     setObjectName("PanelPlayback");
 }
 Mpi3PanelPlayback::~Mpi3PanelPlayback(){}
@@ -48,93 +59,140 @@ void Mpi3PanelPlayback::initializeLayout(){
     m_frmControls = new QWidget(this);
     m_frmSearchbar = new QWidget(this);
 
-    m_sldVolume = new QSlider(m_frmVolume);
+    m_lblTitle = new QLabel(this);
+    m_lblArtist = new QLabel(this);
+    m_lblPositionMin = new QLabel(this);
+    m_lblPositionMax = new QLabel(this);
 
-    m_btnNext = new QPushButton(m_frmControls);
-    m_btnPrev = new QPushButton(m_frmControls);
-    m_btnPlay = new QPushButton(m_frmControls);
-    m_sldPosition = new QSlider(m_frmControls);
+    m_btnPlay = new QPushButton(this);
+    m_btnNext = new QPushButton(this);
+    m_btnPrev = new QPushButton(this);
+    m_btnFade = new QPushButton(this);
+    m_sldPosition = new QSlider(this);
 
-    m_boxSearch = new QLineEdit(m_frmSearchbar);
-    m_btnSearch = new QPushButton(m_frmSearchbar);
-
-    QGridLayout *layoutVolume = new QGridLayout(this);
-    layoutVolume->addWidget(m_sldVolume, 0, 0, 1, 1);
-    layoutVolume->setColumnStretch(1, 1);
-    m_frmVolume->setLayout(layoutVolume);
-
-    m_sldVolume->setOrientation(Qt::Horizontal);
-    m_sldVolume->setFixedWidth(120);
-
-    int h = 60;
-    int w = 350;
-    int w_btn = 50;
-
-    m_frmControls->setFixedHeight(h);
-    m_frmControls->setFixedWidth(w);
-
-    m_sldPosition->setOrientation(Qt::Horizontal);
-    m_sldPosition->setFixedWidth(w-(w_btn*2));
-    m_sldPosition->setFixedHeight(12);
-    m_sldPosition->move(w_btn, 45);
-
-    m_btnNext->setFixedHeight(h-1);
-    m_btnPrev->setFixedHeight(h-1);
-    m_btnPlay->setFixedHeight(h-20);
-
-    m_btnNext->setFixedWidth(w_btn);
-    m_btnPrev->setFixedWidth(w_btn);
-    m_btnPlay->setFixedWidth(w-(w_btn*2));
-
-    m_btnPrev->move(0, 0);
-    m_btnNext->move(w-w_btn, 0);
-    m_btnPlay->move(w_btn, 0);
-
-    m_btnNext->setFlat(true);
-    m_btnPrev->setFlat(true);
-    m_btnPlay->setFlat(true);
+    m_sldVolume = new QSlider(this);
+    m_boxSearch = new QLineEdit(this);
+    m_btnSearch = new QPushButton(this);
 
     m_pixNext = QPixmap(":/icons/playback/next.png");
     m_pixPrev = QPixmap(":/icons/playback/prev.png");
     m_pixPlay = QPixmap(":/icons/playback/play.png");
     m_pixPaus = QPixmap(":/icons/playback/paus.png");
+    m_pixSearch = QPixmap(":/icons/playback/search.png");
+
+    QGridLayout *layoutVolume = new QGridLayout(this);
+    layoutVolume->addWidget(m_sldVolume, 1, 0, 1, 1);
+    layoutVolume->addWidget(m_btnPlay, 1, 1, 1, 1);
+    layoutVolume->setColumnStretch(0, 1);
+    layoutVolume->setRowStretch(0, 1);
+    layoutVolume->setRowStretch(2, 1);
+    layoutVolume->setRowMinimumHeight(1, 20);
+    layoutVolume->setHorizontalSpacing(0);
+    layoutVolume->setVerticalSpacing(0);
+    layoutVolume->setMargin(0);
+    m_frmVolume->setLayout(layoutVolume);
+
+    m_btnPlay->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_btnPlay->setIcon(QIcon(m_pixPlay));
+    m_btnPlay->setFlat(true);
+
+    m_sldVolume->setOrientation(Qt::Horizontal);
+
+    int uHeight = 52;
+    int uBtnWidth = 48;
+
+    QGridLayout *layoutControl = new QGridLayout(this);
+    layoutControl->addWidget(m_lblTitle, 0, 2, 1, 1);
+    layoutControl->addWidget(m_lblArtist, 1, 2, 3, 1);
+    layoutControl->addWidget(m_lblPositionMin,  3, 1, 1, 1);
+    layoutControl->addWidget(m_lblPositionMax, 3, 3, 1, 1);
+    layoutControl->addWidget(m_sldPosition, 4, 1, 1, 3);
+    layoutControl->addWidget(m_btnPrev, 0, 0, 5, 1);
+    layoutControl->addWidget(m_btnFade, 0, 1, 4, 3);
+    layoutControl->addWidget(m_btnNext, 0, 4, 5, 1);
+    layoutControl->setColumnMinimumWidth(1, 22);
+    layoutControl->setColumnMinimumWidth(3, 22);
+    layoutControl->setColumnStretch(0, 0);
+    layoutControl->setColumnStretch(1, 0);
+    layoutControl->setColumnStretch(2, 1);
+    layoutControl->setColumnStretch(3, 0);
+    layoutControl->setColumnStretch(4, 0);
+    layoutControl->setHorizontalSpacing(0);
+    layoutControl->setVerticalSpacing(0);
+    layoutControl->setMargin(0);
+    m_frmControls->setLayout(layoutControl);
+
+    m_frmControls->setFixedHeight(uHeight-1);
+
+    m_btnPrev->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_btnNext->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+    m_btnNext->setFixedWidth(uBtnWidth);
+    m_btnPrev->setFixedWidth(uBtnWidth);
+
+    m_sldPosition->setFixedHeight(8);
+    m_sldPosition->setOrientation(Qt::Horizontal);
+
+    m_lblTitle->setAlignment(Qt::AlignCenter);
+    m_lblArtist->setAlignment(Qt::AlignCenter);
+    m_sldPosition->setOrientation(Qt::Horizontal);
+
+
+
+
+    m_btnFade->setVisible(false);
+
+
 
     m_btnNext->setIcon(QIcon(m_pixNext));
     m_btnPrev->setIcon(QIcon(m_pixPrev));
-    m_btnPlay->setIcon(QIcon(m_pixPlay));
+    m_btnFade->setIcon(QIcon(m_pixPlay));
 
-    m_btnNext->setIconSize(m_pixNext.rect().size());
-    m_btnPrev->setIconSize(m_pixPrev.rect().size());
-    m_btnPlay->setIconSize(m_pixPlay.rect().size());
+    m_btnNext->setIconSize(QSize((uBtnWidth/12)*8, (uHeight/12)*8));
+    m_btnPrev->setIconSize(QSize((uBtnWidth/12)*8, (uHeight/12)*8));
+    m_btnFade->setIconSize(QSize((uBtnWidth/12)*8, (uHeight/12)*8));
 
+    m_btnNext->setFlat(true);
+    m_btnPrev->setFlat(true);
+    m_btnFade->setFlat(true);
+
+    m_btnSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_boxSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_boxSearch->setTextMargins(0, 0, 0, 0);
+
+    m_btnSearch->setIcon(QIcon(m_pixSearch));
+    m_btnSearch->setIconSize(QSize(20, 20));
+    m_btnSearch->setFlat(true);
 
     QGridLayout *layoutSearchbar = new QGridLayout(this);
-    layoutSearchbar->addWidget(m_boxSearch, 0, 1, 1, 1);
-    layoutSearchbar->addWidget(m_btnSearch, 0, 2, 1, 1);
-    layoutSearchbar->setColumnStretch(0, 1);
-    layoutSearchbar->setVerticalSpacing(0);
+    layoutSearchbar->addWidget(m_btnSearch, 1, 0, 1, 1);
+    layoutSearchbar->addWidget(m_boxSearch, 1, 1, 1, 1);
+    layoutSearchbar->setColumnStretch(1, 1);
+    layoutSearchbar->setRowStretch(0, 1);
+    layoutSearchbar->setRowStretch(2, 1);
+    layoutSearchbar->setRowMinimumHeight(1, 20);
     layoutSearchbar->setHorizontalSpacing(0);
+    layoutSearchbar->setVerticalSpacing(0);
     layoutSearchbar->setMargin(0);
     m_frmSearchbar->setLayout(layoutSearchbar);
 
-    m_boxSearch->setFixedWidth(100);
-    m_btnSearch->setText("S");
-    m_btnSearch->setFixedWidth(20);
-
     QGridLayout *layoutMain = new QGridLayout(this);
-    layoutMain->addWidget(m_frmVolume, 0, 0, 1, 1);
-    layoutMain->addWidget(m_frmControls, 0, 1, 1, 1);
-    layoutMain->addWidget(m_frmSearchbar, 0, 2, 1, 1);
-    layoutMain->setColumnStretch(1, 1);
-    layoutMain->setColumnMinimumWidth(0, 150);
-    layoutMain->setColumnMinimumWidth(1, 350);
-    layoutMain->setColumnMinimumWidth(2, 150);
-    layoutMain->setRowMinimumHeight(0, 60);
+    layoutMain->addWidget(m_frmVolume, 0, 1, 1, 1);
+    layoutMain->addWidget(m_frmControls, 0, 3, 1, 1);
+    layoutMain->addWidget(m_frmSearchbar, 0, 5, 1, 1);
+    layoutMain->setRowMinimumHeight(0, uHeight);
+    layoutMain->setColumnMinimumWidth(0, 20);
+    layoutMain->setColumnMinimumWidth(1, 150);
+    layoutMain->setColumnMinimumWidth(3, 360);
+    layoutMain->setColumnMinimumWidth(5, 150);
+    layoutMain->setColumnMinimumWidth(6, 20);
+    layoutMain->setColumnStretch(2, 1);
+    layoutMain->setColumnStretch(3, 6);
+    layoutMain->setColumnStretch(4, 1);
+    layoutMain->setHorizontalSpacing(0);
+    layoutMain->setVerticalSpacing(0);
     layoutMain->setMargin(0);
     setLayout(layoutMain);
-
-    int x = m_frmVolume->width() + m_frmControls->width();
-    m_frmControls->move(x, 0);
 }
 
 double Mpi3PanelPlayback::getButtonOpacity() const{
@@ -143,7 +201,7 @@ double Mpi3PanelPlayback::getButtonOpacity() const{
 void Mpi3PanelPlayback::setButtonOpacity(double opacity){
     m_btnOpacity = opacity;
 
-    QPixmap pixCurrent = m_playerState == QMediaPlayer::PlayingState ? m_pixPaus : m_pixPlay;
+    QPixmap pixCurrent = m_playing ? m_pixPaus : m_pixPlay;
 
     if(m_btnOpacity > 0.00){
         QPixmap pixMask = QPixmap(pixCurrent);
@@ -157,97 +215,80 @@ void Mpi3PanelPlayback::setButtonOpacity(double opacity){
         painter.end();
 
         QIcon icnMask(QPixmap::fromImage(imgMask));
-        m_btnPlay->setIcon(icnMask);
+        m_btnFade->setIcon(icnMask);
     }
     else {
-        m_btnPlay->setVisible(false);
-        m_btnPlay->setIcon(QIcon(pixCurrent));
+        m_btnFade->setVisible(false);
+        m_btnFade->setIcon(QIcon(pixCurrent));
     }
 }
 void Mpi3PanelPlayback::beginFadeButton(){
-    if(m_playerState != QMediaPlayer::StoppedState){
+    if(m_playing){
         QPropertyAnimation *animation = new QPropertyAnimation(this);
         animation->setPropertyName("buttonOpacity");
         animation->setTargetObject(this);
-        animation->setDuration(1000);
         animation->setStartValue(100.00);
         animation->setEndValue(0.00);
+        animation->setDuration(1000);
         animation->start(QAbstractAnimation::DeleteWhenStopped);
     }
 }
 
-int Mpi3PanelPlayback::volume() const{
-    double linearVolume =  QAudio::convertVolume(
-                m_sldVolume->value() / double(100),
-                QAudio::LogarithmicVolumeScale,
-                QAudio::LinearVolumeScale);
+void Mpi3PanelPlayback::setDisplay(Mpi3Song *song){
+    if(song){
+        m_lblTitle->setText(song->name());
+        m_lblArtist->setText(song->artist());
+        m_lblPositionMax->setText(QString::number(song->time()));
+        m_lblPositionMin->setText("0.00");
+    }
+}
 
-    return qRound(linearVolume * 100);
+int Mpi3PanelPlayback::volume() const{
+    return m_sldVolume->value();
 }
 void Mpi3PanelPlayback::setVolume(int volume){
-    double logarithmicVolume = QAudio::convertVolume(
-                volume / double(100),
-                QAudio::LinearVolumeScale,
-                QAudio::LogarithmicVolumeScale);
-
-    m_sldVolume->setValue(qRound(logarithmicVolume * 100));
+    m_sldVolume->setValue(volume);
 }
 
-QMediaPlayer::State Mpi3PanelPlayback::state() const{
-    return m_playerState;
+bool Mpi3PanelPlayback::playing() const {
+    return m_playing;
 }
-void Mpi3PanelPlayback::setState(QMediaPlayer::State state) {
-    if(state != m_playerState) {
-        m_playerState = state;
+void Mpi3PanelPlayback::setPlaying(bool playing){
+    m_playing = playing;
 
-        switch(m_playerState) {
-            case QMediaPlayer::StoppedState: {
-                m_btnPlay->setIcon(QIcon(m_pixPlay));
-                m_btnPlay->setVisible(true);
-                break;
-            }
-            case QMediaPlayer::PausedState: {
-                m_btnPlay->setIcon(QIcon(m_pixPlay));
-                break;
-            }
-            case QMediaPlayer::PlayingState: {
-                m_btnPlay->setIcon(QIcon(m_pixPaus));
-                break;
-            }
-        }
+    if(m_playing){
+        m_btnPlay->setIcon(QIcon(m_pixPaus));
+        m_btnFade->setIcon(QIcon(m_pixPlay));
     }
+    else {
+        m_btnPlay->setIcon(QIcon(m_pixPlay));
+        m_btnFade->setIcon(QIcon(m_pixPaus));
+    }
+
+    m_btnFade->setVisible(true);
+    m_fadeTimer->start(1000);
 }
 
 void Mpi3PanelPlayback::clickedPlay(){
-    switch(m_playerState) {
-        case QMediaPlayer::StoppedState: {
-//            setState(QMediaPlayer::PlayingState);
-            emit audioPlay();
-            break;
-        }
-        case QMediaPlayer::PausedState: {
-//            setState(QMediaPlayer::PlayingState);
-            emit audioPlay();
-            break;
-        }
-        case QMediaPlayer::PlayingState: {
-//            setState(QMediaPlayer::PausedState);
-            emit audioPause();
-            break;
-        }
-    }
+    emit m_playing ? audioPause() : audioPlay();
 }
-
 void Mpi3PanelPlayback::clickedNext(){
     emit navigateNext();
 }
-
 void Mpi3PanelPlayback::clickedPrev(){
     emit navigatePrev();
 }
-
-void Mpi3PanelPlayback::volumeSliderChanged(){
+void Mpi3PanelPlayback::volumeChanged(){
     emit changeVolume(volume());
+}
+
+void Mpi3PanelPlayback::elementModified(Mpi3Element *elemModified){
+    if(elemModified->type() == Mpi3Element::SongElement){
+        Mpi3Song *sc_songModified = static_cast<Mpi3Song*>(elemModified);
+        if(sc_songModified->pid() == m_pidCurrentSong){
+            setDisplay(sc_songModified);
+        }
+    }
 }
 
 void Mpi3PanelPlayback::paintEvent(QPaintEvent *event){
@@ -259,37 +300,6 @@ void Mpi3PanelPlayback::paintEvent(QPaintEvent *event){
 
     QWidget::paintEvent(event);
 }
-void Mpi3PanelPlayback::resizeEvent(QResizeEvent *event){
-    int x = (width() / 2) - (m_frmControls->width() / 2);
-    m_frmControls->move(x, 0);
-    QWidget::resizeEvent(event);
-}
-bool Mpi3PanelPlayback::eventFilter(QObject *object, QEvent *event){
-    if(object == m_frmControls){
-        if(event->type() == QEvent::Enter){
-            m_fadeTimer->stop();
-            m_btnPlay->setVisible(true);
-        }
-    }
-    else if(object == m_btnPlay){
-        if(event->type() == QEvent::Enter){
-            m_fadeTimer->stop();
-        }
-        else if(event->type() == QEvent::Leave){
-            m_fadeTimer->stop();
-            m_fadeTimer->start(1000);
-        }
-    }
-
-    return QWidget::eventFilter(object, event);
-}
-
-
-
-
-
-
-
 
 
 
