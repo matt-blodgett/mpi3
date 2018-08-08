@@ -4,13 +4,11 @@
 #define MAUDIO_H
 
 #include <QObject>
-
-#include <atomic>
-#include <thread>
+#include <QMutex>
 
 struct AVFormatContext;
 struct AVCodecContext;
-struct AVCodec;
+struct ao_device;
 
 
 namespace Mpi3 {
@@ -23,43 +21,51 @@ public:
     explicit MAudioEngine(QObject *parent = nullptr);
     ~MAudioEngine();
 
-public:
-    bool load(std::string filepath);
+private:
+    bool engine_alloc();
+    void engine_dealloc();
+    void engine_dispatch();
 
-    void start();
+public:
+    void open(const std::string &path);
     void stop();
 
+public slots:
     void play();
     void pause();
-
+    void seek(double pos);
     void setVolume(float vol);
 
 public:
-    bool loaded();
-    bool active();
-    bool paused();
-    float volume();
-    double position();
+    bool loaded() const;
+    bool active() const;
+    bool paused() const;
+    float volume() const;
+    double position() const;
 
 signals:
-    void updatePosition(double position);
+    void notifyVolume(float vol);
+    void notifyPosition(double pos);
+    void notifyPlayback(bool state);
+    void notifyActive(bool act);
 
 private:
-    std::atomic<bool> m_loaded;
-    std::atomic<bool> m_active;
-    std::atomic<bool> m_paused;
-    std::atomic<float> m_volume;
-    std::atomic<float> m_decibels;
-    std::atomic<double> m_position;
+    mutable QMutex m_mutex;
 
+    bool m_loaded;
+    bool m_active;
+    bool m_paused;
+    float m_volume;
+    float m_decibels;
+    double m_position;
+    std::string m_filepath;
+
+private:
     AVFormatContext *m_formatCtx = nullptr;
     AVCodecContext *m_codecCtx = nullptr;
-    int m_streamIndex;
+    int m_streamIdx;
 
-private:
-    void beginDecoding();
-    std::thread m_decodeThread;
-
+    ao_device *m_aoDevice;
 
 };
 

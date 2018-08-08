@@ -256,6 +256,8 @@ bool Mpi3PanelPlayback::playing() const {
 void Mpi3PanelPlayback::setPlaying(bool playing){
     m_playing = playing;
 
+    qDebug() << m_playing;
+
     if(m_playing){
         m_btnPlay->setIcon(QIcon(m_pixPaus));
         m_btnFade->setIcon(QIcon(m_pixPlay));

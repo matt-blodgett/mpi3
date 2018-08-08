@@ -35,7 +35,10 @@
 
 
 Mpi3RootDesktop::Mpi3RootDesktop(){}
-Mpi3RootDesktop::~Mpi3RootDesktop(){}
+Mpi3RootDesktop::~Mpi3RootDesktop(){
+    m_audioThread.quit();
+    m_audioThread.wait();
+}
 
 void Mpi3RootDesktop::initialize(){
     initializeObjects();
@@ -50,9 +53,32 @@ void Mpi3RootDesktop::initialize(){
 //    m_mediaLibrary->modify(song, "Prayer in C", Mpi3Song::SongName);
 //    m_mediaLibrary->modify(song, "Lilly Wood & The Prick (Ft.) Robin Schulz)", Mpi3Song::SongArtist);
 
+
     Mpi3Song *song = m_mediaLibrary->libSongs->at(0);
     m_panelPlayback->setDisplay(song);
 
+
+    Mpi3::MAudioEngine *audioEngine = new Mpi3::MAudioEngine();
+
+
+    //QThread::yieldCurrentThread();
+
+    audioEngine->moveToThread(&m_audioThread);
+
+    m_audioThread.setPriority(QThread::HighPriority);
+
+    audioEngine->open(song->path().toStdString());
+
+
+    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, audioEngine, &Mpi3::MAudioEngine::play, Qt::DirectConnection);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, audioEngine, &Mpi3::MAudioEngine::pause, Qt::DirectConnection);
+    connect(audioEngine, &Mpi3::MAudioEngine::notifyPlayback, m_panelPlayback, &Mpi3PanelPlayback::setPlaying);
+
+    connect(&m_audioThread, &QThread::finished, audioEngine, &QObject::deleteLater);
+
+//    connect(&m_audioThread, &QThread::started, audioEngine, &Mpi3::MAudioEngine::start);
+
+    m_audioThread.start();
 
     centralWidget()->show();
 }
@@ -69,17 +95,17 @@ void Mpi3RootDesktop::initializeObjects(){
     m_modelContainers = new Mpi3ModelContainers();
     m_modelSonglist = new Mpi3ModelSonglist();
 
-    m_audioEngine = new Mpi3::MAudioEngine(this);
+//    m_audioEngine = new Mpi3::MAudioEngine(this);
     m_mediaLibrary = new Mpi3Library();
 
     m_treeSonglist->setModel(m_modelSonglist);
     m_treeContainers->setModel(m_modelContainers);
 
-    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, this, &Mpi3RootDesktop::mediaControlPlay);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, this, &Mpi3RootDesktop::mediaControlPause);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::navigateNext, this, &Mpi3RootDesktop::mediaControlNext);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::navigatePrev, this, &Mpi3RootDesktop::mediaControlPrev);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, this, &Mpi3RootDesktop::mediaControlVolume);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, this, &Mpi3RootDesktop::mediaControlPlay);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, this, &Mpi3RootDesktop::mediaControlPause);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::navigateNext, this, &Mpi3RootDesktop::mediaControlNext);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::navigatePrev, this, &Mpi3RootDesktop::mediaControlPrev);
+//    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, this, &Mpi3RootDesktop::mediaControlVolume);
 //    connect(m_audioEngine, &Mpi3::MAudioEngine::updatePosition, this, &Mpi3RootDesktop::mediaControlPosition);
 
     connect(m_mediaLibrary, &Mpi3Library::elementModified, m_panelPlayback, &Mpi3PanelPlayback::elementModified);
@@ -554,10 +580,10 @@ void Mpi3RootDesktop::containersContextMenu(const QPoint &point){
 
 void Mpi3RootDesktop::mediaControlPlay(){
 
-    Mpi3Song *song = m_mediaLibrary->libSongs->at(0);
+//    Mpi3Song *song = m_mediaLibrary->libSongs->at(0);
 
-    m_audioEngine->load(song->path().toStdString());
-    m_audioEngine->start();
+//    m_audioEngine->load(song->path().toStdString());
+//    m_audioEngine->start();
 
 //    qDebug() << "check";
 
@@ -583,7 +609,7 @@ void Mpi3RootDesktop::mediaControlPlay(){
 void Mpi3RootDesktop::mediaControlPause(){
 //    if(m_audioEngine->loaded() && !m_audioEngine->paused()){
 //        m_panelPlayback->setPlaying(false);
-        m_audioEngine->pause();
+//        m_audioEngine->pause();
 //    }
 }
 void Mpi3RootDesktop::mediaControlNext(){
@@ -593,12 +619,14 @@ void Mpi3RootDesktop::mediaControlPrev(){
 
 }
 void Mpi3RootDesktop::mediaControlVolume(float vol){
-    m_audioEngine->setVolume(vol/100);
+    Q_UNUSED(vol);
+//    m_audioEngine->setVolume(vol/100);
 }
 
 
 void Mpi3RootDesktop::mediaControlPosition(double pos){
-    qDebug() << pos;
+    Q_UNUSED(pos);
+//    qDebug() << pos;
 }
 
 void Mpi3RootDesktop::setColumnVisibility(int column){
