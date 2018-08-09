@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#include <QThread>
 
 #include <lib/libao/ao/ao.h>
 
@@ -27,10 +26,32 @@ static int decode_audio_frame(
         AVFrame *frame, AVFormatContext *format_ctx,
         AVCodecContext *codec_ctx, int *finished) {
 
+    //static int flush_codec(AVCodecContext *codec_ctx){
+
+    //    AVFrame *frame;
+    //    frame = av_frame_alloc();
+
+    //    if(!frame){
+    //        return -1;
+    //    }
+
+    //    avcodec_send_packet(codec_ctx, nullptr);
+
+    //    int eof = 0;
+    //    while(eof != AVERROR_EOF){
+    //        eof = avcodec_receive_frame(codec_ctx, frame);
+    //    }
+
+    //    av_frame_free(&frame);
+    //    avcodec_flush_buffers(codec_ctx);
+
+    //    return 0;
+    //}
+
     AVPacket pckt;
     av_init_packet(&pckt);
 
-    int error;
+    int error = 0;
     if((error = av_read_frame(format_ctx, &pckt)) < 0) {
 
         if(error == AVERROR_EOF){
@@ -69,18 +90,17 @@ static int decode_audio_frame(
 
 
 MAudioEngine::MAudioEngine(QObject *parent) : QObject(parent){
-    QMutexLocker lock(&m_mutex);
+    QMutexLocker mlock(&m_accessMutex);
 
-    m_filepath = "";
     m_loaded = false;
     m_active = false;
     m_paused = false;
     m_volume = 0.0f;
     m_decibels = -30.0f;
     m_position = 0.0;
+    m_filepath.clear();
 
     m_volume = 0.5f;
-
 
     av_log_set_level(AV_LOG_VERBOSE); // AV_LOG_QUIET
     av_register_all();
@@ -89,7 +109,8 @@ MAudioEngine::MAudioEngine(QObject *parent) : QObject(parent){
     ao_initialize();
 }
 MAudioEngine::~MAudioEngine(){
-    QMutexLocker lock(&m_mutex);
+//    m_active = false;
+//    m_processThread->wait();
 
     engine_dealloc();
     avformat_network_deinit();
@@ -99,18 +120,25 @@ MAudioEngine::~MAudioEngine(){
 }
 
 void MAudioEngine::engine_dealloc(){
-    avformat_close_input(&m_formatCtx);
-    avcodec_close(m_codecCtx);
-
-    avformat_free_context(m_formatCtx);
-    avcodec_free_context(&m_codecCtx);
-
-    ao_close(m_aoDevice);
-
     m_active = false;
     m_loaded = false;
     m_position = 0.0;
-    m_filepath = "";
+    m_filepath.clear();
+
+    if(m_formatCtx){
+        avformat_close_input(&m_formatCtx);
+        avformat_free_context(m_formatCtx);
+    }
+
+    if(m_codecCtx){
+        avcodec_close(m_codecCtx);
+        avcodec_free_context(&m_codecCtx);
+    }
+
+    if(m_aoDevice){
+        ao_close(m_aoDevice);
+    }
+
 }
 bool MAudioEngine::engine_alloc(){
 
@@ -119,7 +147,8 @@ bool MAudioEngine::engine_alloc(){
 
 
     //---------------------------------------------------------------------------
-    error = avformat_open_input(&m_formatCtx, m_filepath.c_str(), nullptr, nullptr);
+    std::string spath = m_filepath.toStdString();
+    error = avformat_open_input(&m_formatCtx, spath.c_str(), nullptr, nullptr);
     if(error < 0){
         std::cerr << "ERROR: error opening input file";
         return false;
@@ -140,15 +169,15 @@ bool MAudioEngine::engine_alloc(){
         m_formatCtx, AVMEDIA_TYPE_AUDIO, -1, -1, &codec, 0);
 
     if(m_streamIdx == AVERROR_STREAM_NOT_FOUND){
-        std::cerr << "ERROR: stream not found" << std::endl;
+        std::cerr << "ERROR: error finding audio stream" << std::endl;
         return false;
     }
     else if(m_streamIdx == AVERROR_DECODER_NOT_FOUND){
-        std::cerr << "ERROR: decoder not found" << std::endl;
+        std::cerr << "ERROR: error finding decoder" << std::endl;
         return false;
     }
     else if(!codec){
-        std::cerr << "ERROR: no codec" << std::endl;
+        std::cerr << "ERROR: error loading codec" << std::endl;
         return false;
     }
 
@@ -231,61 +260,72 @@ bool MAudioEngine::engine_alloc(){
         return false;
     }
 
-    m_loaded = true;
+
     return true;
 }
-void MAudioEngine::engine_dispatch(){
+void MAudioEngine::engine_process(){
 
+    m_accessMutex.lock();
 
-    int error = 0;
+    avformat_seek_file(m_formatCtx, 0, 0, 0, 0, 0);
 
-
-    //---------------------------------------------------------------------------
     AVStream *stream = m_formatCtx->streams[m_streamIdx];
     AVFrame *frame = av_frame_alloc();
 
-    error = 0;
-    avcodec_send_packet(m_codecCtx, nullptr);
-    while(error != AVERROR_EOF){
-        error = avcodec_receive_frame(m_codecCtx, frame);
-    }
-
-    avcodec_flush_buffers(m_codecCtx);
-    avformat_seek_file(m_formatCtx, 0, 0, 0, 0, 0);
-
-
-    //---------------------------------------------------------------------------
-    int btps = av_get_bytes_per_sample(m_codecCtx->sample_fmt);
-
+    int error = 0;
     int finished = 0;
     int interrupt = 0;
+    int bps = av_get_bytes_per_sample(m_codecCtx->sample_fmt);
+    error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
+
+    if(!error){
+        m_active = true;
+        emit notifyActive(true);
+    }
+
+    m_accessMutex.unlock();
+
+
+    m_processMutex.lock();
+    m_processCondition.wait(&m_processMutex);
+    m_processMutex.unlock();
+
+    emit notifyPlayback(true);
 
     while(!finished && !error && active()) {
 
+
+        if(++interrupt > 400){break;}
+
+
+
         emit notifyPosition(position());
 
-        if(++interrupt > 220){
-            break;
-        }
+        if(paused()){
+            emit notifyPlayback(false);
 
-        while(paused() && active()){
-            std::cout << "loop paused" << std::endl;
-            QThread::msleep(100);
+            m_processMutex.lock();
+            m_processCondition.wait(&m_processMutex);
+
+            if(active()){
+                emit notifyPlayback(true);
+            }
+
+            m_processMutex.unlock();
         }
 
         if(error || !active()){
             break;
         }
 
-        m_mutex.lock();
+        m_accessMutex.lock();
         m_position = frame->pkt_dts * av_q2d(stream->time_base);
-        std::cout << m_position << std::endl;
 
         for (int i = 0; i < frame->nb_samples; i++){
 
             for (int c = 0; c < m_codecCtx->channels; c++){
 
-                short *data_raw = reinterpret_cast<short*>(frame->data[c] + btps*i);
+                short *data_raw = reinterpret_cast<short*>(frame->data[c] + bps*i);
                 float sample_raw = static_cast<float>(*data_raw) / static_cast<float>(BIT_RANGE);
 
                 sample_raw *= m_volume;
@@ -294,81 +334,102 @@ void MAudioEngine::engine_dispatch(){
                 float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
                 short data_processed = static_cast<short>(sample_processed);
 
-                ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(btps));
-
+                ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
             }
+
         }
 
         error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
-        m_mutex.unlock();
+        m_accessMutex.unlock();
     }
 
 
     av_frame_free(&frame);
+
+    std::cout << "loop ended" << std::endl;
+
+    emit notifyActive(false);
+    QThread::currentThread()->quit();
+}
+void MAudioEngine::engine_finished(){
+    QMutexLocker mlock(&m_accessMutex);
+
+    if(m_processThread){
+        if(m_processThread->isFinished()){
+            std::cout << "thread finished" << std::endl;
+            delete m_processThread;
+        }
+    }
 }
 
-void MAudioEngine::open(const std::string &path){
-    m_mutex.lock();
+bool MAudioEngine::open(const QString &path){
+    QMutexLocker mlock(&m_accessMutex);
 
     engine_dealloc();
     m_filepath = path;
-    engine_alloc();
+    m_loaded = engine_alloc();
 
-    if(m_loaded){
-        m_active = true;
-        m_mutex.unlock();
-        engine_dispatch();
-    }
-    else{
-        m_active = false;
-        m_mutex.unlock();
+    return m_loaded;
+}
+
+void MAudioEngine::start(){
+    QMutexLocker mlock(&m_accessMutex);
+
+    if(!m_processThread && m_loaded){
+        m_processThread = QThread::create([this](){engine_process();});
+        connect(m_processThread, &QThread::finished, this, [this](){engine_finished();});
+
+        m_processThread->start();
+        m_processThread->setPriority(QThread::HighestPriority);
     }
 }
 void MAudioEngine::stop(){
-    QMutexLocker lock(&m_mutex);
-    m_loaded = false;
+    m_accessMutex.lock();
     m_active = false;
-    emit notifyActive(false);
-}
+    m_accessMutex.unlock();
 
+    if(m_processThread){
+        m_processThread->wait();
+    }
+}
 void MAudioEngine::play(){
-    QMutexLocker lock(&m_mutex);
+    QMutexLocker mlock(&m_accessMutex);
     m_paused = false;
-    emit notifyPlayback(true);
+    m_processCondition.notify_all();
 }
 void MAudioEngine::pause(){
-    QMutexLocker lock(&m_mutex);
+    QMutexLocker mlock(&m_accessMutex);
     m_paused = true;
-    emit notifyPlayback(false);
 }
 void MAudioEngine::seek(double pos){
     Q_UNUSED(pos);
 }
-void MAudioEngine::setVolume(float vol){
-    QMutexLocker lock(&m_mutex);
+void MAudioEngine::gain(float vol){
+    QMutexLocker mlock(&m_accessMutex);
     m_volume = av_clipf_c(vol, 0.0f, 1.0f);
     m_decibels = av_clipf_c(10.0f * logf(m_volume), VOL_DB_FLOOR, VOL_DB_CIEL);
+
     emit notifyVolume(vol);
 }
 
 bool MAudioEngine::loaded() const{
-    QMutexLocker lock(&m_mutex);
+    QMutexLocker mlock(&m_accessMutex);
     return m_loaded;
 }
 bool MAudioEngine::active() const{
-    QMutexLocker lock(&m_mutex);
+    QMutexLocker mlock(&m_accessMutex);
     return m_active;
 }
 bool MAudioEngine::paused() const{
-    QMutexLocker lock(&m_mutex);
+    QMutexLocker mlock(&m_accessMutex);
     return m_paused;
 }
 float MAudioEngine::volume() const{
-    QMutexLocker lock(&m_mutex);
+    QMutexLocker mlock(&m_accessMutex);
     return m_volume;
 }
 double MAudioEngine::position() const{
-    QMutexLocker lock(&m_mutex);
+    QMutexLocker mlock(&m_accessMutex);
     return m_position;
 }
 

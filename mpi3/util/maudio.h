@@ -5,6 +5,9 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QThread>
+#include <QWaitCondition>
+#include <QTime>
 
 struct AVFormatContext;
 struct AVCodecContext;
@@ -16,6 +19,7 @@ namespace Mpi3 {
 class MAudioEngine : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY(MAudioEngine)
 
 public:
     explicit MAudioEngine(QObject *parent = nullptr);
@@ -24,17 +28,18 @@ public:
 private:
     bool engine_alloc();
     void engine_dealloc();
-    void engine_dispatch();
+    void engine_process();
+    void engine_finished();
 
 public:
-    void open(const std::string &path);
-    void stop();
+    bool open(const QString &path);
 
-public slots:
+    void start();
+    void stop();
     void play();
     void pause();
     void seek(double pos);
-    void setVolume(float vol);
+    void gain(float vol);
 
 public:
     bool loaded() const;
@@ -50,7 +55,11 @@ signals:
     void notifyActive(bool act);
 
 private:
-    mutable QMutex m_mutex;
+    QThread *m_processThread = nullptr;
+    QWaitCondition m_processCondition;
+
+    mutable QMutex m_processMutex;
+    mutable QMutex m_accessMutex;
 
     bool m_loaded;
     bool m_active;
@@ -58,14 +67,14 @@ private:
     float m_volume;
     float m_decibels;
     double m_position;
-    std::string m_filepath;
+    QString m_filepath;
 
 private:
     AVFormatContext *m_formatCtx = nullptr;
     AVCodecContext *m_codecCtx = nullptr;
     int m_streamIdx;
 
-    ao_device *m_aoDevice;
+    ao_device *m_aoDevice = nullptr;
 
 };
 

@@ -4,7 +4,6 @@
 #define MROOT_H
 
 #include <QMainWindow>
-#include <QThread>
 
 QT_BEGIN_NAMESPACE
 class QTreeView;
@@ -34,8 +33,6 @@ public:
     ~Mpi3RootDesktop();
     void initialize();
 
-    QThread m_audioThread;
-
 private:
     void initializeObjects();
     void initializeMainMenu();
@@ -60,7 +57,7 @@ private:
 
     Mpi3::MStyleSheet *m_qssStyleSheet = nullptr;
 
-//    Mpi3::MAudioEngine *m_audioEngine = nullptr;
+    Mpi3::MAudioEngine *m_audioEngine = nullptr;
     Mpi3Library *m_mediaLibrary = nullptr;
 
 private:

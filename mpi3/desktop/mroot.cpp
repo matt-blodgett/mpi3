@@ -36,8 +36,8 @@
 
 Mpi3RootDesktop::Mpi3RootDesktop(){}
 Mpi3RootDesktop::~Mpi3RootDesktop(){
-    m_audioThread.quit();
-    m_audioThread.wait();
+//    m_audioThread.quit();
+//    m_audioThread.wait();
 }
 
 void Mpi3RootDesktop::initialize(){
@@ -58,27 +58,18 @@ void Mpi3RootDesktop::initialize(){
     m_panelPlayback->setDisplay(song);
 
 
-    Mpi3::MAudioEngine *audioEngine = new Mpi3::MAudioEngine();
+    m_audioEngine = new Mpi3::MAudioEngine(this);
 
 
-    //QThread::yieldCurrentThread();
+    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, m_audioEngine, &Mpi3::MAudioEngine::play);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, m_audioEngine, &Mpi3::MAudioEngine::pause);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, m_audioEngine, &Mpi3::MAudioEngine::gain);
+    connect(m_audioEngine, &Mpi3::MAudioEngine::notifyPlayback, m_panelPlayback, &Mpi3PanelPlayback::setPlaying);
+    connect(m_audioEngine, &Mpi3::MAudioEngine::notifyPosition, this, &Mpi3RootDesktop::mediaControlPosition);
 
-    audioEngine->moveToThread(&m_audioThread);
+    m_audioEngine->open(song->path());
+    m_audioEngine->start();
 
-    m_audioThread.setPriority(QThread::HighPriority);
-
-    audioEngine->open(song->path().toStdString());
-
-
-    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, audioEngine, &Mpi3::MAudioEngine::play, Qt::DirectConnection);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, audioEngine, &Mpi3::MAudioEngine::pause, Qt::DirectConnection);
-    connect(audioEngine, &Mpi3::MAudioEngine::notifyPlayback, m_panelPlayback, &Mpi3PanelPlayback::setPlaying);
-
-    connect(&m_audioThread, &QThread::finished, audioEngine, &QObject::deleteLater);
-
-//    connect(&m_audioThread, &QThread::started, audioEngine, &Mpi3::MAudioEngine::start);
-
-    m_audioThread.start();
 
     centralWidget()->show();
 }
@@ -625,8 +616,8 @@ void Mpi3RootDesktop::mediaControlVolume(float vol){
 
 
 void Mpi3RootDesktop::mediaControlPosition(double pos){
-    Q_UNUSED(pos);
-//    qDebug() << pos;
+//    Q_UNUSED(pos);
+    qDebug() << pos;
 }
 
 void Mpi3RootDesktop::setColumnVisibility(int column){
