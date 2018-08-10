@@ -13,11 +13,10 @@ class QLabel;
 class QTimer;
 QT_END_NAMESPACE
 
+#include "core/mglobal.h"
+
 class Mpi3Element;
 class Mpi3Song;
-
-
-#include "util/mglobal.h"
 
 
 class Mpi3PanelPlayback : public QWidget
@@ -39,13 +38,13 @@ private:
     void beginFadeButton();
 
 public:
-    float volume() const;
+    int volume() const;
     bool stopped() const;
     bool playing() const;
     bool paused() const;
     Mpi3::EngineState currentState() const;
 
-    void setVolume(float volume);
+    void setVolume(int volume);
     void setState(Mpi3::EngineState state);
     void setDisplay(Mpi3Song *song = nullptr);
 
@@ -91,7 +90,7 @@ signals:
     void audioPause();
     void navigateNext();
     void navigatePrev();
-    void changeVolume(float volume);
+    void changeVolume(int volume);
 
 public:
     void elementModified(Mpi3Element *elemModified);

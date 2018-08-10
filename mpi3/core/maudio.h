@@ -5,15 +5,13 @@
 
 #include "mglobal.h"
 
-
 #include <QObject>
-#include <QMutex>
-#include <QThread>
-#include <QWaitCondition>
-#include <QTime>
 
-#include <QReadWriteLock>
-
+QT_BEGIN_NAMESPACE
+class QReadWriteLock;
+class QWaitCondition;
+class QMutex;
+QT_END_NAMESPACE
 
 struct AVFormatContext;
 struct AVCodecContext;
@@ -48,7 +46,7 @@ public:
     void pause();
 
     void seek(double pos);
-    void gain(float vol);
+    void gain(int vol);
 
 public:
     QString filepath() const;
@@ -76,9 +74,9 @@ private:
     void updateRequest(Mpi3::EngineState state);
 
 private:
-    mutable QReadWriteLock m_attribMtx;
-    mutable QMutex m_processMutex;
-    QWaitCondition m_processCondition;
+    mutable QReadWriteLock *m_attribMtx = nullptr;
+    mutable QMutex *m_processMutex = nullptr;
+    QWaitCondition *m_processCondition = nullptr;
     QThread *m_processThread = nullptr;
 
     Mpi3::MediaState m_mediaStatus;
@@ -86,8 +84,8 @@ private:
     Mpi3::ErrorState m_errorStatus;
     Mpi3::EngineState m_requestStatus;
 
-    float m_volume;
-    float m_decibels;
+    float m_vol_percent;
+    float m_vol_dbscale;
     double m_position;
     QString m_filepath;
 
@@ -98,7 +96,7 @@ private:
     int m_streamIdx;
 
 signals:
-    void notifyVolume(float vol);
+    void notifyVolume(int vol);
     void notifyPosition(double pos);
     void notifyMediaStatus(Mpi3::MediaState state);
     void notifyEngineStatus(Mpi3::EngineState state);

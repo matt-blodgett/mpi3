@@ -5,8 +5,6 @@
 
 #include <QMetaType>
 
-#include <QMetaEnum>
-
 namespace Mpi3 {
 
     Q_NAMESPACE
@@ -37,11 +35,8 @@ namespace Mpi3 {
 
     Q_ENUM_NS(ErrorState)
 
+    void register_global_metatypes();
 };
-
-Q_DECLARE_METATYPE(Mpi3::MediaState)
-Q_DECLARE_METATYPE(Mpi3::EngineState)
-Q_DECLARE_METATYPE(Mpi3::ErrorState)
 
 
 #endif

@@ -19,7 +19,7 @@ class Mpi3Folder;
 class Mpi3Playlist;
 class Mpi3Song;
 
-#include "util/mlibrary.h"
+#include "core/mlibrary.h"
 
 
 class Mpi3ModelContainers : public QAbstractItemModel

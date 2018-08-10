@@ -1,6 +1,6 @@
 #include "maudiocontrol.h"
 
-#include "util/mlibrary.h"
+#include "core/mlibrary.h"
 
 #include <QGridLayout>
 #include <QStyleOption>
@@ -236,7 +236,7 @@ void Mpi3PanelPlayback::beginFadeButton(){
     }
 }
 
-float Mpi3PanelPlayback::volume() const{
+int Mpi3PanelPlayback::volume() const{
     return m_sldVolume->value();
 }
 bool Mpi3PanelPlayback::stopped() const {
@@ -249,8 +249,10 @@ bool Mpi3PanelPlayback::paused() const {
     return m_currentState == Mpi3::EngineState::EngineIdle;
 }
 
-void Mpi3PanelPlayback::setVolume(float volume){
-    m_sldVolume->setValue(static_cast<int>(volume*100));
+void Mpi3PanelPlayback::setVolume(int volume){
+    m_sldVolume->blockSignals(true);
+    m_sldVolume->setValue(volume);
+    m_sldVolume->blockSignals(false);
 }
 void Mpi3PanelPlayback::setState(Mpi3::EngineState state){
     m_currentState = state;

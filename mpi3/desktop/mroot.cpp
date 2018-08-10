@@ -1,15 +1,16 @@
 ﻿#include "mroot.h"
 
+#include "core/mlibrary.h"
+#include "core/maudio.h"
+
+#include "util/mstyle.h"
+#include "util/msettings.h"
+
 #include "ui/mlibrarydisplay.h"
 #include "ui/maudiocontrol.h"
 
 #include "ui/mvc/mlibmodel.h"
 #include "ui/mvc/mlibview.h"
-
-#include "util/mstyle.h"
-#include "util/msettings.h"
-#include "util/mlibrary.h"
-#include "util/maudio.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -36,8 +37,8 @@
 
 Mpi3RootDesktop::Mpi3RootDesktop(){}
 Mpi3RootDesktop::~Mpi3RootDesktop(){
-//    m_audioThread.quit();
-//    m_audioThread.wait();
+    m_audioEngine->stop();
+    delete m_audioEngine;
 }
 
 void Mpi3RootDesktop::initialize(){
@@ -58,7 +59,8 @@ void Mpi3RootDesktop::initialize(){
     m_panelPlayback->setDisplay(song);
 
 
-    m_audioEngine = new MAudioEngine();
+
+    m_audioEngine = new MAudioEngine(this);
 
 
     connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, m_audioEngine, &MAudioEngine::play);
@@ -67,8 +69,9 @@ void Mpi3RootDesktop::initialize(){
 
     connect(m_audioEngine, &MAudioEngine::notifyEngineStatus, m_panelPlayback, &Mpi3PanelPlayback::setState);
     connect(m_audioEngine, &MAudioEngine::notifyPosition, this, &Mpi3RootDesktop::mediaControlPosition);
+    connect(m_audioEngine, &MAudioEngine::notifyVolume, m_panelPlayback, &Mpi3PanelPlayback::setVolume);
 
-    m_audioEngine->gain(0.5f);
+    m_audioEngine->gain(50);
     m_audioEngine->open(song->path());
     m_audioEngine->start();
 
@@ -612,14 +615,14 @@ void Mpi3RootDesktop::mediaControlPrev(){
 
 }
 void Mpi3RootDesktop::mediaControlVolume(float vol){
-    Q_UNUSED(vol);
+    qDebug() << "VOLUME " <<  vol;
 //    m_audioEngine->setVolume(vol/100);
 }
 
 
 void Mpi3RootDesktop::mediaControlPosition(double pos){
-//    Q_UNUSED(pos);
-    qDebug() << pos;
+    Q_UNUSED(pos);
+//    qDebug() << pos;
 }
 
 void Mpi3RootDesktop::setColumnVisibility(int column){

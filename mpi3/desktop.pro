@@ -31,39 +31,41 @@ DEPENDPATH += $$PWD/lib/libao
 LIBS += $$PWD/lib/libav/avcodec.lib
 LIBS += $$PWD/lib/libav/avformat.lib
 LIBS += $$PWD/lib/libav/avresample.lib
-LIBS += $$PWD/lib/libav/avfilter.lib
 LIBS += $$PWD/lib/libav/avutil.lib
 INCLUDEPATH += $$PWD/lib/libav
 DEPENDPATH += $$PWD/lib/libav
 
 
+HEADERS += core/mglobal.h
+SOURCES += core/mglobal.cpp
+
+HEADERS += core/mlibrary.h
+SOURCES += core/mlibrary.cpp
+
+HEADERS += core/maudio.h
+SOURCES += core/maudio.cpp
+
+HEADERS += util/mstyle.h
+SOURCES += util/mstyle.cpp
+
+HEADERS += util/msettings.h
+SOURCES += util/msettings.cpp
+
 RESOURCES += desktop.qrc
-HEADERS += util/mglobal.h
 SOURCES += desktop/main.cpp
 
-SOURCES += desktop/mroot.cpp
 HEADERS += desktop/mroot.h
-
-SOURCES += desktop/ui/maudiocontrol.cpp
-SOURCES += desktop/ui/mlibrarydisplay.cpp
+SOURCES += desktop/mroot.cpp
 
 HEADERS += desktop/ui/maudiocontrol.h
 HEADERS += desktop/ui/mlibrarydisplay.h
+SOURCES += desktop/ui/maudiocontrol.cpp
+SOURCES += desktop/ui/mlibrarydisplay.cpp
 
-HEADERS += desktop/ui/mvc/mlibmodel.h
-HEADERS += desktop/ui/mvc/mlibview.h
 HEADERS += desktop/ui/mvc/mlibitem.h
-
-SOURCES += desktop/ui/mvc/mlibmodel.cpp
-SOURCES += desktop/ui/mvc/mlibview.cpp
+HEADERS += desktop/ui/mvc/mlibview.h
+HEADERS += desktop/ui/mvc/mlibmodel.h
 SOURCES += desktop/ui/mvc/mlibitem.cpp
+SOURCES += desktop/ui/mvc/mlibview.cpp
+SOURCES += desktop/ui/mvc/mlibmodel.cpp
 
-HEADERS += util/mstyle.h
-HEADERS += util/mlibrary.h
-HEADERS += util/msettings.h
-HEADERS += util/maudio.h
-
-SOURCES += util/mstyle.cpp
-SOURCES += util/mlibrary.cpp
-SOURCES += util/msettings.cpp
-SOURCES += util/maudio.cpp

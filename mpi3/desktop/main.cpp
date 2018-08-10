@@ -1,13 +1,11 @@
 #include "mroot.h"
+#include "core/mglobal.h"
 #include <QApplication>
 
-#include "util/mglobal.h"
 
 int main(int argc, char *argv[]){
 
-    qRegisterMetaType<Mpi3::MediaState>();
-    qRegisterMetaType<Mpi3::EngineState>();
-    qRegisterMetaType<Mpi3::ErrorState>();
+    Mpi3::register_global_metatypes();
 
     QApplication app(argc, argv);
     app.setApplicationDisplayName("Mpi3 Media Player");
