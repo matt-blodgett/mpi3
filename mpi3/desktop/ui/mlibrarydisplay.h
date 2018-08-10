@@ -11,17 +11,17 @@ class QSplitter;
 class QLabel;
 QT_END_NAMESPACE
 
-class Mpi3TreeViewContainers;
-class Mpi3TreeViewSonglist;
+class MTreeContainers;
+class MTreeSonglist;
 
 
-class Mpi3PanelLibrary : public QWidget
+class MPanelLibrary : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Mpi3PanelLibrary(QWidget *parent = nullptr);
-    ~Mpi3PanelLibrary();
+    explicit MPanelLibrary(QWidget *parent = nullptr);
+    ~MPanelLibrary();
 
 private:
     void initializeLayout();
@@ -34,16 +34,16 @@ public:
         ViewContainer
     };
 
-    Mpi3PanelLibrary::View currentView() const;
-    void changeView(Mpi3PanelLibrary::View view);
+    MPanelLibrary::View currentView() const;
+    void changeView(MPanelLibrary::View view);
     void setDisplay(const QString &title);
 
 private:
-    Mpi3PanelLibrary::View m_currentView;
+    MPanelLibrary::View m_currentView;
 
 private:
-    Mpi3TreeViewContainers *m_treeContainers = nullptr;
-    Mpi3TreeViewSonglist *m_treeSonglist = nullptr;
+    MTreeContainers *m_treeContainers = nullptr;
+    MTreeSonglist *m_treeSonglist = nullptr;
 
     QSplitter *m_frmLibrary = nullptr;
     QWidget *m_frmViews = nullptr;

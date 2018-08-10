@@ -9,16 +9,16 @@
 #include <QIcon>
 
 
-class LibraryItem
+class MModelItem
 {
 
 public:
-    explicit LibraryItem(LibraryItem *parent = nullptr);
-    ~LibraryItem();
+    explicit MModelItem(MModelItem *parent = nullptr);
+    ~MModelItem();
 
 public:
-    LibraryItem *parent();
-    LibraryItem *child(int row);
+    MModelItem *parent();
+    MModelItem *child(int row);
 
     int childCount() const;
     int childNumber() const;
@@ -37,8 +37,8 @@ public:
     bool removeColumns(int position, int columns);
 
 private:
-    QList<LibraryItem*> m_childItems;
-    LibraryItem *m_parentItem;
+    QList<MModelItem*> m_childItems;
+    MModelItem *m_parentItem;
 
     QVector<QVariant> m_itemData;
     QIcon m_itemIcon;

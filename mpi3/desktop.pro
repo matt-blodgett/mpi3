@@ -36,8 +36,8 @@ INCLUDEPATH += $$PWD/lib/libav
 DEPENDPATH += $$PWD/lib/libav
 
 
-HEADERS += core/mglobal.h
-SOURCES += core/mglobal.cpp
+HEADERS += mglobal.h
+SOURCES += mglobal.cpp
 
 HEADERS += core/mlibrary.h
 SOURCES += core/mlibrary.cpp

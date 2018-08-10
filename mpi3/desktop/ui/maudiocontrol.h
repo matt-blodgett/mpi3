@@ -13,29 +13,27 @@ class QLabel;
 class QTimer;
 QT_END_NAMESPACE
 
-#include "core/mglobal.h"
 
-class Mpi3Element;
-class Mpi3Song;
+#include "mglobal.h"
 
 
-class Mpi3PanelPlayback : public QWidget
+class MPanelPlayback : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY(double buttonOpacity READ getButtonOpacity WRITE setButtonOpacity)
+    Q_PROPERTY(double buttonOpacity READ buttonOpacity WRITE setButtonOpacity)
 
 public:
-    explicit Mpi3PanelPlayback(QWidget *parent = nullptr);
-    ~Mpi3PanelPlayback();
+    explicit MPanelPlayback(QWidget *parent = nullptr);
+    ~MPanelPlayback();
 
 private:
     void initializeLayout();
 
 private:
     double m_btnOpacity = 100.00;
-    double getButtonOpacity() const;
+    double buttonOpacity() const;
     void setButtonOpacity(double opacity);
-    void beginFadeButton();
+    void animateFadeButton();
 
 public:
     int volume() const;
@@ -46,7 +44,7 @@ public:
 
     void setVolume(int volume);
     void setState(Mpi3::EngineState state);
-    void setDisplay(Mpi3Song *song = nullptr);
+    void setDisplay(MSong *song = nullptr);
 
 private:
     Mpi3::EngineState m_currentState;
@@ -93,7 +91,7 @@ signals:
     void changeVolume(int volume);
 
 public:
-    void elementModified(Mpi3Element *elemModified);
+    void elementModified(MMediaElement *elemModified);
 
 private:
     void paintEvent(QPaintEvent *event);

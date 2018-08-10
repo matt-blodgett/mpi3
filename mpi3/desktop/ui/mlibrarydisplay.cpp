@@ -10,7 +10,7 @@
 #include <QLabel>
 
 
-Mpi3PanelLibrary::Mpi3PanelLibrary(QWidget *parent) : QWidget(parent){
+MPanelLibrary::MPanelLibrary(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
     m_btnSongs->setText("Songs");
@@ -22,10 +22,10 @@ Mpi3PanelLibrary::Mpi3PanelLibrary(QWidget *parent) : QWidget(parent){
     m_btnArtists->setStyle(new MStyle(m_btnArtists->style()));
     m_btnAlbums->setStyle(new MStyle(m_btnAlbums->style()));
 
-    connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewAllSongs);});
-    connect(m_btnArtists, &QPushButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewArtists);});
-    connect(m_btnAlbums, &QPushButton::released, this, [this](){changeView(Mpi3PanelLibrary::ViewAlbums);});
-    connect(m_treeContainers, &QTreeView::clicked, this, &Mpi3PanelLibrary::containerClicked);
+    connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(MPanelLibrary::ViewAllSongs);});
+    connect(m_btnArtists, &QPushButton::released, this, [this](){changeView(MPanelLibrary::ViewArtists);});
+    connect(m_btnAlbums, &QPushButton::released, this, [this](){changeView(MPanelLibrary::ViewAlbums);});
+    connect(m_treeContainers, &QTreeView::clicked, this, &MPanelLibrary::containerClicked);
 
     m_frmViews->setObjectName("PanelViews");
     m_frmTrees->setObjectName("PanelTrees");
@@ -39,9 +39,9 @@ Mpi3PanelLibrary::Mpi3PanelLibrary(QWidget *parent) : QWidget(parent){
     m_treeSonglist->header()->setObjectName("SonglistTreeviewHeader");
     m_treeContainers->header()->setObjectName("ContainersTreeviewHeader");
 }
-Mpi3PanelLibrary::~Mpi3PanelLibrary(){}
+MPanelLibrary::~MPanelLibrary(){}
 
-void Mpi3PanelLibrary::initializeLayout(){
+void MPanelLibrary::initializeLayout(){
     m_frmLibrary = new QSplitter(this);
 
     m_frmViews = new QWidget(this);
@@ -54,8 +54,8 @@ void Mpi3PanelLibrary::initializeLayout(){
     m_lblPlaylist = new QLabel(this);
     m_lblView = new QLabel(this);
 
-    m_treeContainers = new Mpi3TreeViewContainers(this);
-    m_treeSonglist = new Mpi3TreeViewSonglist(this);
+    m_treeContainers = new MTreeContainers(this);
+    m_treeSonglist = new MTreeSonglist(this);
 
     QGridLayout *layoutViews = new QGridLayout();
     layoutViews->addWidget(m_btnSongs, 0, 0, 1, 1);
@@ -103,30 +103,30 @@ void Mpi3PanelLibrary::initializeLayout(){
     m_frmLibrary->setOrientation(Qt::Horizontal);
 }
 
-Mpi3PanelLibrary::View Mpi3PanelLibrary::currentView() const{
+MPanelLibrary::View MPanelLibrary::currentView() const{
     return m_currentView;
 }
-void Mpi3PanelLibrary::changeView(Mpi3PanelLibrary::View view){
+void MPanelLibrary::changeView(MPanelLibrary::View view){
     m_currentView = view;
 
     switch(m_currentView){
 
-        case Mpi3PanelLibrary::ViewAllSongs: {
+        case MPanelLibrary::ViewAllSongs: {
             m_btnSongs->toggle();
             m_treeContainers->clearSelection();
             break;
         }
-        case Mpi3PanelLibrary::ViewArtists: {
+        case MPanelLibrary::ViewArtists: {
             m_btnArtists->toggle();
             m_treeContainers->clearSelection();
             break;
         }
-        case Mpi3PanelLibrary::ViewAlbums: {
+        case MPanelLibrary::ViewAlbums: {
             m_btnAlbums->toggle();
             m_treeContainers->clearSelection();
             break;
         }
-        case Mpi3PanelLibrary::ViewContainer: {
+        case MPanelLibrary::ViewContainer: {
             m_btnSongs->setAutoExclusive(false);
             m_btnArtists->setAutoExclusive(false);
             m_btnAlbums->setAutoExclusive(false);
@@ -145,16 +145,16 @@ void Mpi3PanelLibrary::changeView(Mpi3PanelLibrary::View view){
 
     emit viewChanged();
 }
-void Mpi3PanelLibrary::setDisplay(const QString &title){
+void MPanelLibrary::setDisplay(const QString &title){
     m_lblView->setText(title);
 }
-void Mpi3PanelLibrary::containerClicked(const QModelIndex &index){
+void MPanelLibrary::containerClicked(const QModelIndex &index){
     if(index.isValid()){
-        changeView(Mpi3PanelLibrary::ViewContainer);
+        changeView(MPanelLibrary::ViewContainer);
     }
 }
 
-void Mpi3PanelLibrary::showEvent(QShowEvent *event){
+void MPanelLibrary::showEvent(QShowEvent *event){
     m_frmLibrary->setSizes({180, width()-180});
     QWidget::showEvent(event);
 }

@@ -7,24 +7,25 @@
 
 class MStyle;
 
-class Mpi3TreeView : public QTreeView
+
+class MTreeView : public QTreeView
 {
     Q_OBJECT
 
 public:
-    explicit Mpi3TreeView(QWidget *parent = nullptr);
+    explicit MTreeView(QWidget *parent = nullptr);
 
 protected:
     MStyle *m_drawStyle = nullptr;
 };
 
 
-class Mpi3TreeViewContainers : public Mpi3TreeView
+class MTreeContainers : public MTreeView
 {
     Q_OBJECT
 
 public:
-    explicit Mpi3TreeViewContainers(QWidget *parent = nullptr);
+    explicit MTreeContainers(QWidget *parent = nullptr);
 
 private:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -34,12 +35,12 @@ private:
 };
 
 
-class Mpi3TreeViewSonglist : public Mpi3TreeView
+class MTreeSonglist : public MTreeView
 {
     Q_OBJECT
 
 public:
-    explicit Mpi3TreeViewSonglist(QWidget *parent = nullptr);
+    explicit MTreeSonglist(QWidget *parent = nullptr);
 
 private:
     void dropEvent(QDropEvent *event);

@@ -318,10 +318,13 @@ void MAudioEngine::engine_process(){
                 short *data_raw = reinterpret_cast<short*>(frame->data[c] + bps*i);
                 float sample_raw = static_cast<float>(*data_raw) / static_cast<float>(BIT_RANGE);
 
-                m_attribMtx->lockForRead();
-                sample_raw *= m_vol_dbscale;
+                sample_raw *= 0.0f;
                 sample_raw *= BIT_RANGE;
-                m_attribMtx->unlock();
+
+//                m_attribMtx->lockForRead();
+//                sample_raw *= m_vol_dbscale;
+//                sample_raw *= BIT_RANGE;
+//                m_attribMtx->unlock();
 
                 float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
                 short data_processed = static_cast<short>(sample_processed);

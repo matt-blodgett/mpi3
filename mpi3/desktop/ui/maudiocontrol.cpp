@@ -19,7 +19,8 @@
 #include <QDebug>
 
 
-Mpi3PanelPlayback::Mpi3PanelPlayback(QWidget *parent) : QWidget(parent){
+
+MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
     m_currentState = Mpi3::EngineState::EngineStopped;
@@ -32,12 +33,12 @@ Mpi3PanelPlayback::Mpi3PanelPlayback(QWidget *parent) : QWidget(parent){
     m_btnFade->installEventFilter(this);
     m_frmControls->installEventFilter(this);
 
-    connect(m_fadeTimer, &QTimer::timeout, this, [this](){beginFadeButton();});
+    connect(m_fadeTimer, &QTimer::timeout, this, [this](){animateFadeButton();});
 
-    connect(m_btnPlay, &QPushButton::released, this, &Mpi3PanelPlayback::clickedPlay);
-    connect(m_btnNext, &QPushButton::released, this, &Mpi3PanelPlayback::clickedNext);
-    connect(m_btnPrev, &QPushButton::released, this, &Mpi3PanelPlayback::clickedPrev);
-    connect(m_sldVolume, &QSlider::valueChanged, this, &Mpi3PanelPlayback::volumeChanged);
+    connect(m_btnPlay, &QPushButton::released, this, &MPanelPlayback::clickedPlay);
+    connect(m_btnNext, &QPushButton::released, this, &MPanelPlayback::clickedNext);
+    connect(m_btnPrev, &QPushButton::released, this, &MPanelPlayback::clickedPrev);
+    connect(m_sldVolume, &QSlider::valueChanged, this, &MPanelPlayback::volumeChanged);
 
     m_lblTitle->setObjectName("SongDisplayLabelTitle");
     m_lblArtist->setObjectName("SongDisplayLabelArtist");
@@ -54,9 +55,9 @@ Mpi3PanelPlayback::Mpi3PanelPlayback(QWidget *parent) : QWidget(parent){
     m_boxSearch->setObjectName("BoxSearch");
     setObjectName("PanelPlayback");
 }
-Mpi3PanelPlayback::~Mpi3PanelPlayback(){}
+MPanelPlayback::~MPanelPlayback(){}
 
-void Mpi3PanelPlayback::initializeLayout(){
+void MPanelPlayback::initializeLayout(){
     m_frmVolume = new QWidget(this);
     m_frmControls = new QWidget(this);
     m_frmSearchbar = new QWidget(this);
@@ -128,6 +129,7 @@ void Mpi3PanelPlayback::initializeLayout(){
 
     m_btnPrev->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_btnNext->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_btnFade->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     m_btnNext->setFixedWidth(uBtnWidth);
     m_btnPrev->setFixedWidth(uBtnWidth);
@@ -197,13 +199,13 @@ void Mpi3PanelPlayback::initializeLayout(){
     setLayout(layoutMain);
 }
 
-double Mpi3PanelPlayback::getButtonOpacity() const{
+double MPanelPlayback::buttonOpacity() const{
     return m_btnOpacity;
 }
-void Mpi3PanelPlayback::setButtonOpacity(double opacity){
+void MPanelPlayback::setButtonOpacity(double opacity){
     m_btnOpacity = opacity;
 
-    QPixmap pixCurrent = playing() ? m_pixPaus : m_pixPlay;
+    QPixmap pixCurrent = playing() ? m_pixPlay : m_pixPaus;
 
     if(m_btnOpacity > 0.00){
         QPixmap pixMask = QPixmap(pixCurrent);
@@ -224,37 +226,37 @@ void Mpi3PanelPlayback::setButtonOpacity(double opacity){
         m_btnFade->setIcon(QIcon(pixCurrent));
     }
 }
-void Mpi3PanelPlayback::beginFadeButton(){
-    if(playing()){
+void MPanelPlayback::animateFadeButton(){
+    if(!stopped()){
         QPropertyAnimation *animation = new QPropertyAnimation(this);
         animation->setPropertyName("buttonOpacity");
         animation->setTargetObject(this);
         animation->setStartValue(100.00);
         animation->setEndValue(0.00);
-        animation->setDuration(1000);
+        animation->setDuration(700);
         animation->start(QAbstractAnimation::DeleteWhenStopped);
     }
 }
 
-int Mpi3PanelPlayback::volume() const{
+int MPanelPlayback::volume() const{
     return m_sldVolume->value();
 }
-bool Mpi3PanelPlayback::stopped() const {
+bool MPanelPlayback::stopped() const {
     return m_currentState == Mpi3::EngineState::EngineStopped;
 }
-bool Mpi3PanelPlayback::playing() const {
+bool MPanelPlayback::playing() const {
     return m_currentState == Mpi3::EngineState::EngineActive;
 }
-bool Mpi3PanelPlayback::paused() const {
+bool MPanelPlayback::paused() const {
     return m_currentState == Mpi3::EngineState::EngineIdle;
 }
 
-void Mpi3PanelPlayback::setVolume(int volume){
+void MPanelPlayback::setVolume(int volume){
     m_sldVolume->blockSignals(true);
     m_sldVolume->setValue(volume);
     m_sldVolume->blockSignals(false);
 }
-void Mpi3PanelPlayback::setState(Mpi3::EngineState state){
+void MPanelPlayback::setState(Mpi3::EngineState state){
     m_currentState = state;
 
     if(m_currentState == Mpi3::EngineState::EngineActive){
@@ -267,9 +269,9 @@ void Mpi3PanelPlayback::setState(Mpi3::EngineState state){
     }
 
     m_btnFade->setVisible(true);
-    m_fadeTimer->start(1000);
+    m_fadeTimer->start(300);
 }
-void Mpi3PanelPlayback::setDisplay(Mpi3Song *song){
+void MPanelPlayback::setDisplay(MSong *song){
     if(song){
         m_lblTitle->setText(song->name());
         m_lblArtist->setText(song->artist());
@@ -278,29 +280,29 @@ void Mpi3PanelPlayback::setDisplay(Mpi3Song *song){
     }
 }
 
-void Mpi3PanelPlayback::clickedPlay(){
+void MPanelPlayback::clickedPlay(){
     emit playing() ? audioPause() : audioPlay();
 }
-void Mpi3PanelPlayback::clickedNext(){
+void MPanelPlayback::clickedNext(){
     emit navigateNext();
 }
-void Mpi3PanelPlayback::clickedPrev(){
+void MPanelPlayback::clickedPrev(){
     emit navigatePrev();
 }
-void Mpi3PanelPlayback::volumeChanged(){
+void MPanelPlayback::volumeChanged(){
     emit changeVolume(volume());
 }
 
-void Mpi3PanelPlayback::elementModified(Mpi3Element *elemModified){
-    if(elemModified->type() == Mpi3Element::SongElement){
-        Mpi3Song *sc_songModified = static_cast<Mpi3Song*>(elemModified);
+void MPanelPlayback::elementModified(MMediaElement *elemModified){
+    if(elemModified->type() == Mpi3::SongElement){
+        MSong *sc_songModified = static_cast<MSong*>(elemModified);
         if(sc_songModified->pid() == m_pidCurrentSong){
             setDisplay(sc_songModified);
         }
     }
 }
 
-void Mpi3PanelPlayback::paintEvent(QPaintEvent *event){
+void MPanelPlayback::paintEvent(QPaintEvent *event){
     QStyleOption opt;
     opt.initFrom(this);
 

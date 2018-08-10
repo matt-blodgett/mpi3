@@ -7,7 +7,7 @@
 #include <QMimeData>
 
 
-Mpi3TreeView::Mpi3TreeView(QWidget *parent) : QTreeView(parent){
+MTreeView::MTreeView(QWidget *parent) : QTreeView(parent){
     m_drawStyle = new MStyle(style());
     setStyle(m_drawStyle);
 
@@ -25,7 +25,7 @@ Mpi3TreeView::Mpi3TreeView(QWidget *parent) : QTreeView(parent){
 }
 
 
-Mpi3TreeViewContainers::Mpi3TreeViewContainers(QWidget *parent) : Mpi3TreeView(parent){
+MTreeContainers::MTreeContainers(QWidget *parent) : MTreeView(parent){
     setSelectionMode(QAbstractItemView::SingleSelection);
     setAlternatingRowColors(false);
     setRootIsDecorated(true);
@@ -34,7 +34,7 @@ Mpi3TreeViewContainers::Mpi3TreeViewContainers(QWidget *parent) : Mpi3TreeView(p
     m_drawStyle->setTVIndicatorStyle(MStyle::TV_IndicatorStyleDrop);
 }
 
-void Mpi3TreeViewContainers::dragEnterEvent(QDragEnterEvent *event){
+void MTreeContainers::dragEnterEvent(QDragEnterEvent *event){
     QTreeView::dragEnterEvent(event);
 
     if(event->mimeData()->hasUrls()){
@@ -52,7 +52,7 @@ void Mpi3TreeViewContainers::dragEnterEvent(QDragEnterEvent *event){
         }
     }
 }
-void Mpi3TreeViewContainers::dragMoveEvent(QDragMoveEvent *event){
+void MTreeContainers::dragMoveEvent(QDragMoveEvent *event){
     Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
 
     QModelIndex dropIndex = indexAt(event->pos());
@@ -67,11 +67,11 @@ void Mpi3TreeViewContainers::dragMoveEvent(QDragMoveEvent *event){
 
     event->acceptProposedAction();
 }
-void Mpi3TreeViewContainers::dragLeaveEvent(QDragLeaveEvent *event){
+void MTreeContainers::dragLeaveEvent(QDragLeaveEvent *event){
     setDragDropMode(QAbstractItemView::DragDrop);
     QTreeView::dragLeaveEvent(event);
 }
-void Mpi3TreeViewContainers::dropEvent(QDropEvent *event){
+void MTreeContainers::dropEvent(QDropEvent *event){
     Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
 
     QModelIndex dropIndex = indexAt(event->pos());
@@ -108,7 +108,7 @@ void Mpi3TreeViewContainers::dropEvent(QDropEvent *event){
 }
 
 
-Mpi3TreeViewSonglist::Mpi3TreeViewSonglist(QWidget *parent) : Mpi3TreeView(parent){
+MTreeSonglist::MTreeSonglist(QWidget *parent) : MTreeView(parent){
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setAlternatingRowColors(true);
     setRootIsDecorated(false);
@@ -117,7 +117,7 @@ Mpi3TreeViewSonglist::Mpi3TreeViewSonglist(QWidget *parent) : Mpi3TreeView(paren
     m_drawStyle->setTVIndicatorStyle(MStyle::TV_IndicatorStyleMove);
 }
 
-void Mpi3TreeViewSonglist::dropEvent(QDropEvent *event){
+void MTreeSonglist::dropEvent(QDropEvent *event){
     Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
 
     QModelIndex dropIndex = indexAt(event->pos());

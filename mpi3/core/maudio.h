@@ -3,8 +3,6 @@
 #ifndef MAUDIO_H
 #define MAUDIO_H
 
-#include "mglobal.h"
-
 #include <QObject>
 
 QT_BEGIN_NAMESPACE
@@ -18,12 +16,14 @@ struct AVCodecContext;
 struct ao_device;
 
 
+#include "mglobal.h"
+
+
 class MAudioEngine : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(MAudioEngine)
-
-//    Q_PROPERTY
+    Q_PROPERTY(float volume READ volume WRITE gain)
 
 public:
     explicit MAudioEngine(QObject *parent = nullptr);

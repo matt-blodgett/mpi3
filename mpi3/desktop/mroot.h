@@ -9,27 +9,26 @@ QT_BEGIN_NAMESPACE
 class QTreeView;
 QT_END_NAMESPACE
 
-class Mpi3PanelLibrary;
-class Mpi3PanelPlayback;
-class Mpi3ModelContainers;
-class Mpi3ModelSonglist;
-class Mpi3TreeViewContainers;
-class Mpi3TreeViewSonglist;
-class Mpi3Library;
-
-
+class MMediaLibrary;
 class MAudioEngine;
 class MStyleSheet;
 
+class MPanelLibrary;
+class MModelContainers;
+class MTreeContainers;
+
+class MPanelPlayback;
+class MModelSonglist;
+class MTreeSonglist;
 
 
-class Mpi3RootDesktop : public QMainWindow
+class MRootDesktop : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit Mpi3RootDesktop();
-    ~Mpi3RootDesktop();
+    explicit MRootDesktop();
+    ~MRootDesktop();
     void initialize();
 
 private:
@@ -45,19 +44,19 @@ private:
     void containersContextMenu(const QPoint &point);
 
 private:
-    Mpi3PanelLibrary *m_panelLibview = nullptr;
-    Mpi3PanelPlayback *m_panelPlayback = nullptr;
+    MPanelLibrary *m_panelLibview = nullptr;
+    MPanelPlayback *m_panelPlayback = nullptr;
 
-    Mpi3TreeViewContainers *m_treeContainers = nullptr;
-    Mpi3TreeViewSonglist *m_treeSonglist = nullptr;
+    MTreeContainers *m_treeContainers = nullptr;
+    MTreeSonglist *m_treeSonglist = nullptr;
 
-    Mpi3ModelContainers *m_modelContainers = nullptr;
-    Mpi3ModelSonglist *m_modelSonglist = nullptr;
+    MModelContainers *m_modelContainers = nullptr;
+    MModelSonglist *m_modelSonglist = nullptr;
 
     MStyleSheet *m_qssStyleSheet = nullptr;
 
     MAudioEngine *m_audioEngine = nullptr;
-    Mpi3Library *m_mediaLibrary = nullptr;
+    MMediaLibrary *m_mediaLibrary = nullptr;
 
 private:
     void mediaControlPlay();

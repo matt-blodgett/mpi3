@@ -1,39 +1,39 @@
 #include "mlibitem.h"
 
 
-LibraryItem::LibraryItem(LibraryItem *parent){
+MModelItem::MModelItem(MModelItem *parent){
     m_parentItem = parent;
 }
 
-LibraryItem::~LibraryItem(){
+MModelItem::~MModelItem(){
     qDeleteAll(m_childItems);
 }
 
-LibraryItem *LibraryItem::parent(){
+MModelItem *MModelItem::parent(){
     return m_parentItem;
 }
-LibraryItem *LibraryItem::child(int row){
+MModelItem *MModelItem::child(int row){
     return m_childItems.value(row);
 }
 
-int LibraryItem::childCount() const{
+int MModelItem::childCount() const{
     return m_childItems.count();
 }
-int LibraryItem::childNumber() const{
+int MModelItem::childNumber() const{
     if(m_parentItem){
-        return m_parentItem->m_childItems.indexOf(const_cast<LibraryItem*>(this));
+        return m_parentItem->m_childItems.indexOf(const_cast<MModelItem*>(this));
     }
 
     return 0;
 }
-int LibraryItem::columnCount() const{
+int MModelItem::columnCount() const{
     return m_itemData.count();
 }
 
-QVariant LibraryItem::data(int column) const{
+QVariant MModelItem::data(int column) const{
     return m_itemData.value(column);
 }
-bool LibraryItem::setData(int column, const QVariant &value){
+bool MModelItem::setData(int column, const QVariant &value){
     if (column < 0 || column >= m_itemData.size()){
         return false;
     }
@@ -42,27 +42,27 @@ bool LibraryItem::setData(int column, const QVariant &value){
     return true;
 }
 
-QIcon LibraryItem::icon() const{
+QIcon MModelItem::icon() const{
     return m_itemIcon;
 }
-void LibraryItem::setIcon(const QIcon &icn){
+void MModelItem::setIcon(const QIcon &icn){
     m_itemIcon = icn;
 }
 
-bool LibraryItem::insertChildren(int position, int count, int columns){
+bool MModelItem::insertChildren(int position, int count, int columns){
     if (position < 0 || position > m_childItems.size()){
         return false;
     }
 
     for (int row = 0; row < count; ++row){
-        LibraryItem *item = new LibraryItem(this);
+        MModelItem *item = new MModelItem(this);
         item->insertColumns(0, columns);
         m_childItems.insert(position, item);
     }
 
     return true;
 }
-bool LibraryItem::insertColumns(int position, int columns){
+bool MModelItem::insertColumns(int position, int columns){
     if(position < 0 || position > m_itemData.size()){
         return false;
     }
@@ -72,14 +72,14 @@ bool LibraryItem::insertColumns(int position, int columns){
     }
 
     for(int i = 0; i < m_childItems.size(); i++){
-        LibraryItem *child = m_childItems.at(i);
+        MModelItem *child = m_childItems.at(i);
         child->insertColumns(position, columns);
     }
 
     return true;
 }
 
-bool LibraryItem::removeChildren(int position, int count){
+bool MModelItem::removeChildren(int position, int count){
     if (position < 0 || position + count > m_childItems.size()){
         return false;
     }
@@ -90,7 +90,7 @@ bool LibraryItem::removeChildren(int position, int count){
 
     return true;
 }
-bool LibraryItem::removeColumns(int position, int columns){
+bool MModelItem::removeColumns(int position, int columns){
     if (position < 0 || position + columns > m_itemData.size()){
         return false;
     }
@@ -100,7 +100,7 @@ bool LibraryItem::removeColumns(int position, int columns){
     }
 
     for(int i = 0; i < m_childItems.size(); i++){
-        LibraryItem *child = m_childItems.at(i);
+        MModelItem *child = m_childItems.at(i);
         child->removeColumns(position, columns);
     }
 
