@@ -19,6 +19,8 @@ class Mpi3Folder;
 class Mpi3Playlist;
 class Mpi3Song;
 
+#include "util/mlibrary.h"
+
 
 class Mpi3ModelContainers : public QAbstractItemModel
 {
@@ -89,7 +91,7 @@ private:
     void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
     void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);
     void elementMoved(Mpi3Element *elemMoved, Mpi3Element *elemParent);
-    void elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren);
+    void elementDeleted(const QString &pidDeleted, Mpi3Element::ElementType elemType, QVector<QString> pidChildren);
 };
 
 
@@ -164,7 +166,7 @@ private:
     void elementInserted(Mpi3Element *elemInserted, Mpi3Element *elemParent);
     void elementRemoved(Mpi3Element *elemRemoved, Mpi3Element *elemParent);
     void elementMoved(Mpi3Element *elemMoved, Mpi3Element *elemParent);
-    void elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren);
+    void elementDeleted(const QString &pidDeleted, Mpi3Element::ElementType elemType, QVector<QString> pidChildren);
 };
 
 

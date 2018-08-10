@@ -58,15 +58,17 @@ void Mpi3RootDesktop::initialize(){
     m_panelPlayback->setDisplay(song);
 
 
-    m_audioEngine = new Mpi3::MAudioEngine(this);
+    m_audioEngine = new MAudioEngine();
 
 
-    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, m_audioEngine, &Mpi3::MAudioEngine::play);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, m_audioEngine, &Mpi3::MAudioEngine::pause);
-    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, m_audioEngine, &Mpi3::MAudioEngine::gain);
-    connect(m_audioEngine, &Mpi3::MAudioEngine::notifyPlayback, m_panelPlayback, &Mpi3PanelPlayback::setPlaying);
-    connect(m_audioEngine, &Mpi3::MAudioEngine::notifyPosition, this, &Mpi3RootDesktop::mediaControlPosition);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPlay, m_audioEngine, &MAudioEngine::play);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::audioPause, m_audioEngine, &MAudioEngine::pause);
+    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, m_audioEngine, &MAudioEngine::gain);
 
+    connect(m_audioEngine, &MAudioEngine::notifyEngineStatus, m_panelPlayback, &Mpi3PanelPlayback::setState);
+    connect(m_audioEngine, &MAudioEngine::notifyPosition, this, &Mpi3RootDesktop::mediaControlPosition);
+
+    m_audioEngine->gain(0.5f);
     m_audioEngine->open(song->path());
     m_audioEngine->start();
 
@@ -75,7 +77,7 @@ void Mpi3RootDesktop::initialize(){
 }
 
 void Mpi3RootDesktop::initializeObjects(){
-    m_qssStyleSheet = new Mpi3::MStyleSheet();
+    m_qssStyleSheet = new MStyleSheet();
 
     m_panelLibview = new Mpi3PanelLibrary(this);
     m_panelPlayback = new Mpi3PanelPlayback(this);
@@ -86,7 +88,7 @@ void Mpi3RootDesktop::initializeObjects(){
     m_modelContainers = new Mpi3ModelContainers();
     m_modelSonglist = new Mpi3ModelSonglist();
 
-//    m_audioEngine = new Mpi3::MAudioEngine(this);
+//    m_audioEngine = new MAudioEngine(this);
     m_mediaLibrary = new Mpi3Library();
 
     m_treeSonglist->setModel(m_modelSonglist);
@@ -97,7 +99,7 @@ void Mpi3RootDesktop::initializeObjects(){
 //    connect(m_panelPlayback, &Mpi3PanelPlayback::navigateNext, this, &Mpi3RootDesktop::mediaControlNext);
 //    connect(m_panelPlayback, &Mpi3PanelPlayback::navigatePrev, this, &Mpi3RootDesktop::mediaControlPrev);
 //    connect(m_panelPlayback, &Mpi3PanelPlayback::changeVolume, this, &Mpi3RootDesktop::mediaControlVolume);
-//    connect(m_audioEngine, &Mpi3::MAudioEngine::updatePosition, this, &Mpi3RootDesktop::mediaControlPosition);
+//    connect(m_audioEngine, &MAudioEngine::updatePosition, this, &Mpi3RootDesktop::mediaControlPosition);
 
     connect(m_mediaLibrary, &Mpi3Library::elementModified, m_panelPlayback, &Mpi3PanelPlayback::elementModified);
     connect(m_panelLibview, &Mpi3PanelLibrary::viewChanged, this, &Mpi3RootDesktop::libraryViewChanged);
@@ -288,7 +290,7 @@ void Mpi3RootDesktop::initializeLayout(){
 }
 void Mpi3RootDesktop::initializeState(){
     QString appDir = QApplication::applicationDirPath();
-    Mpi3::MSettingsXml settings(appDir + "/profile.xml");
+    MSettingsXml settings(appDir + "/profile.xml");
 
     settings.beginGroup("RootWindow");
     QRect screenSize = QApplication::desktop()->availableGeometry(this);
@@ -332,7 +334,7 @@ void Mpi3RootDesktop::initializeState(){
 void Mpi3RootDesktop::saveSettings(){
     QString appDir = QApplication::applicationDirPath();
     QDir().remove(appDir + "/profile.xml");
-    Mpi3::MSettingsXml *settings = new Mpi3::MSettingsXml(appDir + "/profile.xml");
+    MSettingsXml *settings = new MSettingsXml(appDir + "/profile.xml");
 
     settings->beginGroup("RootWindow");
     settings->setValue("rootx", x());

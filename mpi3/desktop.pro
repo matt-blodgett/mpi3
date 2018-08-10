@@ -1,5 +1,6 @@
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 DEFINES += QT_DEPRECATED_WARNINGS=0x010000
+DEFINES += QT_NO_NARROWING_CONVERSIONS_IN_CONNECT
 
 
 CONFIG += c++1z
@@ -37,6 +38,7 @@ DEPENDPATH += $$PWD/lib/libav
 
 
 RESOURCES += desktop.qrc
+HEADERS += util/mglobal.h
 SOURCES += desktop/main.cpp
 
 SOURCES += desktop/mroot.cpp

@@ -6,9 +6,6 @@
 #include <QFile>
 
 
-using namespace Mpi3;
-
-
 MStyleSheet::MStyleSheet(){}
 
 void MStyleSheet::load(const QString &path){

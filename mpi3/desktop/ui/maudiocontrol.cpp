@@ -22,6 +22,8 @@
 Mpi3PanelPlayback::Mpi3PanelPlayback(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
+    m_currentState = Mpi3::EngineState::EngineStopped;
+
     m_sldVolume->setRange(0, 100);
 
     m_fadeTimer = new QTimer(this);
@@ -201,7 +203,7 @@ double Mpi3PanelPlayback::getButtonOpacity() const{
 void Mpi3PanelPlayback::setButtonOpacity(double opacity){
     m_btnOpacity = opacity;
 
-    QPixmap pixCurrent = m_playing ? m_pixPaus : m_pixPlay;
+    QPixmap pixCurrent = playing() ? m_pixPaus : m_pixPlay;
 
     if(m_btnOpacity > 0.00){
         QPixmap pixMask = QPixmap(pixCurrent);
@@ -223,7 +225,7 @@ void Mpi3PanelPlayback::setButtonOpacity(double opacity){
     }
 }
 void Mpi3PanelPlayback::beginFadeButton(){
-    if(m_playing){
+    if(playing()){
         QPropertyAnimation *animation = new QPropertyAnimation(this);
         animation->setPropertyName("buttonOpacity");
         animation->setTargetObject(this);
@@ -234,31 +236,26 @@ void Mpi3PanelPlayback::beginFadeButton(){
     }
 }
 
-void Mpi3PanelPlayback::setDisplay(Mpi3Song *song){
-    if(song){
-        m_lblTitle->setText(song->name());
-        m_lblArtist->setText(song->artist());
-        m_lblPositionMax->setText(QString::number(song->time()));
-        m_lblPositionMin->setText("0.00");
-    }
-}
-
-int Mpi3PanelPlayback::volume() const{
+float Mpi3PanelPlayback::volume() const{
     return m_sldVolume->value();
 }
-void Mpi3PanelPlayback::setVolume(int volume){
-    m_sldVolume->setValue(volume);
+bool Mpi3PanelPlayback::stopped() const {
+    return m_currentState == Mpi3::EngineState::EngineStopped;
 }
-
 bool Mpi3PanelPlayback::playing() const {
-    return m_playing;
+    return m_currentState == Mpi3::EngineState::EngineActive;
 }
-void Mpi3PanelPlayback::setPlaying(bool playing){
-    m_playing = playing;
+bool Mpi3PanelPlayback::paused() const {
+    return m_currentState == Mpi3::EngineState::EngineIdle;
+}
 
-    qDebug() << m_playing;
+void Mpi3PanelPlayback::setVolume(float volume){
+    m_sldVolume->setValue(static_cast<int>(volume*100));
+}
+void Mpi3PanelPlayback::setState(Mpi3::EngineState state){
+    m_currentState = state;
 
-    if(m_playing){
+    if(m_currentState == Mpi3::EngineState::EngineActive){
         m_btnPlay->setIcon(QIcon(m_pixPaus));
         m_btnFade->setIcon(QIcon(m_pixPlay));
     }
@@ -270,9 +267,17 @@ void Mpi3PanelPlayback::setPlaying(bool playing){
     m_btnFade->setVisible(true);
     m_fadeTimer->start(1000);
 }
+void Mpi3PanelPlayback::setDisplay(Mpi3Song *song){
+    if(song){
+        m_lblTitle->setText(song->name());
+        m_lblArtist->setText(song->artist());
+        m_lblPositionMax->setText(QString::number(song->time()));
+        m_lblPositionMin->setText("0.00");
+    }
+}
 
 void Mpi3PanelPlayback::clickedPlay(){
-    emit m_playing ? audioPause() : audioPlay();
+    emit playing() ? audioPause() : audioPlay();
 }
 void Mpi3PanelPlayback::clickedNext(){
     emit navigateNext();

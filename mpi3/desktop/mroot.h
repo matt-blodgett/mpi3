@@ -18,10 +18,9 @@ class Mpi3TreeViewSonglist;
 class Mpi3Library;
 
 
-namespace Mpi3{
 class MAudioEngine;
 class MStyleSheet;
-};
+
 
 
 class Mpi3RootDesktop : public QMainWindow
@@ -55,9 +54,9 @@ private:
     Mpi3ModelContainers *m_modelContainers = nullptr;
     Mpi3ModelSonglist *m_modelSonglist = nullptr;
 
-    Mpi3::MStyleSheet *m_qssStyleSheet = nullptr;
+    MStyleSheet *m_qssStyleSheet = nullptr;
 
-    Mpi3::MAudioEngine *m_audioEngine = nullptr;
+    MAudioEngine *m_audioEngine = nullptr;
     Mpi3Library *m_mediaLibrary = nullptr;
 
 private:

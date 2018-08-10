@@ -5,12 +5,7 @@
 
 #include <QTreeView>
 
-namespace Mpi3{
-
 class MStyle;
-
-};
-
 
 class Mpi3TreeView : public QTreeView
 {
@@ -20,7 +15,7 @@ public:
     explicit Mpi3TreeView(QWidget *parent = nullptr);
 
 protected:
-    Mpi3::MStyle *m_drawStyle = nullptr;
+    MStyle *m_drawStyle = nullptr;
 };
 
 

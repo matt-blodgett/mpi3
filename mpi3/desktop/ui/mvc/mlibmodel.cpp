@@ -556,7 +556,7 @@ void Mpi3ModelContainers::elementMoved(Mpi3Element *elemMoved, Mpi3Element *elem
         folderInserted(sc_movedFolder, elemParent);
     }
 }
-void Mpi3ModelContainers::elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren){
+void Mpi3ModelContainers::elementDeleted(const QString &pidDeleted, Mpi3Element::ElementType elemType, QVector<QString> pidChildren){
     if(elemType == Mpi3Element::FolderElement || elemType == Mpi3Element::PlaylistElement){
         QModelIndex childIndex = getIndex(pidDeleted);
         QModelIndex parentIndex = getIndex(getPID(getItem(pidDeleted)->parent()));
@@ -953,7 +953,7 @@ void Mpi3ModelSonglist::elementMoved(Mpi3Element *elemMoved, Mpi3Element *elemPa
         }
     }
 }
-void Mpi3ModelSonglist::elementDeleted(const QString &pidDeleted, int elemType, QVector<QString> pidChildren){
+void Mpi3ModelSonglist::elementDeleted(const QString &pidDeleted, Mpi3Element::ElementType elemType, QVector<QString> pidChildren){
     if(elemType == Mpi3Element::SongElement){
         for(int i = 0; i < m_currentSonglist.size(); i++){
             Mpi3Song *songDeleted = m_currentSonglist.at(i);

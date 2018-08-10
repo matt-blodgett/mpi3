@@ -7,9 +7,6 @@
 #include <QMimeData>
 
 
-using namespace Mpi3;
-
-
 Mpi3TreeView::Mpi3TreeView(QWidget *parent) : QTreeView(parent){
     m_drawStyle = new MStyle(style());
     setStyle(m_drawStyle);

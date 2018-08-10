@@ -6,9 +6,6 @@
 #include <QProxyStyle>
 
 
-namespace Mpi3
-{
-
 class MStyleSheet
 {
 
@@ -58,7 +55,6 @@ public:
     void drawPrimitive(
             PrimitiveElement element, const QStyleOption *option,
             QPainter *painter, const QWidget *widget = nullptr) const;
-};
 
 };
 

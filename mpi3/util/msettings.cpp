@@ -3,9 +3,6 @@
 #include <QXmlStreamReader>
 
 
-using namespace Mpi3;
-
-
 typedef class MSettingsXmlNode XmlNode;
 static const QString RootName = "mpi3config";
 

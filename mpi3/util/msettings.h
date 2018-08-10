@@ -10,9 +10,6 @@ class QIODevice;
 QT_END_NAMESPACE
 
 
-namespace Mpi3
-{
-
 class MSettingsXml : public QSettings
 {
     Q_OBJECT
@@ -41,8 +38,6 @@ public:
     QString fullPath() const;
     QString tagName;
     QString subtext;
-};
-
 };
 
 #endif
