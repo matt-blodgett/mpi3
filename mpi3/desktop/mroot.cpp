@@ -1,8 +1,8 @@
 ﻿#include "mroot.h"
 #include "mglobal.h"
 
-#include "core/mlibrary.h"
-#include "core/maudio.h"
+#include "core/mmedialibrary.h"
+#include "core/maudioengine.h"
 
 #include "util/mstyle.h"
 #include "util/msettings.h"
@@ -40,6 +40,8 @@ MRootDesktop::MRootDesktop(){}
 MRootDesktop::~MRootDesktop(){
     m_audioEngine->stop();
     delete m_audioEngine;
+    delete m_styleSheet;
+    delete m_mediaLibrary;
 }
 
 void MRootDesktop::initialize(){
@@ -81,7 +83,7 @@ void MRootDesktop::initialize(){
 }
 
 void MRootDesktop::initializeObjects(){
-    m_qssStyleSheet = new MStyleSheet();
+    m_styleSheet = new MStyleSheet();
 
     m_panelLibview = new MPanelLibrary(this);
     m_panelPlayback = new MPanelPlayback(this);
@@ -324,8 +326,8 @@ void MRootDesktop::initializeState(){
         resize(wnd_width, wnd_height);
     }
 
-    m_qssStyleSheet->load(qss_path);
-    setStyleSheet(m_qssStyleSheet->qssStyle());
+    m_styleSheet->load(qss_path);
+    setStyleSheet(m_styleSheet->qssStyle());
 
     m_mediaLibrary->load(lib_path);
     m_modelContainers->setLibrary(m_mediaLibrary);
@@ -349,7 +351,7 @@ void MRootDesktop::saveSettings(){
     settings->endGroup();
 
     settings->beginGroup("UserApplicationPaths");
-    settings->setValue("style", m_qssStyleSheet->qssPath());
+    settings->setValue("style", m_styleSheet->qssPath());
     settings->setValue("library", m_mediaLibrary->filepath());
     settings->setValue("media", "");
     settings->setValue("downloads", "");
@@ -706,14 +708,14 @@ void MRootDesktop::themeSet(){
     qssFile = QFileDialog::getOpenFileName(this, "Open QSS Theme File", pathDesktop, "QSS Files (*.qss)");
 
     if(qssFile != ""){
-        m_qssStyleSheet->load(qssFile);
+        m_styleSheet->load(qssFile);
         themeRefresh();
     }
 }
 void MRootDesktop::themeRefresh(){
-    if(m_qssStyleSheet){
-        m_qssStyleSheet->load();
-        setStyleSheet(m_qssStyleSheet->qssStyle());
+    if(m_styleSheet){
+        m_styleSheet->load();
+        setStyleSheet(m_styleSheet->qssStyle());
     }
 }
 

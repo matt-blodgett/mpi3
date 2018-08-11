@@ -9,6 +9,7 @@ QT_BEGIN_NAMESPACE
 class QTreeView;
 QT_END_NAMESPACE
 
+
 class MMediaLibrary;
 class MAudioEngine;
 class MStyleSheet;
@@ -44,19 +45,18 @@ private:
     void containersContextMenu(const QPoint &point);
 
 private:
-    MPanelLibrary *m_panelLibview = nullptr;
-    MPanelPlayback *m_panelPlayback = nullptr;
-
-    MTreeContainers *m_treeContainers = nullptr;
-    MTreeSonglist *m_treeSonglist = nullptr;
-
-    MModelContainers *m_modelContainers = nullptr;
-    MModelSonglist *m_modelSonglist = nullptr;
-
-    MStyleSheet *m_qssStyleSheet = nullptr;
-
-    MAudioEngine *m_audioEngine = nullptr;
     MMediaLibrary *m_mediaLibrary = nullptr;
+    MAudioEngine *m_audioEngine = nullptr;
+
+    MStyleSheet *m_styleSheet = nullptr;
+
+    MPanelLibrary *m_panelLibview = nullptr;
+    MModelContainers *m_modelContainers = nullptr;
+    MTreeContainers *m_treeContainers = nullptr;
+
+    MPanelPlayback *m_panelPlayback = nullptr;
+    MModelSonglist *m_modelSonglist = nullptr;
+    MTreeSonglist *m_treeSonglist = nullptr;
 
 private:
     void mediaControlPlay();
@@ -64,7 +64,6 @@ private:
     void mediaControlNext();
     void mediaControlPrev();
     void mediaControlVolume(float vol);
-
     void mediaControlPosition(double pos);
 
 private:

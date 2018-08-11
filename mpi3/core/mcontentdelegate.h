@@ -1,0 +1,7 @@
+#ifndef MCONTENTDELEGATE_H
+#define MCONTENTDELEGATE_H
+
+
+
+
+#endif // MCONTENTDELEGATE_H

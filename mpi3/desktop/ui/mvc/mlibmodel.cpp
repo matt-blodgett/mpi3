@@ -1,7 +1,7 @@
 #include "mlibmodel.h"
 #include "mlibitem.h"
 
-#include "core/mlibrary.h"
+#include "core/mmedialibrary.h"
 
 #include <QMimeData>
 #include <QPixmap>

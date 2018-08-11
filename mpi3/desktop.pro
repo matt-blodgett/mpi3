@@ -39,20 +39,21 @@ DEPENDPATH += $$PWD/lib/libav
 HEADERS += mglobal.h
 SOURCES += mglobal.cpp
 
-HEADERS += core/mlibrary.h
-SOURCES += core/mlibrary.cpp
+RESOURCES += desktop.qrc
+SOURCES += desktop/main.cpp
 
-HEADERS += core/maudio.h
-SOURCES += core/maudio.cpp
+HEADERS += core/maudioengine.h
+SOURCES += core/maudioengine.cpp
+HEADERS += core/mmedialibrary.h
+SOURCES += core/mmedialibrary.cpp
+HEADERS += core/mcontentdelegate.h
+SOURCES += core/mcontentdelegate.cpp
 
 HEADERS += util/mstyle.h
 SOURCES += util/mstyle.cpp
 
 HEADERS += util/msettings.h
 SOURCES += util/msettings.cpp
-
-RESOURCES += desktop.qrc
-SOURCES += desktop/main.cpp
 
 HEADERS += desktop/mroot.h
 SOURCES += desktop/mroot.cpp
@@ -68,4 +69,3 @@ HEADERS += desktop/ui/mvc/mlibmodel.h
 SOURCES += desktop/ui/mvc/mlibitem.cpp
 SOURCES += desktop/ui/mvc/mlibview.cpp
 SOURCES += desktop/ui/mvc/mlibmodel.cpp
-

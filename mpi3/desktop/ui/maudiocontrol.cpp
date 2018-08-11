@@ -1,6 +1,6 @@
 #include "maudiocontrol.h"
 
-#include "core/mlibrary.h"
+#include "core/mmedialibrary.h"
 
 #include <QGridLayout>
 #include <QStyleOption>

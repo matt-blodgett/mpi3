@@ -1,4 +1,4 @@
-#include "maudio.h"
+#include "maudioengine.h"
 
 #include <QThread>
 #include <QMutex>
