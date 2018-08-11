@@ -85,7 +85,7 @@ private:
     Mpi3::EngineState m_requestStatus;
 
     float m_vol_percent;
-    float m_vol_dbscale;
+    float m_vol_dbratio;
     double m_position;
     QString m_filepath;
 
@@ -101,6 +101,7 @@ signals:
     void notifyMediaStatus(Mpi3::MediaState state);
     void notifyEngineStatus(Mpi3::EngineState state);
     void notifyErrorStatus(Mpi3::ErrorState state);
+    void notifyRequestStatus(Mpi3::EngineState state);
 
 };
 

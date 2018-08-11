@@ -23,7 +23,7 @@ class MMediaElement : public QObject
 friend class MMediaLibrary;
 
 public:
-    explicit MMediaElement();
+    explicit MMediaElement(QObject *parent = nullptr);
     virtual Mpi3::ElementType type() const;
 
 public:
@@ -45,14 +45,14 @@ class MSong : public MMediaElement
 friend class MMediaLibrary;
 
 public:
+    explicit MSong();
+    Mpi3::ElementType type() const override;
+
     enum MutableProperty {
         SongName,
         SongArtist,
         SongAlbum,
     };
-
-    explicit MSong();
-    Mpi3::ElementType type() const override;
 
 public:
     QString artist() const;
@@ -78,6 +78,40 @@ private:
 };
 
 
+class MMediaContainer : public MMediaElement
+{
+    Q_OBJECT
+
+friend class MMediaLibrary;
+
+public:
+    explicit MMediaContainer();
+    Mpi3::ElementType type() const override;
+
+public:
+    virtual QVector<MSong*> songs() const;
+    virtual QVector<MPlaylist*> playlists() const;
+    virtual QVector<MFolder*> folders() const;
+
+public:
+    MMediaContainer *parentContainer() const;
+    QVector<MMediaElement*> childElements(Mpi3::ElementType elemType = Mpi3::BaseElement) const;
+    QVector<MMediaContainer*> childContainers() const;
+
+    MSong *getSong(const QString &pid) const;
+    MPlaylist *getPlaylist(const QString &pid) const;
+    MFolder *getFolder(const QString &pid) const;
+
+    MMediaContainer *getContainer(const QString &pid) const;
+    MMediaElement *getElement(const QString &pid, Mpi3::ElementType elemType = Mpi3::BaseElement) const;
+
+private:
+    MMediaContainer *m_parentContainer = nullptr;
+};
+
+
+
+
 class MPlaylist : public MMediaElement
 {
     Q_OBJECT
@@ -95,6 +129,8 @@ public:
 public:
     MSong *getSong(const QString &pid) const;
 };
+
+
 
 
 class MFolder : public MMediaElement

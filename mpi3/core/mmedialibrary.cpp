@@ -12,14 +12,15 @@
 
 #define PID_MAX_LENGTH 18
 
-static const QString PrefixBase     = "E:";
-static const QString PrefixSong     = "S:";
-static const QString PrefixPlaylist = "P:";
-static const QString PrefixFolder   = "F:";
-static const QString PrefixLibrary  = "L:";
+static const QString PrefixBase         = "E:";
+static const QString PrefixSong         = "S:";
+static const QString PrefixContainer    = "C:";
+static const QString PrefixPlaylist     = "P:";
+static const QString PrefixFolder       = "F:";
+static const QString PrefixLibrary      = "L:";
 
 
-MMediaElement::MMediaElement() : QObject(nullptr){}
+MMediaElement::MMediaElement(QObject *parent) : QObject(parent){}
 Mpi3::ElementType MMediaElement::type() const {
     return Mpi3::BaseElement;
 }
@@ -65,6 +66,93 @@ int MSong::bitRate() const{
 int MSong::sampleRate() const{
     return m_sampleRate;
 }
+
+
+MMediaContainer::MMediaContainer(){}
+Mpi3::ElementType MMediaContainer::type() const {
+    return Mpi3::ContainerElement;
+}
+
+MMediaContainer *MMediaContainer::parentContainer() const{
+    return m_parentContainer;
+}
+QVector<MMediaElement*> MMediaContainer::childElements(Mpi3::ElementType elemType) const{
+
+    QVector<MMediaElement*> children;
+
+    bool baseElem = elemType == Mpi3::BaseElement;
+    bool containerElem = elemType == Mpi3::ContainerElement;
+
+    if(elemType == Mpi3::FolderElement || baseElem || containerElem){
+        foreach(MFolder *folder, folders()){
+            children.push_back(folder);
+        }
+    }
+
+    if(elemType == Mpi3::PlaylistElement || baseElem || containerElem){
+        foreach(MPlaylist *playlist, playlists()){
+            children.push_back(playlist);
+        }
+    }
+
+    if(elemType == Mpi3::SongElement || baseElem){
+        foreach(MSong *song, songs()){
+            children.push_back(song);
+        }
+    }
+
+    return children;
+}
+
+QVector<MSong*> MMediaContainer::songs() const {
+    return QVector<MSong*>();
+}
+QVector<MPlaylist*> MMediaContainer::playlists() const {
+    return QVector<MPlaylist*>();
+}
+QVector<MFolder*> MMediaContainer::folders() const {
+    return QVector<MFolder*>();
+}
+
+MMediaElement *MMediaContainer::getElement(const QString &pid, Mpi3::ElementType elemType) const{
+    foreach(MMediaElement *element, childElements(elemType)){
+        if(element->pid() == pid){
+            return element;
+        }
+    }
+
+    return nullptr;
+}
+MMediaContainer *MMediaContainer::getContainer(const QString &pid) const {
+    return static_cast<MMediaContainer*>(getElement(pid, Mpi3::ContainerElement));
+}
+MSong *MMediaContainer::getSong(const QString &pid) const{
+    return static_cast<MSong*>(getElement(pid, Mpi3::SongElement));
+}
+MPlaylist *MMediaContainer::getPlaylist(const QString &pid) const{
+    return static_cast<MPlaylist*>(getElement(pid, Mpi3::PlaylistElement));
+}
+MFolder *MMediaContainer::getFolder(const QString &pid) const{
+    return static_cast<MFolder*>(getElement(pid, Mpi3::FolderElement));
+}
+
+
+//    switch(elemType) {
+//        case Mpi3::BaseElement:
+//            break;
+//        case Mpi3::SongElement:
+//            break;
+//        case Mpi3::ContainerElement:
+//            break;
+//        case Mpi3::PlaylistElement:
+//            break;
+//        case Mpi3::FolderElement:
+//            break;
+//        case Mpi3::LibraryElement:
+//            break;
+//    }
+
+
 
 
 MPlaylist::MPlaylist() : MMediaElement(){}

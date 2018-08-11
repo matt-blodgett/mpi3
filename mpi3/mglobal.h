@@ -3,15 +3,18 @@
 #ifndef MGLOBAL_H
 #define MGLOBAL_H
 
+
 #include <QMetaType>
+
 
 typedef QColor QColour;
 
 
 class MMediaElement;
+class MMediaContainer;
 class MMediaLibrary;
-class MFolder;
 class MPlaylist;
+class MFolder;
 class MSong;
 
 
@@ -22,6 +25,7 @@ namespace Mpi3 {
     enum ElementType {
         BaseElement,
         SongElement,
+        ContainerElement,
         PlaylistElement,
         FolderElement,
         LibraryElement

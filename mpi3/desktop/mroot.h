@@ -59,14 +59,6 @@ private:
     MTreeSonglist *m_treeSonglist = nullptr;
 
 private:
-    void mediaControlPlay();
-    void mediaControlPause();
-    void mediaControlNext();
-    void mediaControlPrev();
-    void mediaControlVolume(float vol);
-    void mediaControlPosition(double pos);
-
-private:
     void setColumnVisibility(int column);
     void openFileLocation(const QString &path);
     void libraryViewChanged();

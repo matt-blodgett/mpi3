@@ -73,9 +73,9 @@ public:
     QString getPID(const QModelIndex &index) const;
     QString getPID(MModelItem *item) const;
 
-    MFolder *getParentFolderAt(const QModelIndex &index) const;
-
     void setLibrary(MMediaLibrary *library);
+
+    MFolder *getParentFolderAt(const QModelIndex &index) const;
 
 private:
     void populate(MFolder *parentFolder = nullptr, MModelItem *parentItem = nullptr);
@@ -147,10 +147,11 @@ private:
 
 public:
     QMap<int, bool> columnVisibility;
-    MSong *getSongAt(const QModelIndex &index) const;
 
-public:
     void setLibrary(MMediaLibrary *library);
+
+    QVector<MSong*> currentSonglist() const;
+    MSong *getSongAt(const QModelIndex &index) const;
 
     QString currentContainer() const;
     MModelSonglist::Display currentDisplay() const;

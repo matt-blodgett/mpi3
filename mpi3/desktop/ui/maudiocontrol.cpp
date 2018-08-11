@@ -23,7 +23,7 @@
 MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
-    m_currentState = Mpi3::EngineState::EngineStopped;
+    m_currentState = Mpi3::EngineStopped;
 
     m_sldVolume->setRange(0, 100);
 
@@ -242,13 +242,13 @@ int MPanelPlayback::volume() const{
     return m_sldVolume->value();
 }
 bool MPanelPlayback::stopped() const {
-    return m_currentState == Mpi3::EngineState::EngineStopped;
+    return m_currentState == Mpi3::EngineStopped;
 }
 bool MPanelPlayback::playing() const {
-    return m_currentState == Mpi3::EngineState::EngineActive;
+    return m_currentState == Mpi3::EngineActive;
 }
 bool MPanelPlayback::paused() const {
-    return m_currentState == Mpi3::EngineState::EngineIdle;
+    return m_currentState == Mpi3::EngineIdle;
 }
 
 void MPanelPlayback::setVolume(int volume){
@@ -259,7 +259,7 @@ void MPanelPlayback::setVolume(int volume){
 void MPanelPlayback::setState(Mpi3::EngineState state){
     m_currentState = state;
 
-    if(m_currentState == Mpi3::EngineState::EngineActive){
+    if(m_currentState == Mpi3::EngineActive){
         m_btnPlay->setIcon(QIcon(m_pixPaus));
         m_btnFade->setIcon(QIcon(m_pixPlay));
     }

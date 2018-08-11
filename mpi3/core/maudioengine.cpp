@@ -8,13 +8,15 @@
 #include <QReadLocker>
 #include <QWaitCondition>
 
-#include <lib/libao/ao/ao.h>
 
 extern "C"
 {
 #include <lib/libav/libavcodec/avcodec.h>
 #include <lib/libav/libavformat/avformat.h>
 }
+
+#include <lib/libao/ao/ao.h>
+
 
 #define BIT_DEPTH 16
 #define BIT_RANGE (1<<(BIT_DEPTH - 1))
@@ -96,13 +98,13 @@ MAudioEngine::MAudioEngine(QObject *parent) : QObject(parent){
     m_processCondition = new QWaitCondition();
     m_attribMtx = new QReadWriteLock();
 
-    m_mediaStatus = Mpi3::MediaState::MediaEmpty;
-    m_engineStatus = Mpi3::EngineState::EngineStopped;
-    m_errorStatus = Mpi3::ErrorState::NoError;
-    m_requestStatus = Mpi3::EngineState::EngineStopped;
+    m_mediaStatus = Mpi3::MediaEmpty;
+    m_engineStatus = Mpi3::EngineStopped;
+    m_errorStatus = Mpi3::NoError;
+    m_requestStatus = Mpi3::EngineStopped;
 
     m_vol_percent = 0.0f;
-    m_vol_dbscale = 0.0f;
+    m_vol_dbratio = 0.0f;
     m_position = 0.0;
     m_filepath = QString();
 
@@ -148,7 +150,7 @@ void MAudioEngine::media_dealloc(){
     }
 
     m_filepath.clear();
-    updateStatus(Mpi3::MediaState::MediaEmpty);
+    updateStatus(Mpi3::MediaEmpty);
 }
 void MAudioEngine::media_alloc(){
 
@@ -270,7 +272,7 @@ void MAudioEngine::media_alloc(){
         return;
     }
 
-    updateStatus(Mpi3::MediaState::MediaReady);
+    updateStatus(Mpi3::MediaReady);
 }
 void MAudioEngine::engine_process(){
 
@@ -291,25 +293,25 @@ void MAudioEngine::engine_process(){
 
         for(int i = 0; i < frame->nb_samples; i++){
 
-            if(requestedStatus() == Mpi3::EngineState::EngineIdle){
+            if(requestedStatus() == Mpi3::EngineIdle){
 
-                updateStatus(Mpi3::EngineState::EngineIdle);
+                updateStatus(Mpi3::EngineIdle);
 
                 m_processMutex->lock();
                 m_processCondition->wait(m_processMutex);
                 m_processMutex->unlock();
 
                 switch(requestedStatus()){
-                    case Mpi3::EngineState::EngineActive:
-                        updateStatus(Mpi3::EngineState::EngineActive);
+                    case Mpi3::EngineActive:
+                        updateStatus(Mpi3::EngineActive);
                         break;
-                    case Mpi3::EngineState::EngineStopped:
+                    case Mpi3::EngineStopped:
                         goto halt;
-                    case Mpi3::EngineState::EngineIdle:
+                    case Mpi3::EngineIdle:
                         continue;
                 }
             }
-            else if(requestedStatus() == Mpi3::EngineState::EngineStopped){
+            else if(requestedStatus() == Mpi3::EngineStopped){
                 goto halt;
             }
 
@@ -318,13 +320,13 @@ void MAudioEngine::engine_process(){
                 short *data_raw = reinterpret_cast<short*>(frame->data[c] + bps*i);
                 float sample_raw = static_cast<float>(*data_raw) / static_cast<float>(BIT_RANGE);
 
-                sample_raw *= 0.0f;
-                sample_raw *= BIT_RANGE;
-
-//                m_attribMtx->lockForRead();
-//                sample_raw *= m_vol_dbscale;
+//                sample_raw *= 0.0f;
 //                sample_raw *= BIT_RANGE;
-//                m_attribMtx->unlock();
+
+                m_attribMtx->lockForRead();
+                sample_raw *= m_vol_dbratio;
+                sample_raw *= BIT_RANGE;
+                m_attribMtx->unlock();
 
                 float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
                 short data_processed = static_cast<short>(sample_processed);
@@ -347,8 +349,8 @@ halt:
 }
 void MAudioEngine::engine_finished(){
     delete m_processThread;
-    updateStatus(Mpi3::EngineState::EngineStopped);
     media_dealloc();
+    updateStatus(Mpi3::EngineStopped);
 }
 
 void MAudioEngine::open(const QString &path){
@@ -369,9 +371,9 @@ void MAudioEngine::start(){
             m_processThread = QThread::create([this](){engine_process();});
             connect(m_processThread, &QThread::finished, this, [this](){engine_finished();});
 
-            updateStatus(Mpi3::MediaState::MediaBusy);
-            updateStatus(Mpi3::EngineState::EngineActive);
-            updateRequest(Mpi3::EngineState::EngineActive);
+            updateStatus(Mpi3::MediaBusy);
+            updateStatus(Mpi3::EngineActive);
+            m_requestStatus = Mpi3::EngineActive;
 
             m_processThread->start();
             m_processThread->setPriority(QThread::HighestPriority);
@@ -382,7 +384,7 @@ void MAudioEngine::stop(){
 
     if(busy()){
 
-        updateRequest(Mpi3::EngineState::EngineStopped);
+        updateRequest(Mpi3::EngineStopped);
 
         if(m_processThread){
             m_processThread->wait();
@@ -391,10 +393,10 @@ void MAudioEngine::stop(){
 }
 
 void MAudioEngine::play(){
-    updateRequest(Mpi3::EngineState::EngineActive);
+    updateRequest(Mpi3::EngineActive);
 }
 void MAudioEngine::pause(){
-    updateRequest(Mpi3::EngineState::EngineIdle);
+    updateRequest(Mpi3::EngineIdle);
 }
 
 void MAudioEngine::seek(double pos){
@@ -405,7 +407,7 @@ void MAudioEngine::gain(int vol){
     QWriteLocker lock_write(m_attribMtx);
 
     m_vol_percent = av_clipf_c(static_cast<float>(vol)/100.0f, 0.0f, 1.0f);
-    m_vol_dbscale = av_clipf_c(log10f(1 - m_vol_percent) / -2.0f, 0.0f, 1.0f);
+    m_vol_dbratio = av_clipf_c(log10f(1 - m_vol_percent) / -2.0f, 0.0f, 1.0f);
 
     emit notifyVolume(vol);
 }
@@ -417,28 +419,28 @@ QString MAudioEngine::filepath() const {
 
 bool MAudioEngine::empty() const {
     QReadLocker lock_read(m_attribMtx);
-    return m_mediaStatus == Mpi3::MediaState::MediaEmpty;
+    return m_mediaStatus == Mpi3::MediaEmpty;
 }
 bool MAudioEngine::ready() const{
     QReadLocker lock_read(m_attribMtx);
-    return m_mediaStatus == Mpi3::MediaState::MediaReady;
+    return m_mediaStatus == Mpi3::MediaReady;
 }
 bool MAudioEngine::busy() const {
     QReadLocker lock_read(m_attribMtx);
-    return m_mediaStatus == Mpi3::MediaState::MediaBusy;
+    return m_mediaStatus == Mpi3::MediaBusy;
 }
 
 bool MAudioEngine::stopped() const {
     QReadLocker lock_read(m_attribMtx);
-    return m_engineStatus == Mpi3::EngineState::EngineStopped;
+    return m_engineStatus == Mpi3::EngineStopped;
 }
 bool MAudioEngine::playing() const{
     QReadLocker lock_read(m_attribMtx);
-    return m_engineStatus == Mpi3::EngineState::EngineActive;
+    return m_engineStatus == Mpi3::EngineActive;
 }
 bool MAudioEngine::paused() const{
     QReadLocker lock_read(m_attribMtx);
-    return m_engineStatus == Mpi3::EngineState::EngineIdle;;
+    return m_engineStatus == Mpi3::EngineIdle;;
 }
 
 float MAudioEngine::volume() const{
@@ -486,14 +488,12 @@ void MAudioEngine::updateRequest(Mpi3::EngineState state){
     QWriteLocker lock_write(m_attribMtx);
     m_requestStatus = state;
 
-    if(state != Mpi3::EngineState::EngineIdle){
+    if(state != Mpi3::EngineIdle){
         m_processCondition->notify_all();
     }
+
+    emit notifyRequestStatus(state);
 }
-
-
-
-
 
 
 
