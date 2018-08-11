@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef MAUDIO_H
-#define MAUDIO_H
+#ifndef MAUDIOENGINE_H
+#define MAUDIOENGINE_H
 
 #include <QObject>
 

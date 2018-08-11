@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef MLIBRARY_H
-#define MLIBRARY_H
+#ifndef MMEDIALIBRARY_H
+#define MMEDIALIBRARY_H
 
 #include <QObject>
 #include <QVector>
