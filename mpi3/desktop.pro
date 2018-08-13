@@ -51,7 +51,6 @@ SOURCES += core/mcontentdelegate.cpp
 
 HEADERS += util/mstyle.h
 SOURCES += util/mstyle.cpp
-
 HEADERS += util/msettings.h
 SOURCES += util/msettings.cpp
 

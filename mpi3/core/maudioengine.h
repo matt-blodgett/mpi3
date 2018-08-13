@@ -6,10 +6,10 @@
 #include <QObject>
 
 QT_BEGIN_NAMESPACE
-class QReadWriteLock;
 class QWaitCondition;
 class QMutex;
 QT_END_NAMESPACE
+
 
 struct AVFormatContext;
 struct AVCodecContext;
@@ -17,6 +17,22 @@ struct ao_device;
 
 
 #include "mglobal.h"
+
+
+struct MSongInfo{
+    void load(const QString &path);
+    bool loaded;
+
+    QString name;
+    QString artist;
+    QString album;
+    QString kind;
+
+    int time;
+    int size;
+    int bitRate;
+    int sampleRate;
+};
 
 
 class MAudioEngine : public QObject
@@ -32,9 +48,7 @@ public:
 private:
     void media_alloc();
     void media_dealloc();
-
     void engine_process();
-    void engine_finished();
 
 public:
     void open(const QString &path);
@@ -74,7 +88,7 @@ private:
     void updateRequest(Mpi3::EngineState state);
 
 private:
-    mutable QReadWriteLock *m_attribMtx = nullptr;
+    mutable QMutex *m_attribMtx = nullptr;
     mutable QMutex *m_processMutex = nullptr;
     QWaitCondition *m_processCondition = nullptr;
     QThread *m_processThread = nullptr;
@@ -83,6 +97,7 @@ private:
     Mpi3::EngineState m_engineStatus;
     Mpi3::ErrorState m_errorStatus;
     Mpi3::EngineState m_requestStatus;
+    Mpi3::EngineState m_playpauseStatus;
 
     float m_vol_percent;
     float m_vol_dbratio;
@@ -98,6 +113,7 @@ private:
 signals:
     void notifyVolume(int vol);
     void notifyPosition(double pos);
+
     void notifyMediaStatus(Mpi3::MediaState state);
     void notifyEngineStatus(Mpi3::EngineState state);
     void notifyErrorStatus(Mpi3::ErrorState state);

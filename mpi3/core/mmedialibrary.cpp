@@ -7,8 +7,6 @@
 #include <QUrl>
 #include <QDir>
 
-#include <QDebug>
-
 
 #define PID_MAX_LENGTH 18
 
@@ -18,6 +16,44 @@ static const QString PrefixContainer    = "C:";
 static const QString PrefixPlaylist     = "P:";
 static const QString PrefixFolder       = "F:";
 static const QString PrefixLibrary      = "L:";
+
+static void xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text){
+    QDomElement e = xml.createElement(tagname);
+    QDomText t = xml.createTextNode(text);
+    e.appendChild(t);
+    elem.appendChild(e);
+}
+static QMap<QString, QVariant> plistDict(const QDomNode &parentNode){
+
+    QMap<QString, QVariant> dict;
+
+    for(int i = 0; i < parentNode.childNodes().size(); i++){
+        QDomNode childNode = parentNode.childNodes().at(i);
+
+        if(childNode.toElement().tagName() == "key"){
+
+            QDomElement keyNode = childNode.toElement();
+            QDomElement valueNode = parentNode.childNodes().at(i + 1).toElement();
+
+            if(valueNode.tagName() == "dict"){
+                dict[keyNode.text()] = plistDict(valueNode);
+            }
+            else if(valueNode.tagName() == "array"){
+                QList<QVariant> arrayItems;
+                for(int cnode = 0; cnode < valueNode.childNodes().size(); cnode++){
+                    arrayItems.append(plistDict(valueNode.childNodes().at(cnode)));
+                }
+                dict[keyNode.text()] = arrayItems;
+            }
+            else {
+                dict[keyNode.text()] = parentNode.childNodes().at(i + 1).toElement().text();
+            }
+
+        }
+    }
+
+    return dict;
+}
 
 
 MMediaElement::MMediaElement(QObject *parent) : QObject(parent){}
@@ -73,9 +109,26 @@ Mpi3::ElementType MMediaContainer::type() const {
     return Mpi3::ContainerElement;
 }
 
-MMediaContainer *MMediaContainer::parentContainer() const{
-    return m_parentContainer;
+QVector<MSong*> MMediaContainer::songs() const {
+    return QVector<MSong*>();
 }
+QVector<MPlaylist*> MMediaContainer::playlists() const {
+    return QVector<MPlaylist*>();
+}
+QVector<MFolder*> MMediaContainer::folders() const {
+    return QVector<MFolder*>();
+}
+
+MFolder *MMediaContainer::parentFolder() const {
+    if(m_parent){
+        if(m_parent->type() == Mpi3::FolderElement){
+            return static_cast<MFolder*>(m_parent);
+        }
+    }
+
+    return nullptr;
+}
+
 QVector<MMediaElement*> MMediaContainer::childElements(Mpi3::ElementType elemType) const{
 
     QVector<MMediaElement*> children;
@@ -103,18 +156,8 @@ QVector<MMediaElement*> MMediaContainer::childElements(Mpi3::ElementType elemTyp
 
     return children;
 }
-
-QVector<MSong*> MMediaContainer::songs() const {
-    return QVector<MSong*>();
-}
-QVector<MPlaylist*> MMediaContainer::playlists() const {
-    return QVector<MPlaylist*>();
-}
-QVector<MFolder*> MMediaContainer::folders() const {
-    return QVector<MFolder*>();
-}
-
 MMediaElement *MMediaContainer::getElement(const QString &pid, Mpi3::ElementType elemType) const{
+
     foreach(MMediaElement *element, childElements(elemType)){
         if(element->pid() == pid){
             return element;
@@ -123,11 +166,9 @@ MMediaElement *MMediaContainer::getElement(const QString &pid, Mpi3::ElementType
 
     return nullptr;
 }
+
 MMediaContainer *MMediaContainer::getContainer(const QString &pid) const {
     return static_cast<MMediaContainer*>(getElement(pid, Mpi3::ContainerElement));
-}
-MSong *MMediaContainer::getSong(const QString &pid) const{
-    return static_cast<MSong*>(getElement(pid, Mpi3::SongElement));
 }
 MPlaylist *MMediaContainer::getPlaylist(const QString &pid) const{
     return static_cast<MPlaylist*>(getElement(pid, Mpi3::PlaylistElement));
@@ -135,87 +176,87 @@ MPlaylist *MMediaContainer::getPlaylist(const QString &pid) const{
 MFolder *MMediaContainer::getFolder(const QString &pid) const{
     return static_cast<MFolder*>(getElement(pid, Mpi3::FolderElement));
 }
+MSong *MMediaContainer::getSong(const QString &pid) const{
+    return static_cast<MSong*>(getElement(pid, Mpi3::SongElement));
+}
 
 
-//    switch(elemType) {
-//        case Mpi3::BaseElement:
-//            break;
-//        case Mpi3::SongElement:
-//            break;
-//        case Mpi3::ContainerElement:
-//            break;
-//        case Mpi3::PlaylistElement:
-//            break;
-//        case Mpi3::FolderElement:
-//            break;
-//        case Mpi3::LibraryElement:
-//            break;
-//    }
-
-
-
-
-MPlaylist::MPlaylist() : MMediaElement(){}
+MPlaylist::MPlaylist() : MMediaContainer(){}
 Mpi3::ElementType MPlaylist::type() const {
     return Mpi3::PlaylistElement;
 }
-
-MSong* MPlaylist::getSong(const QString &pid) const{
-    for(int i = 0; i < songs.size(); i++){
-        MSong *song = songs.at(i);
-        if(song->pid() == pid){
-            return song;
-        }
-    }
-
-    return nullptr;
+QVector<MSong*> MPlaylist::songs() const {
+    return m_songs;
 }
 
 
-MFolder::MFolder() : MMediaElement(){}
+MFolder::MFolder() : MMediaContainer(){}
 Mpi3::ElementType MFolder::type() const {
     return Mpi3::FolderElement;
 }
 
-MPlaylist *MFolder::getPlaylist(const QString &pid) const{
-    for(int i = 0; i < playlists.size(); i++){
-        if(playlists.at(i)->pid() == pid){
-            return playlists.at(i);
+QVector<MSong*> MFolder::songs() const{
+
+    QVector<MSong*> childsongs;
+
+    foreach(MPlaylist *playlist, playlists()){
+        foreach(MSong *song, playlist->songs()){
+            if(!childsongs.contains(song)){
+                childsongs.push_back(song);
+            }
         }
     }
 
-    return nullptr;
-}
-MFolder *MFolder::getFolder(const QString &pid) const{
-    for(int i = 0; i < folders.size(); i++){
-        if(folders.at(i)->pid() == pid){
-            return folders.at(i);
+    foreach(MFolder *folder, folders()){
+        foreach(MSong* song, folder->songs()){
+            if(!childsongs.contains(song)){
+                childsongs.append(song);
+            }
         }
     }
 
-    return nullptr;
+    return childsongs;
+}
+QVector<MPlaylist*> MFolder::playlists() const{
+    return m_playlists;
+}
+QVector<MFolder*> MFolder::folders() const{
+    return m_folders;
+}
+QVector<MMediaContainer*> MFolder::childContainers() const {
+
+    QVector<MMediaContainer*> containers;
+
+    foreach(MFolder *folder, m_folders){
+        containers.push_back(folder);
+
+        foreach(MMediaContainer *child, folder->childContainers()){
+            containers.push_back(child);
+        }
+    }
+
+    foreach(MPlaylist *playlist, m_playlists){
+        containers.push_back(playlist);
+    }
 }
 
-MMediaLibrary::MMediaLibrary() : MMediaElement(){
-    libSongs = new QVector<MSong*>;
-    libPlaylists = new QVector<MPlaylist*>;
-    libFolders = new QVector<MFolder*>;
-}
-MMediaLibrary::~MMediaLibrary(){
-    delete libSongs;
-    delete libPlaylists;
-    delete libFolders;
-}
+
+MMediaLibrary::MMediaLibrary() : MMediaContainer(){}
 Mpi3::ElementType MMediaLibrary::type() const {
     return Mpi3::LibraryElement;
 }
 
+QString MMediaLibrary::filepath() const {
+    return m_filepath;
+}
 void MMediaLibrary::load(const QString &path){
+
     QFile loadFile(path);
     if (loadFile.open(QIODevice::ReadOnly)){
-        libFolders->clear();
-        libPlaylists->clear();
-        libSongs->clear();
+
+        m_libFolders.clear();
+        m_libPlaylists.clear();
+        m_libSongs.clear();
 
         QDomDocument xml;
         xml.setContent(loadFile.readAll());
@@ -246,10 +287,8 @@ void MMediaLibrary::load(const QString &path){
             song->m_bitRate = xmlSongs.at(i).namedItem("bitRate").toElement().text().toInt();
             song->m_sampleRate = xmlSongs.at(i).namedItem("sampleRate").toElement().text().toInt();
 
-            libSongs->append(song);
+            m_libSongs.append(song);
         }
-
-        QMap<QString, QStringList> childElementMap;
 
         for(int i = 0; i < xmlPlaylists.length(); i++){
             MPlaylist *playlist = new MPlaylist();
@@ -257,17 +296,12 @@ void MMediaLibrary::load(const QString &path){
             playlist->m_name = xmlPlaylists.at(i).namedItem("name").toElement().text();
             playlist->m_added = xmlPlaylists.at(i).namedItem("added").toElement().text();
 
-            QStringList childElements;
             QDomNodeList childSongs = xmlPlaylists.at(i).namedItem("childSongs").childNodes();
             for(int c_index = 0; c_index < childSongs.size(); c_index++){
-                childElements.append(childSongs.at(c_index).toElement().text());
+                playlist->m_songs.append(getSong(childSongs.at(c_index).toElement().text()));
             }
 
-            if(childElements.size() > 0){
-                childElementMap[playlist->m_pid] = childElements;
-            }
-
-            libPlaylists->append(playlist);
+            m_libPlaylists.append(playlist);
         }
 
         for(int i = 0; i < xmlFolders.length(); i++){
@@ -276,53 +310,29 @@ void MMediaLibrary::load(const QString &path){
             folder->m_name = xmlFolders.at(i).namedItem("name").toElement().text();
             folder->m_added = xmlFolders.at(i).namedItem("added").toElement().text();
 
-            QStringList childElements;
-            QDomNodeList childFolders = xmlFolders.at(i).namedItem("childFolders").childNodes();
-            for(int c_index = 0; c_index < childFolders.size(); c_index++){
-                childElements.append(childFolders.at(c_index).toElement().text());
-            }
-
             QDomNodeList childPlaylists = xmlFolders.at(i).namedItem("childPlaylists").childNodes();
             for(int c_index = 0; c_index < childPlaylists.size(); c_index++){
-                childElements.append(childPlaylists.at(c_index).toElement().text());
+                MPlaylist *chPlaylist = getPlaylist(childPlaylists.at(c_index).toElement().text());
+
+                folder->m_playlists.append(chPlaylist);
+                chPlaylist->m_parent = folder;
             }
 
-            if(childElements.size() > 0){
-                childElementMap[folder->m_pid] = childElements;
-            }
-
-            libFolders->append(folder);
+            m_libFolders.append(folder);
         }
 
-        for(int i = 0; i < childElementMap.keys().size(); i++){
-            QString pidParent = childElementMap.keys().at(i);
-            QStringList pidsChildren = childElementMap[pidParent];
+        for(int i = 0; i < xmlFolders.length(); i++){
+            MFolder *folder = getFolder(xmlFolders.at(i).namedItem("pid").toElement().text());
 
-            MFolder *parentFolder = getFolder(pidParent);
+            QDomNodeList childFolders = xmlFolders.at(i).namedItem("childFolders").childNodes();
+            for(int c_index = 0; c_index < childFolders.size(); c_index++){
+                MFolder *chFolder = getFolder(childFolders.at(c_index).toElement().text());
 
-            if(!parentFolder){
-                MPlaylist *parentPlaylist = getPlaylist(pidParent);
-                for(int c_index = 0; c_index < pidsChildren.size(); c_index++){
-                    parentPlaylist->songs.append(getSong(pidsChildren.at(c_index)));
-                }
-            }
-            else {
-                for(int c_index = 0; c_index < pidsChildren.size(); c_index++){
-                    MFolder *childFolder = getFolder(pidsChildren.at(c_index));
-                    if(childFolder){
-                        parentFolder->folders.append(childFolder);
-                        childFolder->parent = parentFolder;
-                    }
-                }
-                for(int c_index = 0; c_index < pidsChildren.size(); c_index++){
-                    MPlaylist *childPlaylist = getPlaylist(pidsChildren.at(c_index));
-                    if(childPlaylist){
-                        parentFolder->playlists.append(childPlaylist);
-                        childPlaylist->parent = parentFolder;
-                    }
-                }
+                folder->m_folders.append(chFolder);
+                chFolder->m_parent = folder;
             }
         }
+
     }
     else {
         m_pid = generatePID(Mpi3::LibraryElement);
@@ -333,19 +343,21 @@ void MMediaLibrary::load(const QString &path){
     }
 }
 void MMediaLibrary::save(const QString &path){
+
     if(!path.isNull()){
         m_filepath = path;
     }
 
     QFile saveFile(m_filepath);
     if(saveFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)){
+
         QDomDocument xml("Mpi3Library");
         QDomElement root = xml.createElement("library");
         xml.appendChild(root);
 
-        xmlWriteElement(xml, root, "pid", pid());
-        xmlWriteElement(xml, root, "name", name());
-        xmlWriteElement(xml, root, "added", added());
+        xmlWriteElement(xml, root, "pid", m_pid);
+        xmlWriteElement(xml, root, "name", m_name);
+        xmlWriteElement(xml, root, "added", m_added);
 
         QDomElement xmlSongs = xml.createElement("songs");
         QDomElement xmlPlaylists = xml.createElement("playlists");
@@ -355,13 +367,13 @@ void MMediaLibrary::save(const QString &path){
         root.appendChild(xmlPlaylists);
         root.appendChild(xmlFolders);
 
-        for(int i = 0; i < libSongs->size(); i++){
-            MSong *song = libSongs->at(i);
+        for(int i = 0; i < m_libSongs.size(); i++){
+            MSong *song = m_libSongs.at(i);
             QDomElement songElement = xml.createElement("song");
 
-            xmlWriteElement(xml, songElement, "pid", song->pid());
-            xmlWriteElement(xml, songElement, "name", song->name());
-            xmlWriteElement(xml, songElement, "added", song->added());
+            xmlWriteElement(xml, songElement, "pid", song->m_pid);
+            xmlWriteElement(xml, songElement, "name", song->m_name);
+            xmlWriteElement(xml, songElement, "added", song->m_added);
 
             xmlWriteElement(xml, songElement, "artist", song->m_artist);
             xmlWriteElement(xml, songElement, "album", song->m_album);
@@ -376,42 +388,45 @@ void MMediaLibrary::save(const QString &path){
             xmlSongs.appendChild(songElement);
         }
 
-        for(int i = 0; i < libPlaylists->size(); i++){
-            MPlaylist *playlist = libPlaylists->at(i);
+        for(int i = 0; i < m_libPlaylists.size(); i++){
+            MPlaylist *playlist = m_libPlaylists.at(i);
             QDomElement playlistElement = xml.createElement("playlist");
 
-            xmlWriteElement(xml, playlistElement, "pid", playlist->pid());
-            xmlWriteElement(xml, playlistElement, "name", playlist->name());
-            xmlWriteElement(xml, playlistElement, "added", playlist->added());
+            xmlWriteElement(xml, playlistElement, "pid", playlist->m_pid);
+            xmlWriteElement(xml, playlistElement, "name", playlist->m_name);
+            xmlWriteElement(xml, playlistElement, "added", playlist->m_added);
+
+            MFolder *parentFolder = playlist->m_parent;
+            xmlWriteElement(xml, playlistElement, "parent", parentFolder ? parentFolder->m_pid : "");
 
             QDomElement playlistSongs = xml.createElement("childSongs");
-            for(int c_index = 0; c_index < playlist->songs.size(); c_index++){
-                MSong *childSong = playlist->songs.at(c_index);
-                xmlWriteElement(xml, playlistSongs, "pid", childSong->pid());
+            foreach(MSong *childSong, playlist->m_songs){
+                xmlWriteElement(xml, playlistSongs, "pid", childSong->m_pid);
             }
 
             playlistElement.appendChild(playlistSongs);
             xmlPlaylists.appendChild(playlistElement);
         }
 
-        for(int i = 0; i < libFolders->size(); i++){
-            MFolder *folder = libFolders->at(i);
+        for(int i = 0; i < m_libFolders.size(); i++){
+            MFolder *folder = m_libFolders.at(i);
             QDomElement folderElement = xml.createElement("folder");
 
-            xmlWriteElement(xml, folderElement, "pid", folder->pid());
-            xmlWriteElement(xml, folderElement, "name", folder->name());
-            xmlWriteElement(xml, folderElement, "added", folder->added());
+            xmlWriteElement(xml, folderElement, "pid", folder->m_pid);
+            xmlWriteElement(xml, folderElement, "name", folder->m_name);
+            xmlWriteElement(xml, folderElement, "added", folder->m_added);
+
+            MFolder *parentFolder = folder->m_parent;
+            xmlWriteElement(xml, folderElement, "parent", parentFolder ? parentFolder->m_pid : "");
 
             QDomElement folderFolders = xml.createElement("childFolders");
-            for(int c_index = 0; c_index < folder->folders.size(); c_index++){
-                MFolder *childFolder = folder->folders.at(c_index);
-                xmlWriteElement(xml, folderFolders, "pid", childFolder->pid());
+            foreach(MFolder *childFolder, folder->m_folders){
+                xmlWriteElement(xml, folderFolders, "pid", childFolder->m_pid);
             }
 
             QDomElement folderPlaylists = xml.createElement("childPlaylists");
-            for(int c_index = 0; c_index < folder->playlists.size(); c_index++){
-                MPlaylist *childPlaylist = folder->playlists.at(c_index);
-                xmlWriteElement(xml, folderPlaylists, "pid", childPlaylist->pid());
+            foreach(MPlaylist *childPlaylist, folder->m_playlists){
+                xmlWriteElement(xml, folderPlaylists, "pid", childPlaylist->m_pid);
             }
 
             folderElement.appendChild(folderFolders);
@@ -423,13 +438,107 @@ void MMediaLibrary::save(const QString &path){
         xmlStream << xml.toString();
     }
 }
-
-QString MMediaLibrary::filepath() const {
-    return m_filepath;
+void MMediaLibrary::reset(){
+    m_libSongs.clear();
+    m_libPlaylists.clear();
+    m_libFolders.clear();
 }
 
+QVector<MSong*> MMediaLibrary::songs() const{
+    return m_libSongs;
+}
+QVector<MPlaylist*> MMediaLibrary::playlists() const{
+    return m_libPlaylists;
+}
+QVector<MFolder*> MMediaLibrary::folders() const{
+    return m_libFolders;
+}
+
+QVector<MFolder*> MMediaLibrary::rootFolders() const{
+
+    QVector<MFolder*> childFolders;
+
+    foreach(MFolder *folder, folders()){
+        if(!folder->m_parent){
+            childFolders.append(folder);
+        }
+    }
+
+    return childFolders;
+}
+QVector<MPlaylist*> MMediaLibrary::rootPlaylists() const{
+
+    QVector<MPlaylist*> childPlaylists;
+
+    foreach(MPlaylist *playlist, m_libPlaylists){
+        if(!playlist->m_parent){
+            childPlaylists.append(playlist);
+        }
+    }
+
+    return childPlaylists;
+}
+
+MSong *MMediaLibrary::newSong(const QString &path) const{
+    MSong *song = new MSong();
+    song->m_pid = generatePID(Mpi3::SongElement);
+
+    if(!path.isNull()){
+        song->m_name = QUrl(path).fileName();
+        song->m_path = path;
+    }
+
+    return song;
+}
+MPlaylist *MMediaLibrary::newPlaylist(bool named) const{
+    MPlaylist *playlist = new MPlaylist();
+    playlist->m_pid = generatePID(Mpi3::PlaylistElement);
+
+    if(named){
+        QString name = "New Playlist";
+        QString append = "";
+        int duplicates = 1;
+
+        int i = 0;
+        while(i < m_libPlaylists.size()){
+            MPlaylist *p = m_libPlaylists.at(i++);
+            if(p->name() == name + append){
+                append = " " + QString::number(duplicates++);
+                i = 0;
+            }
+        }
+
+        playlist->m_name = name + append;
+    }
+
+    return playlist;
+}
+MFolder *MMediaLibrary::newFolder(bool named) const{
+    MFolder *folder = new MFolder();
+    folder->m_pid = generatePID(Mpi3::FolderElement);
+
+    if(named){
+        QString name = "New Folder";
+        QString append = "";
+        int duplicates = 1;
+
+        int i = 0;
+        while(i < m_libFolders.size()){
+            MFolder *f = m_libFolders.at(i++);
+            if(f->name() == name + append){
+                append = " " + QString::number(duplicates++);
+                i = 0;
+            }
+        }
+
+        folder->m_name = name + append;
+    }
+
+    return folder;
+}
 QString MMediaLibrary::generatePID(Mpi3::ElementType elemType) const{
     QString pid;
+
     switch(elemType){
         case Mpi3::BaseElement: {
             pid = PrefixBase;
@@ -437,6 +546,10 @@ QString MMediaLibrary::generatePID(Mpi3::ElementType elemType) const{
         }
         case Mpi3::SongElement: {
             pid = PrefixSong;
+            break;
+        }
+        case Mpi3::ContainerElement: {
+            pid = PrefixContainer;
             break;
         }
         case Mpi3::PlaylistElement: {
@@ -458,66 +571,13 @@ QString MMediaLibrary::generatePID(Mpi3::ElementType elemType) const{
         pid += clist[QRandomGenerator().global()->bounded(0, 36)];
     }
 
-    if(elemType == Mpi3::SongElement){
-        for(int i = 0; i < libSongs->size(); i++){
-            if(libSongs->at(i)->pid() == pid){
-                return generatePID(elemType);
-            }
-        }
-    }
-    else if(elemType == Mpi3::PlaylistElement){
-        for(int i = 0; i < libPlaylists->size(); i++){
-            if(libPlaylists->at(i)->pid() == pid){
-                return generatePID(elemType);
-            }
-        }
-    }
-    else if(elemType == Mpi3::FolderElement){
-        for(int i = 0; i < libFolders->size(); i++){
-            if(libFolders->at(i)->pid() == pid){
-                return generatePID(elemType);
-            }
+    foreach(MMediaElement *element, childElements(elemType)){
+        if(element->m_pid == pid){
+            return generatePID(elemType);
         }
     }
 
     return pid;
-}
-void MMediaLibrary::xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text) const{
-    QDomElement e = xml.createElement(tagname);
-    QDomText t = xml.createTextNode(text);
-    e.appendChild(t);
-    elem.appendChild(e);
-}
-QMap<QString, QVariant> MMediaLibrary::plistDict(const QDomNode &parentNode) const{
-
-    QMap<QString, QVariant> dict;
-
-    for(int i = 0; i < parentNode.childNodes().size(); i++){
-        QDomNode childNode = parentNode.childNodes().at(i);
-
-        if(childNode.toElement().tagName() == "key"){
-
-            QDomElement keyNode = childNode.toElement();
-            QDomElement valueNode = parentNode.childNodes().at(i + 1).toElement();
-
-            if(valueNode.tagName() == "dict"){
-                dict[keyNode.text()] = plistDict(valueNode);
-            }
-            else if(valueNode.tagName() == "array"){
-                QList<QVariant> arrayItems;
-                for(int cnode = 0; cnode < valueNode.childNodes().size(); cnode++){
-                    arrayItems.append(plistDict(valueNode.childNodes().at(cnode)));
-                }
-                dict[keyNode.text()] = arrayItems;
-            }
-            else {
-                dict[keyNode.text()] = parentNode.childNodes().at(i + 1).toElement().text();
-            }
-
-        }
-    }
-
-    return dict;
 }
 
 void MMediaLibrary::importItunesPlist(const QString &path, MFolder *parentFolder){
@@ -578,14 +638,14 @@ void MMediaLibrary::importItunesPlist(const QString &path, MFolder *parentFolder
     }
 }
 
-bool MMediaLibrary::validMediaFiles(QUrl mediaUrl) const{
+bool MMediaLibrary::validMediaFiles(QUrl mediaUrl){
     if(mediaUrl.toString().endsWith(".mp3") || mediaUrl.toString().endsWith(".wav")){
         return true;
     }
 
     return false;
 }
-bool MMediaLibrary::validMediaFiles(QList<QUrl> mediaUrls) const{
+bool MMediaLibrary::validMediaFiles(QList<QUrl> mediaUrls){
     if(mediaUrls.size() == 0){
         return false;
     }
@@ -599,15 +659,7 @@ bool MMediaLibrary::validMediaFiles(QList<QUrl> mediaUrls) const{
     return true;
 }
 
-QList<QUrl> MMediaLibrary::songsToPaths(QVector<MSong*> songObjects) const {
-    QList<QUrl> songUrls;
-    for(int i = 0; i < songObjects.size(); i++){
-        songUrls.append(songObjects.at(i)->path());
-    }
-
-    return songUrls;
-}
-QVector<MSong*> MMediaLibrary::songsFromData(QByteArray pidBytes) const {
+QVector<MSong*> MMediaLibrary::songsFromBytes(QByteArray pidBytes) const {
     QStringList pidStrings;
 
     int i = 0;
@@ -618,8 +670,8 @@ QVector<MSong*> MMediaLibrary::songsFromData(QByteArray pidBytes) const {
     }
 
     QVector<MSong*> extractedSongs;
-    for(int i = 0; i < pidStrings.size(); i++){
-        MSong *song = getSong(pidStrings.at(i));
+    foreach(QString pidstr, pidStrings){
+        MSong *song = getSong(pidstr);
         if(song && !extractedSongs.contains(song)){
             extractedSongs.append(song);
         }
@@ -627,224 +679,21 @@ QVector<MSong*> MMediaLibrary::songsFromData(QByteArray pidBytes) const {
 
     return extractedSongs;
 }
-QByteArray MMediaLibrary::songsToData(QVector<MSong*> songObjects) const{
+QByteArray MMediaLibrary::songsToBytes(QVector<MSong*> songObjects){
     QByteArray pidBytes;
-    for(int i = 0; i < songObjects.size(); i++){
-        pidBytes.append(songObjects.at(i)->pid());
+    foreach(MSong *song, songObjects){
+        pidBytes.append(song->pid());
     }
 
     return pidBytes;
 }
-
-QVector<MFolder*> MMediaLibrary::childFolders() const{
-    QVector<MFolder*> folders;
-    for(int i = 0; i < libFolders->size(); i++){
-        MFolder *f = libFolders->at(i);
-        if(!f->parent){
-            folders.append(f);
-        }
+QList<QUrl> MMediaLibrary::songsToPaths(QVector<MSong*> songObjects) {
+    QList<QUrl> songUrls;
+    foreach(MSong *song, songObjects){
+        songUrls.push_back(song->path());
     }
 
-    return folders;
-}
-QVector<MPlaylist*> MMediaLibrary::childPlaylists() const{
-    QVector<MPlaylist*> playlists;
-    for(int i = 0; i < libPlaylists->size(); i++){
-        MPlaylist *p = libPlaylists->at(i);
-        if(!p->parent){
-            playlists.append(p);
-        }
-    }
-
-    return playlists;
-}
-
-QVector<MSong*> MMediaLibrary::allChildSongs(MFolder *parentFolder) const{
-    if(!parentFolder){
-        return *libSongs;
-    }
-
-    QVector<MSong*> songs;
-    QVector<MPlaylist*> nestedPlaylists = allChildPlaylists(parentFolder);
-    for(int i = 0; i < nestedPlaylists.size(); i++){
-        MPlaylist *playlist = nestedPlaylists.at(i);
-        for(int j = 0; j < playlist->songs.size(); j++){
-            MSong *addSong = playlist->songs.at(j);
-            if(!songs.contains(addSong)){
-                songs.append(addSong);
-            }
-        }
-    }
-
-    return songs;
-}
-QVector<MPlaylist*> MMediaLibrary::allChildPlaylists(MFolder *parentFolder) const{
-    if(!parentFolder){
-        return *libPlaylists;
-    }
-
-    QVector<MPlaylist*> playlists;
-    for(int i = 0; i < parentFolder->playlists.size(); i++){
-        playlists.append(parentFolder->playlists.at(i));
-    }
-
-    for(int i = 0; i < parentFolder->folders.size(); i++){
-        MFolder *childFolder = parentFolder->folders.at(i);
-        QVector<MPlaylist*> nestedPlaylists = allChildPlaylists(childFolder);
-        for(int j = 0; j < nestedPlaylists.size(); j++){
-            playlists.append(nestedPlaylists.at(j));
-        }
-    }
-
-    return playlists;
-}
-QVector<MFolder*> MMediaLibrary::allChildFolders(MFolder *parentFolder) const{
-    if(!parentFolder){
-        return *libFolders;
-    }
-
-    QVector<MFolder*> folders;
-    for(int i = 0; i < parentFolder->folders.size(); i++){
-        MFolder *childFolder = parentFolder->folders.at(i);
-        folders.append(childFolder);
-
-        QVector<MFolder*> nestedFolders = allChildFolders(childFolder);
-        for(int j = 0; j < nestedFolders.size(); j++){
-            folders.append(nestedFolders.at(j));
-        }
-    }
-
-    return folders;
-}
-
-MMediaElement* MMediaLibrary::getElement(const QString &pid){
-    if(pid.isNull()){
-        return nullptr;
-    }
-    else if(pid.startsWith(PrefixSong)){
-        for(int i = 0; i < libSongs->size(); i++){
-            if(libSongs->at(i)->pid() == pid){
-                return libSongs->at(i);
-            }
-        }
-    }
-    else if(pid.startsWith(PrefixPlaylist)){
-        for(int i = 0; i < libPlaylists->size(); i++){
-            if(libPlaylists->at(i)->pid() == pid){
-                return libPlaylists->at(i);
-            }
-        }
-    }
-    else if(pid.startsWith(PrefixFolder)){
-        for(int i = 0; i < libFolders->size(); i++){
-            if(libFolders->at(i)->pid() == pid){
-                return libFolders->at(i);
-            }
-        }
-    }
-    else if(pid.startsWith(PrefixLibrary)){
-        return this;
-    }
-
-    return nullptr;
-}
-MSong* MMediaLibrary::getSong(const QString &pid) const{
-    if(pid.isNull()){
-        return nullptr;
-    }
-
-    for(int i = 0; i < libSongs->size(); i++){
-        MSong *s = libSongs->at(i);
-        if(s->pid() == pid){
-            return s;
-        }
-    }
-
-    return nullptr;
-}
-MPlaylist* MMediaLibrary::getPlaylist(const QString &pid) const{
-    if(pid.isNull()){
-        return nullptr;
-    }
-
-    for(int i = 0; i < libPlaylists->size(); i++){
-        MPlaylist *p = libPlaylists->at(i);
-        if(p->pid() == pid){
-            return p;
-        }
-    }
-
-    return nullptr;
-}
-MFolder* MMediaLibrary::getFolder(const QString &pid) const{
-    if(pid.isNull()){
-        return nullptr;
-    }
-
-    for(int i = 0; i < libFolders->size(); i++){
-        MFolder *f = libFolders->at(i);
-        if(f->pid() == pid){
-            return f;
-        }
-    }
-
-    return nullptr;
-}
-
-MSong* MMediaLibrary::newSong(const QString &path) const{
-    MSong *song = new MSong();
-    song->m_pid = generatePID(Mpi3::SongElement);
-
-    if(!path.isNull()){
-        song->m_name = QUrl(path).fileName();
-        song->m_path = path;
-    }
-
-    return song;
-}
-MPlaylist* MMediaLibrary::newPlaylist(bool named) const{
-    MPlaylist *playlist = new MPlaylist();
-    playlist->m_pid = generatePID(Mpi3::PlaylistElement);
-
-    if(named){
-        QString name = "New Playlist";
-        QString append = "";
-        int duplicates = 1;
-
-        int i = 0;
-        while(i < libPlaylists->size()){
-            MPlaylist *p = libPlaylists->at(i++);
-            if(p->name() == name + append){
-                append = " " + QString::number(duplicates++);
-                i = 0;
-            }
-        }
-        playlist->m_name = name + append;
-    }
-
-    return playlist;
-}
-MFolder* MMediaLibrary::newFolder(bool named) const{
-    MFolder *folder = new MFolder();
-    folder->m_pid = generatePID(Mpi3::FolderElement);
-
-    if(named){
-        QString name = "New Folder";
-        QString append = "";
-        int duplicates = 1;
-
-        int i = 0;
-        while(i < libFolders->size()){
-            MFolder *f = libFolders->at(i++);
-            if(f->name() == name + append){
-                append = " " + QString::number(duplicates++);
-                i = 0;
-            }
-        }
-        folder->m_name = name + append;
-    }
-
-    return folder;
+    return songUrls;
 }
 
 void MMediaLibrary::modify(const QString &pid, const QString &value){
@@ -855,6 +704,7 @@ void MMediaLibrary::modify(const QString &pid, const QString &value){
     }
 }
 void MMediaLibrary::modify(MSong *song, const QString &value, MSong::MutableProperty songProperty){
+
     switch(songProperty){
         case MSong::SongName: {
             song->m_name = value;
@@ -874,155 +724,134 @@ void MMediaLibrary::modify(MSong *song, const QString &value, MSong::MutableProp
 }
 
 void MMediaLibrary::insert(MSong *inSong, MPlaylist *toPlaylist, int atPosition){
+
     if(toPlaylist){
-        toPlaylist->songs.insert(qBound(0, atPosition, toPlaylist->songs.size()), inSong);
+        toPlaylist->m_songs.insert(qBound(0, atPosition, toPlaylist->m_songs.size()), inSong);
         emit elementInserted(inSong, toPlaylist);
     }
-    if(!libSongs->contains(inSong)){
-        libSongs->append(inSong);
-        emit elementInserted(inSong, nullptr);
+
+    if(!m_libSongs.contains(inSong)){
+        m_libSongs.append(inSong);
+        emit elementInserted(inSong, this);
     }
 }
 void MMediaLibrary::insert(MPlaylist *inPlaylist, MFolder *toFolder, int atPosition){
+
     if(toFolder){
-        toFolder->playlists.insert(qBound(0, atPosition, toFolder->playlists.size()), inPlaylist);
-        inPlaylist->parent = toFolder;
+        int pos = qBound(0, atPosition, toFolder->m_playlists.size());
+        toFolder->m_playlists.insert(pos, inPlaylist);
         emit elementInserted(inPlaylist, toFolder);
     }
 
-    if(!libPlaylists->contains(inPlaylist)){
-        libPlaylists->append(inPlaylist);
-        emit elementInserted(inPlaylist, nullptr);
+    inPlaylist->m_parent = toFolder;
+
+    if(!m_libPlaylists.contains(inPlaylist)){
+        m_libPlaylists.append(inPlaylist);
+        emit elementInserted(inPlaylist, this);
     }
 }
 void MMediaLibrary::insert(MFolder *inFolder, MFolder *toFolder, int atPosition){
+
     if(toFolder){
-        toFolder->folders.insert(qBound(0, atPosition, toFolder->folders.size()), inFolder);
-        inFolder->parent = toFolder;
+        int pos = qBound(0, atPosition, toFolder->m_folders.size());
+        toFolder->m_folders.insert(pos, inFolder);
         emit elementInserted(inFolder, toFolder);
     }
 
-    if(!libFolders->contains(inFolder)){
-        libFolders->append(inFolder);
-        emit elementInserted(inFolder, nullptr);
+    inFolder->m_parent = toFolder;
+
+    if(!m_libFolders.contains(inFolder)){
+        m_libFolders.append(inFolder);
+        emit elementInserted(inFolder, this);
     }
 }
 
 void MMediaLibrary::remove(MSong *remSong, MPlaylist *fromPlaylist){
-    fromPlaylist->songs.removeAll(remSong);
+    fromPlaylist->m_songs.removeAll(remSong);
     emit elementRemoved(remSong, fromPlaylist);
 }
 void MMediaLibrary::remove(MPlaylist *remPlaylist, MFolder *fromFolder){
-    fromFolder->playlists.removeAll(remPlaylist);
+    fromFolder->m_playlists.removeAll(remPlaylist);
     emit elementRemoved(remPlaylist, fromFolder);
 }
 void MMediaLibrary::remove(MFolder *remFolder, MFolder *fromFolder){
-    fromFolder->folders.removeAll(remFolder);
+    fromFolder->m_folders.removeAll(remFolder);
     emit elementRemoved(remFolder, fromFolder);
 }
 
 void MMediaLibrary::move(MSong* moveSong, MPlaylist *parentPlaylist, int toPosition){
-    int fromPosition = parentPlaylist->songs.indexOf(moveSong);
-    parentPlaylist->songs.move(fromPosition, qBound(0, toPosition, parentPlaylist->songs.size()));
+
+    int fromPosition = parentPlaylist->m_songs.indexOf(moveSong);
+    int pos = qBound(0, toPosition, parentPlaylist->m_songs.size());
+
+    parentPlaylist->m_songs.move(fromPosition, pos);
     emit elementMoved(moveSong, parentPlaylist);
 }
 void MMediaLibrary::move(MPlaylist *movePlaylist, MFolder *toFolder, int toPosition){
-    MFolder *parentFolder = movePlaylist->parent;
-    if(parentFolder){
-        parentFolder->playlists.removeAll(movePlaylist);
-    }
 
-    movePlaylist->parent = toFolder;
+    if(movePlaylist->m_parent){
+         movePlaylist->m_parent->m_playlists.removeAll(movePlaylist);
+    }
 
     if(toFolder){
-        toFolder->playlists.insert(qBound(0, toPosition, toFolder->playlists.size()), movePlaylist);
+        int pos = qBound(0, toPosition, toFolder->m_playlists.size());
+        toFolder->m_playlists.insert(pos, movePlaylist);
     }
 
-    qDebug() << "";
-    qDebug() << "move" << movePlaylist->name();
-    if(toFolder){
-        qDebug() << "to" << toFolder->name();
-    }
-    else {
-        qDebug() << "to root";
-    }
-    emit elementMoved(movePlaylist, toFolder);
+    movePlaylist->m_parent = toFolder;
+    emit elementMoved(movePlaylist, toFolder ? toFolder : static_cast<MMediaContainer*>(this));
 }
 void MMediaLibrary::move(MFolder *moveFolder, MFolder *toFolder, int toPosition){
-    MFolder *parentFolder = moveFolder->parent;
-    if(parentFolder){
-        parentFolder->folders.removeAll(moveFolder);
-    }
 
-    moveFolder->parent = toFolder;
+    if(moveFolder->m_parent){
+        moveFolder->m_parent->m_folders.removeAll(moveFolder);
+    }
 
     if(toFolder){
-        qDebug() << qBound(0, toPosition, toFolder->folders.size());
-        toFolder->folders.insert(qBound(0, toPosition, toFolder->folders.size()), moveFolder);
+        int pos = qBound(0, toPosition, toFolder->m_folders.size());
+        toFolder->m_folders.insert(pos, moveFolder);
     }
 
-    qDebug() << "";
-    qDebug() << "move" << moveFolder->name();
-    if(toFolder){
-        qDebug() << "to" << toFolder->name();
-    }
-    else {
-        qDebug() << "to root";
-    }
-
-    emit elementMoved(moveFolder, toFolder);
+    moveFolder->m_parent = toFolder;
+    emit elementMoved(moveFolder, toFolder ? toFolder : static_cast<MMediaContainer*>(this));
 }
 
 void MMediaLibrary::discard(MSong *remSong){
-    for(int i = 0; i < libPlaylists->size(); i++){
-        MPlaylist *playlist = libPlaylists->at(i);
-        if(playlist->songs.contains(remSong)){
-            playlist->songs.removeAll(remSong);
+
+    foreach(MPlaylist *playlist, m_libPlaylists){
+        if(playlist->m_songs.contains(remSong)){
+            playlist->m_songs.removeAll(remSong);
         }
     }
 
-    libSongs->removeAll(remSong);
-    emit elementDeleted(remSong->pid(), Mpi3::SongElement);
-//    delete remSong;
+    m_libSongs.removeAll(remSong);
+    emit elementDeleted(remSong);
 }
 void MMediaLibrary::discard(MPlaylist *remPlaylist){
-    if(remPlaylist->parent){
-        remPlaylist->parent->playlists.removeAll(remPlaylist);
+
+    if(remPlaylist->m_parent){
+        remPlaylist->m_parent->m_playlists.removeAll(remPlaylist);
     }
 
-    QVector<QString> pidChildren;
-    for(int i = 0; i < remPlaylist->songs.size(); i++){
-        pidChildren.append(remPlaylist->songs.at(i)->pid());
-    }
-
-    libPlaylists->removeAll(remPlaylist);
-    emit elementDeleted(remPlaylist->pid(), Mpi3::PlaylistElement, pidChildren);
-//    delete remPlaylist;
+    m_libPlaylists.removeAll(remPlaylist);
+    emit elementDeleted(remPlaylist);
 }
 void MMediaLibrary::discard(MFolder *remFolder){
-    if(remFolder->parent){
-        remFolder->parent->folders.removeAll(remFolder);
+
+    if(remFolder->m_parent){
+        remFolder->m_parent->m_folders.removeAll(remFolder);
     }
 
-    QVector<QString> pidChildren;
-    QVector<MPlaylist*> nestedPlaylists = allChildPlaylists(remFolder);
-    QVector<MFolder*> nestedFolders = allChildFolders(remFolder);
+    foreach(MMediaContainer *child, remFolder->childContainers()){
 
-    for(int i = 0; i < nestedPlaylists.size(); i++){
-        MPlaylist *playlist = nestedPlaylists.at(i);
-        pidChildren.append(playlist->pid());
-        libPlaylists->removeAll(playlist);
-//        delete playlist;
+        if(child->type() == Mpi3::FolderElement){
+            m_libFolders.removeAll(static_cast<MFolder*>(child));
+        }
+        else if(child->type() == Mpi3::PlaylistElement){
+            m_libPlaylists.removeAll(static_cast<MPlaylist*>(child));
+        }
     }
 
-    for(int i = 0; i < nestedFolders.size(); i++){
-        MFolder *folder = nestedFolders.at(i);
-        pidChildren.append(folder->pid());
-        libFolders->removeAll(folder);
-//        delete folder;
-    }
-
-    libFolders->removeAll(remFolder);
-    emit elementDeleted(remFolder->pid(), Mpi3::FolderElement, pidChildren);
-//    delete remFolder;
+    m_libFolders.removeAll(remFolder);
+    emit elementDeleted(remFolder);
 }

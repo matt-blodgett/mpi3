@@ -4,11 +4,14 @@
 #define MCONTENTDELEGATE_H
 
 #include <QObject>
+#include <QVector>
 
 
 #include "mglobal.h"
 
+
 class MAudioEngine;
+
 
 class MContentDelegate : public QObject
 {
@@ -21,19 +24,23 @@ public:
 
 public:
     void setEngine(MAudioEngine *engine);
-    void setContent(QVector<MSong*> content);
+    void setContent(MMediaContainer *container, MSong *song);
     void setIndex(int idx);
+
+    void next();
+    void prev();
 
 public:
     MAudioEngine *engine() const;
-    QStringList content() const;
-    QString pathAt(int idx) const;
+    MMediaContainer *container() const;
+    MSong *song() const;
+    MSong *songAt(int idx) const;
     int index() const;
 
 private:
     MAudioEngine *m_audioEngine = nullptr;
-    QStringList m_mediaContent;
-    int m_index;
+    MMediaContainer *m_container = nullptr;
+    MSong *m_song = nullptr;
 
 private slots:
     void processMediaStatus(Mpi3::MediaState state);
@@ -42,7 +49,7 @@ private slots:
     void processRequestStatus(Mpi3::EngineState state);
 
 signals:
-    void notifyIndex(int idx);
+    void notifySongChanged(MSong *song, MMediaContainer *container);
 
 };
 

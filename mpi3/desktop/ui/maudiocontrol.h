@@ -49,6 +49,7 @@ public:
 private:
     Mpi3::EngineState m_currentState;
     QString m_pidCurrentSong;
+    bool m_navigating;
 
 private:
     QWidget *m_frmVolume = nullptr;

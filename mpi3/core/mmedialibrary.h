@@ -6,12 +6,6 @@
 #include <QObject>
 #include <QVector>
 
-QT_BEGIN_NAMESPACE
-class QDomDocument;
-class QDomElement;
-class QDomNode;
-QT_END_NAMESPACE
-
 
 #include "mglobal.h"
 
@@ -88,31 +82,26 @@ public:
     explicit MMediaContainer();
     Mpi3::ElementType type() const override;
 
-public:
     virtual QVector<MSong*> songs() const;
     virtual QVector<MPlaylist*> playlists() const;
     virtual QVector<MFolder*> folders() const;
 
-public:
-    MMediaContainer *parentContainer() const;
+    MFolder *parentFolder() const;
+
     QVector<MMediaElement*> childElements(Mpi3::ElementType elemType = Mpi3::BaseElement) const;
-    QVector<MMediaContainer*> childContainers() const;
-
-    MSong *getSong(const QString &pid) const;
-    MPlaylist *getPlaylist(const QString &pid) const;
-    MFolder *getFolder(const QString &pid) const;
-
-    MMediaContainer *getContainer(const QString &pid) const;
     MMediaElement *getElement(const QString &pid, Mpi3::ElementType elemType = Mpi3::BaseElement) const;
 
+    MMediaContainer *getContainer(const QString &pid) const;
+    MPlaylist *getPlaylist(const QString &pid) const;
+    MFolder *getFolder(const QString &pid) const;
+    MSong *getSong(const QString &pid) const;
+
 private:
-    MMediaContainer *m_parentContainer = nullptr;
+    MFolder *m_parent = nullptr;
 };
 
 
-
-
-class MPlaylist : public MMediaElement
+class MPlaylist : public MMediaContainer
 {
     Q_OBJECT
 
@@ -121,19 +110,15 @@ friend class MMediaLibrary;
 public:
     explicit MPlaylist();
     Mpi3::ElementType type() const override;
+    QVector<MSong*> songs() const override;
 
-public:
-    MFolder *parent = nullptr;
-    QVector<MSong*> songs;
+private:
+    QVector<MSong*> m_songs;
 
-public:
-    MSong *getSong(const QString &pid) const;
 };
 
 
-
-
-class MFolder : public MMediaElement
+class MFolder : public MMediaContainer
 {
     Q_OBJECT
 
@@ -143,77 +128,59 @@ public:
     explicit MFolder();
     Mpi3::ElementType type() const override;
 
-public:
-    MFolder *parent = nullptr;
-    QVector<MFolder*> folders;
-    QVector<MPlaylist*> playlists;
+    QVector<MSong*> songs() const override;
+    QVector<MPlaylist*> playlists() const override;
+    QVector<MFolder*> folders() const override;
+    QVector<MMediaContainer*> childContainers() const;
 
-public:
-    MPlaylist *getPlaylist(const QString &pid) const;
-    MFolder *getFolder(const QString &pid) const;
+private:
+    QVector<MPlaylist*> m_playlists;
+    QVector<MFolder*> m_folders;
 };
 
 
-class MMediaLibrary : public MMediaElement
+class MMediaLibrary : public MMediaContainer
 {
     Q_OBJECT
     Q_DISABLE_COPY(MMediaLibrary)
 
 public:    
     explicit MMediaLibrary();
-    ~MMediaLibrary() override;
     Mpi3::ElementType type() const override;
 
+    QString filepath() const;
     void load(const QString &path = QString());
     void save(const QString &path = QString());
+    void reset();
 
 public:
-    QString filepath() const;
+    QVector<MSong*> songs() const override;
+    QVector<MPlaylist*> playlists() const override;
+    QVector<MFolder*> folders() const override;
 
-private:
-    QString m_filepath;
+    QVector<MFolder*> rootFolders() const;
+    QVector<MPlaylist*> rootPlaylists() const;
 
-private:
+    MSong *newSong(const QString &path = QString()) const;
+    MPlaylist *newPlaylist(bool named = false) const;
+    MFolder *newFolder(bool named = false) const;
     QString generatePID(Mpi3::ElementType elemType) const;
-    void xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text) const;
-    QMap<QString, QVariant> plistDict(const QDomNode &parentNode) const;
 
 public:
     void importItunesPlist(const QString &path, MFolder *parentFolder = nullptr);
 
-    bool validMediaFiles(QUrl mediaUrl) const;
-    bool validMediaFiles(QList<QUrl> mediaUrls) const;
+    QVector<MSong*> songsFromBytes(QByteArray pidBytes) const;
+    static QByteArray songsToBytes(QVector<MSong*> songObjects);
+    static QList<QUrl> songsToPaths(QVector<MSong*> songObjects);
 
-    QList<QUrl> songsToPaths(QVector<MSong*> songObjects) const;
-    QVector<MSong*> songsFromData(QByteArray pidBytes) const;
-    QByteArray songsToData(QVector<MSong*> songObjects) const;
+    static bool validMediaFiles(QUrl mediaUrl);
+    static bool validMediaFiles(QList<QUrl> mediaUrls);
 
-public:
-    QVector<MSong*> *libSongs = nullptr;
-    QVector<MPlaylist*> *libPlaylists = nullptr;
-    QVector<MFolder*> *libFolders = nullptr;
-
-public:
-//    QVector<Mpi3Folder*> rootFolders;
-//    QVector<Mpi3Playlist*> rootPlaylist;
-
-    QVector<MFolder*> childFolders() const;
-    QVector<MPlaylist*> childPlaylists() const;
-
-    QVector<MSong*> allChildSongs(MFolder *parentFolder = nullptr) const;
-    QVector<MPlaylist*> allChildPlaylists(MFolder *parentFolder = nullptr) const;
-    QVector<MFolder*> allChildFolders(MFolder *parentFolder = nullptr) const;
-
-public:
-    Q_REQUIRED_RESULT MMediaElement *getElement(const QString &pid);
-
-    Q_REQUIRED_RESULT MSong *getSong(const QString &pid) const;
-    Q_REQUIRED_RESULT MPlaylist *getPlaylist(const QString &pid) const;
-    Q_REQUIRED_RESULT MFolder *getFolder(const QString &pid) const;
-
-    Q_REQUIRED_RESULT MSong* newSong(const QString &path = QString()) const;
-    Q_REQUIRED_RESULT MPlaylist* newPlaylist(bool named = false) const;
-    Q_REQUIRED_RESULT MFolder* newFolder(bool named = false) const;
+private:
+    QString m_filepath;
+    QVector<MSong*> m_libSongs;
+    QVector<MPlaylist*> m_libPlaylists;
+    QVector<MFolder*> m_libFolders;
 
 public:
     void modify(const QString &pid, const QString &value);
@@ -237,11 +204,10 @@ public:
 
 signals:
     void elementModified(MMediaElement *elemModified);
-    void elementInserted(MMediaElement *elemInserted, MMediaElement *elemParent);
-    void elementRemoved(MMediaElement *elemRemoved, MMediaElement *elemParent);
-    void elementMoved(MMediaElement *elemMoved, MMediaElement *elemParent);
-    void elementDeleted(const QString &pidDeleted, Mpi3::ElementType elemType, QVector<QString> pidChildren = QVector<QString>());
+    void elementInserted(MMediaElement *elemInserted, MMediaContainer *elemParent);
+    void elementRemoved(MMediaElement *elemRemoved, MMediaContainer *elemParent);
+    void elementMoved(MMediaElement *elemMoved, MMediaContainer *elemParent);
+    void elementDeleted(MMediaElement *elemDeleted);
 };
-
 
 #endif

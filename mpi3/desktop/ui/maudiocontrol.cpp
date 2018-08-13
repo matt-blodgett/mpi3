@@ -141,13 +141,6 @@ void MPanelPlayback::initializeLayout(){
     m_lblArtist->setAlignment(Qt::AlignCenter);
     m_sldPosition->setOrientation(Qt::Horizontal);
 
-
-
-
-    m_btnFade->setVisible(false);
-
-
-
     m_btnNext->setIcon(QIcon(m_pixNext));
     m_btnPrev->setIcon(QIcon(m_pixPrev));
     m_btnFade->setIcon(QIcon(m_pixPlay));
@@ -257,19 +250,26 @@ void MPanelPlayback::setVolume(int volume){
     m_sldVolume->blockSignals(false);
 }
 void MPanelPlayback::setState(Mpi3::EngineState state){
-    m_currentState = state;
 
-    if(m_currentState == Mpi3::EngineActive){
+    if(state == Mpi3::EngineActive){
         m_btnPlay->setIcon(QIcon(m_pixPaus));
         m_btnFade->setIcon(QIcon(m_pixPlay));
     }
-    else {
+    else if(state == Mpi3::EngineIdle) {
         m_btnPlay->setIcon(QIcon(m_pixPlay));
         m_btnFade->setIcon(QIcon(m_pixPaus));
     }
 
-    m_btnFade->setVisible(true);
-    m_fadeTimer->start(300);
+    if(!m_navigating && state != m_currentState){
+        m_btnFade->setVisible(true);
+        m_fadeTimer->start(300);
+    }
+
+    if(state != Mpi3::EngineStopped){
+        m_navigating = false;
+    }
+
+    m_currentState = state;
 }
 void MPanelPlayback::setDisplay(MSong *song){
     if(song){
@@ -281,12 +281,14 @@ void MPanelPlayback::setDisplay(MSong *song){
 }
 
 void MPanelPlayback::clickedPlay(){
-    emit playing() ? audioPause() : audioPlay();
+    emit paused() || stopped() ? audioPlay() : audioPause();
 }
 void MPanelPlayback::clickedNext(){
+    m_navigating = true;
     emit navigateNext();
 }
 void MPanelPlayback::clickedPrev(){
+    m_navigating = true;
     emit navigatePrev();
 }
 void MPanelPlayback::volumeChanged(){
@@ -295,9 +297,9 @@ void MPanelPlayback::volumeChanged(){
 
 void MPanelPlayback::elementModified(MMediaElement *elemModified){
     if(elemModified->type() == Mpi3::SongElement){
-        MSong *sc_songModified = static_cast<MSong*>(elemModified);
-        if(sc_songModified->pid() == m_pidCurrentSong){
-            setDisplay(sc_songModified);
+        MSong *sc_song = static_cast<MSong*>(elemModified);
+        if(sc_song->pid() == m_pidCurrentSong){
+            setDisplay(sc_song);
         }
     }
 }

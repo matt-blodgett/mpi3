@@ -62,8 +62,8 @@ private:
     QIcon m_icnPlaylist;
 
 private:
-    QScopedPointer<MMediaLibrary> m_mediaLibrary;
     QMap<QString, MModelItem*> m_libItems;
+    MMediaLibrary *m_mediaLibrary = nullptr;
     MModelItem *m_rootItem = nullptr;
 
 public:
@@ -75,7 +75,7 @@ public:
 
     void setLibrary(MMediaLibrary *library);
 
-    MFolder *getParentFolderAt(const QModelIndex &index) const;
+    MFolder *parentFolderAt(const QModelIndex &index) const;
 
 private:
     void populate(MFolder *parentFolder = nullptr, MModelItem *parentItem = nullptr);
@@ -87,7 +87,7 @@ private slots:
     void elementInserted(MMediaElement *elemInserted, MMediaElement *elemParent);
     void elementRemoved(MMediaElement *elemRemoved, MMediaElement *elemParent);
     void elementMoved(MMediaElement *elemMoved, MMediaElement *elemParent);
-    void elementDeleted(const QString &pidDeleted, Mpi3::ElementType elemType, QVector<QString> pidChildren);
+    void elementDeleted(MMediaElement *elemDeleted);
 };
 
 
@@ -98,16 +98,6 @@ class MModelSonglist : public QAbstractItemModel
 public:
     explicit MModelSonglist(QObject *parent = nullptr);
     ~MModelSonglist() override;
-
-public:
-    enum Display {
-        DisplayNone,
-        DisplayAllSongs,
-        DisplayArtists,
-        DisplayAlbums,
-        DisplayPlaylist,
-        DisplayFolder
-    };
 
 public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
@@ -138,32 +128,29 @@ public:
     bool removeRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
     bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
 
-private:
-    QStringList m_headers;
-    QScopedPointer<MMediaLibrary> m_mediaLibrary;
-    MModelSonglist::Display m_currentDisplay;
-    QVector<MSong*> m_currentSonglist;
-    QString m_currentContainer;
-
 public:
+    void setLibrary(MMediaLibrary *library);
+    void setContainer(MMediaContainer *container);
+
+    MMediaLibrary *library() const;
+    MMediaContainer *container() const;
+    QVector<MSong*> songlist() const;
+    MSong *songAt(const QModelIndex &index) const;
+
     QMap<int, bool> columnVisibility;
 
-    void setLibrary(MMediaLibrary *library);
-
-    QVector<MSong*> currentSonglist() const;
-    MSong *getSongAt(const QModelIndex &index) const;
-
-    QString currentContainer() const;
-    MModelSonglist::Display currentDisplay() const;
-    void setDisplay(MModelSonglist::Display display);
-    void setDisplay(MMediaElement *container);
+private:
+    QStringList m_headers;
+    MMediaLibrary *m_library = nullptr;
+    MMediaContainer *m_container = nullptr;
+    QVector<MSong*> m_songlist;
 
 private slots:
     void elementModified(MMediaElement *elemModified);
-    void elementInserted(MMediaElement *elemInserted, MMediaElement *elemParent);
-    void elementRemoved(MMediaElement *elemRemoved, MMediaElement *elemParent);
-    void elementMoved(MMediaElement *elemMoved, MMediaElement *elemParent);
-    void elementDeleted(const QString &pidDeleted, Mpi3::ElementType elemType, QVector<QString> pidChildren);
+    void elementInserted(MMediaElement *elemInserted, MMediaContainer *elemParent);
+    void elementRemoved(MMediaElement *elemRemoved, MMediaContainer *elemParent);
+    void elementMoved(MMediaElement *elemMoved, MMediaContainer *elemParent);
+    void elementDeleted(MMediaElement *elemDeleted);
 };
 
 

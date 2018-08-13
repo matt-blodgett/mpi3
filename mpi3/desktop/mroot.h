@@ -10,9 +10,10 @@ class QTreeView;
 QT_END_NAMESPACE
 
 
+class MStyleSheet;
 class MMediaLibrary;
 class MAudioEngine;
-class MStyleSheet;
+class MContentDelegate;
 
 class MPanelLibrary;
 class MModelContainers;
@@ -40,15 +41,10 @@ private:
     void saveSettings();
 
 private:
-    void headerContextMenu(const QPoint &point);
-    void songlistContextMenu(const QPoint &point);
-    void containersContextMenu(const QPoint &point);
-
-private:
+    MStyleSheet *m_styleSheet = nullptr;
     MMediaLibrary *m_mediaLibrary = nullptr;
     MAudioEngine *m_audioEngine = nullptr;
-
-    MStyleSheet *m_styleSheet = nullptr;
+    MContentDelegate *m_contentDelegate = nullptr;
 
     MPanelLibrary *m_panelLibview = nullptr;
     MModelContainers *m_modelContainers = nullptr;
@@ -59,9 +55,17 @@ private:
     MTreeSonglist *m_treeSonglist = nullptr;
 
 private:
+    void setCurrentContent(const QModelIndex &idx);
+    void currentSongChanged();
+    void libraryViewChanged();
+
     void setColumnVisibility(int column);
     void openFileLocation(const QString &path);
-    void libraryViewChanged();
+
+private:
+    void headerContextMenu(const QPoint &point);
+    void songlistContextMenu(const QPoint &point);
+    void containersContextMenu(const QPoint &point);
 
     void libImport();
     void libExport();
