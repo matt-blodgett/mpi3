@@ -19,19 +19,30 @@ struct ao_device;
 #include "mglobal.h"
 
 
+namespace Mpi3 {
+    void external_libs_init();
+    void external_libs_deinit();
+};
+
+
 struct MSongInfo{
     void load(const QString &path);
     bool loaded;
 
-    QString name;
+    QString title;
     QString artist;
     QString album;
     QString kind;
 
-    int time;
-    int size;
+    double time;
+    int64_t size;
     int bitRate;
     int sampleRate;
+
+    QString majorBrand;
+    QString minorVersion;
+    QString compatibleBrands;
+    QString encoder;
 };
 
 

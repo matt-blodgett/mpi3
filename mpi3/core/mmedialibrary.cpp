@@ -1,4 +1,5 @@
 #include "mmedialibrary.h"
+#include "maudioengine.h"
 
 #include <QRandomGenerator>
 #include <QDomDocument>
@@ -9,13 +10,13 @@
 
 
 #define PID_MAX_LENGTH 18
-
 static const QString PrefixBase         = "E:";
 static const QString PrefixSong         = "S:";
 static const QString PrefixContainer    = "C:";
 static const QString PrefixPlaylist     = "P:";
 static const QString PrefixFolder       = "F:";
 static const QString PrefixLibrary      = "L:";
+
 
 static void xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text){
     QDomElement e = xml.createElement(tagname);
@@ -83,19 +84,23 @@ QString MSong::artist() const{
 QString MSong::album() const{
     return m_album;
 }
-QString MSong::path() const{
-    return m_path;
-}
 QString MSong::kind() const{
     return m_kind;
 }
+QString MSong::path() const {
+    return QDir::toNativeSeparators(QUrl(m_path).toLocalFile());;
+}
+QString MSong::url() const {
+    return m_path;
+}
 
-int MSong::time() const{
+double MSong::time() const{
     return m_time;
 }
-int MSong::size() const{
+double MSong::size() const{
     return m_size;
 }
+
 int MSong::bitRate() const{
     return m_bitRate;
 }
@@ -103,6 +108,18 @@ int MSong::sampleRate() const{
     return m_sampleRate;
 }
 
+QString MSong::majorBrand() const{
+    return m_majorBrand;
+}
+QString MSong::minorVersion() const{
+    return m_minorVersion;
+}
+QString MSong::compatibleBrands() const{
+    return m_compatibleBrands;
+}
+QString MSong::encoder() const{
+    return m_encoder;
+}
 
 MMediaContainer::MMediaContainer(){}
 Mpi3::ElementType MMediaContainer::type() const {
@@ -238,6 +255,8 @@ QVector<MMediaContainer*> MFolder::childContainers() const {
     foreach(MPlaylist *playlist, m_playlists){
         containers.push_back(playlist);
     }
+
+    return containers;
 }
 
 
@@ -279,13 +298,20 @@ void MMediaLibrary::load(const QString &path){
 
             song->m_artist = xmlSongs.at(i).namedItem("artist").toElement().text();
             song->m_album = xmlSongs.at(i).namedItem("album").toElement().text();
-            song->m_path = xmlSongs.at(i).namedItem("path").toElement().text();
             song->m_kind = xmlSongs.at(i).namedItem("kind").toElement().text();
 
-            song->m_time = xmlSongs.at(i).namedItem("time").toElement().text().toInt();
-            song->m_size = xmlSongs.at(i).namedItem("size").toElement().text().toInt();
+            song->m_path = xmlSongs.at(i).namedItem("path").toElement().text();
+
+            song->m_time = xmlSongs.at(i).namedItem("time").toElement().text().toDouble();
+            song->m_size = xmlSongs.at(i).namedItem("size").toElement().text().toDouble();
+
             song->m_bitRate = xmlSongs.at(i).namedItem("bitRate").toElement().text().toInt();
             song->m_sampleRate = xmlSongs.at(i).namedItem("sampleRate").toElement().text().toInt();
+
+            song->m_majorBrand = xmlSongs.at(i).namedItem("majorBrand").toElement().text();
+            song->m_minorVersion = xmlSongs.at(i).namedItem("minorVersion").toElement().text();
+            song->m_compatibleBrands = xmlSongs.at(i).namedItem("compatibleBrands").toElement().text();
+            song->m_encoder = xmlSongs.at(i).namedItem("encoder").toElement().text();
 
             m_libSongs.append(song);
         }
@@ -377,13 +403,20 @@ void MMediaLibrary::save(const QString &path){
 
             xmlWriteElement(xml, songElement, "artist", song->m_artist);
             xmlWriteElement(xml, songElement, "album", song->m_album);
-            xmlWriteElement(xml, songElement, "path", song->m_path);
             xmlWriteElement(xml, songElement, "kind", song->m_kind);
+
+            xmlWriteElement(xml, songElement, "path", song->m_path);
 
             xmlWriteElement(xml, songElement, "time", QString::number(song->m_time));
             xmlWriteElement(xml, songElement, "size", QString::number(song->m_size));
+
             xmlWriteElement(xml, songElement, "bitRate", QString::number(song->m_bitRate));
             xmlWriteElement(xml, songElement, "sampleRate", QString::number(song->m_sampleRate));
+
+            xmlWriteElement(xml, songElement, "majorBrand", song->m_majorBrand);
+            xmlWriteElement(xml, songElement, "minorVersion", song->m_minorVersion);
+            xmlWriteElement(xml, songElement, "compatibleBrands", song->m_compatibleBrands);
+            xmlWriteElement(xml, songElement, "encoder", song->m_encoder);
 
             xmlSongs.appendChild(songElement);
         }
@@ -484,8 +517,36 @@ MSong *MMediaLibrary::newSong(const QString &path) const{
     song->m_pid = generatePID(Mpi3::SongElement);
 
     if(!path.isNull()){
-        song->m_name = QUrl(path).fileName();
-        song->m_path = path;
+
+        MSongInfo info;
+        info.load(path);
+
+        if(info.loaded){
+            song->m_name = info.title;
+            song->m_artist = info.artist;
+            song->m_album = info.album;
+            song->m_kind = info.kind;
+            song->m_path = path;
+
+            song->m_size = info.size;
+            song->m_time = info.time;
+
+            song->m_bitRate = info.bitRate;
+            song->m_sampleRate = info.sampleRate;
+
+            song->m_majorBrand = info.majorBrand;
+            song->m_minorVersion = info.minorVersion;
+            song->m_compatibleBrands = info.compatibleBrands;
+            song->m_encoder = info.encoder;
+        }
+
+        if(song->m_name.isEmpty() || song->m_name.isNull()){
+            song->m_name = QUrl(path).fileName();
+            QStringList splitExt = song->m_name.split(".");
+            if(splitExt.size() > 0){
+                song->m_name = splitExt.at(0);
+            }
+        }
     }
 
     return song;

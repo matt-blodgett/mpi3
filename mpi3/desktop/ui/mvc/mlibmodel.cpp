@@ -149,7 +149,7 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
 
         if(actionIsCopyAction && dataIsSonglist){
             QByteArray pidBytes = data->data(QMetaType::typeName(qMetaTypeId<QStringList>()));
-            foreach(MSong *song, m_mediaLibrary->songsFromData(pidBytes)){
+            foreach(MSong *song, m_mediaLibrary->songsFromBytes(pidBytes)){
                 m_mediaLibrary->insert(song, parentPlaylist);
             }
             return true;
@@ -622,8 +622,8 @@ QMimeData *MModelSonglist::mimeData(const QModelIndexList &indexes) const{
         }
     }
 
-    QByteArray pidBytes = m_library->songsToData(selectedSongs);
-    QList<QUrl> songUrls = m_library->songsToPaths(selectedSongs);
+    QByteArray pidBytes = MMediaLibrary::songsToBytes(selectedSongs);
+    QList<QUrl> songUrls = MMediaLibrary::songsToPaths(selectedSongs);
 
     mData->setData(QMetaType::typeName(qMetaTypeId<QStringList>()), pidBytes);
     mData->setUrls(songUrls);
@@ -667,7 +667,7 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
 
         if(dataIsSonglist){
             QByteArray pidBytes = data->data(QMetaType::typeName(qMetaTypeId<QStringList>()));
-            QVector<MSong*> droppedSongs = m_library->songsFromData(pidBytes);
+            QVector<MSong*> droppedSongs = m_library->songsFromBytes(pidBytes);
 
             if(actionIsCopyAction){
                 foreach(MSong *song, droppedSongs){

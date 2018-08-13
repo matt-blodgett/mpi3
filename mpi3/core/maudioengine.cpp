@@ -1,16 +1,12 @@
 #include "maudioengine.h"
 
+#include <QFileInfo>
+#include <QWaitCondition>
 #include <QThread>
 #include <QMutex>
 
-#include <QReadWriteLock>
-#include <QWriteLocker>
-#include <QReadLocker>
-#include <QWaitCondition>
 
-
-extern "C"
-{
+extern "C" {
 #include <lib/libav/libavcodec/avcodec.h>
 #include <lib/libav/libavformat/avformat.h>
 }
@@ -20,19 +16,30 @@ extern "C"
 
 #define BIT_DEPTH 16
 #define BIT_RANGE (1<<(BIT_DEPTH - 1))
-
-
 #include <iostream>
 
 
-Q_DECL_UNUSED static int flush_codec(AVCodecContext *codec_ctx){
+namespace Mpi3 {
+    void external_libs_init() {
+        // AV_LOG_QUIET
+        av_log_set_level(AV_LOG_VERBOSE);
+        avcodec_register_all();
+        av_register_all();
+        avformat_network_init();
+        ao_initialize();
+    }
+    void external_libs_deinit() {
+        avformat_network_deinit();
+        ao_shutdown();
+    }
+};
+
+
+Q_DECL_UNUSED static int flush_codec(
+        AVCodecContext *codec_ctx){
 
     AVFrame *frame;
     frame = av_frame_alloc();
-
-    if(!frame){
-        return -1;
-    }
 
     avcodec_send_packet(codec_ctx, nullptr);
 
@@ -48,8 +55,10 @@ Q_DECL_UNUSED static int flush_codec(AVCodecContext *codec_ctx){
 }
 
 static int decode_audio_frame(
-        AVFrame *frame, AVFormatContext *format_ctx,
-        AVCodecContext *codec_ctx, int *finished) {
+        AVFrame *frame,
+        AVFormatContext *format_ctx,
+        AVCodecContext *codec_ctx,
+        int *finished) {
 
     AVPacket pckt;
     av_init_packet(&pckt);
@@ -93,19 +102,20 @@ static int decode_audio_frame(
 
 
 static int load_contexts(
-        std::string filepath, AVFormatContext *formatCtx,
-        AVCodecContext *codecCtx, int *streamIdx){
-
+        std::string filepath,
+        AVFormatContext **formatCtx,
+        AVCodecContext **codecCtx,
+        int *streamIdx){
 
     int error = 0;
 
-    error = avformat_open_input(&formatCtx, filepath.c_str(), nullptr, nullptr);
+    error = avformat_open_input(formatCtx, filepath.c_str(), nullptr, nullptr);
     if(error < 0){
         std::cerr << "ERROR: error opening input file";
         return error;
     }
 
-    error = avformat_find_stream_info(formatCtx, nullptr);
+    error = avformat_find_stream_info(*formatCtx, nullptr);
     if(error < 0){
         std::cerr << "ERROR: error finding stream info" << std::endl;
         return error;
@@ -113,7 +123,7 @@ static int load_contexts(
 
     AVCodec *codec;
     *streamIdx = av_find_best_stream(
-        formatCtx, AVMEDIA_TYPE_AUDIO, -1, -1, &codec, 0);
+        *formatCtx, AVMEDIA_TYPE_AUDIO, -1, -1, &codec, 0);
 
     if(*streamIdx == AVERROR_STREAM_NOT_FOUND){
         std::cerr << "ERROR: error finding audio stream" << std::endl;
@@ -128,55 +138,89 @@ static int load_contexts(
         return error;
     }
 
-
-    codecCtx = avcodec_alloc_context3(codec);
+    *codecCtx = avcodec_alloc_context3(codec);
     if(!codecCtx){
         std::cerr << "ERROR: error allocating codec context";
         return error;
     }
 
-    error = avcodec_open2(codecCtx, codec, nullptr);
+    error = avcodec_open2(*codecCtx, codec, nullptr);
     if(error < 0){
         std::cerr << "ERROR: error opening codec";
         return error;
     }
 
     return error;
+}
 
 
-//    //---------------------------------------------------------------------------
-//    for(uint32_t i = 0; i < formatCtx->nb_streams; i++){
-//        if(formatCtx->streams[i]->index != m_streamIdx){
-//            formatCtx->streams[i]->discard = AVDISCARD_ALL;
-//        }
-//    }
+void MSongInfo::load(const QString &path){
 
-//    AVStream *stream = formatCtx->streams[m_streamIdx];
-//    stream->discard = AVDISCARD_DEFAULT;
+    AVFormatContext *formatCtx = nullptr;
+    AVCodecContext *codecCtx = nullptr;
 
-    AVFrame *frame;
-    frame = av_frame_alloc();
-    if(!frame){
-        std::cerr << "ERROR: error allocating frame" << std::endl;
-        return -1;
+    int stream_index = -1;
+
+    int error = load_contexts(path.toStdString(), &formatCtx, &codecCtx, &stream_index);
+    if(error < 0 || stream_index < 0){
+        loaded = false;
+        return;
     }
 
-
-    //---------------------------------------------------------------------------
     avformat_seek_file(formatCtx, 0, 0, 0, 0, 0);
 
     error = 0;
     int finished = 0;
     int sample_rate = -1;
+    AVFrame *frame = av_frame_alloc();
     while((!finished && !error) && sample_rate <= 0){
         error = decode_audio_frame(frame, formatCtx, codecCtx, &finished);
         sample_rate = frame->sample_rate;
     }
 
+    AVStream *stream = formatCtx->streams[stream_index];
+    time = stream->duration * av_q2d(stream->time_base);
+    size = QFileInfo(path).size();
+    bitRate = formatCtx->bit_rate;
+    sampleRate = sample_rate;
+    kind = codecCtx->codec->name;
+
+    AVDictionary *meta = formatCtx->metadata;
+    AVDictionaryEntry *tag = nullptr;
+    while ((tag = av_dict_get(meta, "", tag, AV_DICT_IGNORE_SUFFIX))){
+
+        if(strncmp(tag->key, "title", 5) == 0){
+            title = tag->value;
+        }
+        else if(strncmp(tag->key, "artist", 6) == 0){
+            artist = tag->value;
+        }
+        else if(strncmp(tag->key, "album", 5) == 0){
+            album = tag->value;
+        }
+        else if(strncmp(tag->key, "major_brand", 11) == 0){
+            majorBrand = tag->value;
+        }
+        else if(strncmp(tag->key, "minor_version", 13) == 0){
+            minorVersion = tag->value;
+        }
+        else if(strncmp(tag->key, "compatible_brands", 7) == 0){
+            compatibleBrands = tag->value;
+        }
+        else if(strncmp(tag->key, "encoder", 7) == 0){
+            encoder = tag->value;
+        }
+
+    }
+
     av_frame_free(&frame);
+    avformat_close_input(&formatCtx);
+    avformat_free_context(formatCtx);
+    avcodec_close(codecCtx);
+    avcodec_free_context(&codecCtx);
+
+    loaded = true;
 }
-
-
 
 
 MAudioEngine::MAudioEngine(QObject *parent) : QObject(parent){
@@ -200,23 +244,18 @@ MAudioEngine::MAudioEngine(QObject *parent) : QObject(parent){
     m_codecCtx = nullptr;
     m_aoDevice = nullptr;
     m_streamIdx = -1;
-
-    av_log_set_level(AV_LOG_VERBOSE); // AV_LOG_QUIET
-    av_register_all();
-    avcodec_register_all();
-    avformat_network_init();
-    ao_initialize();
 }
 MAudioEngine::~MAudioEngine(){
     stop();
-
     media_dealloc();
-    avformat_network_deinit();
-    ao_shutdown();
 
+    delete m_attribMtx;
     delete m_processMutex;
     delete m_processCondition;
-    delete m_attribMtx;
+    delete m_processThread;
+
+    delete m_formatCtx;
+    delete m_codecCtx;
 
     std::cout << "THREAD: ENGINE DESTROYED" << std::endl;
 }
@@ -238,18 +277,9 @@ void MAudioEngine::media_dealloc(){
 }
 void MAudioEngine::media_alloc(){
 
+    int error = load_contexts(m_filepath.toStdString(), &m_formatCtx, &m_codecCtx, &m_streamIdx);
+    if(error < 0 || m_streamIdx < 0){return;}
 
-    int error = 0;
-
-
-    error = load_contexts(m_filepath.toStdString(), m_formatCtx, m_codecCtx, &m_streamIdx);
-
-    if(error < 0){
-        return;
-    }
-
-
-    //---------------------------------------------------------------------------
     for(uint32_t i = 0; i < m_formatCtx->nb_streams; i++){
         if(m_formatCtx->streams[i]->index != m_streamIdx){
             m_formatCtx->streams[i]->discard = AVDISCARD_ALL;
@@ -257,21 +287,13 @@ void MAudioEngine::media_alloc(){
     }
 
     m_formatCtx->streams[m_streamIdx]->discard = AVDISCARD_DEFAULT;
-
-    AVFrame *frame;
-    frame = av_frame_alloc();
-    if(!frame){
-        std::cerr << "ERROR: error allocating frame" << std::endl;
-        return;
-    }
-
-
-    //---------------------------------------------------------------------------
     avformat_seek_file(m_formatCtx, 0, 0, 0, 0, 0);
 
     error = 0;
     int finished = 0;
     int sample_rate = -1;
+
+    AVFrame *frame = av_frame_alloc();
     while((!finished && !error) && sample_rate <= 0){
         error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
         sample_rate = frame->sample_rate;
@@ -279,19 +301,6 @@ void MAudioEngine::media_alloc(){
 
     av_frame_free(&frame);
 
-//    std::cout << "duration: " << stream->duration * av_q2d(stream->time_base) << std::endl;
-//    std::cout << "sample rate: " << sample_rate << std::endl;
-//    std::cout << "bit rate: " << m_formatCtx->bit_rate << std::endl;
-
-//    AVDictionaryEntry *tag;
-//    while ((tag = av_dict_get(m_formatCtx->metadata, "", tag, AV_DICT_IGNORE_SUFFIX))){
-//        std::cout << tag->key << " = " << tag->value << std::endl;
-//    }
-
-//    std::cout << std::endl;
-
-
-    //---------------------------------------------------------------------------
     int default_driver = ao_default_driver_id();
     ao_info *info = ao_driver_info(default_driver);
 
@@ -387,8 +396,6 @@ void MAudioEngine::open(const QString &path){
 
     if(empty()){
 
-        m_attribMtx->lock();
-
         std::cout << "OPEN: media_dealloc" << std::endl;
         media_dealloc();
 
@@ -399,7 +406,6 @@ void MAudioEngine::open(const QString &path){
         std::cout << "OPEN: media_alloc" << std::endl;
         media_alloc();
 
-        m_attribMtx->unlock();
     }
 }
 
@@ -524,14 +530,3 @@ void MAudioEngine::updateRequest(Mpi3::EngineState state){
 
     emit notifyRequestStatus(state);
 }
-
-
-
-
-
-
-
-
-
-
-

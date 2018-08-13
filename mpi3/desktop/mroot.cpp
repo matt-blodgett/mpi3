@@ -42,13 +42,50 @@ MRootDesktop::~MRootDesktop(){
     delete m_audioEngine;
     delete m_styleSheet;
     delete m_mediaLibrary;
+    Mpi3::external_libs_deinit();
 }
 
 void MRootDesktop::initialize(){
+    Mpi3::external_libs_init();
     initializeObjects();
     initializeMainMenu();
     initializeLayout();
     initializeState();
+
+
+    MSongInfo info;
+
+    info.load("C:/Users/mablodgett/Desktop/Calm Down.mp3");
+    if(info.loaded){
+        qDebug() << "-----------";
+        qDebug() << "info loaded";
+
+        qDebug() << info.title;
+        qDebug() << info.artist;
+        qDebug() << info.album;
+        qDebug() << info.kind;
+        qDebug() << info.time;
+        qDebug() << info.size;
+        qDebug() << info.bitRate;
+        qDebug() << info.sampleRate;
+        qDebug() << info.majorBrand;
+        qDebug() << info.minorVersion;
+        qDebug() << info.compatibleBrands;
+        qDebug() << info.encoder;
+    }
+
+    QString path = "file:///C:/Users/mablodgett/Desktop/Calm Down.mp3";
+
+    qDebug() << QUrl(path).toLocalFile();
+
+    QString url = QUrl(path).toLocalFile();
+
+    while(url.startsWith("\\")){
+        url.remove(0, 1);
+    }
+
+    qDebug() << QDir::toNativeSeparators(url);
+
     centralWidget()->show();
 }
 

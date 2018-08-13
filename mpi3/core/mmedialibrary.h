@@ -51,24 +51,37 @@ public:
 public:
     QString artist() const;
     QString album() const;
-    QString path() const;
     QString kind() const;
 
-    int time() const;
-    int size() const;
+    QString path() const;
+    QString url() const;
+
+    double time() const;
+    double size() const;
+
     int bitRate() const;
     int sampleRate() const;
+
+    QString majorBrand() const;
+    QString minorVersion() const;
+    QString compatibleBrands() const;
+    QString encoder() const;
 
 private:
     QString m_artist;
     QString m_album;
-    QString m_path;
     QString m_kind;
+    QString m_path;
 
-    int m_time = -1;
-    int m_size = -1;
     int m_bitRate = -1;
+    double m_size = -1;
+    double m_time = 0.0;
     int m_sampleRate = -1;
+
+    QString m_majorBrand;
+    QString m_minorVersion;
+    QString m_compatibleBrands;
+    QString m_encoder;
 };
 
 
