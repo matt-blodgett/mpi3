@@ -37,12 +37,15 @@ private:
 
 public:
     int volume() const;
+    double position() const;
+
     bool stopped() const;
     bool playing() const;
     bool paused() const;
     Mpi3::EngineState currentState() const;
 
     void setVolume(int volume);
+    void setPosition(double position);
     void setState(Mpi3::EngineState state);
     void setDisplay(MSong *song = nullptr);
 
@@ -90,6 +93,7 @@ signals:
     void navigateNext();
     void navigatePrev();
     void changeVolume(int volume);
+    void changePosition(double position);
 
 public:
     void elementModified(MMediaElement *elemModified);

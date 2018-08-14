@@ -42,6 +42,9 @@ class MTreeSonglist : public MTreeView
 public:
     explicit MTreeSonglist(QWidget *parent = nullptr);
 
+public:
+    void autoFitColumns();
+
 private:
     void dropEvent(QDropEvent *event);
 };

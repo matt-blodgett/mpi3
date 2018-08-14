@@ -9,13 +9,19 @@
 #include <QDir>
 
 
+#include <QDebug>
+
 #define PID_MAX_LENGTH 18
+
 static const QString PrefixBase         = "E:";
 static const QString PrefixSong         = "S:";
 static const QString PrefixContainer    = "C:";
 static const QString PrefixPlaylist     = "P:";
 static const QString PrefixFolder       = "F:";
 static const QString PrefixLibrary      = "L:";
+
+static const QString PIDCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static const QList<QString> FileSizeSuffixes = {"KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
 
 
 static void xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString &tagname, const QString &text){
@@ -58,7 +64,7 @@ static QMap<QString, QVariant> plistDict(const QDomNode &parentNode){
 
 
 MMediaElement::MMediaElement(QObject *parent) : QObject(parent){}
-Mpi3::ElementType MMediaElement::type() const {
+Mpi3::ElementType MMediaElement::type() const{
     return Mpi3::BaseElement;
 }
 
@@ -74,7 +80,7 @@ QString MMediaElement::added() const{
 
 
 MSong::MSong() : MMediaElement(){}
-Mpi3::ElementType MSong::type() const {
+Mpi3::ElementType MSong::type() const{
     return Mpi3::SongElement;
 }
 
@@ -87,10 +93,7 @@ QString MSong::album() const{
 QString MSong::kind() const{
     return m_kind;
 }
-QString MSong::path() const {
-    return QDir::toNativeSeparators(QUrl(m_path).toLocalFile());;
-}
-QString MSong::url() const {
+QString MSong::path() const{
     return m_path;
 }
 
@@ -101,6 +104,13 @@ double MSong::size() const{
     return m_size;
 }
 
+QString MSong::time_str() const {
+    return MMediaLibrary::timeToString(m_time);
+}
+QString MSong::size_str() const {
+    return MMediaLibrary::sizeToString(m_size);
+}
+
 int MSong::bitRate() const{
     return m_bitRate;
 }
@@ -108,35 +118,23 @@ int MSong::sampleRate() const{
     return m_sampleRate;
 }
 
-QString MSong::majorBrand() const{
-    return m_majorBrand;
-}
-QString MSong::minorVersion() const{
-    return m_minorVersion;
-}
-QString MSong::compatibleBrands() const{
-    return m_compatibleBrands;
-}
-QString MSong::encoder() const{
-    return m_encoder;
-}
 
 MMediaContainer::MMediaContainer(){}
-Mpi3::ElementType MMediaContainer::type() const {
+Mpi3::ElementType MMediaContainer::type() const{
     return Mpi3::ContainerElement;
 }
 
-QVector<MSong*> MMediaContainer::songs() const {
+QVector<MSong*> MMediaContainer::songs() const{
     return QVector<MSong*>();
 }
-QVector<MPlaylist*> MMediaContainer::playlists() const {
+QVector<MPlaylist*> MMediaContainer::playlists() const{
     return QVector<MPlaylist*>();
 }
-QVector<MFolder*> MMediaContainer::folders() const {
+QVector<MFolder*> MMediaContainer::folders() const{
     return QVector<MFolder*>();
 }
 
-MFolder *MMediaContainer::parentFolder() const {
+MFolder *MMediaContainer::parentFolder() const{
     if(m_parent){
         if(m_parent->type() == Mpi3::FolderElement){
             return static_cast<MFolder*>(m_parent);
@@ -174,7 +172,6 @@ QVector<MMediaElement*> MMediaContainer::childElements(Mpi3::ElementType elemTyp
     return children;
 }
 MMediaElement *MMediaContainer::getElement(const QString &pid, Mpi3::ElementType elemType) const{
-
     foreach(MMediaElement *element, childElements(elemType)){
         if(element->pid() == pid){
             return element;
@@ -184,17 +181,36 @@ MMediaElement *MMediaContainer::getElement(const QString &pid, Mpi3::ElementType
     return nullptr;
 }
 
-MMediaContainer *MMediaContainer::getContainer(const QString &pid) const {
-    return static_cast<MMediaContainer*>(getElement(pid, Mpi3::ContainerElement));
+MMediaContainer *MMediaContainer::getContainer(const QString &pid) const{
+    MFolder *folder = getFolder(pid);
+    return  folder ? folder : static_cast<MMediaContainer*>(getPlaylist(pid));
 }
 MPlaylist *MMediaContainer::getPlaylist(const QString &pid) const{
-    return static_cast<MPlaylist*>(getElement(pid, Mpi3::PlaylistElement));
+    foreach(MPlaylist *playlist, playlists()){
+        if(playlist->pid() == pid){
+            return playlist;
+        }
+    }
+
+    return nullptr;
 }
 MFolder *MMediaContainer::getFolder(const QString &pid) const{
-    return static_cast<MFolder*>(getElement(pid, Mpi3::FolderElement));
+    foreach(MFolder *folder, folders()){
+        if(folder->pid() == pid){
+            return folder;
+        }
+    }
+
+    return nullptr;
 }
 MSong *MMediaContainer::getSong(const QString &pid) const{
-    return static_cast<MSong*>(getElement(pid, Mpi3::SongElement));
+    foreach(MSong *song, songs()){
+        if(song->pid() == pid){
+            return song;
+        }
+    }
+
+    return nullptr;
 }
 
 
@@ -308,11 +324,6 @@ void MMediaLibrary::load(const QString &path){
             song->m_bitRate = xmlSongs.at(i).namedItem("bitRate").toElement().text().toInt();
             song->m_sampleRate = xmlSongs.at(i).namedItem("sampleRate").toElement().text().toInt();
 
-            song->m_majorBrand = xmlSongs.at(i).namedItem("majorBrand").toElement().text();
-            song->m_minorVersion = xmlSongs.at(i).namedItem("minorVersion").toElement().text();
-            song->m_compatibleBrands = xmlSongs.at(i).namedItem("compatibleBrands").toElement().text();
-            song->m_encoder = xmlSongs.at(i).namedItem("encoder").toElement().text();
-
             m_libSongs.append(song);
         }
 
@@ -413,11 +424,6 @@ void MMediaLibrary::save(const QString &path){
             xmlWriteElement(xml, songElement, "bitRate", QString::number(song->m_bitRate));
             xmlWriteElement(xml, songElement, "sampleRate", QString::number(song->m_sampleRate));
 
-            xmlWriteElement(xml, songElement, "majorBrand", song->m_majorBrand);
-            xmlWriteElement(xml, songElement, "minorVersion", song->m_minorVersion);
-            xmlWriteElement(xml, songElement, "compatibleBrands", song->m_compatibleBrands);
-            xmlWriteElement(xml, songElement, "encoder", song->m_encoder);
-
             xmlSongs.appendChild(songElement);
         }
 
@@ -467,6 +473,7 @@ void MMediaLibrary::save(const QString &path){
             xmlFolders.appendChild(folderElement);
         }
 
+
         QTextStream xmlStream(&saveFile);
         xmlStream << xml.toString();
     }
@@ -512,11 +519,16 @@ QVector<MPlaylist*> MMediaLibrary::rootPlaylists() const{
     return childPlaylists;
 }
 
-MSong *MMediaLibrary::newSong(const QString &path) const{
+MSong *MMediaLibrary::newSong(const QString &fpath) const{
     MSong *song = new MSong();
     song->m_pid = generatePID(Mpi3::SongElement);
 
-    if(!path.isNull()){
+    if(!fpath.isNull()){
+
+        QString path = QDir::toNativeSeparators(QUrl(fpath).toLocalFile());
+        while(path.startsWith("\\")){
+            path.remove(0, 1);
+        }
 
         MSongInfo info;
         info.load(path);
@@ -533,11 +545,6 @@ MSong *MMediaLibrary::newSong(const QString &path) const{
 
             song->m_bitRate = info.bitRate;
             song->m_sampleRate = info.sampleRate;
-
-            song->m_majorBrand = info.majorBrand;
-            song->m_minorVersion = info.minorVersion;
-            song->m_compatibleBrands = info.compatibleBrands;
-            song->m_encoder = info.encoder;
         }
 
         if(song->m_name.isEmpty() || song->m_name.isNull()){
@@ -627,9 +634,9 @@ QString MMediaLibrary::generatePID(Mpi3::ElementType elemType) const{
         }
     }
 
-    QString clist = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
     while(pid.size() < PID_MAX_LENGTH){
-        pid += clist[QRandomGenerator().global()->bounded(0, 36)];
+        pid += PIDCharacters[QRandomGenerator().global()->bounded(0, 36)];
     }
 
     foreach(MMediaElement *element, childElements(elemType)){
@@ -755,6 +762,31 @@ QList<QUrl> MMediaLibrary::songsToPaths(QVector<MSong*> songObjects) {
     }
 
     return songUrls;
+}
+
+QString MMediaLibrary::timeToString(double time){
+    int sctime = static_cast<int>(time);
+    int seconds = sctime % 60;
+    int minutes = (sctime - seconds) / 60;
+
+    QString secs = QString::number(seconds);
+    QString mins = QString::number(minutes);
+
+    if(secs.size() == 1){
+        secs.prepend("0");
+    }
+
+    return QString(mins + ":" + secs);
+}
+QString MMediaLibrary::sizeToString(double size){
+    QString unit("B");
+    QStringListIterator i(FileSizeSuffixes);
+    while(size >= 1024.0 && i.hasNext()) {
+        unit = i.next();
+        size /= 1024.0;
+    }
+
+    return QString().setNum(size,'f', 2) + " " + unit;
 }
 
 void MMediaLibrary::modify(const QString &pid, const QString &value){

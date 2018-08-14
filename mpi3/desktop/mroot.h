@@ -55,11 +55,9 @@ private:
     MTreeSonglist *m_treeSonglist = nullptr;
 
 private:
-    void setCurrentContent(const QModelIndex &idx);
     void currentSongChanged();
     void libraryViewChanged();
-
-    void setColumnVisibility(int column);
+    void setCurrentContent(const QModelIndex &idx);
     void openFileLocation(const QString &path);
 
 private:
@@ -80,9 +78,9 @@ private:
     void libImportSongs(QTreeView *treeParent);
     void libDownloadSongs(QTreeView *treeParent);
 
-    void objPlay();
-    void objEdit();
-    void objDetails();
+    void objPlay(const QModelIndex &idx);
+    void objEdit(const QModelIndex &idx);
+    void objDetails(const QModelIndex &idx);
 
     void objAddTo();
     void objRemoveFrom();

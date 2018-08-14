@@ -37,8 +37,6 @@ public:
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
 
-//    bool hasChildren(const QModelIndex &parent = QModelIndex()) const override;
-
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
@@ -136,8 +134,6 @@ public:
     MMediaContainer *container() const;
     QVector<MSong*> songlist() const;
     MSong *songAt(const QModelIndex &index) const;
-
-    QMap<int, bool> columnVisibility;
 
 private:
     QStringList m_headers;

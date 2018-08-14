@@ -100,7 +100,6 @@ static int decode_audio_frame(
     return error;
 }
 
-
 static int load_contexts(
         std::string filepath,
         AVFormatContext **formatCtx,

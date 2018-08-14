@@ -117,6 +117,12 @@ MTreeSonglist::MTreeSonglist(QWidget *parent) : MTreeView(parent){
     m_drawStyle->setTVIndicatorStyle(MStyle::TV_IndicatorStyleMove);
 }
 
+void MTreeSonglist::autoFitColumns(){
+    for(int i = 0; i < model()->columnCount(); i++){
+        resizeColumnToContents(i);
+    }
+}
+
 void MTreeSonglist::dropEvent(QDropEvent *event){
     Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
 

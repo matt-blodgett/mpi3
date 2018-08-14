@@ -19,7 +19,6 @@
 #include <QDebug>
 
 
-
 MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
@@ -54,6 +53,12 @@ MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
     m_btnSearch->setObjectName("ButtonSearch");
     m_boxSearch->setObjectName("BoxSearch");
     setObjectName("PanelPlayback");
+
+
+
+
+
+    m_btnFade->setVisible(false);
 }
 MPanelPlayback::~MPanelPlayback(){}
 
@@ -85,19 +90,12 @@ void MPanelPlayback::initializeLayout(){
 
     QGridLayout *layoutVolume = new QGridLayout(this);
     layoutVolume->addWidget(m_sldVolume, 1, 0, 1, 1);
-    layoutVolume->addWidget(m_btnPlay, 1, 1, 1, 1);
     layoutVolume->setColumnStretch(0, 1);
-    layoutVolume->setRowStretch(0, 1);
-    layoutVolume->setRowStretch(2, 1);
     layoutVolume->setRowMinimumHeight(1, 20);
     layoutVolume->setHorizontalSpacing(0);
     layoutVolume->setVerticalSpacing(0);
     layoutVolume->setMargin(0);
     m_frmVolume->setLayout(layoutVolume);
-
-    m_btnPlay->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-    m_btnPlay->setIcon(QIcon(m_pixPlay));
-    m_btnPlay->setFlat(true);
 
     m_sldVolume->setOrientation(Qt::Horizontal);
 
@@ -175,21 +173,42 @@ void MPanelPlayback::initializeLayout(){
 
     QGridLayout *layoutMain = new QGridLayout(this);
     layoutMain->addWidget(m_frmVolume, 0, 1, 1, 1);
-    layoutMain->addWidget(m_frmControls, 0, 3, 1, 1);
-    layoutMain->addWidget(m_frmSearchbar, 0, 5, 1, 1);
+    layoutMain->addWidget(m_btnPlay, 0, 3, 1, 1);
+    layoutMain->addWidget(m_frmControls, 0, 5, 1, 1);
+    layoutMain->addWidget(m_frmSearchbar, 0, 9, 1, 1);
     layoutMain->setRowMinimumHeight(0, uHeight);
     layoutMain->setColumnMinimumWidth(0, 20);
     layoutMain->setColumnMinimumWidth(1, 150);
-    layoutMain->setColumnMinimumWidth(3, 360);
-    layoutMain->setColumnMinimumWidth(5, 150);
-    layoutMain->setColumnMinimumWidth(6, 20);
+    layoutMain->setColumnMinimumWidth(2, 10);
+    layoutMain->setColumnMinimumWidth(3, 40);
+    layoutMain->setColumnMinimumWidth(4, 10);
+    layoutMain->setColumnMinimumWidth(5, 400);
+    layoutMain->setColumnMinimumWidth(6, 10);
+    layoutMain->setColumnMinimumWidth(7, 40);
+    layoutMain->setColumnMinimumWidth(8, 10);
+    layoutMain->setColumnMinimumWidth(9, 150);
+    layoutMain->setColumnMinimumWidth(10, 20);
+    layoutMain->setColumnStretch(0, 0);
+    layoutMain->setColumnStretch(1, 0);
     layoutMain->setColumnStretch(2, 1);
-    layoutMain->setColumnStretch(3, 6);
+    layoutMain->setColumnStretch(3, 0);
     layoutMain->setColumnStretch(4, 1);
+    layoutMain->setColumnStretch(5, 6);
+    layoutMain->setColumnStretch(6, 1);
+    layoutMain->setColumnStretch(7, 0);
+    layoutMain->setColumnStretch(8, 1);
+    layoutMain->setColumnStretch(9, 0);
+    layoutMain->setColumnStretch(10, 0);
     layoutMain->setHorizontalSpacing(0);
     layoutMain->setVerticalSpacing(0);
     layoutMain->setMargin(0);
     setLayout(layoutMain);
+
+    m_btnPlay->setFixedWidth(32);
+    m_btnPlay->setFixedHeight(32);
+    m_btnPlay->setIconSize(QSize(22, 22));
+    m_btnPlay->setIcon(QIcon(m_pixPlay));
+    m_btnPlay->setFlat(true);
 }
 
 double MPanelPlayback::buttonOpacity() const{
@@ -234,6 +253,9 @@ void MPanelPlayback::animateFadeButton(){
 int MPanelPlayback::volume() const{
     return m_sldVolume->value();
 }
+double MPanelPlayback::position() const {
+    return m_sldPosition->value();
+}
 bool MPanelPlayback::stopped() const {
     return m_currentState == Mpi3::EngineStopped;
 }
@@ -248,6 +270,12 @@ void MPanelPlayback::setVolume(int volume){
     m_sldVolume->blockSignals(true);
     m_sldVolume->setValue(volume);
     m_sldVolume->blockSignals(false);
+}
+void MPanelPlayback::setPosition(double position){
+    m_sldPosition->blockSignals(true);
+    m_sldPosition->setValue(static_cast<int>(position));
+    m_lblPositionMin->setText(MMediaLibrary::timeToString(position));
+    m_sldPosition->blockSignals(false);
 }
 void MPanelPlayback::setState(Mpi3::EngineState state){
 
@@ -273,10 +301,12 @@ void MPanelPlayback::setState(Mpi3::EngineState state){
 }
 void MPanelPlayback::setDisplay(MSong *song){
     if(song){
+        m_sldPosition->setMinimum(0);
+        m_sldPosition->setMaximum(static_cast<int>(song->time()));
         m_lblTitle->setText(song->name());
         m_lblArtist->setText(song->artist());
-        m_lblPositionMax->setText(QString::number(song->time()));
-        m_lblPositionMin->setText("0.00");
+        m_lblPositionMax->setText(song->time_str());
+        m_lblPositionMin->setText("0:00");
     }
 }
 

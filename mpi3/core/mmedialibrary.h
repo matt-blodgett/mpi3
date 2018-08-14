@@ -45,27 +45,23 @@ public:
     enum MutableProperty {
         SongName,
         SongArtist,
-        SongAlbum,
+        SongAlbum
     };
 
 public:
     QString artist() const;
     QString album() const;
     QString kind() const;
-
     QString path() const;
-    QString url() const;
 
     double time() const;
     double size() const;
 
+    QString time_str() const;
+    QString size_str() const;
+
     int bitRate() const;
     int sampleRate() const;
-
-    QString majorBrand() const;
-    QString minorVersion() const;
-    QString compatibleBrands() const;
-    QString encoder() const;
 
 private:
     QString m_artist;
@@ -73,15 +69,12 @@ private:
     QString m_kind;
     QString m_path;
 
-    int m_bitRate = -1;
-    double m_size = -1;
+    int m_wpadded;
     double m_time = 0.0;
-    int m_sampleRate = -1;
+    double m_size = 0.0;
 
-    QString m_majorBrand;
-    QString m_minorVersion;
-    QString m_compatibleBrands;
-    QString m_encoder;
+    int m_bitRate = 0;
+    int m_sampleRate = 0;
 };
 
 
@@ -188,6 +181,9 @@ public:
 
     static bool validMediaFiles(QUrl mediaUrl);
     static bool validMediaFiles(QList<QUrl> mediaUrls);
+
+    static QString timeToString(double time);
+    static QString sizeToString(double size);
 
 private:
     QString m_filepath;
