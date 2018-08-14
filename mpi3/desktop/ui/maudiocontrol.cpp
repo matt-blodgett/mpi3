@@ -58,7 +58,7 @@ MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
 
 
 
-    m_btnFade->setVisible(false);
+//    m_btnFade->setVisible(false);
 }
 MPanelPlayback::~MPanelPlayback(){}
 

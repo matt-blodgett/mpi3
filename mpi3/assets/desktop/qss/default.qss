@@ -15,23 +15,23 @@ QWidget {
 // --------------------------------------------------
 // * MainMenuBar *
 // --------------------------------------------------
-QMenuBar#MainMenuBar {
+QWidget#MainMenuBar {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #828282, stop:1 #565656);
     color: #FFFFFF;
     border-bottom: 1px solid #000000;
 }
 
-QMenuBar#MainMenuBar::item {
+QWidget#MainMenuBar::item {
     padding: 3px 8px 3px 2px;
     background: transparent;
     border-radius: 0px;
 }
 
-QMenuBar#MainMenuBar::item:selected {
+QWidget#MainMenuBar::item:selected {
     background: #999999;
 }
 
-QMenuBar#MainMenuBar::item:pressed {
+QWidget#MainMenuBar::item:pressed {
     background: #888888;
 }
 

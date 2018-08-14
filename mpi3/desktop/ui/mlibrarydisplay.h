@@ -41,7 +41,6 @@ public:
 private:
     MPanelLibrary::View m_currentView;
 
-private:
     MTreeContainers *m_treeContainers = nullptr;
     MTreeSonglist *m_treeSonglist = nullptr;
 

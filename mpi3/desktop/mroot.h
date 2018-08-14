@@ -54,6 +54,9 @@ private:
     MModelSonglist *m_modelSonglist = nullptr;
     MTreeSonglist *m_treeSonglist = nullptr;
 
+    QPoint m_lastPoint;
+    QWidget *m_menuWidget = nullptr;
+
 private:
     void currentSongChanged();
     void libraryViewChanged();
@@ -96,6 +99,7 @@ private:
     void objDelete(QTreeView *treeParent);
 
 private:
+    bool eventFilter(QObject *object, QEvent *event);
     void paintEvent(QPaintEvent *event);
     void closeEvent(QCloseEvent *event);
 };

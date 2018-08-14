@@ -30,10 +30,12 @@
 #include <QFileDialog>
 #include <QDir>
 
+#include <QMouseEvent>
 
 
 #include <QDebug>
 
+#include <QPushButton>
 
 
 MRootDesktop::MRootDesktop(){}
@@ -54,13 +56,16 @@ void MRootDesktop::initialize(){
     initializeState();
 
 
-    MSong *song = m_mediaLibrary->songs().at(1);
-
-    m_panelPlayback->setDisplay(song);
+    setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
 
 
     centralWidget()->show();
+
+
+
 }
+
+
 void MRootDesktop::initializeObjects(){
     m_styleSheet = new MStyleSheet();
 
@@ -281,6 +286,32 @@ void MRootDesktop::initializeLayout(){
     setCentralWidget(windowMain);
     setMinimumHeight(200);
     setMinimumWidth(700);
+
+
+    m_menuWidget = new QWidget(this);
+    QHBoxLayout *layoutMenu = new QHBoxLayout(m_menuWidget);
+    QPushButton *m_btnClose = new QPushButton(m_menuWidget);
+
+
+    layoutMenu->addWidget(menuBar(), 0, Qt::AlignLeft);
+    layoutMenu->addWidget(m_btnClose, 1, Qt::AlignRight | Qt::AlignCenter);
+
+    layoutMenu->setMargin(0);
+
+    layoutMenu->setContentsMargins(0, 2, 0, 0);
+
+    m_menuWidget->setLayout(layoutMenu);
+
+    setMenuWidget(m_menuWidget);
+
+    m_menuWidget->setObjectName("MainMenuBar");
+    m_menuWidget->installEventFilter(this);
+
+
+
+    connect(m_btnClose, &QPushButton::released, this, &QMainWindow::close);
+
+
 }
 void MRootDesktop::initializeState(){
     QString appDir = QApplication::applicationDirPath();
@@ -858,6 +889,41 @@ void MRootDesktop::paintEvent(QPaintEvent *event){
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 
     QWidget::paintEvent(event);
+}
+bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
+
+    if(object == m_menuWidget){
+        if(event->type() == QEvent::MouseButtonPress){
+            QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
+            m_lastPoint = sc_event->pos();
+        }
+        else if(event->type() == QEvent::MouseMove){
+            if(!m_lastPoint.isNull()){
+                QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
+
+//                if(!menuBar()->actionAt(sc_event->pos())){
+                    int x_curr = this->x();
+                    int y_curr = this->y();
+
+                    int x_last = m_lastPoint.x();
+                    int y_last = m_lastPoint.y();
+
+                    int x_event = sc_event->x();
+                    int y_event = sc_event->y();
+
+                    move(x_curr - (x_last - x_event), y_curr - (y_last - y_event));
+//                }
+//                else {
+//                    m_lastPoint = QPoint();
+//                }
+            }
+        }
+        else if(event->type() == QEvent::MouseButtonRelease){
+            m_lastPoint = QPoint();
+        }
+    }
+
+    return QMainWindow::eventFilter(object, event);
 }
 void MRootDesktop::closeEvent(QCloseEvent *event){
     saveSettings();
