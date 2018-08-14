@@ -31,6 +31,7 @@
 #include <QDir>
 
 #include <QMouseEvent>
+#include <QSizeGrip>
 
 
 #include <QDebug>
@@ -61,7 +62,8 @@ void MRootDesktop::initialize(){
 
     centralWidget()->show();
 
-
+    move(100, 100);
+    resize(800, 300);
 
 }
 
@@ -109,7 +111,6 @@ void MRootDesktop::initializeObjects(){
 }
 void MRootDesktop::initializeMainMenu(){
     QMenuBar *menu_main = menuBar();
-    menu_main->setObjectName("MainMenuBar");
 
     QAction *act_audioSettings = new QAction(menu_main);
     QAction *act_wndExit = new QAction(menu_main);
@@ -273,11 +274,15 @@ void MRootDesktop::initializeMainMenu(){
     act_editDelete->setDisabled(true);
 }
 void MRootDesktop::initializeLayout(){
+
+
     QWidget *windowMain = new QWidget(this);
     QGridLayout *layoutMain = new QGridLayout(windowMain);
-    layoutMain->addWidget(m_panelPlayback, 0, 0, 1, 1);
-    layoutMain->addWidget(m_panelLibview, 1, 0, 1, 1);
-    layoutMain->setColumnStretch(0, 1);
+    layoutMain->addWidget(m_panelPlayback, 0, 1, 1, 1);
+    layoutMain->addWidget(m_panelLibview, 1, 1, 1, 1);
+
+
+    layoutMain->setColumnStretch(1, 1);
     layoutMain->setRowStretch(1, 1);
     layoutMain->setMargin(0);
     layoutMain->setHorizontalSpacing(0);
@@ -288,33 +293,70 @@ void MRootDesktop::initializeLayout(){
     setMinimumWidth(700);
 
 
+    setContentsMargins(1, 1, 1, 1);
+
+
+
+    menuBar()->setObjectName("MainMenu");
+
+    this->setObjectName("RootWindow");
+
+
+
     m_menuWidget = new QWidget(this);
+    m_btnClose = new QPushButton(m_menuWidget);
+    m_btnMinimize = new QPushButton(m_menuWidget);
+    m_btnMaximize = new QPushButton(m_menuWidget);
+
     QHBoxLayout *layoutMenu = new QHBoxLayout(m_menuWidget);
-    QPushButton *m_btnClose = new QPushButton(m_menuWidget);
 
 
     layoutMenu->addWidget(menuBar(), 0, Qt::AlignLeft);
-    layoutMenu->addWidget(m_btnClose, 1, Qt::AlignRight | Qt::AlignCenter);
+    layoutMenu->addStretch(1);
+    layoutMenu->addWidget(m_btnMinimize, 0, Qt::AlignRight | Qt::AlignCenter);
+    layoutMenu->addWidget(m_btnMaximize, 0, Qt::AlignRight | Qt::AlignCenter);
+    layoutMenu->addWidget(m_btnClose, 0, Qt::AlignRight | Qt::AlignCenter);
+
+
+    m_btnClose->setIcon(QIcon(":/icons/window/close.png"));
+    m_btnMinimize->setIcon(QIcon(":/icons/window/minimize.png"));
+    m_btnMaximize->setIcon(QIcon(":/icons/window/maximize.png"));
+
+    m_btnClose->setObjectName("ButtonRootWindow");
+    m_btnMinimize->setObjectName("ButtonRootWindow");
+    m_btnMaximize->setObjectName("ButtonRootWindow");
+
+    m_btnClose->setFlat(true);
+    m_btnMinimize->setFlat(true);
+    m_btnMaximize->setFlat(true);
+
 
     layoutMenu->setMargin(0);
-
-    layoutMenu->setContentsMargins(0, 2, 0, 0);
+    layoutMenu->setContentsMargins(0, 2, 0, 2);
 
     m_menuWidget->setLayout(layoutMenu);
 
     setMenuWidget(m_menuWidget);
 
     m_menuWidget->setObjectName("MainMenuBar");
+
     m_menuWidget->installEventFilter(this);
 
 
 
     connect(m_btnClose, &QPushButton::released, this, &QMainWindow::close);
 
+    installEventFilter(this);
 
 }
+
 void MRootDesktop::initializeState(){
     QString appDir = QApplication::applicationDirPath();
+
+    if(!QFile::exists(appDir + "/profile.xml")){
+        return;
+    }
+
     MSettingsXml settings(appDir + "/profile.xml");
 
     settings.beginGroup("RootWindow");
@@ -893,33 +935,207 @@ void MRootDesktop::paintEvent(QPaintEvent *event){
 bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
 
     if(object == m_menuWidget){
+
         if(event->type() == QEvent::MouseButtonPress){
+
             QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
             m_lastPoint = sc_event->pos();
         }
         else if(event->type() == QEvent::MouseMove){
+
             if(!m_lastPoint.isNull()){
+
                 QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
 
-//                if(!menuBar()->actionAt(sc_event->pos())){
-                    int x_curr = this->x();
-                    int y_curr = this->y();
+                int x_curr = this->x();
+                int y_curr = this->y();
 
-                    int x_last = m_lastPoint.x();
-                    int y_last = m_lastPoint.y();
+                int x_last = m_lastPoint.x();
+                int y_last = m_lastPoint.y();
 
-                    int x_event = sc_event->x();
-                    int y_event = sc_event->y();
+                int x_event = sc_event->x();
+                int y_event = sc_event->y();
 
-                    move(x_curr - (x_last - x_event), y_curr - (y_last - y_event));
-//                }
-//                else {
-//                    m_lastPoint = QPoint();
-//                }
+                move(x_curr - (x_last - x_event), y_curr - (y_last - y_event));
+
             }
         }
         else if(event->type() == QEvent::MouseButtonRelease){
             m_lastPoint = QPoint();
+        }
+    }
+
+    if(object == this){
+
+        if(event->type() == QEvent::MouseButtonPress){
+            QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
+
+//            m_west = false;
+//            m_east = false;
+
+//            m_north = false;
+//            m_south = false;
+
+
+//            int x_event = sc_event->pos().x();
+//            int y_event = sc_event->pos().y();
+
+//            bool west = x_event <= 2;
+//            bool east = x_event >= width() - 2;
+
+//            bool north = y_event <= 2;
+//            bool south = y_event >= height() - 2;
+
+//            bool north_edge = y_event < 3;
+//            bool south_edge = y_event > height() - 3;
+
+//            bool west_edge = x_event < 3;
+//            bool east_edge = x_event > width() - 3;
+
+//            int x_root = pos().rx();
+//            int y_root = pos().ry();
+
+
+//            m_west = west;
+//            m_east = east;
+
+//            m_north = north;
+//            m_south = south;
+
+
+
+            m_west = sc_event->pos().x() <= 2;
+            m_north = sc_event->pos().y() <= 2;
+
+            m_resizing = true;
+            m_lastPoint = sc_event->pos();
+            m_lastSize = this->size();
+
+
+        }
+
+        else if(event->type() == QEvent::MouseMove){
+
+            if(!m_lastPoint.isNull()){
+
+                QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
+
+                if(m_resizing && QApplication::overrideCursor()){
+
+                    bool resize_vertical = QApplication::overrideCursor()->shape() == Qt::SizeVerCursor;
+                    bool resize_horizontal = QApplication::overrideCursor()->shape() == Qt::SizeHorCursor;
+
+
+                    if(resize_vertical){
+                        int h = sc_event->pos().y() - m_lastPoint.y();
+
+                        if(m_north){
+                            if(height() == minimumHeight() && h >= 0){
+                                return QMainWindow::eventFilter(object, event);
+                            }
+
+                            resize(m_lastSize.width(), height() - h);
+                            move(pos().rx(), cursor().pos().ry());
+                        }
+                        else if(!m_north){
+                            resize(m_lastSize.width(), m_lastSize.height() + h);
+                        }
+
+                    }
+
+                    else if(resize_horizontal){
+
+                        int w = sc_event->pos().x() - m_lastPoint.x();
+
+                        if(m_west){
+
+                            qDebug() << w;
+                            if(width() == minimumWidth() && w >= 0){
+                                return QMainWindow::eventFilter(object, event);
+                            }
+
+                            resize(width() - w, m_lastSize.height());
+                            move(cursor().pos().rx(), pos().ry());
+
+                        }
+                        else if (!m_west){
+                            resize(m_lastSize.width() + w, m_lastSize.height());
+                        }
+
+
+                   }
+                }
+            }
+        }
+
+        else if(event->type() == QEvent::MouseButtonRelease){
+            m_resizing = false;
+        }
+
+        else if(event->type() == QEvent::HoverMove){
+
+            if(m_resizing){
+                return QMainWindow::eventFilter(object, event);
+            }
+
+            QHoverEvent *sc_event = static_cast<QHoverEvent*>(event);
+
+            int x_event = sc_event->pos().x();
+            int y_event = sc_event->pos().y();
+
+            bool west = x_event <= 2;
+            bool east = x_event >= width() - 2;
+
+            bool north = y_event <= 2;
+            bool south = y_event >= height() - 2;
+
+            bool north_edge = y_event < 3;
+            bool south_edge = y_event > height() - 3;
+
+            bool west_edge = x_event < 3;
+            bool east_edge = x_event > width() - 3;
+
+            int x_root = pos().rx();
+            int y_root = pos().ry();
+
+
+            // top-left
+            if((west && north_edge) || (north && west_edge)){
+                cursor().setPos(x_root, y_root);
+                QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
+            }
+            // top-right
+            else if((east && north_edge) || (north && east_edge)){
+                cursor().setPos(x_root + width() - 1, y_root);
+                QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
+            }
+            // bottom-left
+            else if((west && south_edge) || (south && west_edge)){
+                cursor().setPos(x_root + 1, y_root + height() - 1);
+                QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
+            }
+            // bottom-right
+            else if((east && south_edge) || (south && east_edge)){
+                cursor().setPos(x_root + width() - 1, y_root + height() - 1);
+                QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
+            }
+            // left or right
+            else if(east || west){
+                cursor().setPos(west ? x_root  : x_root + width() - 1, cursor().pos().ry());
+                QApplication::setOverrideCursor(Qt::SizeHorCursor);
+            }
+            // top or bottom
+            else if(north || south){
+                cursor().setPos(cursor().pos().rx(), north ? y_root : y_root + height() - 1);
+                QApplication::setOverrideCursor(Qt::SizeVerCursor);
+            }
+            else{
+//                m_resizing = false;
+                while(QApplication::overrideCursor()){
+                    QApplication::restoreOverrideCursor();
+                }
+
+            }
         }
     }
 

@@ -7,6 +7,7 @@
 
 QT_BEGIN_NAMESPACE
 class QTreeView;
+class QPushButton;
 QT_END_NAMESPACE
 
 
@@ -54,8 +55,22 @@ private:
     MModelSonglist *m_modelSonglist = nullptr;
     MTreeSonglist *m_treeSonglist = nullptr;
 
+
+    bool m_west;
+    bool m_east;
+
+    bool m_north;
+    bool m_south;
+
+
+    bool m_resizing;
+    QSize m_lastSize;
+
     QPoint m_lastPoint;
     QWidget *m_menuWidget = nullptr;
+    QPushButton *m_btnMaximize = nullptr;
+    QPushButton *m_btnMinimize = nullptr;
+    QPushButton *m_btnClose = nullptr;
 
 private:
     void currentSongChanged();
