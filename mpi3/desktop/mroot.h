@@ -55,22 +55,22 @@ private:
     MModelSonglist *m_modelSonglist = nullptr;
     MTreeSonglist *m_treeSonglist = nullptr;
 
-
-    bool m_west;
-    bool m_east;
-
-    bool m_north;
-    bool m_south;
-
-
-    bool m_resizing;
-    QSize m_lastSize;
-
-    QPoint m_lastPoint;
-    QWidget *m_menuWidget = nullptr;
+private:
     QPushButton *m_btnMaximize = nullptr;
     QPushButton *m_btnMinimize = nullptr;
     QPushButton *m_btnClose = nullptr;
+    QWidget *m_menuWidget = nullptr;
+
+    QPoint m_lastCursorPoint;
+    QPoint m_lastRootPoint;
+    QSize m_lastSize;
+
+    bool m_resizeWest;
+    bool m_resizeEast;
+    bool m_resizeNorth;
+    bool m_resizeSouth;
+    bool m_moveActive;
+    bool m_resizeActive;
 
 private:
     void currentSongChanged();
