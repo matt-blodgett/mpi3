@@ -61,6 +61,7 @@ private:
     QPushButton *m_btnClose = nullptr;
     QWidget *m_menuWidget = nullptr;
 
+    // override redirect
     QPoint m_lastCursorPoint;
     QPoint m_lastRootPoint;
     QSize m_lastSize;
@@ -87,6 +88,7 @@ private:
 
     void libImport();
     void libExport();
+    void libBackup();
     void libReset();
 
     void themeSet();

@@ -32,10 +32,15 @@
 
 #include <QPushButton>
 #include <QMouseEvent>
-
+#include <QTime>
 
 #include <QDebug>
 
+
+#define M_LIBRARY_FILE_EXT              ".mpi3lib"
+#define M_APPDATA_PATH_PROFILE          "/profile.xml"
+#define M_APPDATA_PATH_LIBRARYDEFAULT   "/newlibrary" + M_LIBRARY_FILE_EXT
+#define M_APPDATA_PATH_LIBRARYBACKUPS   "/backups"
 
 
 MRootDesktop::MRootDesktop(){}
@@ -104,8 +109,9 @@ void MRootDesktop::initializeMainMenu(){
 
     QAction *act_libImport = new QAction(menu_main);
     QAction *act_libExport = new QAction(menu_main);
+    QAction *act_libBackup = new QAction(menu_main);
     QAction *act_libReset = new QAction(menu_main);
-    QAction *act_libOpenFileLocation = new QAction(menu_main);
+    QAction *act_libOpenFileLoc = new QAction(menu_main);
     QAction *act_libNewFolder = new QAction(menu_main);
     QAction *act_libNewPlaylist = new QAction(menu_main);
     QAction *act_libImportPlaylists = new QAction(menu_main);
@@ -136,8 +142,9 @@ void MRootDesktop::initializeMainMenu(){
 
     act_libImport->setText("Import Library");
     act_libExport->setText("Export Library");
+    act_libBackup->setText("Backup Library");
     act_libReset->setText("Reset Library");
-    act_libOpenFileLocation->setText("Open File Location");
+    act_libOpenFileLoc->setText("Open File Location");
     act_libNewFolder->setText("New Folder");
     act_libNewPlaylist->setText("New Playlist");
     act_libImportPlaylists->setText("Import Playlists");
@@ -182,8 +189,10 @@ void MRootDesktop::initializeMainMenu(){
     menu_main->addMenu(menu_file);
     menu_library->addAction(act_libImport);
     menu_library->addAction(act_libExport);
+    menu_library->addAction(act_libBackup);
+    menu_library->addSeparator();
     menu_library->addAction(act_libReset);
-    menu_library->addAction(act_libOpenFileLocation);
+    menu_library->addAction(act_libOpenFileLoc);
     menu_library->addSeparator();
     menu_library->addAction(act_libNewFolder);
     menu_library->addAction(act_libNewPlaylist);
@@ -227,8 +236,9 @@ void MRootDesktop::initializeMainMenu(){
 
     connect(act_libImport, &QAction::triggered, this, [this](){libImport();});
     connect(act_libExport, &QAction::triggered, this, [this](){libExport();});
+    connect(act_libBackup, &QAction::triggered, this, [this](){libBackup();});
     connect(act_libReset, &QAction::triggered, this, [this](){libReset();});
-    connect(act_libOpenFileLocation, &QAction::triggered, [=](){openFileLocation(m_mediaLibrary->filepath());});
+    connect(act_libOpenFileLoc, &QAction::triggered, [=](){openFileLocation(m_mediaLibrary->filepath());});
     connect(act_libNewPlaylist, &QAction::triggered, this, [this](){libNewPlaylist();});
     connect(act_libNewFolder, &QAction::triggered, this, [this](){libNewFolder();});
     connect(act_libImportPlaylists, &QAction::triggered, this, [this](){libImportPlaylists();});
@@ -319,13 +329,13 @@ void MRootDesktop::initializeLayout(){
     installEventFilter(this);
 }
 void MRootDesktop::initializeState(){
-    QString appDir = QApplication::applicationDirPath();
+    QString appDataLoc = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
-    if(!QFile::exists(appDir + "/profile.xml")){
+    if(!QFile::exists(appDataLoc + M_APPDATA_PATH_PROFILE)){
         return;
     }
 
-    MSettingsXml settings(appDir + "/profile.xml");
+    MSettingsXml settings(appDataLoc + M_APPDATA_PATH_PROFILE);
 
     settings.beginGroup("RootWindow");
     QRect screenSize = QApplication::desktop()->availableGeometry(this);
@@ -351,7 +361,7 @@ void MRootDesktop::initializeState(){
 
     settings.beginGroup("UserApplicationPaths");
     QString qss_path = settings.value("style", ":/styles/default.qss").toString();
-    QString lib_path = settings.value("library", appDir + "/newlibrary.mpi3lib").toString();
+    QString lib_path = settings.value("library", appDataLoc + M_APPDATA_PATH_LIBRARYDEFAULT).toString();
     settings.endGroup();
 
     settings.beginGroup("UserApplicationValues");
@@ -390,9 +400,10 @@ void MRootDesktop::initializeState(){
     }
 }
 void MRootDesktop::saveSettings(){
-    QString appDir = QApplication::applicationDirPath();
-    QDir().remove(appDir + "/profile.xml");
-    MSettingsXml *settings = new MSettingsXml(appDir + "/profile.xml");
+    QString appDataLoc = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+
+    QDir().remove(appDataLoc + M_APPDATA_PATH_PROFILE);
+    MSettingsXml *settings = new MSettingsXml(appDataLoc + M_APPDATA_PATH_PROFILE);
 
     settings->beginGroup("RootWindow");
     settings->setValue("rootx", x());
@@ -740,6 +751,53 @@ void MRootDesktop::libImport(){
         m_modelSonglist->setLibrary(m_mediaLibrary);
         themeRefresh();
     }
+}
+void MRootDesktop::libBackup(){
+
+    QString appDataLoc = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+
+    if(!QDir().exists(appDataLoc + M_APPDATA_PATH_LIBRARYBACKUPS)){
+        QDir().mkdir(appDataLoc + M_APPDATA_PATH_LIBRARYBACKUPS);
+    }
+
+    QDate cdate = QDate().currentDate();
+    QTime ctime = QTime().currentTime();
+
+    QString yrs = QString::number(cdate.year());
+    QString mth = QString::number(cdate.month());
+    QString day = QString::number(cdate.day());
+
+    QString hrs = QString::number(ctime.hour());
+    QString min = QString::number(ctime.minute());
+    QString sec = QString::number(ctime.second());
+
+    if(mth.size() == 1){
+        mth.prepend("0");
+    }
+
+    if(day.size() == 1){
+        day.prepend("0");
+    }
+
+    if(hrs.size() == 1){
+        hrs.prepend("0");
+    }
+
+    if(min.size() == 1){
+        min.prepend("0");
+    }
+
+    if(sec.size() == 1){
+        sec.prepend("0");
+    }
+
+    QString saveTimeStr = yrs + mth + day + "_" + hrs + min + sec;
+    QString saveDir = appDataLoc + M_APPDATA_PATH_LIBRARYBACKUPS;
+    QString savePath = "/backup_" + saveTimeStr + M_LIBRARY_FILE_EXT;
+    QString oldPath = m_mediaLibrary->filepath();
+
+    m_mediaLibrary->save(saveDir + savePath);
+    m_mediaLibrary->save(oldPath);
 }
 void MRootDesktop::libExport(){
     QString libFile;
