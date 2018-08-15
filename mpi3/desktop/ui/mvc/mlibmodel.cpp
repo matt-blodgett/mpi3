@@ -47,7 +47,7 @@ QStringList MModelContainers::mimeTypes() const {
     mTypes << QMetaType::typeName(qMetaTypeId<QString>());
     return mTypes;
 }
-QMimeData* MModelContainers::mimeData(const QModelIndexList &indexes) const{
+QMimeData *MModelContainers::mimeData(const QModelIndexList &indexes) const{
     QMimeData *mData = new QMimeData();
     if(indexes.size() == 1){
         QByteArray pidBytes;
@@ -62,7 +62,7 @@ bool MModelContainers::canDropMimeData(const QMimeData *data, Qt::DropAction act
 
     bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
     bool dataIsContainer = data->hasFormat(QMetaType::typeName(qMetaTypeId<QString>()));
-    bool dataIsValidMediaFiles = data->hasUrls() ? m_mediaLibrary->validMediaFiles(data->urls()) : false;
+    bool dataIsValidMediaFiles = data->hasUrls() ? MMediaLibrary::validMediaFiles(data->urls()) : false;
     bool actionIsCopyAction = action == Qt::CopyAction;
     bool actionIsMoveAction = action == Qt::MoveAction;
 
@@ -87,7 +87,7 @@ bool MModelContainers::canDropMimeData(const QMimeData *data, Qt::DropAction act
             return moveFolder != dropFolder && !moveFolder->childContainers().contains(dropFolder);
         }
         else if(movePlaylist && dropFolder){
-            return dropPlaylist->parentFolder() != dropFolder;
+            return movePlaylist->parentFolder() != dropFolder;
         }
 
         return false;

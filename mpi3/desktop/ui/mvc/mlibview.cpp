@@ -7,6 +7,9 @@
 #include <QMimeData>
 
 
+#include <QDebug>
+
+
 MTreeView::MTreeView(QWidget *parent) : QTreeView(parent){
     m_drawStyle = new MStyle(style());
     setStyle(m_drawStyle);
@@ -91,7 +94,9 @@ void MTreeContainers::dropEvent(QDropEvent *event){
             expand(dropIndex);
 
             if(action == Qt::MoveAction){
+
                 for(int i = 0; i < model()->rowCount(dropIndex); i++){
+
                     QModelIndex childIndex = model()->index(i, 0, dropIndex);
                     QVariant indexData = model()->data(childIndex);
 
