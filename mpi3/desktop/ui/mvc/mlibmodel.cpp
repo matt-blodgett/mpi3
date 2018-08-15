@@ -776,7 +776,7 @@ bool MModelSonglist::setData(const QModelIndex &index, const QVariant &value, in
             return false;
         }
 
-        MSong::MutableProperty attrib;
+        MSong::MutableProperty attrib = MSong::SongName;
         if(index.column() == 0){
             attrib  = MSong::SongName;
         }
