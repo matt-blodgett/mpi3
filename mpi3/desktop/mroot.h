@@ -69,8 +69,10 @@ private:
     bool m_resizeEast;
     bool m_resizeNorth;
     bool m_resizeSouth;
-    bool m_moveActive;
     bool m_resizeActive;
+    bool m_moveActive;
+    bool m_maximizeActive;
+    void toggleMaximized();
 
 private:
     void currentSongChanged();

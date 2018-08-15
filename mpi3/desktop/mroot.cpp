@@ -263,23 +263,23 @@ void MRootDesktop::initializeMainMenu(){
 void MRootDesktop::initializeLayout(){
 
     m_menuWidget = new QWidget(this);
+    m_btnClose = new QPushButton(m_menuWidget);
+    m_btnMinimize = new QPushButton(m_menuWidget);
+    m_btnMaximize = new QPushButton(m_menuWidget);
 
     m_menuWidget->setObjectName("MainMenuBar");
     menuBar()->setObjectName("MainMenu");
     setObjectName("RootWindow");
 
-    m_btnClose = new QPushButton(m_menuWidget);
-    m_btnMinimize = new QPushButton(m_menuWidget);
-    m_btnMaximize = new QPushButton(m_menuWidget);
-
-    QHBoxLayout *layoutMenu = new QHBoxLayout(m_menuWidget);
-    layoutMenu->addWidget(menuBar(), 0, Qt::AlignLeft);
-    layoutMenu->addStretch(1);
-    layoutMenu->addWidget(m_btnMinimize, 0, Qt::AlignRight | Qt::AlignCenter);
-    layoutMenu->addWidget(m_btnMaximize, 0, Qt::AlignRight | Qt::AlignCenter);
-    layoutMenu->addWidget(m_btnClose, 0, Qt::AlignRight | Qt::AlignCenter);
+    QGridLayout *layoutMenu = new QGridLayout(m_menuWidget);
+    layoutMenu->addWidget(menuBar(), 0, 0, 1, 1);
+    layoutMenu->addWidget(m_btnMinimize, 0, 2, 1, 1);
+    layoutMenu->addWidget(m_btnMaximize, 0, 3, 1, 1);
+    layoutMenu->addWidget(m_btnClose, 0, 4, 1, 1);
+    layoutMenu->setColumnMinimumWidth(5, 4);
+    layoutMenu->setColumnStretch(0, 0);
+    layoutMenu->setColumnStretch(1, 1);
     layoutMenu->setMargin(0);
-    layoutMenu->setContentsMargins(0, 2, 0, 2);
     m_menuWidget->setLayout(layoutMenu);
 
     m_btnMinimize->setIcon(QIcon(":/icons/window/minimize.png"));
@@ -307,17 +307,17 @@ void MRootDesktop::initializeLayout(){
     setMinimumHeight(300);
     setMinimumWidth(700);
 
-    setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
-    setCentralWidget(windowMain);
     setContentsMargins(1, 1, 1, 1);
+    setCentralWidget(windowMain);
     setMenuWidget(m_menuWidget);
-    installEventFilter(this);
+    setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
 
     connect(m_btnMinimize, &QPushButton::released, this, &QMainWindow::showMinimized);
-    connect(m_btnMaximize, &QPushButton::released, this, &QMainWindow::showMaximized);
+    connect(m_btnMaximize, &QPushButton::released, this, &MRootDesktop::toggleMaximized);
     connect(m_btnClose, &QPushButton::released, this, &QMainWindow::close);
-}
 
+    installEventFilter(this);
+}
 void MRootDesktop::initializeState(){
     QString appDir = QApplication::applicationDirPath();
 
@@ -359,9 +359,11 @@ void MRootDesktop::initializeState(){
     settings.endGroup();
 
     if(wnd_maximized){
+        m_maximizeActive = true;
         showMaximized();
     }
     else{
+        m_maximizeActive = false;
         move(wnd_rootx, wnd_rooty);
         resize(wnd_width, wnd_height);
     }
@@ -397,7 +399,7 @@ void MRootDesktop::saveSettings(){
     settings->setValue("rooty", y());
     settings->setValue("width", width());
     settings->setValue("height", height());
-    settings->setValue("maximized", isMaximized());
+    settings->setValue("maximized", m_maximizeActive);
     settings->endGroup();
 
     QString columnWidths;
@@ -424,6 +426,20 @@ void MRootDesktop::saveSettings(){
     settings->endGroup();
 
     m_mediaLibrary->save();
+}
+
+void MRootDesktop::toggleMaximized(){
+
+    if(!m_maximizeActive){
+        m_btnMaximize->setIcon(QIcon(":/icons/window/demaximize.png"));
+        m_maximizeActive = true;
+        showMaximized();
+    }
+    else {
+        m_btnMaximize->setIcon(QIcon(":/icons/window/maximize.png"));
+        m_maximizeActive = false;
+        showNormal();
+    }
 }
 
 void MRootDesktop::currentSongChanged(){
@@ -933,14 +949,14 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             m_lastCursorPoint = QPoint();
         }
 
-        else if(event->type() == QEvent::MouseMove && m_moveActive){
+        else if(event->type() == QEvent::MouseMove && m_moveActive && !m_maximizeActive){
             QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
             int x_move = m_lastCursorPoint.x() - sc_event->x();
             int y_move = m_lastCursorPoint.y() - sc_event->y();
             move(x() - x_move, y() - y_move);
         }
 
-        else if(event->type() == QEvent::MouseMove && m_resizeActive){
+        else if(event->type() == QEvent::MouseMove && m_resizeActive && !m_maximizeActive){
 
             QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
 
@@ -1051,7 +1067,7 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
 
         else if(event->type() == QEvent::HoverMove){
 
-            if(m_resizeActive){
+            if(m_resizeActive || m_maximizeActive){
                 return QMainWindow::eventFilter(object, event);
             }
 
@@ -1109,7 +1125,6 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
                 while(QApplication::overrideCursor()){
                     QApplication::restoreOverrideCursor();
                 }
-
             }
         }
     }
