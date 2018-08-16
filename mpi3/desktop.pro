@@ -42,6 +42,14 @@ SOURCES += mglobal.cpp
 RESOURCES += desktop.qrc
 SOURCES += desktop/main.cpp
 
+HEADERS += desktop/mroot.h
+SOURCES += desktop/mroot.cpp
+
+HEADERS += util/mstyle.h
+SOURCES += util/mstyle.cpp
+HEADERS += util/msettings.h
+SOURCES += util/msettings.cpp
+
 HEADERS += core/maudioengine.h
 SOURCES += core/maudioengine.cpp
 HEADERS += core/mmedialibrary.h
@@ -49,22 +57,16 @@ SOURCES += core/mmedialibrary.cpp
 HEADERS += core/mcontentdelegate.h
 SOURCES += core/mcontentdelegate.cpp
 
-HEADERS += util/mstyle.h
-SOURCES += util/mstyle.cpp
-HEADERS += util/msettings.h
-SOURCES += util/msettings.cpp
-
-HEADERS += desktop/mroot.h
-SOURCES += desktop/mroot.cpp
-
+HEADERS += desktop/ui/mcontextbar.h
+SOURCES += desktop/ui/mcontextbar.cpp
 HEADERS += desktop/ui/maudiocontrol.h
 HEADERS += desktop/ui/mlibrarydisplay.h
 SOURCES += desktop/ui/maudiocontrol.cpp
 SOURCES += desktop/ui/mlibrarydisplay.cpp
 
 HEADERS += desktop/ui/mvc/mlibitem.h
-HEADERS += desktop/ui/mvc/mlibview.h
-HEADERS += desktop/ui/mvc/mlibmodel.h
 SOURCES += desktop/ui/mvc/mlibitem.cpp
+HEADERS += desktop/ui/mvc/mlibview.h
 SOURCES += desktop/ui/mvc/mlibview.cpp
+HEADERS += desktop/ui/mvc/mlibmodel.h
 SOURCES += desktop/ui/mvc/mlibmodel.cpp

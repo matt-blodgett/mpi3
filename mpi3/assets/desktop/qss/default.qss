@@ -7,7 +7,7 @@
 
 
 QWidget {
-    font-family: "Helvetica";
+    font-family: "Arial";
     font-size: 12px;
 }
 
@@ -68,7 +68,6 @@ QWidget#ButtonRootWindow:hover {
 }
 
 QWidget#ButtonRootWindow:flat {
-
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     border-bottom-left-radius: 4px;
@@ -126,11 +125,70 @@ QMenu::indicator {
 
 
 // --------------------------------------------------
+// * ContextBar *
+// --------------------------------------------------
+QWidget#ContextBar {
+    background-color: #FFFFFF;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #636363;
+}
+
+// --------------------------------------------------
+// * ButtonContextBar *
+// --------------------------------------------------
+QWidget#ButtonContextBar {
+    background-color: #FFFFFF;
+    color: #000000;
+    text-align: center;
+    font-family: "Open Sans";
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0px 0px 0px 20px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-top: 1px solid #FFFFFF;
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #FFFFFF;
+    border-bottom: 1px solid #FFFFFF;
+}
+
+QWidget#ButtonContextBar::indicator {
+    width: 0px;
+    height: 0px;
+}
+
+QWidget#ButtonContextBar:hover {
+    background-color: #eaf6ff;
+    border-top: 1px solid #5a7f99;
+    border-left: 1px solid #5a7f99;
+    border-right: 1px solid #5a7f99;
+    border-bottom: 1px solid #5a7f99;
+}
+
+QWidget#ButtonContextBar:pushed {
+    background-color: #FFFFFF;
+}
+
+QWidget#ButtonContextBar:checked {
+//    qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #828282, stop:1 #565656);
+//    background: qconicalgradient(cx:0.5, cy:0.5, angle:30, stop:0 white, stop:1 #00FF00);
+    background: qradialgradient(cx:0.4, cy:0.4, radius: 1, fx:0.4, fy:0.4, stop:0 #7DB1D8, stop:1 #608EAF);
+    color: #FFFFFF;
+    border-top: 1px solid #5a7f99;
+    border-left: 1px solid #5a7f99;
+    border-right: 1px solid #5a7f99;
+    border-bottom: 1px solid #5a7f99;
+}
+
+
+
+// --------------------------------------------------
 // * PanelPlayback *
 // --------------------------------------------------
 QWidget#PanelPlayback {
     background-color: #BABABA;
-    border-bottom: 1px solid #000000;
 }
 
 // --------------------------------------------------
@@ -377,7 +435,8 @@ QWidget#PanelViewsButton {
     border-bottom: 0px;
     color: #FFFFFF;
     text-align: left;
-    font: 14px normal;
+    font-size: 14px;
+    font-weight: normal;
     padding: 2px 2px 2px 2px;
 }
 
@@ -395,7 +454,8 @@ QWidget#PanelViewsButton:pushed {
 }
 
 QWidget#PanelViewsButton:checked {
-    font: 14px bold;
+    font-size: 14px;
+    font-weight: bold;
     background: #FFFFFF;
     color: #000000;
     border: 0px;
@@ -412,7 +472,8 @@ QWidget#PanelViewsLabel {
     border-bottom: 0px;
     color: #FFFFFF;
     text-align: left;
-    font: 14px normal;
+    font-size: 14px;
+    font-weight: normal;
     padding: 2px 2px 2px 2px;
 }
 
@@ -442,7 +503,8 @@ QWidget#ContainersTreeview {
     border-right: 0px;
     border-bottom: 0px;
     color: #FFFFFF;
-    font: 14px normal;
+    font-size: 14px;
+    font-weight: normal;
     selection-color: #FFFFFF;
     selection-background-color: #777777;
     show-decoration-selected: 1;
@@ -527,7 +589,8 @@ QWidget#SonglistTreeview {
     border-left: 1px solid #000000;
     border-right: 0px;
     border-bottom: 0px;
-    font: 12px normal;
+    font-size: 12px;
+    font-weight: normal;
     show-decoration-selected: 1;
     alternate-background-color: #F9F9F9;
     paint-alternating-row-colors-for-empty-area: 1;
