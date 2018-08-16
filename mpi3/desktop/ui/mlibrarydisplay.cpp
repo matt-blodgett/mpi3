@@ -23,8 +23,8 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : QWidget(parent){
     m_btnAlbums->setStyle(new MStyle(m_btnAlbums->style()));
 
     connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(MPanelLibrary::ViewAllSongs);});
-    connect(m_btnArtists, &QPushButton::released, this, [this](){changeView(MPanelLibrary::ViewArtists);});
-    connect(m_btnAlbums, &QPushButton::released, this, [this](){changeView(MPanelLibrary::ViewAlbums);});
+    connect(m_btnArtists, &QRadioButton::released, this, [this](){changeView(MPanelLibrary::ViewArtists);});
+    connect(m_btnAlbums, &QRadioButton::released, this, [this](){changeView(MPanelLibrary::ViewAlbums);});
     connect(m_treeContainers, &QTreeView::clicked, this, &MPanelLibrary::containerClicked);
 
     m_frmViews->setObjectName("PanelViews");

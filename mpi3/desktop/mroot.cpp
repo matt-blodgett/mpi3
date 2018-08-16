@@ -5,6 +5,7 @@
 #include "core/maudioengine.h"
 #include "core/mcontentdelegate.h"
 
+#include "ui/mcontextbar.h"
 #include "ui/maudiocontrol.h"
 #include "ui/mlibrarydisplay.h"
 #include "ui/mvc/mlibmodel.h"
@@ -34,6 +35,9 @@
 #include <QMouseEvent>
 #include <QTime>
 
+#include <QFontDatabase>
+
+
 #include <QDebug>
 
 
@@ -58,6 +62,7 @@ void MRootDesktop::initialize(){
     initializeMainMenu();
     initializeLayout();
     initializeState();
+    initializeStyle();
     centralWidget()->show();
 }
 void MRootDesktop::initializeObjects(){
@@ -100,6 +105,17 @@ void MRootDesktop::initializeObjects(){
     connect(m_treeContainers, &QTreeView::customContextMenuRequested, this, &MRootDesktop::containersContextMenu);
     connect(m_treeSonglist, &QTreeView::customContextMenuRequested, this, &MRootDesktop::songlistContextMenu);
     connect(m_treeSonglist->header(), &QHeaderView::customContextMenuRequested, this, &MRootDesktop::headerContextMenu);
+
+    m_menuWidget = new QWidget(this);
+    m_btnClose = new QPushButton(m_menuWidget);
+    m_btnMinimize = new QPushButton(m_menuWidget);
+    m_btnMaximize = new QPushButton(m_menuWidget);
+
+    connect(m_btnMinimize, &QPushButton::released, this, &QMainWindow::showMinimized);
+    connect(m_btnMaximize, &QPushButton::released, this, &MRootDesktop::toggleMaximized);
+    connect(m_btnClose, &QPushButton::released, this, &QMainWindow::close);
+
+    m_contextBar = new MContextBar(this);
 }
 void MRootDesktop::initializeMainMenu(){
     QMenuBar *menu_main = menuBar();
@@ -272,11 +288,6 @@ void MRootDesktop::initializeMainMenu(){
 }
 void MRootDesktop::initializeLayout(){
 
-    m_menuWidget = new QWidget(this);
-    m_btnClose = new QPushButton(m_menuWidget);
-    m_btnMinimize = new QPushButton(m_menuWidget);
-    m_btnMaximize = new QPushButton(m_menuWidget);
-
     m_menuWidget->setObjectName("MainMenuBar");
     menuBar()->setObjectName("MainMenu");
     setObjectName("RootWindow");
@@ -307,25 +318,21 @@ void MRootDesktop::initializeLayout(){
     QWidget *windowMain = new QWidget(this);
     QGridLayout *layoutMain = new QGridLayout(windowMain);
     layoutMain->addWidget(m_panelPlayback, 0, 0, 1, 1);
-    layoutMain->addWidget(m_panelLibview, 1, 0, 1, 1);
+    layoutMain->addWidget(m_contextBar, 1, 0, 1, 1);
+    layoutMain->addWidget(m_panelLibview, 2, 0, 1, 1);
     layoutMain->setColumnStretch(0, 1);
-    layoutMain->setRowStretch(1, 1);
+    layoutMain->setRowStretch(2, 1);
     layoutMain->setHorizontalSpacing(0);
     layoutMain->setVerticalSpacing(0);
     windowMain->setLayout(layoutMain);
     layoutMain->setMargin(0);
+
     setMinimumHeight(300);
     setMinimumWidth(700);
-
     setContentsMargins(1, 1, 1, 1);
     setCentralWidget(windowMain);
     setMenuWidget(m_menuWidget);
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
-
-    connect(m_btnMinimize, &QPushButton::released, this, &QMainWindow::showMinimized);
-    connect(m_btnMaximize, &QPushButton::released, this, &MRootDesktop::toggleMaximized);
-    connect(m_btnClose, &QPushButton::released, this, &QMainWindow::close);
-
     installEventFilter(this);
 }
 void MRootDesktop::initializeState(){
@@ -379,8 +386,6 @@ void MRootDesktop::initializeState(){
     }
 
     m_styleSheet->load(qss_path);
-    setStyleSheet(m_styleSheet->qssStyle());
-
     m_mediaLibrary->load(lib_path);
     m_modelContainers->setLibrary(m_mediaLibrary);
     m_modelSonglist->setLibrary(m_mediaLibrary);
@@ -391,6 +396,7 @@ void MRootDesktop::initializeState(){
     m_panelPlayback->setVolume(val_volume);
     m_audioEngine->gain(m_panelPlayback->volume());
     m_panelLibview->changeView(MPanelLibrary::ViewAllSongs);
+    m_contextBar->changeView(MContextBar::ViewMedia);
 
     MMediaContainer *container = m_modelSonglist->container();
     if(container){
@@ -398,6 +404,35 @@ void MRootDesktop::initializeState(){
             m_contentDelegate->setContent(container, container->songs().at(0));
         }
     }
+}
+void MRootDesktop::initializeStyle(){
+    QFontDatabase fdb;
+
+    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Bold.ttf");
+//    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-BoldItalic.ttf");
+//    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-ExtraBold.ttf");
+//    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Italic.ttf");
+    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Light.ttf");
+    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Regular.ttf");
+//    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Semibold.ttf");
+
+//    fdb.addApplicationFont(":/fonts/lato/Lato-Black.ttf");
+//    fdb.addApplicationFont(":/fonts/lato/Lato-Bold.ttf");
+//    fdb.addApplicationFont(":/fonts/lato/Lato-BoldItalic.ttf");
+//    fdb.addApplicationFont(":/fonts/lato/Lato-Hairline.ttf");
+//    fdb.addApplicationFont(":/fonts/lato/Lato-Heavy.ttf");
+//    fdb.addApplicationFont(":/fonts/lato/Lato-Italic.ttf");
+//    fdb.addApplicationFont(":/fonts/lato/Lato-Light.ttf");
+//    fdb.addApplicationFont(":/fonts/lato/Lato-Medium.ttf");
+//    fdb.addApplicationFont(":/fonts/lato/Lato-Regular.ttf");
+//    fdb.addApplicationFont(":/fonts/lato/Lato-Semibold.ttf");
+//    fdb.addApplicationFont(":/fonts/lato/Lato-Thin.ttf");
+
+    if(m_styleSheet->qssPath().isNull()){
+        m_styleSheet->load(":/styles/default.qss");
+    }
+
+    setStyleSheet(m_styleSheet->qssStyle());
 }
 void MRootDesktop::saveSettings(){
     QString appDataLoc = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
@@ -1134,11 +1169,11 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             int x_event = sc_event->pos().x();
             int y_event = sc_event->pos().y();
 
-            bool west = x_event <= 2;
-            bool east = x_event >= width() - 2;
+            bool west = x_event <= 1;
+            bool east = x_event >= width() - 1;
 
             bool north = y_event <= 1;
-            bool south = y_event >= height() - 2;
+            bool south = y_event >= height() - 1;
 
             bool north_edge = y_event < 3;
             bool south_edge = y_event > height() - 3;

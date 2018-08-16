@@ -24,6 +24,8 @@ class MPanelPlayback;
 class MModelSonglist;
 class MTreeSonglist;
 
+class MContextBar;
+
 
 class MRootDesktop : public QMainWindow
 {
@@ -39,6 +41,7 @@ private:
     void initializeMainMenu();
     void initializeLayout();
     void initializeState();
+    void initializeStyle();
     void saveSettings();
 
 private:
@@ -54,6 +57,8 @@ private:
     MPanelPlayback *m_panelPlayback = nullptr;
     MModelSonglist *m_modelSonglist = nullptr;
     MTreeSonglist *m_treeSonglist = nullptr;
+
+    MContextBar *m_contextBar = nullptr;
 
 private:
     QPushButton *m_btnMaximize = nullptr;

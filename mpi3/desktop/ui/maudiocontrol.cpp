@@ -1,5 +1,4 @@
 #include "maudiocontrol.h"
-
 #include "core/mmedialibrary.h"
 
 #include <QGridLayout>
@@ -109,7 +108,7 @@ void MPanelPlayback::initializeLayout(){
     layoutControl->addWidget(m_lblPositionMax, 3, 3, 1, 1);
     layoutControl->addWidget(m_sldPosition, 4, 1, 1, 3);
     layoutControl->addWidget(m_btnPrev, 0, 0, 5, 1);
-    layoutControl->addWidget(m_btnFade, 0, 1, 4, 3);
+    layoutControl->addWidget(m_btnFade, 0, 1, 5, 3);
     layoutControl->addWidget(m_btnNext, 0, 4, 5, 1);
     layoutControl->setColumnMinimumWidth(1, 22);
     layoutControl->setColumnMinimumWidth(3, 22);
