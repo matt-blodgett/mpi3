@@ -1,4 +1,4 @@
-#include "mlibrarydisplay.h"
+#include "mpanelmedia.h"
 #include "mvc/mlibview.h"
 #include "util/mstyle.h"
 
@@ -10,7 +10,7 @@
 #include <QLabel>
 
 
-MPanelLibrary::MPanelLibrary(QWidget *parent) : QWidget(parent){
+MPanelMedia::MPanelMedia(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
     m_btnSongs->setText("Songs");
@@ -22,10 +22,10 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : QWidget(parent){
     m_btnArtists->setStyle(new MStyle(m_btnArtists->style()));
     m_btnAlbums->setStyle(new MStyle(m_btnAlbums->style()));
 
-    connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(MPanelLibrary::ViewAllSongs);});
-    connect(m_btnArtists, &QRadioButton::released, this, [this](){changeView(MPanelLibrary::ViewArtists);});
-    connect(m_btnAlbums, &QRadioButton::released, this, [this](){changeView(MPanelLibrary::ViewAlbums);});
-    connect(m_treeContainers, &QTreeView::clicked, this, &MPanelLibrary::containerClicked);
+    connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewAllSongs);});
+    connect(m_btnArtists, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewArtists);});
+    connect(m_btnAlbums, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewAlbums);});
+    connect(m_treeContainers, &QTreeView::clicked, this, &MPanelMedia::containerClicked);
 
     m_frmViews->setObjectName("PanelViews");
     m_frmTrees->setObjectName("PanelTrees");
@@ -39,9 +39,9 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : QWidget(parent){
     m_treeSonglist->header()->setObjectName("SonglistTreeviewHeader");
     m_treeContainers->header()->setObjectName("ContainersTreeviewHeader");
 }
-MPanelLibrary::~MPanelLibrary(){}
+MPanelMedia::~MPanelMedia(){}
 
-void MPanelLibrary::initializeLayout(){
+void MPanelMedia::initializeLayout(){
     m_frmLibrary = new QSplitter(this);
 
     m_frmViews = new QWidget(this);
@@ -57,7 +57,7 @@ void MPanelLibrary::initializeLayout(){
     m_treeContainers = new MTreeContainers(this);
     m_treeSonglist = new MTreeSonglist(this);
 
-    QGridLayout *layoutViews = new QGridLayout();
+    QGridLayout *layoutViews = new QGridLayout(this);
     layoutViews->addWidget(m_btnSongs, 0, 0, 1, 1);
     layoutViews->addWidget(m_btnArtists, 1, 0, 1, 1);
     layoutViews->addWidget(m_btnAlbums, 2, 0, 1, 1);
@@ -68,12 +68,11 @@ void MPanelLibrary::initializeLayout(){
     layoutViews->setVerticalSpacing(0);
     layoutViews->setHorizontalSpacing(0);
     layoutViews->setMargin(0);
-
     m_frmViews->setLayout(layoutViews);
     m_frmViews->setMinimumWidth(100);
     m_frmViews->setMaximumWidth(400);
 
-    QGridLayout *layoutTrees = new QGridLayout();
+    QGridLayout *layoutTrees = new QGridLayout(this);
     layoutTrees->addWidget(m_lblView, 0, 1, 1, 1);
     layoutTrees->addWidget(m_treeSonglist, 1, 0, 1, 2);
     layoutTrees->setRowStretch(1, 1);
@@ -83,10 +82,9 @@ void MPanelLibrary::initializeLayout(){
     layoutTrees->setHorizontalSpacing(0);
     layoutTrees->setVerticalSpacing(0);
     layoutTrees->setMargin(0);
-
     m_frmTrees->setLayout(layoutTrees);
 
-    QGridLayout *layoutMain = new QGridLayout();
+    QGridLayout *layoutMain = new QGridLayout(this);
     layoutMain->addWidget(m_frmLibrary);
     layoutMain->setColumnStretch(0, 1);
     layoutMain->setRowStretch(0, 1);
@@ -94,39 +92,40 @@ void MPanelLibrary::initializeLayout(){
     layoutMain->setHorizontalSpacing(0);
     layoutMain->setVerticalSpacing(0);
     layoutMain->setMargin(0);
-
     setLayout(layoutMain);
+
     m_frmLibrary->addWidget(m_frmViews);
     m_frmLibrary->addWidget(m_frmTrees);
     m_frmLibrary->setHandleWidth(0);
     m_frmLibrary->setChildrenCollapsible(false);
     m_frmLibrary->setOrientation(Qt::Horizontal);
+    m_frmLibrary->setStretchFactor(1, 1);
 }
 
-MPanelLibrary::View MPanelLibrary::currentView() const{
+MPanelMedia::View MPanelMedia::currentView() const{
     return m_currentView;
 }
-void MPanelLibrary::changeView(MPanelLibrary::View view){
+void MPanelMedia::changeView(MPanelMedia::View view){
     m_currentView = view;
 
     switch(m_currentView){
 
-        case MPanelLibrary::ViewAllSongs: {
+        case MPanelMedia::ViewAllSongs: {
             m_btnSongs->toggle();
             m_treeContainers->clearSelection();
             break;
         }
-        case MPanelLibrary::ViewArtists: {
+        case MPanelMedia::ViewArtists: {
             m_btnArtists->toggle();
             m_treeContainers->clearSelection();
             break;
         }
-        case MPanelLibrary::ViewAlbums: {
+        case MPanelMedia::ViewAlbums: {
             m_btnAlbums->toggle();
             m_treeContainers->clearSelection();
             break;
         }
-        case MPanelLibrary::ViewContainer: {
+        case MPanelMedia::ViewContainer: {
             m_btnSongs->setAutoExclusive(false);
             m_btnArtists->setAutoExclusive(false);
             m_btnAlbums->setAutoExclusive(false);
@@ -145,16 +144,16 @@ void MPanelLibrary::changeView(MPanelLibrary::View view){
 
     emit viewChanged();
 }
-void MPanelLibrary::setDisplay(const QString &title){
+void MPanelMedia::setDisplay(const QString &title){
     m_lblView->setText(title);
 }
-void MPanelLibrary::containerClicked(const QModelIndex &index){
+void MPanelMedia::containerClicked(const QModelIndex &index){
     if(index.isValid()){
-        changeView(MPanelLibrary::ViewContainer);
+        changeView(MPanelMedia::ViewContainer);
     }
 }
 
-void MPanelLibrary::showEvent(QShowEvent *event){
+void MPanelMedia::showEvent(QShowEvent *event){
     m_frmLibrary->setSizes({180, width()-180});
     QWidget::showEvent(event);
 }

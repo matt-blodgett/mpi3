@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/fonts/open-sans">
+        <file alias="OpenSans-Bold.ttf">assets/desktop/fonts/open-sans/OpenSans-Bold.ttf</file>
+        <file alias="OpenSans-BoldItalic.ttf">assets/desktop/fonts/open-sans/OpenSans-BoldItalic.ttf</file>
+        <file alias="OpenSans-ExtraBold.ttf">assets/desktop/fonts/open-sans/OpenSans-ExtraBold.ttf</file>
+        <file alias="OpenSans-Italic.ttf">assets/desktop/fonts/open-sans/OpenSans-Italic.ttf</file>
+        <file alias="OpenSans-Light.ttf">assets/desktop/fonts/open-sans/OpenSans-Light.ttf</file>
+        <file alias="OpenSans-Regular.ttf">assets/desktop/fonts/open-sans/OpenSans-Regular.ttf</file>
+        <file alias="OpenSans-Semibold.ttf">assets/desktop/fonts/open-sans/OpenSans-Semibold.ttf</file>
+    </qresource>
+    <qresource prefix="/fonts/lato">
+        <file alias="Lato-Black.ttf">assets/desktop/fonts/lato/Lato-Black.ttf</file>
+        <file alias="Lato-Bold.ttf">assets/desktop/fonts/lato/Lato-Bold.ttf</file>
+        <file alias="Lato-BoldItalic.ttf">assets/desktop/fonts/lato/Lato-BoldItalic.ttf</file>
+        <file alias="Lato-Hairline.ttf">assets/desktop/fonts/lato/Lato-Hairline.ttf</file>
+        <file alias="Lato-Heavy.ttf">assets/desktop/fonts/lato/Lato-Heavy.ttf</file>
+        <file alias="Lato-Italic.ttf">assets/desktop/fonts/lato/Lato-Italic.ttf</file>
+        <file alias="Lato-Light.ttf">assets/desktop/fonts/lato/Lato-Light.ttf</file>
+        <file alias="Lato-Medium.ttf">assets/desktop/fonts/lato/Lato-Medium.ttf</file>
+        <file alias="Lato-Regular.ttf">assets/desktop/fonts/lato/Lato-Regular.ttf</file>
+        <file alias="Lato-Semibold.ttf">assets/desktop/fonts/lato/Lato-Semibold.ttf</file>
+        <file alias="Lato-Thin.ttf">assets/desktop/fonts/lato/Lato-Thin.ttf</file>
+    </qresource>
+</RCC>

@@ -39,6 +39,7 @@ DEPENDPATH += $$PWD/lib/libav
 HEADERS += mglobal.h
 SOURCES += mglobal.cpp
 
+RESOURCES += fonts.qrc
 RESOURCES += desktop.qrc
 SOURCES += desktop/main.cpp
 
@@ -60,9 +61,11 @@ SOURCES += core/mcontentdelegate.cpp
 HEADERS += desktop/ui/mcontextbar.h
 SOURCES += desktop/ui/mcontextbar.cpp
 HEADERS += desktop/ui/maudiocontrol.h
-HEADERS += desktop/ui/mlibrarydisplay.h
 SOURCES += desktop/ui/maudiocontrol.cpp
-SOURCES += desktop/ui/mlibrarydisplay.cpp
+HEADERS += desktop/ui/mpanellibrary.h
+SOURCES += desktop/ui/mpanellibrary.cpp
+HEADERS += desktop/ui/mpanelmedia.h
+SOURCES += desktop/ui/mpanelmedia.cpp
 
 HEADERS += desktop/ui/mvc/mlibitem.h
 SOURCES += desktop/ui/mvc/mlibitem.cpp

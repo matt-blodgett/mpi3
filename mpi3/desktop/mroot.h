@@ -15,16 +15,14 @@ class MStyleSheet;
 class MMediaLibrary;
 class MAudioEngine;
 class MContentDelegate;
-
+class MContextBar;
+class MPanelPlayback;
 class MPanelLibrary;
+class MPanelMedia;
 class MModelContainers;
 class MTreeContainers;
-
-class MPanelPlayback;
 class MModelSonglist;
 class MTreeSonglist;
-
-class MContextBar;
 
 
 class MRootDesktop : public QMainWindow
@@ -50,26 +48,24 @@ private:
     MAudioEngine *m_audioEngine = nullptr;
     MContentDelegate *m_contentDelegate = nullptr;
 
-    MPanelLibrary *m_panelLibview = nullptr;
+    MContextBar *m_contextBar = nullptr;
+    MPanelLibrary *m_panelLibrary = nullptr;
+    MPanelPlayback *m_panelPlayback = nullptr;
+    MPanelMedia *m_panelMedia = nullptr;
     MModelContainers *m_modelContainers = nullptr;
     MTreeContainers *m_treeContainers = nullptr;
-
-    MPanelPlayback *m_panelPlayback = nullptr;
     MModelSonglist *m_modelSonglist = nullptr;
     MTreeSonglist *m_treeSonglist = nullptr;
-
-    MContextBar *m_contextBar = nullptr;
 
 private:
     QPushButton *m_btnMaximize = nullptr;
     QPushButton *m_btnMinimize = nullptr;
     QPushButton *m_btnClose = nullptr;
     QWidget *m_menuWidget = nullptr;
-
-    // override redirect
     QPoint m_lastCursorPoint;
     QPoint m_lastRootPoint;
     QSize m_lastSize;
+    // override redirect
 
     bool m_resizeWest;
     bool m_resizeEast;
@@ -82,6 +78,7 @@ private:
 
 private:
     void currentSongChanged();
+    void contextPanelChanged();
     void libraryViewChanged();
     void setCurrentContent(const QModelIndex &idx);
     void openFileLocation(const QString &path);

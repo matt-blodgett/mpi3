@@ -63,8 +63,6 @@ void MContextBar::initializeLayout(){
     m_btnMedia->setFixedWidth(100);
     m_btnLibrary->setFixedWidth(100);
     m_btnDevice->setFixedWidth(100);
-
-
 }
 
 MContextBar::View MContextBar::currentView() const{
@@ -73,20 +71,20 @@ MContextBar::View MContextBar::currentView() const{
 void MContextBar::changeView(MContextBar::View view){
     m_currentView = view;
 
-//    switch(m_currentView){
-//        case MContextBar::ViewMedia: {
-//            m_btnMedia->toggle();
-//            break;
-//        }
-//        case MContextBar::ViewLibrary: {
-//            m_btnLibrary->toggle();
-//            break;
-//        }
-//        case MContextBar::ViewDevice: {
-//            m_btnDevice->toggle();
-//            break;
-//        }
-//    }
+    switch(m_currentView){
+        case MContextBar::ViewMedia: {
+            m_btnMedia->toggle();
+            break;
+        }
+        case MContextBar::ViewLibrary: {
+            m_btnLibrary->toggle();
+            break;
+        }
+        case MContextBar::ViewDevice: {
+            m_btnDevice->toggle();
+            break;
+        }
+    }
 
     emit viewChanged();
 }

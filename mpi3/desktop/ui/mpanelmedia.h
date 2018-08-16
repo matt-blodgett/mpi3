@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef MLIBRARYDISPLAY_H
-#define MLIBRARYDISPLAY_H
+#ifndef MPANELMEDIA_H
+#define MPANELMEDIA_H
 
 #include <QWidget>
 
@@ -15,13 +15,13 @@ class MTreeContainers;
 class MTreeSonglist;
 
 
-class MPanelLibrary : public QWidget
+class MPanelMedia : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MPanelLibrary(QWidget *parent = nullptr);
-    ~MPanelLibrary();
+    explicit MPanelMedia(QWidget *parent = nullptr);
+    ~MPanelMedia();
 
 private:
     void initializeLayout();
@@ -34,12 +34,12 @@ public:
         ViewContainer
     };
 
-    MPanelLibrary::View currentView() const;
-    void changeView(MPanelLibrary::View view);
+    MPanelMedia::View currentView() const;
+    void changeView(MPanelMedia::View view);
     void setDisplay(const QString &title);
 
 private:
-    MPanelLibrary::View m_currentView;
+    MPanelMedia::View m_currentView;
 
     MTreeContainers *m_treeContainers = nullptr;
     MTreeSonglist *m_treeSonglist = nullptr;

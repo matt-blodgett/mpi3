@@ -6,8 +6,9 @@
 #include "core/mcontentdelegate.h"
 
 #include "ui/mcontextbar.h"
+#include "ui/mpanellibrary.h"
 #include "ui/maudiocontrol.h"
-#include "ui/mlibrarydisplay.h"
+#include "ui/mpanelmedia.h"
 #include "ui/mvc/mlibmodel.h"
 #include "ui/mvc/mlibview.h"
 
@@ -68,8 +69,9 @@ void MRootDesktop::initialize(){
 void MRootDesktop::initializeObjects(){
     m_styleSheet = new MStyleSheet();
 
-    m_panelLibview = new MPanelLibrary(this);
+    m_panelLibrary = new MPanelLibrary(this);
     m_panelPlayback = new MPanelPlayback(this);
+    m_panelMedia = new MPanelMedia(this);
 
     m_treeContainers = findChild<MTreeContainers*>("ContainersTreeview");
     m_treeSonglist = findChild<MTreeSonglist*>("SonglistTreeview");
@@ -100,7 +102,7 @@ void MRootDesktop::initializeObjects(){
     connect(m_panelPlayback, &MPanelPlayback::navigatePrev, m_contentDelegate, &MContentDelegate::prev);
 
     connect(m_mediaLibrary, &MMediaLibrary::elementModified, m_panelPlayback, &MPanelPlayback::elementModified);
-    connect(m_panelLibview, &MPanelLibrary::viewChanged, this, &MRootDesktop::libraryViewChanged);
+    connect(m_panelMedia, &MPanelMedia::viewChanged, this, &MRootDesktop::libraryViewChanged);
 
     connect(m_treeContainers, &QTreeView::customContextMenuRequested, this, &MRootDesktop::containersContextMenu);
     connect(m_treeSonglist, &QTreeView::customContextMenuRequested, this, &MRootDesktop::songlistContextMenu);
@@ -116,6 +118,9 @@ void MRootDesktop::initializeObjects(){
     connect(m_btnClose, &QPushButton::released, this, &QMainWindow::close);
 
     m_contextBar = new MContextBar(this);
+
+    connect(m_contextBar, &MContextBar::viewChanged, this, &MRootDesktop::contextPanelChanged);
+
 }
 void MRootDesktop::initializeMainMenu(){
     QMenuBar *menu_main = menuBar();
@@ -319,13 +324,16 @@ void MRootDesktop::initializeLayout(){
     QGridLayout *layoutMain = new QGridLayout(windowMain);
     layoutMain->addWidget(m_panelPlayback, 0, 0, 1, 1);
     layoutMain->addWidget(m_contextBar, 1, 0, 1, 1);
-    layoutMain->addWidget(m_panelLibview, 2, 0, 1, 1);
+    layoutMain->addWidget(m_panelMedia, 2, 0, 1, 1);
+    layoutMain->addWidget(m_panelLibrary, 2, 0, 1, 1);
     layoutMain->setColumnStretch(0, 1);
     layoutMain->setRowStretch(2, 1);
     layoutMain->setHorizontalSpacing(0);
     layoutMain->setVerticalSpacing(0);
-    windowMain->setLayout(layoutMain);
     layoutMain->setMargin(0);
+    windowMain->setLayout(layoutMain);
+
+    m_panelLibrary->hide();
 
     setMinimumHeight(300);
     setMinimumWidth(700);
@@ -395,7 +403,7 @@ void MRootDesktop::initializeState(){
     m_contentDelegate->setEngine(m_audioEngine);
     m_panelPlayback->setVolume(val_volume);
     m_audioEngine->gain(m_panelPlayback->volume());
-    m_panelLibview->changeView(MPanelLibrary::ViewAllSongs);
+    m_panelMedia->changeView(MPanelMedia::ViewAllSongs);
     m_contextBar->changeView(MContextBar::ViewMedia);
 
     MMediaContainer *container = m_modelSonglist->container();
@@ -497,30 +505,48 @@ void MRootDesktop::currentSongChanged(){
     }
 
 }
-void MRootDesktop::libraryViewChanged(){
-    switch(m_panelLibview->currentView()) {
+void MRootDesktop::contextPanelChanged(){
 
-        case MPanelLibrary::ViewAllSongs: {
-            m_panelLibview->setDisplay("Library");
+    switch(m_contextBar->currentView()){
+        case MContextBar::ViewMedia:{
+            m_panelMedia->show();
+            m_panelLibrary->hide();
+            break;
+        }
+        case MContextBar::ViewLibrary:{
+            m_panelMedia->hide();
+            m_panelLibrary->show();
+            break;
+        }
+        case MContextBar::ViewDevice:{
+            break;
+        }
+    }
+}
+void MRootDesktop::libraryViewChanged(){
+    switch(m_panelMedia->currentView()) {
+
+        case MPanelMedia::ViewAllSongs: {
+            m_panelMedia->setDisplay("Library");
             m_modelSonglist->setContainer(m_mediaLibrary);
             break;
         }
-        case MPanelLibrary::ViewArtists: {
-            m_panelLibview->setDisplay("Artists");
+        case MPanelMedia::ViewArtists: {
+            m_panelMedia->setDisplay("Artists");
             m_modelSonglist->setContainer(m_mediaLibrary);
             break;
         }
-        case MPanelLibrary::ViewAlbums: {
-            m_panelLibview->setDisplay("Albums");
+        case MPanelMedia::ViewAlbums: {
+            m_panelMedia->setDisplay("Albums");
             m_modelSonglist->setContainer(m_mediaLibrary);
             break;
         }
-        case MPanelLibrary::ViewContainer: {
+        case MPanelMedia::ViewContainer: {
             QModelIndex selectedIndex = m_treeContainers->selectionModel()->currentIndex();
             QString pidContainer = m_modelContainers->getPID(selectedIndex);
             MMediaContainer *container = m_mediaLibrary->getContainer(pidContainer);
 
-            m_panelLibview->setDisplay(container->name());
+            m_panelMedia->setDisplay(container->name());
             m_modelSonglist->setContainer(container);
             break;
         }
@@ -848,7 +874,7 @@ void MRootDesktop::libReset(){
     m_mediaLibrary->save();
     m_modelContainers->setLibrary(m_mediaLibrary);
     m_modelSonglist->setLibrary(m_mediaLibrary);
-    m_panelLibview->changeView(MPanelLibrary::ViewAllSongs);
+    m_panelMedia->changeView(MPanelMedia::ViewAllSongs);
 }
 
 void MRootDesktop::themeSet(){
@@ -974,7 +1000,7 @@ void MRootDesktop::objDelete(QTreeView *treeParent){
         MMediaElement *element = m_mediaLibrary->getElement(pid);
 
         if(element == m_modelSonglist->container()){
-            m_panelLibview->changeView(MPanelLibrary::ViewAllSongs);
+            m_panelMedia->changeView(MPanelMedia::ViewAllSongs);
             m_modelSonglist->setContainer(m_mediaLibrary);
         }
 
