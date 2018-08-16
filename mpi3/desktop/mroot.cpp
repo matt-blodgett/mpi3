@@ -7,6 +7,7 @@
 
 #include "ui/mcontextbar.h"
 #include "ui/mpanellibrary.h"
+#include "ui/mpaneldevice.h"
 #include "ui/maudiocontrol.h"
 #include "ui/mpanelmedia.h"
 #include "ui/mvc/mlibmodel.h"
@@ -71,6 +72,7 @@ void MRootDesktop::initializeObjects(){
 
     m_panelLibrary = new MPanelLibrary(this);
     m_panelPlayback = new MPanelPlayback(this);
+    m_panelDevice = new MPanelDevice(this);
     m_panelMedia = new MPanelMedia(this);
 
     m_treeContainers = findChild<MTreeContainers*>("ContainersTreeview");
@@ -326,6 +328,7 @@ void MRootDesktop::initializeLayout(){
     layoutMain->addWidget(m_contextBar, 1, 0, 1, 1);
     layoutMain->addWidget(m_panelMedia, 2, 0, 1, 1);
     layoutMain->addWidget(m_panelLibrary, 2, 0, 1, 1);
+    layoutMain->addWidget(m_panelDevice, 2, 0, 1, 1);
     layoutMain->setColumnStretch(0, 1);
     layoutMain->setRowStretch(2, 1);
     layoutMain->setHorizontalSpacing(0);
@@ -334,6 +337,7 @@ void MRootDesktop::initializeLayout(){
     windowMain->setLayout(layoutMain);
 
     m_panelLibrary->hide();
+    m_panelDevice->hide();
 
     setMinimumHeight(300);
     setMinimumWidth(700);
@@ -361,6 +365,10 @@ void MRootDesktop::initializeState(){
     int wnd_width = settings.value("width", 800).toInt();
     int wnd_height = settings.value("height", 600).toInt();
     bool wnd_maximized = settings.value("maximized").toBool();
+    settings.endGroup();
+
+    settings.beginGroup("LastSelectedContexts");
+    int view_contextbar = settings.value("contextbar").toInt();
     settings.endGroup();
 
     settings.beginGroup("TreeViewColumnProperties");
@@ -404,7 +412,7 @@ void MRootDesktop::initializeState(){
     m_panelPlayback->setVolume(val_volume);
     m_audioEngine->gain(m_panelPlayback->volume());
     m_panelMedia->changeView(MPanelMedia::ViewAllSongs);
-    m_contextBar->changeView(MContextBar::ViewMedia);
+    m_contextBar->changeView(static_cast<MContextBar::View>(view_contextbar));
 
     MMediaContainer *container = m_modelSonglist->container();
     if(container){
@@ -456,14 +464,17 @@ void MRootDesktop::saveSettings(){
     settings->setValue("maximized", m_maximizeActive);
     settings->endGroup();
 
+    settings->beginGroup("LastSelectedContexts");
+    settings->setValue("contextbar", m_contextBar->currentView());
+    settings->endGroup();
+
+    settings->beginGroup("TreeViewColumnProperties");
     QString columnWidths;
     QString columnVisible;
     for(int i = 0; i < m_modelSonglist->columnCount(); i++){
         columnWidths += QString::number(m_treeSonglist->columnWidth(i)) + ";";
         columnVisible += m_treeSonglist->isColumnHidden(i) ? "0" : "1";
     }
-
-    settings->beginGroup("TreeViewColumnProperties");
     settings->setValue("widths", columnWidths);
     settings->setValue("visible", columnVisible);
     settings->endGroup();
@@ -511,14 +522,19 @@ void MRootDesktop::contextPanelChanged(){
         case MContextBar::ViewMedia:{
             m_panelMedia->show();
             m_panelLibrary->hide();
+            m_panelDevice->hide();
             break;
         }
         case MContextBar::ViewLibrary:{
             m_panelMedia->hide();
             m_panelLibrary->show();
+            m_panelDevice->hide();
             break;
         }
         case MContextBar::ViewDevice:{
+            m_panelMedia->hide();
+            m_panelLibrary->hide();
+            m_panelDevice->show();
             break;
         }
     }

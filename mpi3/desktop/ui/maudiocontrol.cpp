@@ -27,44 +27,48 @@ MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
 
     m_fadeTimer = new QTimer(this);
     m_fadeTimer->setSingleShot(true);
-
-    m_btnFade->installEventFilter(this);
-    m_frmControls->installEventFilter(this);
-
     connect(m_fadeTimer, &QTimer::timeout, this, [this](){animateFadeButton();});
 
     connect(m_btnPlay, &QPushButton::released, this, &MPanelPlayback::clickedPlay);
     connect(m_btnNext, &QPushButton::released, this, &MPanelPlayback::clickedNext);
     connect(m_btnPrev, &QPushButton::released, this, &MPanelPlayback::clickedPrev);
     connect(m_sldVolume, &QSlider::valueChanged, this, &MPanelPlayback::volumeChanged);
-
-    m_lblTitle->setObjectName("SongDisplayLabelTitle");
-    m_lblArtist->setObjectName("SongDisplayLabelArtist");
-    m_lblPositionMax->setObjectName("SongDisplayLabelPosition");
-    m_lblPositionMin->setObjectName("SongDisplayLabelPosition");
-    m_btnNext->setObjectName("ButtonNext");
-    m_btnPrev->setObjectName("ButtonPrev");
-    m_btnPlay->setObjectName("ButtonPlay");
-    m_btnFade->setObjectName("ButtonFade");
-    m_sldVolume->setObjectName("SliderVolume");
-    m_sldPosition->setObjectName("SliderPosition");
-    m_frmControls->setObjectName("PlaybackControl");
-    m_btnSearch->setObjectName("ButtonSearch");
-    m_boxSearch->setObjectName("BoxSearch");
-    setObjectName("PanelPlayback");
-
-
-
-
-
-//    m_btnFade->setVisible(false);
 }
 MPanelPlayback::~MPanelPlayback(){}
 
 void MPanelPlayback::initializeLayout(){
-    m_frmVolume = new QWidget(this);
-    m_frmControls = new QWidget(this);
-    m_frmSearchbar = new QWidget(this);
+
+    // -------------------------------------------------- PIXMAPS
+
+    m_pixNext = QPixmap(":/icons/playback/next.png");
+    m_pixPrev = QPixmap(":/icons/playback/prev.png");
+    m_pixPlay = QPixmap(":/icons/playback/play.png");
+    m_pixPaus = QPixmap(":/icons/playback/paus.png");
+    m_pixSearch = QPixmap(":/icons/playback/search.png");
+
+    // -------------------------------------------------- VOLUME
+
+    QWidget *frmVolume = new QWidget(this);
+
+    m_sldVolume = new QSlider(this);
+
+    QGridLayout *layoutVolume = new QGridLayout(this);
+    layoutVolume->addWidget(m_sldVolume, 1, 0, 1, 1);
+    layoutVolume->setColumnStretch(0, 1);
+    layoutVolume->setRowMinimumHeight(1, 20);
+    layoutVolume->setHorizontalSpacing(0);
+    layoutVolume->setVerticalSpacing(0);
+    layoutVolume->setMargin(0);
+    frmVolume->setLayout(layoutVolume);
+
+    m_sldVolume->setOrientation(Qt::Horizontal);
+
+    // -------------------------------------------------- PLAYBACK
+
+    int uHeight = 52;
+    int uBtnWidth = 48;
+
+    QWidget *frmPlayback = new QWidget(this);
 
     m_lblTitle = new QLabel(this);
     m_lblArtist = new QLabel(this);
@@ -76,30 +80,6 @@ void MPanelPlayback::initializeLayout(){
     m_btnPrev = new QPushButton(this);
     m_btnFade = new QPushButton(this);
     m_sldPosition = new QSlider(this);
-
-    m_sldVolume = new QSlider(this);
-    m_boxSearch = new QLineEdit(this);
-    m_btnSearch = new QPushButton(this);
-
-    m_pixNext = QPixmap(":/icons/playback/next.png");
-    m_pixPrev = QPixmap(":/icons/playback/prev.png");
-    m_pixPlay = QPixmap(":/icons/playback/play.png");
-    m_pixPaus = QPixmap(":/icons/playback/paus.png");
-    m_pixSearch = QPixmap(":/icons/playback/search.png");
-
-    QGridLayout *layoutVolume = new QGridLayout(this);
-    layoutVolume->addWidget(m_sldVolume, 1, 0, 1, 1);
-    layoutVolume->setColumnStretch(0, 1);
-    layoutVolume->setRowMinimumHeight(1, 20);
-    layoutVolume->setHorizontalSpacing(0);
-    layoutVolume->setVerticalSpacing(0);
-    layoutVolume->setMargin(0);
-    m_frmVolume->setLayout(layoutVolume);
-
-    m_sldVolume->setOrientation(Qt::Horizontal);
-
-    int uHeight = 52;
-    int uBtnWidth = 48;
 
     QGridLayout *layoutControl = new QGridLayout(this);
     layoutControl->addWidget(m_lblTitle, 0, 2, 1, 1);
@@ -120,23 +100,22 @@ void MPanelPlayback::initializeLayout(){
     layoutControl->setHorizontalSpacing(0);
     layoutControl->setVerticalSpacing(0);
     layoutControl->setMargin(0);
-    m_frmControls->setLayout(layoutControl);
+    frmPlayback->setLayout(layoutControl);
 
-    m_frmControls->setFixedHeight(uHeight-1);
+    frmPlayback->setFixedHeight(uHeight-1);
 
     m_btnPrev->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_btnNext->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_btnFade->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-
-    m_btnNext->setFixedWidth(uBtnWidth);
-    m_btnPrev->setFixedWidth(uBtnWidth);
 
     m_sldPosition->setFixedHeight(8);
     m_sldPosition->setOrientation(Qt::Horizontal);
 
     m_lblTitle->setAlignment(Qt::AlignCenter);
     m_lblArtist->setAlignment(Qt::AlignCenter);
-    m_sldPosition->setOrientation(Qt::Horizontal);
+
+    m_btnNext->setFixedWidth(uBtnWidth);
+    m_btnPrev->setFixedWidth(uBtnWidth);
 
     m_btnNext->setIcon(QIcon(m_pixNext));
     m_btnPrev->setIcon(QIcon(m_pixPrev));
@@ -150,13 +129,17 @@ void MPanelPlayback::initializeLayout(){
     m_btnPrev->setFlat(true);
     m_btnFade->setFlat(true);
 
-    m_btnSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-    m_boxSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-    m_boxSearch->setTextMargins(0, 0, 0, 0);
+    m_btnPlay->setFixedWidth(32);
+    m_btnPlay->setFixedHeight(32);
+    m_btnPlay->setIconSize(QSize(22, 22));
+    m_btnPlay->setIcon(QIcon(m_pixPlay));
+    m_btnPlay->setFlat(true);
 
-    m_btnSearch->setIcon(QIcon(m_pixSearch));
-    m_btnSearch->setIconSize(QSize(20, 20));
-    m_btnSearch->setFlat(true);
+    // -------------------------------------------------- SEARCHBAR
+    QWidget *frmSearchbar = new QWidget(this);
+
+    m_boxSearch = new QLineEdit(this);
+    m_btnSearch = new QPushButton(this);
 
     QGridLayout *layoutSearchbar = new QGridLayout(this);
     layoutSearchbar->addWidget(m_btnSearch, 1, 0, 1, 1);
@@ -168,13 +151,23 @@ void MPanelPlayback::initializeLayout(){
     layoutSearchbar->setHorizontalSpacing(0);
     layoutSearchbar->setVerticalSpacing(0);
     layoutSearchbar->setMargin(0);
-    m_frmSearchbar->setLayout(layoutSearchbar);
+    frmSearchbar->setLayout(layoutSearchbar);
+
+    m_btnSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_boxSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_boxSearch->setTextMargins(0, 0, 0, 0);
+
+    m_btnSearch->setIcon(QIcon(m_pixSearch));
+    m_btnSearch->setIconSize(QSize(20, 20));
+    m_btnSearch->setFlat(true);
+
+    // -------------------------------------------------- PLAYBACK PANEl
 
     QGridLayout *layoutMain = new QGridLayout(this);
-    layoutMain->addWidget(m_frmVolume, 0, 1, 1, 1);
+    layoutMain->addWidget(frmVolume, 0, 1, 1, 1);
     layoutMain->addWidget(m_btnPlay, 0, 3, 1, 1);
-    layoutMain->addWidget(m_frmControls, 0, 5, 1, 1);
-    layoutMain->addWidget(m_frmSearchbar, 0, 9, 1, 1);
+    layoutMain->addWidget(frmPlayback, 0, 5, 1, 1);
+    layoutMain->addWidget(frmSearchbar, 0, 9, 1, 1);
     layoutMain->setRowMinimumHeight(0, uHeight);
     layoutMain->setColumnMinimumWidth(0, 20);
     layoutMain->setColumnMinimumWidth(1, 150);
@@ -203,11 +196,22 @@ void MPanelPlayback::initializeLayout(){
     layoutMain->setMargin(0);
     setLayout(layoutMain);
 
-    m_btnPlay->setFixedWidth(32);
-    m_btnPlay->setFixedHeight(32);
-    m_btnPlay->setIconSize(QSize(22, 22));
-    m_btnPlay->setIcon(QIcon(m_pixPlay));
-    m_btnPlay->setFlat(true);
+    // -------------------------------------------------- OBJECT NAMES
+
+    m_lblTitle->setObjectName("SongDisplayLabelTitle");
+    m_lblArtist->setObjectName("SongDisplayLabelArtist");
+    m_lblPositionMax->setObjectName("SongDisplayLabelPosition");
+    m_lblPositionMin->setObjectName("SongDisplayLabelPosition");
+    m_btnNext->setObjectName("ButtonNext");
+    m_btnPrev->setObjectName("ButtonPrev");
+    m_btnPlay->setObjectName("ButtonPlay");
+    m_btnFade->setObjectName("ButtonFade");
+    m_sldVolume->setObjectName("SliderVolume");
+    m_sldPosition->setObjectName("SliderPosition");
+    frmPlayback->setObjectName("PlaybackControl");
+    m_btnSearch->setObjectName("ButtonSearch");
+    m_boxSearch->setObjectName("BoxSearch");
+    setObjectName("PanelPlayback");
 }
 
 double MPanelPlayback::buttonOpacity() const{

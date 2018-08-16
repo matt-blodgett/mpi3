@@ -13,11 +13,6 @@
 MPanelMedia::MPanelMedia(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
-    m_btnSongs->setText("Songs");
-    m_btnArtists->setText("Artists");
-    m_btnAlbums->setText("Albums");
-    m_lblPlaylist->setText("Playlists");
-
     m_btnSongs->setStyle(new MStyle(m_btnSongs->style()));
     m_btnArtists->setStyle(new MStyle(m_btnArtists->style()));
     m_btnAlbums->setStyle(new MStyle(m_btnAlbums->style()));
@@ -26,51 +21,43 @@ MPanelMedia::MPanelMedia(QWidget *parent) : QWidget(parent){
     connect(m_btnArtists, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewArtists);});
     connect(m_btnAlbums, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewAlbums);});
     connect(m_treeContainers, &QTreeView::clicked, this, &MPanelMedia::containerClicked);
-
-    m_frmViews->setObjectName("PanelViews");
-    m_frmTrees->setObjectName("PanelTrees");
-    m_btnSongs->setObjectName("PanelViewsButton");
-    m_btnArtists->setObjectName("PanelViewsButton");
-    m_btnAlbums->setObjectName("PanelViewsButton");
-    m_lblView->setObjectName("PanelTreesTitle");
-    m_lblPlaylist->setObjectName("PanelViewsLabel");
-    m_treeSonglist->setObjectName("SonglistTreeview");
-    m_treeContainers->setObjectName("ContainersTreeview");
-    m_treeSonglist->header()->setObjectName("SonglistTreeviewHeader");
-    m_treeContainers->header()->setObjectName("ContainersTreeviewHeader");
 }
 MPanelMedia::~MPanelMedia(){}
 
 void MPanelMedia::initializeLayout(){
-    m_frmLibrary = new QSplitter(this);
 
-    m_frmViews = new QWidget(this);
-    m_frmTrees = new QWidget(this);
+    // -------------------------------------------------- CONTROL PANEl
+
+    QWidget *frmControl = new QWidget(this);
 
     m_btnSongs = new QRadioButton(this);
     m_btnArtists = new QRadioButton(this);
     m_btnAlbums = new QRadioButton(this);
 
-    m_lblPlaylist = new QLabel(this);
-    m_lblView = new QLabel(this);
-
+    QLabel *lblPlaylist = new QLabel(this);
     m_treeContainers = new MTreeContainers(this);
-    m_treeSonglist = new MTreeSonglist(this);
 
-    QGridLayout *layoutViews = new QGridLayout(this);
-    layoutViews->addWidget(m_btnSongs, 0, 0, 1, 1);
-    layoutViews->addWidget(m_btnArtists, 1, 0, 1, 1);
-    layoutViews->addWidget(m_btnAlbums, 2, 0, 1, 1);
-    layoutViews->setRowMinimumHeight(3, 6);
-    layoutViews->addWidget(m_lblPlaylist, 4, 0, 1, 1);
-    layoutViews->addWidget(m_treeContainers, 5, 0, 1, 1);
-    layoutViews->setRowStretch(5, 1);
-    layoutViews->setVerticalSpacing(0);
-    layoutViews->setHorizontalSpacing(0);
-    layoutViews->setMargin(0);
-    m_frmViews->setLayout(layoutViews);
-    m_frmViews->setMinimumWidth(100);
-    m_frmViews->setMaximumWidth(400);
+    QGridLayout *layoutControl = new QGridLayout(this);
+    layoutControl->addWidget(m_btnSongs, 0, 0, 1, 1);
+    layoutControl->addWidget(m_btnArtists, 1, 0, 1, 1);
+    layoutControl->addWidget(m_btnAlbums, 2, 0, 1, 1);
+    layoutControl->setRowMinimumHeight(3, 6);
+    layoutControl->addWidget(lblPlaylist, 4, 0, 1, 1);
+    layoutControl->addWidget(m_treeContainers, 5, 0, 1, 1);
+    layoutControl->setRowStretch(5, 1);
+    layoutControl->setVerticalSpacing(0);
+    layoutControl->setHorizontalSpacing(0);
+    layoutControl->setMargin(0);
+    frmControl->setLayout(layoutControl);
+    frmControl->setMinimumWidth(120);
+    frmControl->setMaximumWidth(400);
+
+    // -------------------------------------------------- TREEVIEWS
+
+    QWidget *frmTreeViews = new QWidget(this);
+
+    m_lblView = new QLabel(this);
+    m_treeSonglist = new MTreeSonglist(this);
 
     QGridLayout *layoutTrees = new QGridLayout(this);
     layoutTrees->addWidget(m_lblView, 0, 1, 1, 1);
@@ -82,7 +69,11 @@ void MPanelMedia::initializeLayout(){
     layoutTrees->setHorizontalSpacing(0);
     layoutTrees->setVerticalSpacing(0);
     layoutTrees->setMargin(0);
-    m_frmTrees->setLayout(layoutTrees);
+    frmTreeViews->setLayout(layoutTrees);
+
+    // -------------------------------------------------- MEDIA PANEl
+
+    m_frmLibrary = new QSplitter(this);
 
     QGridLayout *layoutMain = new QGridLayout(this);
     layoutMain->addWidget(m_frmLibrary);
@@ -94,12 +85,33 @@ void MPanelMedia::initializeLayout(){
     layoutMain->setMargin(0);
     setLayout(layoutMain);
 
-    m_frmLibrary->addWidget(m_frmViews);
-    m_frmLibrary->addWidget(m_frmTrees);
+    m_frmLibrary->addWidget(frmControl);
+    m_frmLibrary->addWidget(frmTreeViews);
     m_frmLibrary->setHandleWidth(0);
     m_frmLibrary->setChildrenCollapsible(false);
     m_frmLibrary->setOrientation(Qt::Horizontal);
     m_frmLibrary->setStretchFactor(1, 1);
+
+    // -------------------------------------------------- STATIC TEXT
+
+    m_btnSongs->setText("Songs");
+    m_btnArtists->setText("Artists");
+    m_btnAlbums->setText("Albums");
+    lblPlaylist->setText("Playlists");
+
+    // -------------------------------------------------- OBJECT NAMES
+
+    frmControl->setObjectName("PanelControl");
+    frmTreeViews->setObjectName("PanelTrees");
+    m_btnSongs->setObjectName("PanelViewsButton");
+    m_btnArtists->setObjectName("PanelViewsButton");
+    m_btnAlbums->setObjectName("PanelViewsButton");
+    m_lblView->setObjectName("PanelTreesTitle");
+    lblPlaylist->setObjectName("PanelViewsLabel");
+    m_treeSonglist->setObjectName("SonglistTreeview");
+    m_treeContainers->setObjectName("ContainersTreeview");
+    m_treeSonglist->header()->setObjectName("SonglistTreeviewHeader");
+    m_treeContainers->header()->setObjectName("ContainersTreeviewHeader");
 }
 
 MPanelMedia::View MPanelMedia::currentView() const{

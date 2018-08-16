@@ -45,14 +45,9 @@ private:
     MTreeSonglist *m_treeSonglist = nullptr;
 
     QSplitter *m_frmLibrary = nullptr;
-    QWidget *m_frmViews = nullptr;
-    QWidget *m_frmTrees = nullptr;
-
     QRadioButton *m_btnSongs = nullptr;
     QRadioButton *m_btnArtists = nullptr;
     QRadioButton *m_btnAlbums = nullptr;
-
-    QLabel *m_lblPlaylist = nullptr;
     QLabel *m_lblView = nullptr;
 
 private:

@@ -55,10 +55,6 @@ private:
     bool m_navigating;
 
 private:
-    QWidget *m_frmVolume = nullptr;
-    QWidget *m_frmControls = nullptr;
-    QWidget *m_frmSearchbar = nullptr;
-
     QLabel *m_lblTitle = nullptr;
     QLabel *m_lblArtist = nullptr;
     QLabel *m_lblPositionMin = nullptr;

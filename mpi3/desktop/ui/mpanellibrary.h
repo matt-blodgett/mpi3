@@ -4,10 +4,15 @@
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
-class QPushButton;
 class QSplitter;
+class QPushButton;
+class QLineEdit;
+class QCheckBox;
+class QComboBox;
+class QTreeView;
 class QLabel;
 QT_END_NAMESPACE
+
 
 class MPanelLibrary : public QWidget
 {
@@ -23,21 +28,27 @@ private:
 private:
     QSplitter *m_frmLibrary = nullptr;
 
-    QWidget *m_frmControl = nullptr;
     QPushButton *m_btnLibImport = nullptr;
+    QPushButton *m_btnLibExport = nullptr;
+    QPushButton *m_btnLibReset = nullptr;
+    QPushButton *m_btnLibOpenFile = nullptr;
 
-    QWidget *m_frmDisplay = nullptr;
+    QLineEdit *m_boxLibName = nullptr;
+    QLabel *m_lblLibAdded = nullptr;
+    QLabel *m_lblPlistCount = nullptr;
+    QLabel *m_lblSongCount = nullptr;
+    QLabel *m_lblArtistCount = nullptr;
 
-    QLabel *m_lblPanelTitle = nullptr;
+    QCheckBox *m_optOrganizeMedia = nullptr;
+    QPushButton *m_btnSetMediaLoc = nullptr;
+    QLineEdit *m_boxMediaLoc = nullptr;
+    QLabel *m_lblMediaSize = nullptr;
 
-    QLabel *m_lblPofileHeader = nullptr;
-    QWidget *m_frmProfileSection = nullptr;
-
-    QLabel *m_lblMediaHeader = nullptr;
-    QWidget *m_frmMediaSection = nullptr;
-
-    QLabel *m_lblBackupHeader = nullptr;
-    QWidget *m_frmBackupSection = nullptr;
+    QCheckBox *m_optBackupLibrary = nullptr;
+    QPushButton *m_btnSetBackupLoc = nullptr;
+    QLineEdit *m_boxBackupLoc = nullptr;
+    QComboBox *m_cbxBackupFreq = nullptr;
+    QTreeView *m_treeBackupHist = nullptr;
 
 private:
     void paintEvent(QPaintEvent *event);

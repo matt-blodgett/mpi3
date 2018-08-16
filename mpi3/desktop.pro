@@ -36,13 +36,14 @@ INCLUDEPATH += $$PWD/lib/libav
 DEPENDPATH += $$PWD/lib/libav
 
 
+RESOURCES += fonts.qrc
+RESOURCES += desktop.qrc
+
+
 HEADERS += mglobal.h
 SOURCES += mglobal.cpp
 
-RESOURCES += fonts.qrc
-RESOURCES += desktop.qrc
 SOURCES += desktop/main.cpp
-
 HEADERS += desktop/mroot.h
 SOURCES += desktop/mroot.cpp
 
@@ -64,6 +65,8 @@ HEADERS += desktop/ui/maudiocontrol.h
 SOURCES += desktop/ui/maudiocontrol.cpp
 HEADERS += desktop/ui/mpanellibrary.h
 SOURCES += desktop/ui/mpanellibrary.cpp
+HEADERS += desktop/ui/mpaneldevice.h
+SOURCES += desktop/ui/mpaneldevice.cpp
 HEADERS += desktop/ui/mpanelmedia.h
 SOURCES += desktop/ui/mpanelmedia.cpp
 

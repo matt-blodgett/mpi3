@@ -13,10 +13,6 @@
 MContextBar::MContextBar(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
-    m_btnMedia->setText("Media");
-    m_btnLibrary->setText("Library");
-    m_btnDevice->setText("Device");
-
     m_btnMedia->setStyle(new MStyle(m_btnMedia->style()));
     m_btnLibrary->setStyle(new MStyle(m_btnLibrary->style()));
     m_btnDevice->setStyle(new MStyle(m_btnDevice->style()));
@@ -24,15 +20,12 @@ MContextBar::MContextBar(QWidget *parent) : QWidget(parent){
     connect(m_btnMedia, &QRadioButton::released, this, [this](){changeView(MContextBar::ViewMedia);});
     connect(m_btnLibrary, &QRadioButton::released, this, [this](){changeView(MContextBar::ViewLibrary);});
     connect(m_btnDevice, &QRadioButton::released, this, [this](){changeView(MContextBar::ViewDevice);});
-
-    m_btnMedia->setObjectName("ButtonContextBar");
-    m_btnLibrary->setObjectName("ButtonContextBar");
-    m_btnDevice->setObjectName("ButtonContextBar");
-    setObjectName("ContextBar");
 }
 MContextBar::~MContextBar(){}
 
 void MContextBar::initializeLayout(){
+
+    // -------------------------------------------------- CONTEXT BAR
 
     m_btnMedia = new QRadioButton(this);
     m_btnLibrary = new QRadioButton(this);
@@ -63,6 +56,19 @@ void MContextBar::initializeLayout(){
     m_btnMedia->setFixedWidth(100);
     m_btnLibrary->setFixedWidth(100);
     m_btnDevice->setFixedWidth(100);
+
+    // -------------------------------------------------- STATIC TEXT
+
+    m_btnMedia->setText("Media");
+    m_btnLibrary->setText("Library");
+    m_btnDevice->setText("Device");
+
+    // -------------------------------------------------- OBJECT NAMES
+
+    m_btnMedia->setObjectName("ButtonContextBar");
+    m_btnLibrary->setObjectName("ButtonContextBar");
+    m_btnDevice->setObjectName("ButtonContextBar");
+    setObjectName("ContextBar");
 }
 
 MContextBar::View MContextBar::currentView() const{

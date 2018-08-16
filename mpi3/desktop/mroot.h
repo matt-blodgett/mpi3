@@ -18,6 +18,7 @@ class MContentDelegate;
 class MContextBar;
 class MPanelPlayback;
 class MPanelLibrary;
+class MPanelDevice;
 class MPanelMedia;
 class MModelContainers;
 class MTreeContainers;
@@ -49,9 +50,11 @@ private:
     MContentDelegate *m_contentDelegate = nullptr;
 
     MContextBar *m_contextBar = nullptr;
-    MPanelLibrary *m_panelLibrary = nullptr;
     MPanelPlayback *m_panelPlayback = nullptr;
+    MPanelLibrary *m_panelLibrary = nullptr;
+    MPanelDevice *m_panelDevice = nullptr;
     MPanelMedia *m_panelMedia = nullptr;
+
     MModelContainers *m_modelContainers = nullptr;
     MTreeContainers *m_treeContainers = nullptr;
     MModelSonglist *m_modelSonglist = nullptr;
