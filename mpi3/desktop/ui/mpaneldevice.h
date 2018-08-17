@@ -3,6 +3,14 @@
 
 #include <QWidget>
 
+QT_BEGIN_NAMESPACE
+class QSplitter;
+class QTreeView;
+class QPushButton;
+class QLineEdit;
+class QLabel;
+QT_END_NAMESPACE
+
 
 class MPanelDevice : public QWidget
 {
@@ -14,6 +22,19 @@ public:
 
 private:
     void initializeLayout();
+
+private:
+    QSplitter *m_frmSplitter = nullptr;
+
+    QTreeView *m_treeStorageDevices = nullptr;
+    QPushButton *m_btnCreateVolume = nullptr;
+    QPushButton *m_btnLoadVolume = nullptr;
+
+    QLineEdit *m_boxLibName = nullptr;
+    QLabel *m_lblLibAdded = nullptr;
+
+    QLabel *m_lblCurrentDevice = nullptr;
+    QWidget *m_frmStorageSpace = nullptr;
 
 private:
     void paintEvent(QPaintEvent *event);

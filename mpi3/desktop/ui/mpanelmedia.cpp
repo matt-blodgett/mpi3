@@ -73,10 +73,10 @@ void MPanelMedia::initializeLayout(){
 
     // -------------------------------------------------- MEDIA PANEl
 
-    m_frmLibrary = new QSplitter(this);
+    m_frmSplitter = new QSplitter(this);
 
     QGridLayout *layoutMain = new QGridLayout(this);
-    layoutMain->addWidget(m_frmLibrary);
+    layoutMain->addWidget(m_frmSplitter);
     layoutMain->setColumnStretch(0, 1);
     layoutMain->setRowStretch(0, 1);
     layoutMain->setMargin(0);
@@ -85,12 +85,12 @@ void MPanelMedia::initializeLayout(){
     layoutMain->setMargin(0);
     setLayout(layoutMain);
 
-    m_frmLibrary->addWidget(frmControl);
-    m_frmLibrary->addWidget(frmTreeViews);
-    m_frmLibrary->setHandleWidth(0);
-    m_frmLibrary->setChildrenCollapsible(false);
-    m_frmLibrary->setOrientation(Qt::Horizontal);
-    m_frmLibrary->setStretchFactor(1, 1);
+    m_frmSplitter->addWidget(frmControl);
+    m_frmSplitter->addWidget(frmTreeViews);
+    m_frmSplitter->setHandleWidth(0);
+    m_frmSplitter->setChildrenCollapsible(false);
+    m_frmSplitter->setOrientation(Qt::Horizontal);
+    m_frmSplitter->setStretchFactor(1, 1);
 
     // -------------------------------------------------- STATIC TEXT
 
@@ -103,15 +103,16 @@ void MPanelMedia::initializeLayout(){
 
     frmControl->setObjectName("PanelControl");
     frmTreeViews->setObjectName("PanelTrees");
-    m_btnSongs->setObjectName("PanelViewsButton");
-    m_btnArtists->setObjectName("PanelViewsButton");
-    m_btnAlbums->setObjectName("PanelViewsButton");
+    m_btnSongs->setObjectName("PanelTreesButton");
+    m_btnArtists->setObjectName("PanelTreesButton");
+    m_btnAlbums->setObjectName("PanelTreesButton");
     m_lblView->setObjectName("PanelTreesTitle");
-    lblPlaylist->setObjectName("PanelViewsLabel");
-    m_treeSonglist->setObjectName("SonglistTreeview");
-    m_treeContainers->setObjectName("ContainersTreeview");
-    m_treeSonglist->header()->setObjectName("SonglistTreeviewHeader");
-    m_treeContainers->header()->setObjectName("ContainersTreeviewHeader");
+    lblPlaylist->setObjectName("PanelTreesLabel");
+
+    m_treeSonglist->setObjectName("TreeviewSonglist");
+    m_treeContainers->setObjectName("TreeviewContainers");
+    m_treeSonglist->header()->setObjectName("TreeviewSonglistHeader");
+    m_treeContainers->header()->setObjectName("TreeviewContainersHeader");
 }
 
 MPanelMedia::View MPanelMedia::currentView() const{
@@ -166,6 +167,6 @@ void MPanelMedia::containerClicked(const QModelIndex &index){
 }
 
 void MPanelMedia::showEvent(QShowEvent *event){
-    m_frmLibrary->setSizes({180, width()-180});
+    m_frmSplitter->setSizes({180, width()-180});
     QWidget::showEvent(event);
 }

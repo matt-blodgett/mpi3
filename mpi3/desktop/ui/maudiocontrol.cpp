@@ -198,10 +198,10 @@ void MPanelPlayback::initializeLayout(){
 
     // -------------------------------------------------- OBJECT NAMES
 
-    m_lblTitle->setObjectName("SongDisplayLabelTitle");
-    m_lblArtist->setObjectName("SongDisplayLabelArtist");
-    m_lblPositionMax->setObjectName("SongDisplayLabelPosition");
-    m_lblPositionMin->setObjectName("SongDisplayLabelPosition");
+    m_lblTitle->setObjectName("DisplayLabelSongTitle");
+    m_lblArtist->setObjectName("DisplayLabelSongArtist");
+    m_lblPositionMax->setObjectName("DisplayLabelSongPosition");
+    m_lblPositionMin->setObjectName("DisplayLabelSongPosition");
     m_btnNext->setObjectName("ButtonNext");
     m_btnPrev->setObjectName("ButtonPrev");
     m_btnPlay->setObjectName("ButtonPlay");

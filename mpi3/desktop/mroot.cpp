@@ -75,8 +75,8 @@ void MRootDesktop::initializeObjects(){
     m_panelDevice = new MPanelDevice(this);
     m_panelMedia = new MPanelMedia(this);
 
-    m_treeContainers = findChild<MTreeContainers*>("ContainersTreeview");
-    m_treeSonglist = findChild<MTreeSonglist*>("SonglistTreeview");
+    m_treeContainers = findChild<MTreeContainers*>("TreeviewContainers");
+    m_treeSonglist = findChild<MTreeSonglist*>("TreeviewSonglist");
 
     m_modelContainers = new MModelContainers(this);
     m_modelSonglist = new MModelSonglist(this);

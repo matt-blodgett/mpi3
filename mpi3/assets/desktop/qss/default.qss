@@ -6,6 +6,7 @@
 // PADDING - TOPpx RIGHTpx BOTTOMpx LEFTpx
 
 
+// ----------------------------------------------------------------- QWidget
 QWidget {
     font-family: "Arial";
     font-size: 12px;
@@ -40,7 +41,6 @@ QWidget#MainMenuBar {
     background-color: qlineargradient(
         x1:0, y1:0, x2:0, y2:1,
         stop:0 #828282, stop:1 #565656);
-//    background-color: #d1e2ff;
 }
 
 
@@ -191,8 +191,8 @@ QWidget#PlaybackControl {
 }
 
 
-// ----------------------------------------------------------------- SongDisplayLabelTitle
-QWidget#SongDisplayLabelTitle {
+// ----------------------------------------------------------------- DisplayLabelSongTitle
+QWidget#DisplayLabelSongTitle {
     background-color: #FFFFFF;
     font-size: 12px;
     font-weight: bold;
@@ -200,16 +200,16 @@ QWidget#SongDisplayLabelTitle {
 }
 
 
-// ----------------------------------------------------------------- SongDisplayLabelArtist
-QWidget#SongDisplayLabelArtist {
+// ----------------------------------------------------------------- DisplayLabelSongArtist
+QWidget#DisplayLabelSongArtist {
     background-color: #FFFFFF;
     font-size: 11px;
     padding: 0px 0px 4px 0px;
 }
 
 
-// ----------------------------------------------------------------- SongDisplayLabelPosition
-QWidget#SongDisplayLabelPosition {
+// ----------------------------------------------------------------- DisplayLabelSongPosition
+QWidget#DisplayLabelSongPosition {
     background-color: #FFFFFF;
     font-size: 11px;
     padding: 0px 3px 3px 3px;
@@ -394,7 +394,6 @@ QWidget#ButtonSearch:flat {
 }
 
 
-
 // ----------------------------------------------------------------- PanelControl
 QWidget#PanelControl {
     background-color: #A3A3A3;
@@ -415,16 +414,7 @@ QWidget#PanelScrollArea {
 }
 
 
-
-// ----------------------------------------------------------------- PanelLibrary
-QWidget#PanelLibrary {
-    background-color: #FFFFFF;
-    border-top: 0px;
-    border-left: 1px solid #000000;
-    border-right: 0px;
-    border-bottom: 0px;
-}
-
+// ----------------------------------------------------------------- PanelTitle
 QWidget#PanelTitle {
     background-color: #FFFFFF;
     color: #000000;
@@ -434,6 +424,58 @@ QWidget#PanelTitle {
     font-weight: bold;
 }
 
+
+// ----------------------------------------------------------------- PanelButton
+QWidget#PanelButton {
+    text-align: center;
+    font-size: 12px;
+    font-weight: normal;
+    padding: 4px 4px 4px 4px;
+    margin: 2px 2px 2px 2px;
+}
+
+
+// ----------------------------------------------------------------- PanelTag
+QWidget#PanelTag {
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 4px 2px 4px;
+//    margin: 2px 2px 2px 2px;
+}
+
+
+// ----------------------------------------------------------------- PanelValue
+QWidget#PanelValue {
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 12px;
+    font-weight: regular;
+    padding: 2px 0px 2px 0px;
+//    margin: 2px 2px 2px 2px;
+}
+
+
+// ----------------------------------------------------------------- PanelEdit
+QWidget#PanelEdit {
+    background-color: #FFFFFF;
+    color: #000000;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    border-top: 1px solid #000000;
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+    border-bottom-left-radius: 1px;
+    border-bottom-right-radius: 1px;
+}
+
+
+// ----------------------------------------------------------------- SectionHeader
 QWidget#SectionHeader {
     background-color: #FFFFFF;
     color: #000000;
@@ -444,6 +486,8 @@ QWidget#SectionHeader {
     padding: 10px 0px 2px 0px;
 }
 
+
+// ----------------------------------------------------------------- SectionFrame
 QWidget#SectionFrame {
     background-color: #ADADAD;
     border-top: 1px solid #000000;
@@ -457,65 +501,44 @@ QWidget#SectionFrame {
 }
 
 
-
-// ----------------------------------------------------------------- PanelLibraryButton
-QWidget#PanelLibraryButton {
-    text-align: center;
-    font-size: 12px;
-    font-weight: normal;
-    padding: 4px 4px 4px 4px;
-    margin: 2px 2px 2px 2px;
-//background-color: #A3A3A3;
-//color: #FFFFFF;
-//border-top: 1px solid #000000;
-//border-left: 1px solid #000000;
-//border-right: 1px solid #000000;
-//border-bottom: 1px solid #000000;
-}
-
-
-// ----------------------------------------------------------------- PanelLibraryTag
-QWidget#PanelLibraryTag {
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 12px;
-    font-weight: bold;
-    padding: 2px 4px 2px 4px;
-//    margin: 2px 2px 2px 2px;
-}
-
-
-// ----------------------------------------------------------------- PanelLibraryValue
-QWidget#PanelLibraryValue {
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 12px;
-    font-weight: regular;
-    padding: 2px 0px 2px 0px;
-//    margin: 2px 2px 2px 2px;
-}
-
-
-// ----------------------------------------------------------------- PanelLibraryEdit
-QWidget#PanelLibraryEdit {
+// ----------------------------------------------------------------- PanelLibrary
+QWidget#PanelLibrary {
     background-color: #FFFFFF;
-    color: #000000;
-    text-align: left;
-    font-size: 12px;
-    font-weight: normal;
-    border-top-left-radius: 1px;
-    border-top-right-radius: 1px;
-    border-bottom-left-radius: 1px;
-    border-bottom-right-radius: 1px;
+    border-top: 0px;
+    border-left: 1px solid #000000;
+    border-right: 0px;
+    border-bottom: 0px;
+}
+
+
+// ----------------------------------------------------------------- PanelDevice
+QWidget#PanelDevice {
+    background-color: #FFFFFF;
+    border-top: 0px;
+    border-left: 1px solid #000000;
+    border-right: 0px;
+    border-bottom: 0px;
+}
+
+
+// ----------------------------------------------------------------- StorageWidget
+QWidget#StorageWidget {
+    background-color: #FFFFFF;
     border-top: 1px solid #000000;
     border-left: 1px solid #000000;
     border-right: 1px solid #000000;
     border-bottom: 1px solid #000000;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    padding: 4px 4px 4px 4px;
+    margin: 6px 6px 6px 6px;
 }
 
 
-// ----------------------------------------------------------------- PanelViewsButton
-QWidget#PanelViewsButton {
+// ----------------------------------------------------------------- PanelTreesButton
+QWidget#PanelTreesButton {
     background-color: #A3A3A3;
     border-top: 0px;
     border-left: 0px;
@@ -528,20 +551,20 @@ QWidget#PanelViewsButton {
     padding: 2px 2px 2px 2px;
 }
 
-QWidget#PanelViewsButton::indicator {
+QWidget#PanelTreesButton::indicator {
     width: 0px;
     height: 0px;
 }
 
-QWidget#PanelViewsButton:hover {
+QWidget#PanelTreesButton:hover {
     background-color: #777777;
 }
 
-QWidget#PanelViewsButton:pushed {
+QWidget#PanelTreesButton:pushed {
     background-color: #FFFFFF;
 }
 
-QWidget#PanelViewsButton:checked {
+QWidget#PanelTreesButton:checked {
     font-size: 14px;
     font-weight: bold;
     background: #FFFFFF;
@@ -550,8 +573,18 @@ QWidget#PanelViewsButton:checked {
 }
 
 
-// ----------------------------------------------------------------- PanelViewsLabel
-QWidget#PanelViewsLabel {
+// ----------------------------------------------------------------- PanelTrees
+QWidget#PanelTrees {
+    background-color: #FFFFFF;
+    border-top: 0px;
+    border-left: 1px solid #000000;
+    border-right: 0px;
+    border-bottom: 1px solid #000000;
+}
+
+
+// ----------------------------------------------------------------- PanelTreesLabel
+QWidget#PanelTreesLabel {
     background-color: #A3A3A3;
     border-top: 1px solid #FFFFFF;
     border-left: 0px;
@@ -565,22 +598,14 @@ QWidget#PanelViewsLabel {
 }
 
 
-// ----------------------------------------------------------------- PanelTrees
-QWidget#PanelTrees {
-    background-color: #FFFFFF;
-    border-top: 0px;
-    border-left: 1px solid #000000;
-    border-right: 0px;
-    border-bottom: 1px solid #000000;
-}
-
+// ----------------------------------------------------------------- PanelTreesTitle
 QWidget#PanelTreesTitle {
     font-size: 20px;
 }
 
 
-// ----------------------------------------------------------------- ContainersTreeview
-QWidget#ContainersTreeview {
+// ----------------------------------------------------------------- TreeviewContainers
+QWidget#TreeviewContainers {
     background-color: #A3A3A3;
     border-top: 0px;
     border-left: 0px;
@@ -594,78 +619,78 @@ QWidget#ContainersTreeview {
     show-decoration-selected: 1;
 }
 
-QWidget#ContainersTreeview::item:hover {
+QWidget#TreeviewContainers::item:hover {
     background: #777777;
     border: 0px;
 }
 
-QWidget#ContainersTreeview::item:selected  {
+QWidget#TreeviewContainers::item:selected  {
     background: #FFFFFF;
     color: #000000;
     border-image: none;
 }
 
-QWidget#ContainersTreeview::branch:selected {
+QWidget#TreeviewContainers::branch:selected {
     border-image: none;
     background: #FFFFFF;
     color: #000000;
 }
 
-QWidget#ContainersTreeview::branch:has-siblings:!adjoins-item {
+QWidget#TreeviewContainers::branch:has-siblings:!adjoins-item {
     border-image: url(:/icons/treeview/branch_vline.png) 0;
 }
 
-QWidget#ContainersTreeview::branch:has-siblings:adjoins-item {
+QWidget#TreeviewContainers::branch:has-siblings:adjoins-item {
     border-image: url(:/icons/treeview/branch_more.png) 0;
 }
 
-QWidget#ContainersTreeview::branch:!has-children:!has-siblings:adjoins-item {
+QWidget#TreeviewContainers::branch:!has-children:!has-siblings:adjoins-item {
     border-image: url(:/icons/treeview/branch_end.png) 0;
 }
 
-QWidget#ContainersTreeview::branch:has-children:!has-siblings:closed {
+QWidget#TreeviewContainers::branch:has-children:!has-siblings:closed {
     image: url(:/icons/treeview/folder_closed_light.png);
     border-image: none;
 }
 
-QWidget#ContainersTreeview::branch:closed:has-children:has-siblings {
+QWidget#TreeviewContainers::branch:closed:has-children:has-siblings {
     image: url(:/icons/treeview/folder_closed_light.png);
     border-image: none;
 }
 
-QWidget#ContainersTreeview::branch:open:has-children:!has-siblings{
+QWidget#TreeviewContainers::branch:open:has-children:!has-siblings{
     image: url(:/icons/treeview/folder_open_light.png);
     border-image: none;
 }
 
-QWidget#ContainersTreeview::branch:open:has-children:has-siblings  {
+QWidget#TreeviewContainers::branch:open:has-children:has-siblings  {
     image: url(:/icons/treeview/folder_open_light.png);
     border-image: none;
 }
 
-QWidget#ContainersTreeview::branch:selected:has-children:!has-siblings:closed {
+QWidget#TreeviewContainers::branch:selected:has-children:!has-siblings:closed {
     image: url(:/icons/treeview/folder_closed_dark.png);
     border-image: none;
 }
 
-QWidget#ContainersTreeview::branch:selected:closed:has-children:has-siblings {
+QWidget#TreeviewContainers::branch:selected:closed:has-children:has-siblings {
     image: url(:/icons/treeview/folder_closed_dark.png);
     border-image: none;
 }
 
-QWidget#ContainersTreeview::branch:selected:open:has-children:!has-siblings{
+QWidget#TreeviewContainers::branch:selected:open:has-children:!has-siblings{
     image: url(:/icons/treeview/folder_open_dark.png);
     border-image: none;
 }
 
-QWidget#ContainersTreeview::branch:selected:open:has-children:has-siblings  {
+QWidget#TreeviewContainers::branch:selected:open:has-children:has-siblings  {
     image: url(:/icons/treeview/folder_open_dark.png);
     border-image: none;
 }
 
 
-// ----------------------------------------------------------------- SonglistTreeview
-QWidget#SonglistTreeview {
+// ----------------------------------------------------------------- TreeviewSonglist
+QWidget#TreeviewSonglist {
     background-color: #F2F2F2;
     color: #000000;
     border-top: 1px solid #000000;

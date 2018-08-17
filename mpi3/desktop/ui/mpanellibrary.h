@@ -26,7 +26,7 @@ private:
     void initializeLayout();
 
 private:
-    QSplitter *m_frmLibrary = nullptr;
+    QSplitter *m_frmSplitter = nullptr;
 
     QPushButton *m_btnLibImport = nullptr;
     QPushButton *m_btnLibExport = nullptr;
@@ -43,6 +43,8 @@ private:
     QPushButton *m_btnSetMediaLoc = nullptr;
     QLineEdit *m_boxMediaLoc = nullptr;
     QLabel *m_lblMediaSize = nullptr;
+    QLabel *m_lblMediaFolderCount = nullptr;
+    QLabel *m_lblMediaFileCount = nullptr;
 
     QCheckBox *m_optBackupLibrary = nullptr;
     QPushButton *m_btnSetBackupLoc = nullptr;

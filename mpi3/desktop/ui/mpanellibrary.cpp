@@ -60,7 +60,7 @@ void MPanelLibrary::initializeLayout(){
 
     // -------------------------------------------------- PROFILE SECTION
 
-    QWidget *frmProfileSection = new QWidget(this);
+    QWidget *frmLibrarySection = new QWidget(this);
 
     m_boxLibName = new QLineEdit(this);
     m_lblLibAdded = new QLabel(this);
@@ -68,15 +68,15 @@ void MPanelLibrary::initializeLayout(){
     QLabel *lblLibNameTag = new QLabel(this);
     QLabel *lblLibAddedTag = new QLabel(this);
 
-    QGridLayout *layoutProfileWest = new QGridLayout();
-    layoutProfileWest->addWidget(lblLibNameTag, 0, 0, 1, 1);
-    layoutProfileWest->addWidget(m_boxLibName, 0, 1, 1, 1);
-    layoutProfileWest->addWidget(lblLibAddedTag, 1, 0, 1, 1);
-    layoutProfileWest->addWidget(m_lblLibAdded, 1, 1, 1, 1);
-    layoutProfileWest->setRowStretch(2, 1);
-    layoutProfileWest->setVerticalSpacing(0);
-    layoutProfileWest->setHorizontalSpacing(0);
-    layoutProfileWest->setMargin(0);
+    QGridLayout *layoutLibraryWest = new QGridLayout();
+    layoutLibraryWest->addWidget(lblLibNameTag, 0, 0, 1, 1);
+    layoutLibraryWest->addWidget(m_boxLibName, 0, 1, 1, 1);
+    layoutLibraryWest->addWidget(lblLibAddedTag, 1, 0, 1, 1);
+    layoutLibraryWest->addWidget(m_lblLibAdded, 1, 1, 1, 1);
+    layoutLibraryWest->setRowStretch(2, 1);
+    layoutLibraryWest->setVerticalSpacing(0);
+    layoutLibraryWest->setHorizontalSpacing(0);
+    layoutLibraryWest->setMargin(0);
 
     QLabel *lblPlaylistCountTag = new QLabel(this);
     QLabel *lblSongCountTag = new QLabel(this);
@@ -86,29 +86,30 @@ void MPanelLibrary::initializeLayout(){
     m_lblSongCount = new QLabel(this);
     m_lblArtistCount = new QLabel(this);
 
-    QGridLayout *layoutProfileEast = new QGridLayout();
-    layoutProfileEast->addWidget(lblPlaylistCountTag, 0, 0, 1, 1);
-    layoutProfileEast->addWidget(m_lblPlistCount, 0, 1, 1, 1);
-    layoutProfileEast->addWidget(lblArtistCountTag, 1, 0, 1, 1);
-    layoutProfileEast->addWidget(m_lblArtistCount, 1, 1, 1, 1);
-    layoutProfileEast->addWidget(lblSongCountTag, 2, 0, 1, 1);
-    layoutProfileEast->addWidget(m_lblSongCount, 2, 1, 1, 1);
-    layoutProfileEast->setRowStretch(3, 1);
-    layoutProfileEast->setVerticalSpacing(0);
-    layoutProfileEast->setHorizontalSpacing(0);
-    layoutProfileEast->setMargin(0);
+    QGridLayout *layoutLibraryEast = new QGridLayout();
+    layoutLibraryEast->addWidget(lblPlaylistCountTag, 0, 0, 1, 1);
+    layoutLibraryEast->addWidget(m_lblPlistCount, 0, 1, 1, 1);
+    layoutLibraryEast->addWidget(lblArtistCountTag, 1, 0, 1, 1);
+    layoutLibraryEast->addWidget(m_lblArtistCount, 1, 1, 1, 1);
+    layoutLibraryEast->addWidget(lblSongCountTag, 2, 0, 1, 1);
+    layoutLibraryEast->addWidget(m_lblSongCount, 2, 1, 1, 1);
+    layoutLibraryEast->setColumnStretch(2, 1);
+    layoutLibraryEast->setRowStretch(3, 1);
+    layoutLibraryEast->setVerticalSpacing(0);
+    layoutLibraryEast->setHorizontalSpacing(0);
+    layoutLibraryEast->setMargin(0);
 
-    QGridLayout *layoutProfile = new QGridLayout(this);
-    layoutProfile->addLayout(layoutProfileWest, 0, 0, 1, 1);
-    layoutProfile->addLayout(layoutProfileEast, 0, 2, 1, 1);
-    layoutProfile->setColumnMinimumWidth(0, 295);
-    layoutProfile->setColumnMinimumWidth(1, 10);
-    layoutProfile->setColumnMinimumWidth(2, 295);
-    layoutProfile->setVerticalSpacing(0);
-    layoutProfile->setHorizontalSpacing(0);
-    layoutProfile->setMargin(0);
-    frmProfileSection->setLayout(layoutProfile);
-    frmProfileSection->setMaximumWidth(600);
+    QGridLayout *layoutLibrary = new QGridLayout(this);
+    layoutLibrary->addLayout(layoutLibraryWest, 0, 0, 1, 1);
+    layoutLibrary->addLayout(layoutLibraryEast, 0, 2, 1, 1);
+    layoutLibrary->setColumnMinimumWidth(0, 295);
+    layoutLibrary->setColumnMinimumWidth(1, 10);
+    layoutLibrary->setColumnMinimumWidth(2, 295);
+    layoutLibrary->setVerticalSpacing(0);
+    layoutLibrary->setHorizontalSpacing(0);
+    layoutLibrary->setMargin(0);
+    frmLibrarySection->setLayout(layoutLibrary);
+    frmLibrarySection->setMaximumWidth(600);
 
     // -------------------------------------------------- MEDIA SECTION
 
@@ -139,9 +140,19 @@ void MPanelLibrary::initializeLayout(){
     QLabel *lblMediaSizeTag = new QLabel(this);
     m_lblMediaSize = new QLabel(this);
 
+    QLabel *lblMediaFolderCountTag = new QLabel(this);
+    m_lblMediaFolderCount = new QLabel(this);
+
+    QLabel *lblMediaFileCountTag = new QLabel(this);
+    m_lblMediaFileCount = new QLabel(this);
+
     QGridLayout *layoutMediaEast = new QGridLayout();
     layoutMediaEast->addWidget(lblMediaSizeTag, 0, 0, 1, 1);
     layoutMediaEast->addWidget(m_lblMediaSize, 0, 1, 1, 1);
+    layoutMediaEast->addWidget(lblMediaFolderCountTag, 1, 0, 1, 1);
+    layoutMediaEast->addWidget(m_lblMediaFolderCount, 1, 1, 1, 1);
+    layoutMediaEast->addWidget(lblMediaFileCountTag, 2, 0, 1, 1);
+    layoutMediaEast->addWidget(m_lblMediaFileCount, 2, 1, 1, 1);
     layoutMediaEast->setVerticalSpacing(0);
     layoutMediaEast->setHorizontalSpacing(0);
     layoutMediaEast->setMargin(0);
@@ -221,16 +232,16 @@ void MPanelLibrary::initializeLayout(){
 
     QWidget *frmDisplay = new QWidget(this);
     QScrollArea *scrollArea = new QScrollArea(this);
-
     QLabel *lblPanelTitle = new QLabel(this);
-    QLabel *lblPofileHeader = new QLabel(this);
+
+    QLabel *lblLibraryHeader = new QLabel(this);
     QLabel *lblMediaHeader = new QLabel(this);
     QLabel *lblBackupHeader = new QLabel(this);
 
     QGridLayout *layoutDisplay = new QGridLayout(this);
     layoutDisplay->addWidget(lblPanelTitle, 0, 0, 1, 1);
-    layoutDisplay->addWidget(lblPofileHeader, 1, 0, 1, 1);
-    layoutDisplay->addWidget(frmProfileSection, 2, 0, 1, 1);
+    layoutDisplay->addWidget(lblLibraryHeader, 1, 0, 1, 1);
+    layoutDisplay->addWidget(frmLibrarySection, 2, 0, 1, 1);
     layoutDisplay->addWidget(lblMediaHeader, 3, 0, 1, 1);
     layoutDisplay->addWidget(frmMediaSection, 4, 0, 1, 1);
     layoutDisplay->addWidget(lblBackupHeader, 5, 0, 1, 1);
@@ -256,10 +267,10 @@ void MPanelLibrary::initializeLayout(){
 
     // -------------------------------------------------- MAIN PANEl
 
-    m_frmLibrary = new QSplitter(this);
+    m_frmSplitter = new QSplitter(this);
 
     QGridLayout *layoutMain = new QGridLayout(this);
-    layoutMain->addWidget(m_frmLibrary);
+    layoutMain->addWidget(m_frmSplitter);
     layoutMain->setColumnStretch(0, 1);
     layoutMain->setRowStretch(0, 1);
     layoutMain->setHorizontalSpacing(0);
@@ -269,24 +280,32 @@ void MPanelLibrary::initializeLayout(){
     layoutMain->setContentsMargins(0, 0, 0, 0);
     setLayout(layoutMain);
 
-    m_frmLibrary->addWidget(frmControl);
-    m_frmLibrary->addWidget(scrollArea);
-    m_frmLibrary->setHandleWidth(0);
-    m_frmLibrary->setChildrenCollapsible(false);
-    m_frmLibrary->setOrientation(Qt::Horizontal);
-    m_frmLibrary->setStretchFactor(1, 1);
+    m_frmSplitter->addWidget(frmControl);
+    m_frmSplitter->addWidget(scrollArea);
+    m_frmSplitter->setHandleWidth(0);
+    m_frmSplitter->setChildrenCollapsible(false);
+    m_frmSplitter->setOrientation(Qt::Horizontal);
+    m_frmSplitter->setStretchFactor(1, 1);
 
     // -------------------------------------------------- STATIC TEXT
 
     lblPanelTitle->setText("Local Library");
-    lblPofileHeader->setText("Profile");
+    lblLibraryHeader->setText("Library");
     lblMediaHeader->setText("Media Files");
     lblBackupHeader->setText("Backups");
+
+    lblLibNameTag->setText("Library Name:");
+    lblLibAddedTag->setText("Date Created:");
+    lblPlaylistCountTag->setText("Playlists:");
+    lblSongCountTag->setText("Songs:");
+    lblArtistCountTag->setText("Artists:");
 
     m_optOrganizeMedia->setText("Consolidate and Organize Media Files");
     lblMediaLocTag->setText("Media Folder:");
     m_btnSetMediaLoc->setText("Change");
     lblMediaSizeTag->setText("Size on Disk:");
+    lblMediaFolderCountTag->setText("Folders:");
+    lblMediaFileCountTag->setText("Files:");
 
     m_optBackupLibrary->setText("Backup Library Automatically");
     lblBackupLocTag->setText("Backup Folder:");
@@ -299,43 +318,51 @@ void MPanelLibrary::initializeLayout(){
     m_btnLibReset->setText("Reset");
     m_btnLibOpenFile->setText("Show In Explorer");
 
-    lblLibNameTag->setText("Library Name:");
-    lblLibAddedTag->setText("Date Created:");
-    lblPlaylistCountTag->setText("Playlists:");
-    lblSongCountTag->setText("Songs:");
-    lblArtistCountTag->setText("Artists:");
-
     // -------------------------------------------------- OBJECT NAMES
 
-    m_boxLibName->setObjectName("PanelLibraryEdit");
-    m_lblLibAdded->setObjectName("PanelLibraryValue");
-    m_lblPlistCount->setObjectName("PanelLibraryValue");
-    m_lblArtistCount->setObjectName("PanelLibraryValue");
-    m_lblSongCount->setObjectName("PanelLibraryValue");
+    m_boxLibName->setObjectName("PanelEdit");
+    m_lblLibAdded->setObjectName("PanelValue");
+    m_lblPlistCount->setObjectName("PanelValue");
+    m_lblArtistCount->setObjectName("PanelValue");
+    m_lblSongCount->setObjectName("PanelValue");
+    lblLibNameTag->setObjectName("PanelTag");
+    lblLibAddedTag->setObjectName("PanelTag");
+    lblPlaylistCountTag->setObjectName("PanelTag");
+    lblSongCountTag->setObjectName("PanelTag");
+    lblArtistCountTag->setObjectName("PanelTag");
 
-    lblLibNameTag->setObjectName("PanelLibraryTag");
-    lblLibAddedTag->setObjectName("PanelLibraryTag");
-    lblPlaylistCountTag->setObjectName("PanelLibraryTag");
-    lblSongCountTag->setObjectName("PanelLibraryTag");
-    lblArtistCountTag->setObjectName("PanelLibraryTag");
+    m_optOrganizeMedia->setObjectName("PanelCheck");
+    lblMediaLocTag->setObjectName("PanelTag");
+    lblMediaSizeTag->setObjectName("PanelTag");
+    lblMediaFolderCountTag->setObjectName("PanelTag");
+    lblMediaFileCountTag->setObjectName("PanelTag");
 
-    m_btnLibImport->setObjectName("PanelLibraryButton");
-    m_btnLibExport->setObjectName("PanelLibraryButton");
-    m_btnLibReset->setObjectName("PanelLibraryButton");
-    m_btnLibOpenFile->setObjectName("PanelLibraryButton");
+    m_optBackupLibrary->setObjectName("PanelCheck");
+    m_treeBackupHist->setObjectName("PanelTree");
+    lblBackupLocTag->setObjectName("PanelTag");
+    m_btnSetBackupLoc->setObjectName("PanelButton");
+    lblBackupFreqTag->setObjectName("PanelTag");
+    lblBackupHistTag->setObjectName("PanelTag");
+    m_cbxBackupFreq->setObjectName("PanelCombo");
+
+    m_btnLibImport->setObjectName("PanelButton");
+    m_btnLibExport->setObjectName("PanelButton");
+    m_btnLibReset->setObjectName("PanelButton");
+    m_btnLibOpenFile->setObjectName("PanelButton");
 
     scrollArea->setObjectName("PanelScrollArea");
     frmDisplay->setObjectName("PanelLibrary");
     frmControl->setObjectName("PanelControl");
 
     lblPanelTitle->setObjectName("PanelTitle");
-    lblPofileHeader->setObjectName("SectionHeader");
+    lblLibraryHeader->setObjectName("SectionHeader");
     lblMediaHeader->setObjectName("SectionHeader");
     lblBackupHeader->setObjectName("SectionHeader");
 
-    frmProfileSection->setObjectName("SectionFrame");
+    frmLibrarySection->setObjectName("SectionFrame");
     frmMediaSection->setObjectName("SectionFrame");
     frmBackupSection->setObjectName("SectionFrame");
+
     setObjectName("PanelLibrary");
 }
 
@@ -349,7 +376,7 @@ void MPanelLibrary::paintEvent(QPaintEvent *event){
     QWidget::paintEvent(event);
 }
 void MPanelLibrary::showEvent(QShowEvent *event){
-    m_frmLibrary->setSizes({180, width()-180});
+    m_frmSplitter->setSizes({180, width()-180});
     QWidget::showEvent(event);
 }
 

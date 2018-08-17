@@ -44,7 +44,7 @@ private:
     MTreeContainers *m_treeContainers = nullptr;
     MTreeSonglist *m_treeSonglist = nullptr;
 
-    QSplitter *m_frmLibrary = nullptr;
+    QSplitter *m_frmSplitter = nullptr;
     QRadioButton *m_btnSongs = nullptr;
     QRadioButton *m_btnArtists = nullptr;
     QRadioButton *m_btnAlbums = nullptr;
