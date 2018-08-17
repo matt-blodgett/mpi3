@@ -25,8 +25,10 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : QWidget(parent){
     m_lblSongCount->setText("20");
     m_lblArtistCount->setText("6");
 
+    m_lblMediaSize->setText("68.01 MB");
+    m_lblMediaFileCount->setText("16 Files, 10 Folders");
     m_boxMediaLoc->setText("C:/Users/Matt/Desktop");
-
+    m_boxBackupLoc->setText("F:/Backups/Media");
 }
 MPanelLibrary::~MPanelLibrary(){}
 
@@ -59,7 +61,7 @@ void MPanelLibrary::initializeLayout(){
     m_btnLibReset->setFixedWidth(120);
     m_btnLibOpenFile->setFixedWidth(120);
 
-    // -------------------------------------------------- PROFILE SECTION
+    // -------------------------------------------------- LIBRARY SECTION
 
     QWidget *frmLibrarySection = new QWidget(this);
 
@@ -95,20 +97,19 @@ void MPanelLibrary::initializeLayout(){
     layoutLibraryEast->addWidget(lblSongCountTag, 2, 0, 1, 1);
     layoutLibraryEast->addWidget(m_lblSongCount, 2, 1, 1, 1);
     layoutLibraryEast->setColumnStretch(2, 1);
-    layoutLibraryEast->setRowStretch(3, 1);
     layoutLibraryEast->setVerticalSpacing(0);
     layoutLibraryEast->setHorizontalSpacing(0);
     layoutLibraryEast->setMargin(0);
 
     QGridLayout *layoutLibrary = new QGridLayout(this);
-    layoutLibrary->addLayout(layoutLibraryWest, 0, 0, 1, 1);
-    layoutLibrary->addLayout(layoutLibraryEast, 0, 2, 1, 1);
+    layoutLibrary->addLayout(layoutLibraryWest, 1, 0, 1, 1);
+    layoutLibrary->addLayout(layoutLibraryEast, 1, 2, 1, 1);
     layoutLibrary->setColumnMinimumWidth(0, 345);
     layoutLibrary->setColumnMinimumWidth(1, 10);
     layoutLibrary->setColumnMinimumWidth(2, 345);
     layoutLibrary->setVerticalSpacing(0);
     layoutLibrary->setHorizontalSpacing(0);
-    layoutLibrary->setMargin(0);
+    layoutLibrary->setMargin(12);
     frmLibrarySection->setLayout(layoutLibrary);
     frmLibrarySection->setMaximumWidth(700);
 
@@ -119,37 +120,33 @@ void MPanelLibrary::initializeLayout(){
     m_optOrganizeMedia = new QCheckBox(this);
 
     QLabel *lblMediaLocTag = new QLabel(this);
-    m_btnSetMediaLoc = new QPushButton(this);
     m_boxMediaLoc = new QLineEdit(this);
+
+    QLabel *lblMediaSizeTag = new QLabel(this);
+    m_lblMediaSize = new QLabel(this);
+    m_lblMediaFileCount = new QLabel(this);
 
     QGridLayout *layoutMediaWest = new QGridLayout();
     layoutMediaWest->addWidget(lblMediaLocTag, 0, 0, 1, 1);
     layoutMediaWest->addWidget(m_boxMediaLoc, 0, 1, 1, 1);
-    layoutMediaWest->addWidget(m_btnSetMediaLoc, 0, 2, 1, 1);
-    layoutMediaWest->setRowStretch(1, 1);
+    layoutMediaWest->addWidget(lblMediaSizeTag, 1, 0, 1, 1);
+    layoutMediaWest->addWidget(m_lblMediaSize, 1, 1, 1, 1);
+    layoutMediaWest->addWidget(m_lblMediaFileCount, 2, 1, 1, 1);
     layoutMediaWest->setVerticalSpacing(0);
     layoutMediaWest->setHorizontalSpacing(0);
     layoutMediaWest->setMargin(0);
 
-    QLabel *lblMediaSizeTag = new QLabel(this);
-    m_lblMediaSize = new QLabel(this);
-
-    QLabel *lblMediaFolderCountTag = new QLabel(this);
-    m_lblMediaFolderCount = new QLabel(this);
-
-    QLabel *lblMediaFileCountTag = new QLabel(this);
-    m_lblMediaFileCount = new QLabel(this);
+    m_btnSetMediaLoc = new QPushButton(this);
 
     QGridLayout *layoutMediaEast = new QGridLayout();
-    layoutMediaEast->addWidget(lblMediaSizeTag, 0, 0, 1, 1);
-    layoutMediaEast->addWidget(m_lblMediaSize, 0, 1, 1, 1);
-    layoutMediaEast->addWidget(lblMediaFolderCountTag, 1, 0, 1, 1);
-    layoutMediaEast->addWidget(m_lblMediaFolderCount, 1, 1, 1, 1);
-    layoutMediaEast->addWidget(lblMediaFileCountTag, 2, 0, 1, 1);
-    layoutMediaEast->addWidget(m_lblMediaFileCount, 2, 1, 1, 1);
+    layoutMediaEast->addWidget(m_btnSetMediaLoc, 0, 0, 1, 1);
+    layoutMediaEast->setColumnStretch(1, 1);
+    layoutMediaEast->setRowStretch(1, 1);
     layoutMediaEast->setVerticalSpacing(0);
     layoutMediaEast->setHorizontalSpacing(0);
     layoutMediaEast->setMargin(0);
+
+    m_btnSetMediaLoc->setFixedWidth(100);
 
     QGridLayout *layoutMedia = new QGridLayout(this);
     layoutMedia->addWidget(m_optOrganizeMedia, 0, 0, 1, 3);
@@ -158,10 +155,9 @@ void MPanelLibrary::initializeLayout(){
     layoutMedia->setColumnMinimumWidth(0, 345);
     layoutMedia->setColumnMinimumWidth(1, 10);
     layoutMedia->setColumnMinimumWidth(2, 345);
-    layoutMedia->setRowStretch(2, 1);
     layoutMedia->setVerticalSpacing(0);
     layoutMedia->setHorizontalSpacing(0);
-    layoutMedia->setMargin(0);
+    layoutMedia->setMargin(12);
     frmMediaSection->setLayout(layoutMedia);
     frmMediaSection->setMaximumWidth(700);
 
@@ -172,7 +168,6 @@ void MPanelLibrary::initializeLayout(){
     m_optBackupLibrary = new QCheckBox(this);
 
     QLabel *lblBackupLocTag = new QLabel(this);
-    m_btnSetBackupLoc = new QPushButton(this);
     m_boxBackupLoc = new QLineEdit(this);
 
     QLabel *lblBackupFreqTag = new QLabel(this);
@@ -181,7 +176,7 @@ void MPanelLibrary::initializeLayout(){
     QGridLayout *layoutBackupWest = new QGridLayout();
     layoutBackupWest->addWidget(lblBackupLocTag, 0, 0, 1, 1);
     layoutBackupWest->addWidget(m_boxBackupLoc, 0, 1, 1, 1);
-    layoutBackupWest->addWidget(m_btnSetBackupLoc, 0, 2, 1, 1);
+
     layoutBackupWest->addWidget(lblBackupFreqTag, 1, 0, 1, 1);
     layoutBackupWest->addWidget(m_cbxBackupFreq, 1, 1, 1, 1);
     layoutBackupWest->setRowStretch(2, 1);
@@ -192,13 +187,19 @@ void MPanelLibrary::initializeLayout(){
     QLabel *lblBackupHistTag = new QLabel(this);
     m_treeBackupHist = new QTreeView(this);
 
+    m_btnSetBackupLoc = new QPushButton(this);
+
     QGridLayout *layoutBackupEast = new QGridLayout();
-    layoutBackupEast->addWidget(lblBackupHistTag, 0, 0, 1, 1);
-    layoutBackupEast->addWidget(m_treeBackupHist, 1, 0, 1, 1);
+    layoutBackupEast->addWidget(m_btnSetBackupLoc, 0, 0, 1, 1);
+//    layoutBackupEast->addWidget(lblBackupHistTag, 0, 0, 1, 1);
+//    layoutBackupEast->addWidget(m_treeBackupHist, 1, 0, 1, 1);
+    layoutBackupEast->setColumnStretch(1, 1);
     layoutBackupEast->setRowStretch(1, 1);
     layoutBackupEast->setVerticalSpacing(0);
     layoutBackupEast->setHorizontalSpacing(0);
     layoutBackupEast->setMargin(0);
+
+    m_btnSetBackupLoc->setFixedWidth(100);
 
     QGridLayout *layoutBackup = new QGridLayout(this);
     layoutBackup->addWidget(m_optBackupLibrary, 0, 0, 1, 3);
@@ -207,10 +208,9 @@ void MPanelLibrary::initializeLayout(){
     layoutBackup->setColumnMinimumWidth(0, 345);
     layoutBackup->setColumnMinimumWidth(1, 10);
     layoutBackup->setColumnMinimumWidth(2, 345);
-    layoutBackup->setRowStretch(2, 1);
     layoutBackup->setVerticalSpacing(0);
     layoutBackup->setHorizontalSpacing(0);
-    layoutBackup->setMargin(0);
+    layoutBackup->setMargin(12);
     frmBackupSection->setLayout(layoutBackup);
     frmBackupSection->setMaximumWidth(700);
 
@@ -232,19 +232,12 @@ void MPanelLibrary::initializeLayout(){
     layoutDisplay->addWidget(frmMediaSection, 4, 0, 1, 1);
     layoutDisplay->addWidget(lblBackupHeader, 5, 0, 1, 1);
     layoutDisplay->addWidget(frmBackupSection, 6, 0, 1, 1);
-    layoutDisplay->setRowMinimumHeight(0, 0);
-    layoutDisplay->setRowMinimumHeight(1, 0);
-    layoutDisplay->setRowMinimumHeight(2, 100);
-    layoutDisplay->setRowMinimumHeight(3, 0);
-    layoutDisplay->setRowMinimumHeight(4, 100);
-    layoutDisplay->setRowMinimumHeight(5, 0);
-    layoutDisplay->setRowMinimumHeight(6, 100);
-    layoutDisplay->setRowStretch(7, 1);
     layoutDisplay->setColumnMinimumWidth(0, 700);
     layoutDisplay->setColumnStretch(0, 1);
+    layoutDisplay->setRowStretch(7, 1);
     layoutDisplay->setHorizontalSpacing(0);
     layoutDisplay->setVerticalSpacing(0);
-    layoutDisplay->setMargin(10);
+    layoutDisplay->setMargin(12);
     frmDisplay->setLayout(layoutDisplay);
 
     scrollArea->setWidget(frmDisplay);
@@ -290,8 +283,6 @@ void MPanelLibrary::initializeLayout(){
     lblMediaLocTag->setText("Media Folder:");
     m_btnSetMediaLoc->setText("Change");
     lblMediaSizeTag->setText("Size on Disk:");
-    lblMediaFolderCountTag->setText("Folders:");
-    lblMediaFileCountTag->setText("Files:");
 
     m_optBackupLibrary->setText("Backup Library Automatically");
     lblBackupLocTag->setText("Backup Folder:");
@@ -306,7 +297,7 @@ void MPanelLibrary::initializeLayout(){
 
     // -------------------------------------------------- OBJECT NAMES
 
-    m_boxLibName->setObjectName("PanelEdit");
+    m_boxLibName->setObjectName("PanelEditHidden");
     m_lblLibAdded->setObjectName("PanelValue");
     m_lblPlistCount->setObjectName("PanelValue");
     m_lblArtistCount->setObjectName("PanelValue");
@@ -318,10 +309,11 @@ void MPanelLibrary::initializeLayout(){
     lblArtistCountTag->setObjectName("PanelTag");
 
     m_optOrganizeMedia->setObjectName("PanelCheck");
+    m_boxMediaLoc->setObjectName("PanelEdit");
     lblMediaLocTag->setObjectName("PanelTag");
     lblMediaSizeTag->setObjectName("PanelTag");
-    lblMediaFolderCountTag->setObjectName("PanelTag");
-    lblMediaFileCountTag->setObjectName("PanelTag");
+    m_lblMediaSize->setObjectName("PanelValue");
+    m_lblMediaFileCount->setObjectName("PanelValue");
 
     m_optBackupLibrary->setObjectName("PanelCheck");
     m_treeBackupHist->setObjectName("PanelTree");
@@ -331,6 +323,7 @@ void MPanelLibrary::initializeLayout(){
     lblBackupFreqTag->setObjectName("PanelTag");
     lblBackupHistTag->setObjectName("PanelTag");
     m_cbxBackupFreq->setObjectName("PanelCombo");
+    m_boxBackupLoc->setObjectName("PanelEdit");
 
     m_btnLibImport->setObjectName("PanelButton");
     m_btnLibExport->setObjectName("PanelButton");

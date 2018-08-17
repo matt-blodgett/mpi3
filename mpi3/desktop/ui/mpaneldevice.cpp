@@ -28,6 +28,8 @@ MPanelDevice::MPanelDevice(QWidget *parent) : QWidget(parent){
     m_treeStorageDevices->setSortingEnabled(true);
     m_treeStorageDevices->setAlternatingRowColors(true);
 
+    m_boxLibName->setText("Raspi Test Library");
+
 //    QFileSystemModel *fsModel = new QFileSystemModel(this);
 //    fsModel->setRootPath("C:/Users/Matt/Desktop");
 //    m_treeStorageDevices->setModel(fsModel);
@@ -93,7 +95,7 @@ void MPanelDevice::initializeLayout(){
     layoutStorage->setColumnMinimumWidth(2, 345);
     layoutStorage->setVerticalSpacing(0);
     layoutStorage->setHorizontalSpacing(0);
-    layoutStorage->setMargin(0);
+    layoutStorage->setMargin(12);
     frmStorageSection->setLayout(layoutStorage);
     frmStorageSection->setMaximumWidth(700);
 
@@ -112,7 +114,6 @@ void MPanelDevice::initializeLayout(){
     layoutLibraryWest->addWidget(m_boxLibName, 0, 1, 1, 1);
     layoutLibraryWest->addWidget(lblLibAddedTag, 1, 0, 1, 1);
     layoutLibraryWest->addWidget(m_lblLibAdded, 1, 1, 1, 1);
-    layoutLibraryWest->setRowStretch(2, 1);
     layoutLibraryWest->setVerticalSpacing(0);
     layoutLibraryWest->setHorizontalSpacing(0);
     layoutLibraryWest->setMargin(0);
@@ -127,7 +128,7 @@ void MPanelDevice::initializeLayout(){
     layoutLibrary->setColumnMinimumWidth(2, 345);
     layoutLibrary->setVerticalSpacing(0);
     layoutLibrary->setHorizontalSpacing(0);
-    layoutLibrary->setMargin(0);
+    layoutLibrary->setMargin(12);
     frmLibrarySection->setLayout(layoutLibrary);
     frmLibrarySection->setMaximumWidth(700);
 
@@ -161,7 +162,7 @@ void MPanelDevice::initializeLayout(){
     layoutMedia->setRowMinimumHeight(1, 60);
     layoutMedia->setVerticalSpacing(0);
     layoutMedia->setHorizontalSpacing(0);
-    layoutMedia->setMargin(0);
+    layoutMedia->setMargin(12);
     frmMediaSection->setLayout(layoutMedia);
     frmMediaSection->setMaximumWidth(700);
 
@@ -183,19 +184,12 @@ void MPanelDevice::initializeLayout(){
     layoutDisplay->addWidget(frmLibrarySection, 4, 0, 1, 1);
     layoutDisplay->addWidget(lblMediaHeader, 5, 0, 1, 1);
     layoutDisplay->addWidget(frmMediaSection, 6, 0, 1, 1);
-    layoutDisplay->setRowMinimumHeight(0, 0);
-    layoutDisplay->setRowMinimumHeight(1, 0);
-    layoutDisplay->setRowMinimumHeight(2, 100);
-    layoutDisplay->setRowMinimumHeight(3, 0);
-    layoutDisplay->setRowMinimumHeight(4, 100);
-    layoutDisplay->setRowMinimumHeight(5, 0);
-    layoutDisplay->setRowMinimumHeight(6, 100);
     layoutDisplay->setRowStretch(7, 1);
     layoutDisplay->setColumnMinimumWidth(0, 700);
     layoutDisplay->setColumnStretch(0, 1);
     layoutDisplay->setHorizontalSpacing(0);
     layoutDisplay->setVerticalSpacing(0);
-    layoutDisplay->setMargin(10);
+    layoutDisplay->setMargin(12);
     frmDisplay->setLayout(layoutDisplay);
 
     scrollArea->setWidget(frmDisplay);
@@ -252,7 +246,7 @@ void MPanelDevice::initializeLayout(){
     m_btnCreateVolume->setObjectName("PanelButton");
     m_btnLoadVolume->setObjectName("PanelButton");
 
-    m_boxLibName->setObjectName("PanelEdit");
+    m_boxLibName->setObjectName("PanelEditHidden");
     m_lblLibAdded->setObjectName("PanelValue");
     lblLibNameTag->setObjectName("PanelTag");
     lblLibAddedTag->setObjectName("PanelTag");

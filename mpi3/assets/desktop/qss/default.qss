@@ -13,9 +13,13 @@ QWidget {
 }
 
 
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
 // ----------------------------------------------------------------- MainMenu
 QWidget#MainMenu {
-    background-color: qlineargradient(
+    background: qlineargradient(
         x1:0, y1:0, x2:0, y2:1,
         stop:0 #828282, stop:1 #565656);
     color: #FFFFFF;
@@ -38,7 +42,7 @@ QWidget#MainMenu::item:pressed {
 
 // ----------------------------------------------------------------- MainMenuBar
 QWidget#MainMenuBar {
-    background-color: qlineargradient(
+    background: qlineargradient(
         x1:0, y1:0, x2:0, y2:1,
         stop:0 #828282, stop:1 #565656);
 }
@@ -46,21 +50,21 @@ QWidget#MainMenuBar {
 
 // ----------------------------------------------------------------- RootWindow
 QWidget#RootWindow {
-    background-color: #777777;
+    background: #777777;
 }
 
 
 // ----------------------------------------------------------------- ButtonRootWindow
 QWidget#ButtonRootWindow {
-    background-color: transparent;
+    background: transparent;
 }
 
 QWidget#ButtonRootWindow:pressed {
-    background-color: #888888;
+    background: #888888;
 }
 
 QWidget#ButtonRootWindow:hover {
-    background-color: #E2E2E2;
+    background: #E2E2E2;
 }
 
 QWidget#ButtonRootWindow:flat {
@@ -73,7 +77,7 @@ QWidget#ButtonRootWindow:flat {
 
 // ----------------------------------------------------------------- QMenu
 QMenu {
-    background-color: #777777;
+    background: #777777;
     border: 1px solid #000000;
     color: #FFFFFF;
     margin: 0px;
@@ -85,12 +89,12 @@ QMenu::item {
 }
 
 QMenu::item:selected {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
     color: #777777;
 }
 
 QMenu::item:disabled {
-    background-color: #777777;
+    background: #777777;
     color: #BCBCBC;
 }
 
@@ -117,9 +121,13 @@ QMenu::indicator {
 }
 
 
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
 // ----------------------------------------------------------------- ContextBar
 QWidget#ContextBar {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
     border-top: 1px solid #000000;
     border-bottom: 1px solid #636363;
 }
@@ -127,21 +135,15 @@ QWidget#ContextBar {
 
 // ----------------------------------------------------------------- ButtonContextBar
 QWidget#ButtonContextBar {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
     color: #000000;
     text-align: center;
     font-family: "Open Sans";
     font-size: 14px;
     font-weight: bold;
     padding: 0px 0px 0px 20px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-top: 1px solid #FFFFFF;
-    border-left: 1px solid #FFFFFF;
-    border-right: 1px solid #FFFFFF;
-    border-bottom: 1px solid #FFFFFF;
+    border-radius: 4px;
+    border: 1px solid #FFFFFF;
 }
 
 QWidget#ButtonContextBar::indicator {
@@ -150,15 +152,12 @@ QWidget#ButtonContextBar::indicator {
 }
 
 QWidget#ButtonContextBar:hover {
-    background-color: #EAF6FF;
-    border-top: 1px solid #5a7f99;
-    border-left: 1px solid #5a7f99;
-    border-right: 1px solid #5a7f99;
-    border-bottom: 1px solid #5a7f99;
+    background: #EAF6FF;
+    border: 1px solid #5a7f99;
 }
 
 QWidget#ButtonContextBar:pushed {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
 }
 
 QWidget#ButtonContextBar:checked {
@@ -172,28 +171,29 @@ QWidget#ButtonContextBar:checked {
         cx:0.4, cy:0.4, radius: 1, fx:0.4, fy:0.4,
         stop:0 #7DB1D8, stop:1 #608EAF);
     color: #FFFFFF;
-    border-top: 1px solid #5A7F99;
-    border-left: 1px solid #5A7F99;
-    border-right: 1px solid #5A7F99;
-    border-bottom: 1px solid #5A7F99;
+    border: 1px solid #5A7F99;
 }
+
+
+// ****************************************************************************************************
+// ****************************************************************************************************
 
 
 // ----------------------------------------------------------------- PanelPlayback
 QWidget#PanelPlayback {
-    background-color: #BABABA;
+    background: #BABABA;
 }
 
 
 // ----------------------------------------------------------------- PlaybackControl
 QWidget#PlaybackControl {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
 }
 
 
 // ----------------------------------------------------------------- DisplayLabelSongTitle
 QWidget#DisplayLabelSongTitle {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
     font-size: 12px;
     font-weight: bold;
     padding: 3px 0px 0px 0px;
@@ -202,7 +202,7 @@ QWidget#DisplayLabelSongTitle {
 
 // ----------------------------------------------------------------- DisplayLabelSongArtist
 QWidget#DisplayLabelSongArtist {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
     font-size: 11px;
     padding: 0px 0px 4px 0px;
 }
@@ -210,7 +210,7 @@ QWidget#DisplayLabelSongArtist {
 
 // ----------------------------------------------------------------- DisplayLabelSongPosition
 QWidget#DisplayLabelSongPosition {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
     font-size: 11px;
     padding: 0px 3px 3px 3px;
 }
@@ -218,15 +218,15 @@ QWidget#DisplayLabelSongPosition {
 
 // ----------------------------------------------------------------- ButtonPrev
 QWidget#ButtonPrev {
-    background-color: qlineargradient(
+    background: qlineargradient(
         x1: 1, y1: 0, x2: 0, y2: 0,
         stop: 0 #F6F7FA, stop: 1 #DADBDE);
 }
 QWidget#ButtonPrev:hover {
-    background-color: #E2E2E2;
+    background: #E2E2E2;
 }
 QWidget#ButtonPrev:pressed {
-    background-color: qlineargradient(
+    background: qlineargradient(
         x1: 1, y1: 0, x2: 0, y2: 0,
         stop: 0 #E2E2E2, stop: 1 #CCCCCC);
 }
@@ -238,15 +238,15 @@ QWidget#ButtonPrev:flat {
 
 // ----------------------------------------------------------------- ButtonNext
 QWidget#ButtonNext {
-    background-color: qlineargradient(
+    background: qlineargradient(
         x1: 1, y1: 0, x2: 0, y2: 0,
         stop: 0 #DADBDE, stop: 1 #F6F7FA);
 }
 QWidget#ButtonNext:hover {
-    background-color: #E2E2E2;
+    background: #E2E2E2;
 }
 QWidget#ButtonNext:pressed {
-    background-color: qlineargradient(
+    background: qlineargradient(
         x1: 1, y1: 0, x2: 0, y2: 0,
         stop: 0 #CCCCCC, stop: 1 #E2E2E2);
 }
@@ -258,36 +258,30 @@ QWidget#ButtonNext:flat {
 
 // ----------------------------------------------------------------- ButtonPlay
 QWidget#ButtonPlay {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
 }
 
 QWidget#ButtonPlay:pressed {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
 }
 
 QWidget#ButtonPlay:hover {
-    background-color: #E2E2E2;
+    background: #E2E2E2;
 }
 
 QWidget#ButtonPlay:flat {
-    border-top: 1px solid #424242;
-    border-left: 1px solid #424242;
-    border-right: 1px solid #424242;
-    border-bottom: 1px solid #424242;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border: 1px solid #424242;
+    border-radius: 4px;
 }
 
 
 // ----------------------------------------------------------------- ButtonFade
 QWidget#ButtonFade {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
 }
 
 QWidget#ButtonFade:pressed {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
 }
 
 QWidget#ButtonFade:flat {
@@ -299,10 +293,7 @@ QWidget#ButtonFade:flat {
 QWidget#SliderVolume {
     background: #F7F7F7;
     border: 1px solid #424242;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border-radius: 4px;
     height: 20px;
 
 }
@@ -361,7 +352,7 @@ QWidget#SliderPosition::sub-page:horizontal {
 
 // ----------------------------------------------------------------- BoxSearch
 QWidget#BoxSearch {
-    background-color: #F7F7F7;
+    background: #F7F7F7;
     border-top: 1px solid #424242;
     border-left: 1px solid #ADADAD;
     border-right: 1px solid #424242;
@@ -375,11 +366,11 @@ QWidget#BoxSearch {
 
 // ----------------------------------------------------------------- ButtonSearch
 QWidget#ButtonSearch {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
 }
 
 QWidget#ButtonSearch:pressed {
-    background-color: #ADADAD;
+    background: #ADADAD;
 }
 
 QWidget#ButtonSearch:flat {
@@ -394,120 +385,28 @@ QWidget#ButtonSearch:flat {
 }
 
 
-// ----------------------------------------------------------------- PanelControl
-QWidget#PanelControl {
-    background-color: #A3A3A3;
-    border-top: 0px;
-    border-left: 0px;
-    border-right: 0px;
-    border-bottom: 0px;
-}
-
-
-// ----------------------------------------------------------------- PanelScrollArea
-QWidget#PanelScrollArea {
-    background-color: #555555;
-    border-top: 0px;
-    border-left: 0px;
-    border-right: 0px;
-    border-bottom: 0px;
-}
-
-
-// ----------------------------------------------------------------- PanelButton
-QWidget#PanelButton {
-    text-align: center;
-    font-size: 12px;
-    font-weight: normal;
-    padding: 4px 4px 4px 4px;
-    margin: 2px 2px 2px 2px;
-}
-
-
-// ----------------------------------------------------------------- PanelTag
-QWidget#PanelTag {
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 12px;
-    font-weight: bold;
-    margin: 6px 12px 2px 12px;
-//    padding: 2px 4px 2px 4px;
-}
-
-
-// ----------------------------------------------------------------- PanelValue
-QWidget#PanelValue {
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 12px;
-    font-weight: regular;
-    margin: 2px 0px 2px 0px;
-//    padding: 2px 0px 2px 0px;
-}
-
-
-// ----------------------------------------------------------------- PanelCheck
-QWidget#PanelCheck {
-    background-color: transparent;
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 14px;
-    font-weight: normal;
-    border-top: 0px;
-    border-left: 0px;
-    border-right: 0px;
-    border-bottom: 1px solid #FFFFFF;
-    padding: 6px 2px 6px 2px;
-    margin: 2px 12px 12px 12px;
-    spacing: 6px;
-}
-
-
-// ----------------------------------------------------------------- PanelEdit
-QWidget#PanelEdit {
-    background-color: #FFFFFF;
-    color: #000000;
-    text-align: left;
-    font-size: 12px;
-    font-weight: normal;
-    border-top: 1px solid #000000;
-    border-left: 1px solid #000000;
-    border-right: 1px solid #000000;
-    border-bottom: 1px solid #000000;
-    border-top-left-radius: 1px;
-    border-top-right-radius: 1px;
-    border-bottom-left-radius: 1px;
-    border-bottom-right-radius: 1px;
-//    padding: 6px 2px 6px 2px;
-    margin: 6px 12px 2px 0px;
-}
+// ****************************************************************************************************
+// ****************************************************************************************************
 
 
 // ----------------------------------------------------------------- PanelTree
 QWidget#PanelTree {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
     color: #000000;
     font-size: 12px;
     font-weight: normal;
-    border-top: 1px solid #000000;
-    border-left: 1px solid #000000;
-    border-right: 1px solid #000000;
-    border-bottom: 1px solid #000000;
-    border-top-left-radius: 1px;
-    border-top-right-radius: 1px;
-    border-bottom-left-radius: 1px;
-    border-bottom-right-radius: 1px;
+    border: 1px solid #000000;
+    border-radius: 1px;
     show-decoration-selected: 1;
     alternate-background-color: #F4F4F4;
     paint-alternating-row-colors-for-empty-area: 1;
-    margin: 2px 12px 12px 12px;
+    margin: 0px 0px 0px 0px;
 }
 
-// trbl
 
 // ----------------------------------------------------------------- PanelTreeHeader
 QWidget#PanelTreeHeader::section {
-    background-color: qlineargradient(
+    background: qlineargradient(
         x1:0, y1:0, x2:0, y2:1,
         stop:0 #616161, stop: 0.5 #505050,
         stop: 0.6 #434343, stop:1 #656565);
@@ -533,10 +432,123 @@ QHeaderView::up-arrow {
 }
 
 
+// ----------------------------------------------------------------- PanelButton
+QWidget#PanelButton {
+    text-align: center;
+    font-size: 12px;
+    font-weight: normal;
+    margin: 2px 0px 2px 0px;
+    padding: 4px 4px 4px 4px;
+}
+
+
+// ----------------------------------------------------------------- PanelCheck
+QWidget#PanelCheck {
+    background: transparent;
+    color: #000000;
+    text-align: left;
+    font-size: 14px;
+    font-weight: normal;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-bottom: 1px solid #555555;
+    margin: 0px 2px 10px 2px;
+    padding: 0px 2px 10px 2px;
+    spacing: 6px;
+}
+
+
+// ----------------------------------------------------------------- PanelEdit
+QWidget#PanelEdit {
+    background: #FFFFFF;
+    color: #000000;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    border: 1px solid #ADADAD;
+    border-radius: 1px;
+    margin: 2px 2px 2px 0px;
+    padding: 0px 1px 0px 1px;
+}
+
+
+// ----------------------------------------------------------------- PanelEditHidden
+QWidget#PanelEditHidden {
+    background: #E3E3E3;
+    color: #000000;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    border: 1px solid transparent;
+    border-radius: 1px;
+    margin: 2px 2px 2px 0px;
+    padding: 0px 1px 0px 1px;
+}
+
+
+QWidget#PanelEditHidden:hover {
+    background: #E3E3E3;
+    color: #000000;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    border: 1px solid #FFFFFF;
+    border-radius: 1px;
+}
+
+
+QWidget#PanelEditHidden:focus {
+    background: #FFFFFF;
+    color: #000000;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    border: 1px solid #ADADAD;
+    border-radius: 1px;
+}
+
+
+// ----------------------------------------------------------------- PanelTag
+QWidget#PanelTag {
+    color: #000000;
+    text-align: left;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 2px 2px 2px 0px;
+    padding: 0px 1px 0px 1px;
+}
+
+
+// ----------------------------------------------------------------- PanelValue
+QWidget#PanelValue {
+    color: #000000;
+    text-align: left;
+    font-size: 12px;
+    font-weight: regular;
+    margin: 2px 2px 2px 0px;
+    padding: 0px 1px 0px 1px;
+}
+
+
+
+
+// trbl
+
+// #555555 - dark gray
+// #878787 - light gray
+
+// #c51f5d - pink
+// #243447 - navy
+// #141d26 - dark blue
+
+
+
+
 // ----------------------------------------------------------------- PanelTitle
 QWidget#PanelTitle {
-    background-color: #555555;
-    color: #FFFFFF;
+    background: #FFFFFF;
+    color: #000000;
     text-align: left;
     font-family: "Open Sans";
     font-size: 32px;
@@ -546,8 +558,8 @@ QWidget#PanelTitle {
 
 // ----------------------------------------------------------------- SectionHeader
 QWidget#SectionHeader {
-    background-color: #555555;
-    color: #FFFFFF;
+    background: #FFFFFF;
+    color: #000000;
     text-align: left;
     font-family: "Open Sans";
     font-size: 16px;
@@ -558,16 +570,16 @@ QWidget#SectionHeader {
 
 // ----------------------------------------------------------------- SectionFrame
 QWidget#SectionFrame {
-//    background-color: #878787;
-    background-color: #A3A3A3;
-    border: 1px solid #FFFFFF;
+//    background: #878787;
+    background: #E3E3E3;
+    border: 1px solid #000000;
     border-radius: 3px;
 }
 
 
 // ----------------------------------------------------------------- PanelLibrary
 QWidget#PanelLibrary {
-    background-color: #555555;
+    background: #FFFFFF;
     border-top: 0px;
     border-left: 1px solid #000000;
     border-right: 0px;
@@ -577,7 +589,7 @@ QWidget#PanelLibrary {
 
 // ----------------------------------------------------------------- PanelDevice
 QWidget#PanelDevice {
-    background-color: #555555;
+    background: #FFFFFF;
     border-top: 0px;
     border-left: 1px solid #000000;
     border-right: 0px;
@@ -585,9 +597,23 @@ QWidget#PanelDevice {
 }
 
 
+// ----------------------------------------------------------------- PanelControl
+QWidget#PanelControl {
+    background: #A3A3A3;
+    border: 0px;
+}
+
+
+// ----------------------------------------------------------------- PanelScrollArea
+QWidget#PanelScrollArea {
+    background: #555555;
+    border: 0px;
+}
+
+
 // ----------------------------------------------------------------- StorageWidget
 QWidget#StorageWidget {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
     border-top: 1px solid #000000;
     border-left: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -601,13 +627,14 @@ QWidget#StorageWidget {
 }
 
 
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
 // ----------------------------------------------------------------- PanelTreesButton
 QWidget#PanelTreesButton {
-    background-color: #A3A3A3;
-    border-top: 0px;
-    border-left: 0px;
-    border-right: 0px;
-    border-bottom: 0px;
+    background: #A3A3A3;
+    border: 0px;
     color: #FFFFFF;
     text-align: left;
     font-size: 14px;
@@ -621,11 +648,11 @@ QWidget#PanelTreesButton::indicator {
 }
 
 QWidget#PanelTreesButton:hover {
-    background-color: #777777;
+    background: #777777;
 }
 
 QWidget#PanelTreesButton:pushed {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
 }
 
 QWidget#PanelTreesButton:checked {
@@ -639,7 +666,7 @@ QWidget#PanelTreesButton:checked {
 
 // ----------------------------------------------------------------- PanelTrees
 QWidget#PanelTrees {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
     border-top: 0px;
     border-left: 1px solid #000000;
     border-right: 0px;
@@ -649,7 +676,7 @@ QWidget#PanelTrees {
 
 // ----------------------------------------------------------------- PanelTreesLabel
 QWidget#PanelTreesLabel {
-    background-color: #A3A3A3;
+    background: #A3A3A3;
     border-top: 1px solid #FFFFFF;
     border-left: 0px;
     border-right: 0px;
@@ -668,14 +695,15 @@ QWidget#PanelTreesTitle {
 }
 
 
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
 // ----------------------------------------------------------------- TreeviewContainers
 QWidget#TreeviewContainers {
-    background-color: #A3A3A3;
-    border-top: 0px;
-    border-left: 0px;
-    border-right: 0px;
-    border-bottom: 0px;
+    background: #A3A3A3;
     color: #FFFFFF;
+    border: 0px;
     font-size: 14px;
     font-weight: normal;
     selection-color: #FFFFFF;
@@ -753,9 +781,13 @@ QWidget#TreeviewContainers::branch:selected:open:has-children:has-siblings  {
 }
 
 
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
 // ----------------------------------------------------------------- TreeviewSonglist
 QWidget#TreeviewSonglist {
-    background-color: #F2F2F2;
+    background: #F2F2F2;
     color: #000000;
     border-top: 1px solid #000000;
     border-left: 1px solid #000000;
@@ -770,7 +802,7 @@ QWidget#TreeviewSonglist {
 
 
 //QHeaderView::section {
-//    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+//    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
 //                                      stop:0 #616161, stop: 0.5 #505050,
 //                                      stop: 0.6 #434343, stop:1 #656565);
 //    color: white;
@@ -780,7 +812,7 @@ QWidget#TreeviewSonglist {
 
 //QHeaderView::section:checked
 //{
-//    background-color: red;
+//    background: red;
 //}
 
 ///* style the sort indicator */

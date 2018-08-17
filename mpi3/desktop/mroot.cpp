@@ -6,9 +6,9 @@
 #include "core/mcontentdelegate.h"
 
 #include "ui/mcontextbar.h"
+#include "ui/maudiocontrol.h"
 #include "ui/mpanellibrary.h"
 #include "ui/mpaneldevice.h"
-#include "ui/maudiocontrol.h"
 #include "ui/mpanelmedia.h"
 #include "ui/mvc/mlibmodel.h"
 #include "ui/mvc/mlibview.h"
@@ -295,6 +295,12 @@ void MRootDesktop::initializeMainMenu(){
     act_editCut->setDisabled(true);
     act_editCopy->setDisabled(true);
     act_editDelete->setDisabled(true);
+
+    QAction *act_RefreshThemeDirect = new QAction(this);
+    act_RefreshThemeDirect->setText("Refresh Theme");
+    connect(act_RefreshThemeDirect, &QAction::triggered, this, &MRootDesktop::themeRefresh);
+    menu_main->addAction(act_RefreshThemeDirect);
+
 }
 void MRootDesktop::initializeLayout(){
 
