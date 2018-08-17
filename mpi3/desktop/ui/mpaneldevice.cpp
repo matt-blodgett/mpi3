@@ -13,13 +13,31 @@
 #include <QLabel>
 #include <QLineEdit>
 
+//#include <QFileSystemModel>
+#include <QHeaderView>
+
+
 
 MPanelDevice::MPanelDevice(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
     m_lblCurrentDevice->setText("RASPI (E:)");
+
+    m_treeStorageDevices->setIndentation(0);
+    m_treeStorageDevices->setItemsExpandable(false);
+    m_treeStorageDevices->setSortingEnabled(true);
+    m_treeStorageDevices->setAlternatingRowColors(true);
+
+//    QFileSystemModel *fsModel = new QFileSystemModel(this);
+//    fsModel->setRootPath("C:/Users/Matt/Desktop");
+//    m_treeStorageDevices->setModel(fsModel);
+
 }
 MPanelDevice::~MPanelDevice(){}
+
+void MPanelDevice::setModel(QAbstractItemModel *lib){
+    m_treeStorageDevices->setModel(lib);
+}
 
 void MPanelDevice::initializeLayout(){
 
@@ -70,14 +88,14 @@ void MPanelDevice::initializeLayout(){
     QGridLayout *layoutStorage = new QGridLayout(this);
     layoutStorage->addLayout(layoutStorageWest, 0, 0, 1, 1);
     layoutStorage->addLayout(layoutStorageEast, 0, 2, 1, 1);
-    layoutStorage->setColumnMinimumWidth(0, 295);
+    layoutStorage->setColumnMinimumWidth(0, 345);
     layoutStorage->setColumnMinimumWidth(1, 10);
-    layoutStorage->setColumnMinimumWidth(2, 295);
+    layoutStorage->setColumnMinimumWidth(2, 345);
     layoutStorage->setVerticalSpacing(0);
     layoutStorage->setHorizontalSpacing(0);
     layoutStorage->setMargin(0);
     frmStorageSection->setLayout(layoutStorage);
-    frmStorageSection->setMaximumWidth(600);
+    frmStorageSection->setMaximumWidth(700);
 
     // -------------------------------------------------- MEDIA
 
@@ -104,14 +122,14 @@ void MPanelDevice::initializeLayout(){
     QGridLayout *layoutLibrary = new QGridLayout(this);
     layoutLibrary->addLayout(layoutLibraryWest, 0, 0, 1, 1);
     layoutLibrary->addLayout(layoutLibraryEast, 0, 2, 1, 1);
-    layoutLibrary->setColumnMinimumWidth(0, 295);
+    layoutLibrary->setColumnMinimumWidth(0, 345);
     layoutLibrary->setColumnMinimumWidth(1, 10);
-    layoutLibrary->setColumnMinimumWidth(2, 295);
+    layoutLibrary->setColumnMinimumWidth(2, 345);
     layoutLibrary->setVerticalSpacing(0);
     layoutLibrary->setHorizontalSpacing(0);
     layoutLibrary->setMargin(0);
     frmLibrarySection->setLayout(layoutLibrary);
-    frmLibrarySection->setMaximumWidth(600);
+    frmLibrarySection->setMaximumWidth(700);
 
     // -------------------------------------------------- MEDIA
 
@@ -136,16 +154,16 @@ void MPanelDevice::initializeLayout(){
     layoutMedia->addLayout(layoutMediaWest, 0, 0, 1, 1);
     layoutMedia->addLayout(layoutMediaEast, 0, 2, 1, 1);
     layoutMedia->addWidget(m_frmStorageSpace, 1, 0, 1, 3);
-    layoutMedia->setColumnMinimumWidth(0, 295);
+    layoutMedia->setColumnMinimumWidth(0, 345);
     layoutMedia->setColumnMinimumWidth(1, 10);
-    layoutMedia->setColumnMinimumWidth(2, 295);
+    layoutMedia->setColumnMinimumWidth(2, 345);
     layoutMedia->setRowMinimumHeight(0, 60);
     layoutMedia->setRowMinimumHeight(1, 60);
     layoutMedia->setVerticalSpacing(0);
     layoutMedia->setHorizontalSpacing(0);
     layoutMedia->setMargin(0);
     frmMediaSection->setLayout(layoutMedia);
-    frmMediaSection->setMaximumWidth(600);
+    frmMediaSection->setMaximumWidth(700);
 
     // -------------------------------------------------- DISPLAY PANEl
 
@@ -173,7 +191,7 @@ void MPanelDevice::initializeLayout(){
     layoutDisplay->setRowMinimumHeight(5, 0);
     layoutDisplay->setRowMinimumHeight(6, 100);
     layoutDisplay->setRowStretch(7, 1);
-    layoutDisplay->setColumnMinimumWidth(0, 600);
+    layoutDisplay->setColumnMinimumWidth(0, 700);
     layoutDisplay->setColumnStretch(0, 1);
     layoutDisplay->setHorizontalSpacing(0);
     layoutDisplay->setVerticalSpacing(0);
@@ -226,10 +244,11 @@ void MPanelDevice::initializeLayout(){
     // -------------------------------------------------- OBJECT NAMES
 
     m_treeStorageDevices->setObjectName("PanelTree");
+    m_treeStorageDevices->header()->setObjectName("PanelTreeHeader");
     lblStorageTag->setObjectName("PanelTag");
     lblVolumesTag->setObjectName("PanelTag");
-    lblCreateVolumeTag->setText("PanelTag");
-    lblLoadVolumeTag->setText("PanelTag");
+    lblCreateVolumeTag->setObjectName("PanelTag");
+    lblLoadVolumeTag->setObjectName("PanelTag");
     m_btnCreateVolume->setObjectName("PanelButton");
     m_btnLoadVolume->setObjectName("PanelButton");
 

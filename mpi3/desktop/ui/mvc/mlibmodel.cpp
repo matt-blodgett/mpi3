@@ -709,6 +709,10 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
     return false;
 }
 
+void MModelSonglist::sort(int column, Qt::SortOrder order){
+    qDebug() << column << order;
+}
+
 int MModelSonglist::rowCount(const QModelIndex &) const{
     return m_songlist.size();
 }
@@ -761,9 +765,16 @@ QVariant MModelSonglist::data(const QModelIndex &index, int role) const{
     return QVariant();
 }
 QVariant MModelSonglist::headerData(int section, Qt::Orientation orientation, int role) const{
+
+//    if(orientation == Qt::Horizontal && role == Qt::DecorationRole){
+//        return QIcon(":/icons/treeview/folder_open_light.png");
+//    }
+//http://doc.qt.io/qt-5/qtwidgets-itemviews-customsortfiltermodel-example.html
+
     if(orientation == Qt::Horizontal && role == Qt::DisplayRole){
         return m_headers.at(section);
     }
+
     return QVariant();
 }
 

@@ -13,6 +13,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QTreeView>
+#include <QHeaderView>
 
 
 MPanelLibrary::MPanelLibrary(QWidget *parent) : QWidget(parent){
@@ -102,28 +103,20 @@ void MPanelLibrary::initializeLayout(){
     QGridLayout *layoutLibrary = new QGridLayout(this);
     layoutLibrary->addLayout(layoutLibraryWest, 0, 0, 1, 1);
     layoutLibrary->addLayout(layoutLibraryEast, 0, 2, 1, 1);
-    layoutLibrary->setColumnMinimumWidth(0, 295);
+    layoutLibrary->setColumnMinimumWidth(0, 345);
     layoutLibrary->setColumnMinimumWidth(1, 10);
-    layoutLibrary->setColumnMinimumWidth(2, 295);
+    layoutLibrary->setColumnMinimumWidth(2, 345);
     layoutLibrary->setVerticalSpacing(0);
     layoutLibrary->setHorizontalSpacing(0);
     layoutLibrary->setMargin(0);
     frmLibrarySection->setLayout(layoutLibrary);
-    frmLibrarySection->setMaximumWidth(600);
+    frmLibrarySection->setMaximumWidth(700);
 
     // -------------------------------------------------- MEDIA SECTION
 
     QWidget *frmMediaSection = new QWidget(this);
 
-    QWidget *frmMediaEnable = new QWidget(this);
     m_optOrganizeMedia = new QCheckBox(this);
-
-    QGridLayout *layoutMediaNorth = new QGridLayout(this);
-    layoutMediaNorth->addWidget(m_optOrganizeMedia);
-    layoutMediaNorth->setVerticalSpacing(0);
-    layoutMediaNorth->setHorizontalSpacing(0);
-    layoutMediaNorth->setMargin(0);
-    frmMediaEnable->setLayout(layoutMediaNorth);
 
     QLabel *lblMediaLocTag = new QLabel(this);
     m_btnSetMediaLoc = new QPushButton(this);
@@ -133,6 +126,7 @@ void MPanelLibrary::initializeLayout(){
     layoutMediaWest->addWidget(lblMediaLocTag, 0, 0, 1, 1);
     layoutMediaWest->addWidget(m_boxMediaLoc, 0, 1, 1, 1);
     layoutMediaWest->addWidget(m_btnSetMediaLoc, 0, 2, 1, 1);
+    layoutMediaWest->setRowStretch(1, 1);
     layoutMediaWest->setVerticalSpacing(0);
     layoutMediaWest->setHorizontalSpacing(0);
     layoutMediaWest->setMargin(0);
@@ -158,32 +152,24 @@ void MPanelLibrary::initializeLayout(){
     layoutMediaEast->setMargin(0);
 
     QGridLayout *layoutMedia = new QGridLayout(this);
-    layoutMedia->addWidget(frmMediaEnable, 0, 0, 1, 3);
+    layoutMedia->addWidget(m_optOrganizeMedia, 0, 0, 1, 3);
     layoutMedia->addLayout(layoutMediaWest, 1, 0, 1, 1);
     layoutMedia->addLayout(layoutMediaEast, 1, 2, 1, 1);
-    layoutMedia->setColumnMinimumWidth(0, 295);
+    layoutMedia->setColumnMinimumWidth(0, 345);
     layoutMedia->setColumnMinimumWidth(1, 10);
-    layoutMedia->setColumnMinimumWidth(2, 295);
+    layoutMedia->setColumnMinimumWidth(2, 345);
     layoutMedia->setRowStretch(2, 1);
     layoutMedia->setVerticalSpacing(0);
     layoutMedia->setHorizontalSpacing(0);
     layoutMedia->setMargin(0);
     frmMediaSection->setLayout(layoutMedia);
-    frmMediaSection->setMaximumWidth(600);
+    frmMediaSection->setMaximumWidth(700);
 
     // -------------------------------------------------- BACKUPS SECTION
 
     QWidget *frmBackupSection = new QWidget(this);
 
-    QWidget *frmBackupEnable = new QWidget(this);
     m_optBackupLibrary = new QCheckBox(this);
-
-    QGridLayout *layoutBackupNorth = new QGridLayout(this);
-    layoutBackupNorth->addWidget(m_optBackupLibrary);
-    layoutBackupNorth->setVerticalSpacing(0);
-    layoutBackupNorth->setHorizontalSpacing(0);
-    layoutBackupNorth->setMargin(0);
-    frmBackupEnable->setLayout(layoutBackupNorth);
 
     QLabel *lblBackupLocTag = new QLabel(this);
     m_btnSetBackupLoc = new QPushButton(this);
@@ -215,18 +201,18 @@ void MPanelLibrary::initializeLayout(){
     layoutBackupEast->setMargin(0);
 
     QGridLayout *layoutBackup = new QGridLayout(this);
-    layoutBackup->addWidget(frmBackupEnable, 0, 0, 1, 3);
+    layoutBackup->addWidget(m_optBackupLibrary, 0, 0, 1, 3);
     layoutBackup->addLayout(layoutBackupWest, 1, 0, 1, 1);
     layoutBackup->addLayout(layoutBackupEast, 1, 2, 1, 1);
-    layoutBackup->setColumnMinimumWidth(0, 295);
+    layoutBackup->setColumnMinimumWidth(0, 345);
     layoutBackup->setColumnMinimumWidth(1, 10);
-    layoutBackup->setColumnMinimumWidth(2, 295);
+    layoutBackup->setColumnMinimumWidth(2, 345);
     layoutBackup->setRowStretch(2, 1);
     layoutBackup->setVerticalSpacing(0);
     layoutBackup->setHorizontalSpacing(0);
     layoutBackup->setMargin(0);
     frmBackupSection->setLayout(layoutBackup);
-    frmBackupSection->setMaximumWidth(600);
+    frmBackupSection->setMaximumWidth(700);
 
     // -------------------------------------------------- DISPLAY PANEl
 
@@ -254,7 +240,7 @@ void MPanelLibrary::initializeLayout(){
     layoutDisplay->setRowMinimumHeight(5, 0);
     layoutDisplay->setRowMinimumHeight(6, 100);
     layoutDisplay->setRowStretch(7, 1);
-    layoutDisplay->setColumnMinimumWidth(0, 600);
+    layoutDisplay->setColumnMinimumWidth(0, 700);
     layoutDisplay->setColumnStretch(0, 1);
     layoutDisplay->setHorizontalSpacing(0);
     layoutDisplay->setVerticalSpacing(0);
@@ -339,6 +325,7 @@ void MPanelLibrary::initializeLayout(){
 
     m_optBackupLibrary->setObjectName("PanelCheck");
     m_treeBackupHist->setObjectName("PanelTree");
+    m_treeBackupHist->header()->setObjectName("PanelTreeHeader");
     lblBackupLocTag->setObjectName("PanelTag");
     m_btnSetBackupLoc->setObjectName("PanelButton");
     lblBackupFreqTag->setObjectName("PanelTag");

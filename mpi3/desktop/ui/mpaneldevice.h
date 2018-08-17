@@ -9,6 +9,7 @@ class QTreeView;
 class QPushButton;
 class QLineEdit;
 class QLabel;
+class QAbstractItemModel;
 QT_END_NAMESPACE
 
 
@@ -19,6 +20,7 @@ class MPanelDevice : public QWidget
 public:
     explicit MPanelDevice(QWidget *parent = nullptr);
     ~MPanelDevice();
+    void setModel(QAbstractItemModel *lib);
 
 private:
     void initializeLayout();

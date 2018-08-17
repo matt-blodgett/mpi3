@@ -14,6 +14,7 @@ class QLabel;
 QT_END_NAMESPACE
 
 
+
 class MPanelLibrary : public QWidget
 {
     Q_OBJECT

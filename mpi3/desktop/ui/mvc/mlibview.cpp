@@ -33,6 +33,7 @@ MTreeContainers::MTreeContainers(QWidget *parent) : MTreeView(parent){
     setAlternatingRowColors(false);
     setRootIsDecorated(true);
     setHeaderHidden(true);
+    setSortingEnabled(false);
 
     m_drawStyle->setTVIndicatorStyle(MStyle::TV_IndicatorStyleDrop);
 }
@@ -118,6 +119,7 @@ MTreeSonglist::MTreeSonglist(QWidget *parent) : MTreeView(parent){
     setAlternatingRowColors(true);
     setRootIsDecorated(false);
     setHeaderHidden(false);
+    setSortingEnabled(true);
 
     m_drawStyle->setTVIndicatorStyle(MStyle::TV_IndicatorStyleMove);
 }

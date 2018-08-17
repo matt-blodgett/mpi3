@@ -65,6 +65,9 @@ void MRootDesktop::initialize(){
     initializeLayout();
     initializeState();
     initializeStyle();
+
+    m_panelDevice->setModel(m_modelSonglist);
+
     centralWidget()->show();
 }
 void MRootDesktop::initializeObjects(){

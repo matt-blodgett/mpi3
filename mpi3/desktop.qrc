@@ -9,10 +9,12 @@
     <qresource prefix="/icons/treeview">
         <file alias="folder.png">assets/desktop/icons/treeview/folder.png</file>
         <file alias="playlist.png">assets/desktop/icons/treeview/playlist.png</file>
-        <file alias="folder_open_light.png">assets/desktop/icons/treeview/folder_open_light.png</file>
-        <file alias="folder_closed_light.png">assets/desktop/icons/treeview/folder_closed_light.png</file>
-        <file alias="folder_open_dark.png">assets/desktop/icons/treeview/folder_open_dark.png</file>
-        <file alias="folder_closed_dark.png">assets/desktop/icons/treeview/folder_closed_dark.png</file>
+        <file alias="arrow_up_light.png">assets/desktop/icons/treeview/arrow_up_light.png</file>
+        <file alias="arrow_up_dark.png">assets/desktop/icons/treeview/arrow_up_dark.png</file>
+        <file alias="arrow_down_light.png">assets/desktop/icons/treeview/arrow_down_light.png</file>
+        <file alias="arrow_down_dark.png">assets/desktop/icons/treeview/arrow_down_dark.png</file>
+        <file alias="arrow_right_light.png">assets/desktop/icons/treeview/arrow_right_light.png</file>
+        <file alias="arrow_right_dark.png">assets/desktop/icons/treeview/arrow_right_dark.png</file>
         <file alias="branch_end.png">assets/desktop/icons/treeview/branch_end.png</file>
         <file alias="branch_more.png">assets/desktop/icons/treeview/branch_more.png</file>
         <file alias="branch_vline.png">assets/desktop/icons/treeview/branch_vline.png</file>

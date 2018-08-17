@@ -406,22 +406,11 @@ QWidget#PanelControl {
 
 // ----------------------------------------------------------------- PanelScrollArea
 QWidget#PanelScrollArea {
-    background-color: #A3A3A3;
+    background-color: #555555;
     border-top: 0px;
     border-left: 0px;
     border-right: 0px;
     border-bottom: 0px;
-}
-
-
-// ----------------------------------------------------------------- PanelTitle
-QWidget#PanelTitle {
-    background-color: #FFFFFF;
-    color: #000000;
-    text-align: left;
-    font-family: "Open Sans";
-    font-size: 32px;
-    font-weight: bold;
 }
 
 
@@ -441,8 +430,8 @@ QWidget#PanelTag {
     text-align: left;
     font-size: 12px;
     font-weight: bold;
-    padding: 2px 4px 2px 4px;
-//    margin: 2px 2px 2px 2px;
+    margin: 6px 12px 2px 12px;
+//    padding: 2px 4px 2px 4px;
 }
 
 
@@ -452,8 +441,25 @@ QWidget#PanelValue {
     text-align: left;
     font-size: 12px;
     font-weight: regular;
-    padding: 2px 0px 2px 0px;
-//    margin: 2px 2px 2px 2px;
+    margin: 2px 0px 2px 0px;
+//    padding: 2px 0px 2px 0px;
+}
+
+
+// ----------------------------------------------------------------- PanelCheck
+QWidget#PanelCheck {
+    background-color: transparent;
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 14px;
+    font-weight: normal;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-bottom: 1px solid #FFFFFF;
+    padding: 6px 2px 6px 2px;
+    margin: 2px 12px 12px 12px;
+    spacing: 6px;
 }
 
 
@@ -472,13 +478,76 @@ QWidget#PanelEdit {
     border-top-right-radius: 1px;
     border-bottom-left-radius: 1px;
     border-bottom-right-radius: 1px;
+//    padding: 6px 2px 6px 2px;
+    margin: 6px 12px 2px 0px;
+}
+
+
+// ----------------------------------------------------------------- PanelTree
+QWidget#PanelTree {
+    background-color: #FFFFFF;
+    color: #000000;
+    font-size: 12px;
+    font-weight: normal;
+    border-top: 1px solid #000000;
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+    border-bottom-left-radius: 1px;
+    border-bottom-right-radius: 1px;
+    show-decoration-selected: 1;
+    alternate-background-color: #F4F4F4;
+    paint-alternating-row-colors-for-empty-area: 1;
+    margin: 2px 12px 12px 12px;
+}
+
+// trbl
+
+// ----------------------------------------------------------------- PanelTreeHeader
+QWidget#PanelTreeHeader::section {
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #616161, stop: 0.5 #505050,
+        stop: 0.6 #434343, stop:1 #656565);
+    color: #FFFFFF;
+    padding: 0px 0px 0px 4px;
+    border: 1px solid #6c6c6c;
+}
+
+QHeaderView::down-arrow {
+    image: url(:/icons/treeview/arrow_down_light.png);
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+    padding: 4px 4px 4px 4px;
+    margin: 4px 4px 4px 4px;
+}
+
+QHeaderView::up-arrow {
+    image: url(:/icons/treeview/arrow_up_light.png);
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+    padding: 4px 4px 4px 4px;
+    margin: 4px 4px 4px 4px;
+}
+
+
+// ----------------------------------------------------------------- PanelTitle
+QWidget#PanelTitle {
+    background-color: #555555;
+    color: #FFFFFF;
+    text-align: left;
+    font-family: "Open Sans";
+    font-size: 32px;
+    font-weight: bold;
 }
 
 
 // ----------------------------------------------------------------- SectionHeader
 QWidget#SectionHeader {
-    background-color: #FFFFFF;
-    color: #000000;
+    background-color: #555555;
+    color: #FFFFFF;
     text-align: left;
     font-family: "Open Sans";
     font-size: 16px;
@@ -489,21 +558,16 @@ QWidget#SectionHeader {
 
 // ----------------------------------------------------------------- SectionFrame
 QWidget#SectionFrame {
-    background-color: #ADADAD;
-    border-top: 1px solid #000000;
-    border-left: 1px solid #000000;
-    border-right: 1px solid #000000;
-    border-bottom: 1px solid #000000;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
+//    background-color: #878787;
+    background-color: #A3A3A3;
+    border: 1px solid #FFFFFF;
+    border-radius: 3px;
 }
 
 
 // ----------------------------------------------------------------- PanelLibrary
 QWidget#PanelLibrary {
-    background-color: #FFFFFF;
+    background-color: #555555;
     border-top: 0px;
     border-left: 1px solid #000000;
     border-right: 0px;
@@ -513,7 +577,7 @@ QWidget#PanelLibrary {
 
 // ----------------------------------------------------------------- PanelDevice
 QWidget#PanelDevice {
-    background-color: #FFFFFF;
+    background-color: #555555;
     border-top: 0px;
     border-left: 1px solid #000000;
     border-right: 0px;
@@ -649,42 +713,42 @@ QWidget#TreeviewContainers::branch:!has-children:!has-siblings:adjoins-item {
 }
 
 QWidget#TreeviewContainers::branch:has-children:!has-siblings:closed {
-    image: url(:/icons/treeview/folder_closed_light.png);
+    image: url(:/icons/treeview/arrow_right_light.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:closed:has-children:has-siblings {
-    image: url(:/icons/treeview/folder_closed_light.png);
+    image: url(:/icons/treeview/arrow_right_light.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:open:has-children:!has-siblings{
-    image: url(:/icons/treeview/folder_open_light.png);
+    image: url(:/icons/treeview/arrow_down_light.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:open:has-children:has-siblings  {
-    image: url(:/icons/treeview/folder_open_light.png);
+    image: url(:/icons/treeview/arrow_down_light.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:selected:has-children:!has-siblings:closed {
-    image: url(:/icons/treeview/folder_closed_dark.png);
+    image: url(:/icons/treeview/arrow_right_dark.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:selected:closed:has-children:has-siblings {
-    image: url(:/icons/treeview/folder_closed_dark.png);
+    image: url(:/icons/treeview/arrow_right_dark.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:selected:open:has-children:!has-siblings{
-    image: url(:/icons/treeview/folder_open_dark.png);
+    image: url(:/icons/treeview/arrow_down_dark.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:selected:open:has-children:has-siblings  {
-    image: url(:/icons/treeview/folder_open_dark.png);
+    image: url(:/icons/treeview/arrow_down_dark.png);
     border-image: none;
 }
 
@@ -728,5 +792,39 @@ QWidget#TreeviewSonglist {
 //    image: url(up_arrow.png);
 //}
 
+
+
+
+//QWidget#PanelCheck::indicator:unchecked {
+//    image: url(:/images/checkbox_unchecked.png);
+//}
+
+//QWidget#PanelCheck::indicator:unchecked:hover {
+//    image: url(:/images/checkbox_unchecked_hover.png);
+//}
+
+//QWidget#PanelCheck::indicator:unchecked:pressed {
+//    image: url(:/images/checkbox_unchecked_pressed.png);
+//}
+
+//QWidget#PanelCheck::indicator:checked {
+//    image: url(:/images/checkbox_checked.png);
+//}
+
+//QWidget#PanelCheck::indicator:checked:hover {
+//    image: url(:/images/checkbox_checked_hover.png);
+//}
+
+//QWidget#PanelCheck::indicator:checked:pressed {
+//    image: url(:/images/checkbox_checked_pressed.png);
+//}
+
+//QWidget#PanelCheck::indicator:indeterminate:hover {
+//    image: url(:/images/checkbox_indeterminate_hover.png);
+//}
+
+//QWidget#PanelCheck::indicator:indeterminate:pressed {
+//    image: url(:/images/checkbox_indeterminate_pressed.png);
+//}
 
 !THEME=END
