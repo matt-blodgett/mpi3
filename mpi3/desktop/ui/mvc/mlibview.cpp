@@ -9,9 +9,8 @@
 
 #include <QSortFilterProxyModel>
 #include <QHeaderView>
-
-#include <QDropEvent>
 #include <QMimeData>
+#include <QDropEvent>
 
 
 #include <QDebug>
@@ -125,7 +124,12 @@ QSortFilterProxyModel *MTreeSonglist::modelSortFilter(){
 MModelSonglist *MTreeSonglist::modelSonglist(){
     return m_modelSonglist;
 }
-
+QMap<QString, QVariant> MTreeSonglist::modelSettings(){
+    return m_containerSettings;
+}
+void MTreeSonglist::setSettings(QMap<QString, QVariant> settings){
+    m_containerSettings = settings;
+}
 void MTreeSonglist::setContainer(MMediaContainer *container){
 
     populateSettings();
@@ -169,7 +173,6 @@ void MTreeSonglist::populateSettings(MMediaContainer *container){
 
     m_containerSettings[container->pid()] = settings;
 }
-
 void MTreeSonglist::populateSettings(){
 
     if(m_modelSonglist->container()){
@@ -194,21 +197,37 @@ void MTreeSonglist::populateSettings(){
     }
 }
 
-void MTreeSonglist::playNextItem(){
-    shiftItem(1);
+void MTreeSonglist::populateQueue(){
+
+    m_playbackQueue.clear();
+
+    for(int i = 0; i < m_modelSortFilter->rowCount(); i++){
+        QModelIndex idx_sort = m_modelSortFilter->index(i, 0);
+        QModelIndex idx_source = m_modelSortFilter->mapToSource(idx_sort);
+        m_playbackQueue.append(m_modelSonglist->songAt(idx_source));
+    }
 }
-void MTreeSonglist::playPrevItem(){
-    shiftItem(-1);
+void MTreeSonglist::sortChanged(int logicalIndex, Qt::SortOrder order){
+    Q_UNUSED(logicalIndex)
+    Q_UNUSED(order)
+
+    if(m_modelSonglist->container() == m_playbackContainer){
+        populateQueue();
+    }
 }
 
 void MTreeSonglist::playItem(const QModelIndex &idx){
-
     MSong *song = m_modelSonglist->songAt(idx);
 
     m_playbackContainer = m_modelSonglist->container();
     m_playbackSong = song;
 
     populateQueue();
+
+    QItemSelectionModel::SelectionFlags flag;
+    flag = QItemSelectionModel::ClearAndSelect;
+    flag |= QItemSelectionModel::Rows;
+    selectionModel()->select(idx, flag);
 
     emit playbackChanged(song);
 }
@@ -241,23 +260,11 @@ void MTreeSonglist::shiftItem(int offset){
     }
 }
 
-void MTreeSonglist::populateQueue(){
-
-    m_playbackQueue.clear();
-
-    for(int i = 0; i < m_modelSortFilter->rowCount(); i++){
-        QModelIndex idx_sort = m_modelSortFilter->index(i, 0);
-        QModelIndex idx_source = m_modelSortFilter->mapToSource(idx_sort);
-        m_playbackQueue.append(m_modelSonglist->songAt(idx_source));
-    }
+void MTreeSonglist::playNextItem(){
+    shiftItem(1);
 }
-void MTreeSonglist::sortChanged(int logicalIndex, Qt::SortOrder order){
-    Q_UNUSED(logicalIndex)
-    Q_UNUSED(order)
-
-    if(m_modelSonglist->container() == m_playbackContainer){
-        populateQueue();
-    }
+void MTreeSonglist::playPrevItem(){
+    shiftItem(-1);
 }
 
 bool MTreeSonglist::allowDragMove(){

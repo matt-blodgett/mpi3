@@ -21,26 +21,23 @@
 #include <QMimeData>
 #include <QProcess>
 
-#include <QHeaderView>
-#include <QMenuBar>
-
-#include <QGridLayout>
-#include <QStyleOption>
-#include <QPainter>
-
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QDir>
 
-#include <QPushButton>
-#include <QMouseEvent>
-#include <QTime>
-
 #include <QFontDatabase>
-
-
+#include <QGridLayout>
+#include <QStyleOption>
+#include <QPainter>
 
 #include <QSortFilterProxyModel>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QMenuBar>
+#include <QTime>
+
+#include <QMouseEvent>
+
 
 #include <QDebug>
 
@@ -72,16 +69,15 @@ void MRootDesktop::initialize(){
 void MRootDesktop::initializeObjects(){
     m_styleSheet = new MStyleSheet();
 
-    m_panelLibrary = new MPanelLibrary(this);
-    m_panelPlayback = new MPanelPlayback(this);
-    m_panelDevice = new MPanelDevice(this);
-    m_panelMedia = new MPanelMedia(this);
-
-    m_treeContainers = m_panelMedia->treeContainers();
-    m_treeSonglist = m_panelMedia->treeSonglist();
-
-    m_audioEngine = new MAudioEngine(this);
     m_mediaLibrary = new MMediaLibrary();
+    m_audioEngine = new MAudioEngine(this);
+
+    connect(m_audioEngine, &MAudioEngine::notifyMediaStatus, this, &MRootDesktop::processAudioMediaStatus);
+    connect(m_audioEngine, &MAudioEngine::notifyEngineStatus, this, &MRootDesktop::processAudioEngineStatus);
+    connect(m_audioEngine, &MAudioEngine::notifyErrorStatus, this, &MRootDesktop::processAudioErrorStatus);
+    connect(m_audioEngine, &MAudioEngine::notifyRequestStatus, this, &MRootDesktop::processAudioRequestStatus);
+
+    m_panelPlayback = new MPanelPlayback(this);
 
     connect(m_panelPlayback, &MPanelPlayback::audioPlay, m_audioEngine, &MAudioEngine::play);
     connect(m_panelPlayback, &MPanelPlayback::audioPause, m_audioEngine, &MAudioEngine::pause);
@@ -92,6 +88,10 @@ void MRootDesktop::initializeObjects(){
     connect(m_audioEngine, &MAudioEngine::notifyPosition, m_panelPlayback, &MPanelPlayback::setPosition);
     connect(m_audioEngine, &MAudioEngine::notifyEngineStatus, m_panelPlayback, &MPanelPlayback::setState);
 
+    m_panelMedia = new MPanelMedia(this);
+    m_treeContainers = m_panelMedia->treeContainers();
+    m_treeSonglist = m_panelMedia->treeSonglist();
+
     connect(m_panelPlayback, &MPanelPlayback::navigateNext, m_treeSonglist, &MTreeSonglist::playNextItem);
     connect(m_panelPlayback, &MPanelPlayback::navigatePrev, m_treeSonglist, &MTreeSonglist::playPrevItem);
 
@@ -101,9 +101,9 @@ void MRootDesktop::initializeObjects(){
     connect(m_treeSonglist, &MTreeSonglist::playbackChanged, this, &MRootDesktop::setPlaybackSong);
     connect(m_panelMedia, &MPanelMedia::viewChanged, this, &MRootDesktop::setContainerDisplay);
 
-    connect(m_treeContainers, &QTreeView::customContextMenuRequested, this, &MRootDesktop::containersContextMenu);
-    connect(m_treeSonglist, &QTreeView::customContextMenuRequested, this, &MRootDesktop::songlistContextMenu);
-    connect(m_treeSonglist->header(), &QHeaderView::customContextMenuRequested, this, &MRootDesktop::headerContextMenu);
+    connect(m_treeContainers, &QTreeView::customContextMenuRequested, this, &MRootDesktop::contextMenuContainers);
+    connect(m_treeSonglist, &QTreeView::customContextMenuRequested, this, &MRootDesktop::contextMenuSonglist);
+    connect(m_treeSonglist->header(), &QHeaderView::customContextMenuRequested, this, &MRootDesktop::contextMenuHeader);
 
     m_menuWidget = new QWidget(this);
     m_btnClose = new QPushButton(m_menuWidget);
@@ -113,6 +113,9 @@ void MRootDesktop::initializeObjects(){
     connect(m_btnMinimize, &QPushButton::released, this, &QMainWindow::showMinimized);
     connect(m_btnMaximize, &QPushButton::released, this, &MRootDesktop::toggleMaximized);
     connect(m_btnClose, &QPushButton::released, this, &QMainWindow::close);
+
+    m_panelLibrary = new MPanelLibrary(this);
+    m_panelDevice = new MPanelDevice(this);
 
     m_contextBar = new MContextBar(this);
     connect(m_contextBar, &MContextBar::viewChanged, this, &MRootDesktop::setContextPanel);
@@ -352,10 +355,7 @@ void MRootDesktop::initializeLayout(){
 void MRootDesktop::initializeState(){
     QString appDataLoc = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
-    if(!QFile::exists(appDataLoc + M_APPDATA_PATH_PROFILE)){
-        return;
-    }
-
+    if(!QFile::exists(appDataLoc + M_APPDATA_PATH_PROFILE)){return;}
     MSettingsXml settings(appDataLoc + M_APPDATA_PATH_PROFILE);
 
     settings.beginGroup("RootWindow");
@@ -371,26 +371,16 @@ void MRootDesktop::initializeState(){
 
     settings.beginGroup("LastSelectedContexts");
     int view_contextbar = settings.value("contextbar").toInt();
+    QString pid_songlist = settings.value("treeview").toString();
     settings.endGroup();
 
-    settings.beginGroup("TreeViewColumnProperties");
-
-    QStringList columnWidths = settings.value("widths").toString().split(";");
-    QString columnVisible = settings.value("visible").toString();
-    for(int i = 0; i < m_treeSonglist->model()->columnCount(); i++){
-        m_treeSonglist->setColumnWidth(i, columnWidths.at(i).toInt());
-        m_treeSonglist->setColumnHidden(i, columnVisible.at(i) == "1" ? false : true);
-    }
-
+    settings.beginGroup("UserApplicationValues");
+    int val_volume = settings.value("volume", 50).toInt();
     settings.endGroup();
 
     settings.beginGroup("UserApplicationPaths");
     QString qss_path = settings.value("style", ":/styles/default.qss").toString();
     QString lib_path = settings.value("library", appDataLoc + M_APPDATA_PATH_LIBRARYDEFAULT).toString();
-    settings.endGroup();
-
-    settings.beginGroup("UserApplicationValues");
-    int val_volume = settings.value("volume", 50).toInt();
     settings.endGroup();
 
     if(wnd_maximized){
@@ -404,18 +394,78 @@ void MRootDesktop::initializeState(){
     }
 
     m_styleSheet->load(qss_path);
-    m_mediaLibrary->load(lib_path);
-
-    m_treeContainers->modelContainers()->setLibrary(m_mediaLibrary);
-    m_treeSonglist->modelSonglist()->setLibrary(m_mediaLibrary);
-    m_treeSonglist->setContainer(m_mediaLibrary);
-
-    m_treeContainers->expandAll();
-//    m_treeSonglist->sortByColumn(0, Qt::AscendingOrder);
 
     m_panelPlayback->setVolume(val_volume);
     m_audioEngine->gain(m_panelPlayback->volume());
-    m_panelMedia->changeView(MPanelMedia::ViewAllSongs);
+
+    m_mediaLibrary->load(lib_path);
+    m_treeContainers->modelContainers()->setLibrary(m_mediaLibrary);
+    m_treeSonglist->modelSonglist()->setLibrary(m_mediaLibrary);
+    m_treeSonglist->setContainer(m_mediaLibrary);
+    m_treeContainers->expandAll();
+
+    QStringList pidlist;
+    pidlist.append(m_mediaLibrary->pid());
+
+    foreach(MPlaylist *playlist, m_mediaLibrary->playlists()){
+        pidlist.append(playlist->pid());
+    }
+
+    foreach(MFolder *folder, m_mediaLibrary->folders()){
+        pidlist.append(folder->pid());
+    }
+
+    QMap<QString, QVariant> modelSettings;
+
+    settings.beginGroup("TreeViewProperties");
+
+    foreach(QString pid, pidlist){
+
+        QString pidKey = pid;
+        pidKey.remove(0, 2);
+
+        settings.beginGroup(pidKey);
+
+        QMap<QString, QVariant> containerSettings;
+        QStringList strWidths = settings.value("widths", QString()).toString().split(";");
+        QString strHidden = settings.value("hidden", QString()).toString();
+        QStringList strSort = settings.value("sort", QString()).toString().split(";");
+
+        if(!strHidden.isNull()){
+            QList<QVariant> colWidths;
+            QList<QVariant> colHidden;
+            QList<QVariant> colSort;
+
+            for(int i = 0; i < strHidden.size(); i++){
+                colWidths.append(strWidths.at(i).toInt());
+                colHidden.append(strHidden[i] == "1");
+            }
+
+            colSort.append(strSort[0].toInt());
+            colSort.append(strSort[1].toInt());
+
+            containerSettings["widths"] = colWidths;
+            containerSettings["hidden"] = colHidden;
+            containerSettings["sort"] = colSort;
+
+            modelSettings[pid] = containerSettings;
+        }
+
+        settings.endGroup();
+    }
+
+    settings.endGroup();
+
+    m_treeSonglist->setSettings(modelSettings);
+    if(pid_songlist != m_mediaLibrary->pid() && pidlist.contains(pid_songlist)){
+        QModelIndex idx = m_treeContainers->modelContainers()->getIndex(pid_songlist);
+        m_treeContainers->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::ClearAndSelect);
+        m_panelMedia->changeView(MPanelMedia::ViewContainer);
+    }
+    else {
+        m_panelMedia->changeView(MPanelMedia::ViewAllSongs);
+    }
+
     m_contextBar->changeView(static_cast<MContextBar::View>(view_contextbar));
 
 //    MMediaContainer *container = m_treeSonglist->modelSonglist()->container();
@@ -470,17 +520,7 @@ void MRootDesktop::saveSettings(){
 
     settings->beginGroup("LastSelectedContexts");
     settings->setValue("contextbar", m_contextBar->currentView());
-    settings->endGroup();
-
-    settings->beginGroup("TreeViewColumnProperties");
-    QString columnWidths;
-    QString columnVisible;
-    for(int i = 0; i < m_treeSonglist->model()->columnCount(); i++){
-        columnWidths += QString::number(m_treeSonglist->columnWidth(i)) + ";";
-        columnVisible += m_treeSonglist->isColumnHidden(i) ? "0" : "1";
-    }
-    settings->setValue("widths", columnWidths);
-    settings->setValue("visible", columnVisible);
+    settings->setValue("treeview", m_treeSonglist->modelSonglist()->container()->pid());
     settings->endGroup();
 
     settings->beginGroup("UserApplicationPaths");
@@ -492,6 +532,43 @@ void MRootDesktop::saveSettings(){
 
     settings->beginGroup("UserApplicationValues");
     settings->setValue("volume", m_panelPlayback->volume());
+    settings->endGroup();
+
+    settings->beginGroup("TreeViewProperties");
+
+    QMap<QString, QVariant>::iterator iter;
+    QMap<QString, QVariant> modelSettings = m_treeSonglist->modelSettings();
+
+    for(iter = modelSettings.begin(); iter != modelSettings.end(); iter++){
+
+        QString pidKey = iter.key();
+        pidKey.remove(0, 2);
+
+        settings->beginGroup(pidKey);
+
+        QMap<QString, QVariant> containerSettings = iter.value().toMap();
+        QList<QVariant> colWidths = containerSettings["widths"].toList();
+        QList<QVariant> colHidden = containerSettings["hidden"].toList();
+        QList<QVariant> colSort = containerSettings["sort"].toList();
+
+        QString strWidths;
+        QString strHidden;
+        QString strSort;
+
+        for(int i = 0; i < colWidths.size(); i++){
+            strWidths += colWidths[i].toString() + ";";
+            strHidden += colHidden[i].toBool() ? "1" : "0";
+        }
+
+        strSort = colSort[0].toString() + ";" + colSort[1].toString();
+
+        settings->setValue("widths", strWidths);
+        settings->setValue("hidden", strHidden);
+        settings->setValue("sort", strSort);
+
+        settings->endGroup();
+    }
+
     settings->endGroup();
 
     m_mediaLibrary->save();
@@ -537,6 +614,7 @@ void MRootDesktop::setContextPanel(){
 void MRootDesktop::setContainerDisplay(){
 
     switch(m_panelMedia->currentView()) {
+
         case MPanelMedia::ViewAllSongs: {
             m_panelMedia->setDisplay("Library");
             m_treeSonglist->setContainer(m_mediaLibrary);
@@ -572,13 +650,25 @@ void MRootDesktop::setPlaybackSong(MSong *song){
     }
 }
 
-void MRootDesktop::openFileLocation(const QString &path){
-    QStringList processArgs;
-    processArgs << "/select," << QDir::toNativeSeparators(path);
-    QProcess::startDetached("explorer", processArgs);
+void MRootDesktop::processAudioMediaStatus(Mpi3::MediaState state){
+    qDebug() << state;
+}
+void MRootDesktop::processAudioEngineStatus(Mpi3::EngineState state){
+    qDebug() << state;
+}
+void MRootDesktop::processAudioErrorStatus(Mpi3::ErrorState state){
+    qDebug() << state;
+}
+void MRootDesktop::processAudioRequestStatus(Mpi3::EngineState state){
+    if(state == Mpi3::EngineActive && m_audioEngine->empty()){
+        if(m_treeSonglist->model()->rowCount() > 0){
+            QModelIndex idx = m_treeSonglist->modelSortFilter()->index(0, 0);
+            m_treeSonglist->playItem(m_treeSonglist->modelSortFilter()->mapToSource(idx));
+        }
+    }
 }
 
-void MRootDesktop::headerContextMenu(const QPoint &point){
+void MRootDesktop::contextMenuHeader(const QPoint &point){
     QMenu *menu_context = new QMenu(this);
 
     QAction *actAutoFitOne = new QAction(menu_context);
@@ -612,7 +702,7 @@ void MRootDesktop::headerContextMenu(const QPoint &point){
     menu_context->exec(m_treeSonglist->mapToGlobal(point));
     delete menu_context;
 }
-void MRootDesktop::songlistContextMenu(const QPoint &point){
+void MRootDesktop::contextMenuSonglist(const QPoint &point){
     QMenu *menu_context = new QMenu(this);
 
     QAction *act_objPlay = new QAction(menu_context);
@@ -713,7 +803,7 @@ void MRootDesktop::songlistContextMenu(const QPoint &point){
     menu_context->exec(m_treeSonglist->mapToGlobal(point));
     delete menu_context;
 }
-void MRootDesktop::containersContextMenu(const QPoint &point){
+void MRootDesktop::contextMenuContainers(const QPoint &point){
     QMenu *menu_context = new QMenu(this);
 
     QAction *act_itemExpand = new QAction(menu_context);
@@ -995,6 +1085,11 @@ void MRootDesktop::objOpenFileLocation(QTreeView *treeParent){
             openFileLocation(song->path());
         }
     }
+}
+void MRootDesktop::openFileLocation(const QString &path){
+    QStringList processArgs;
+    processArgs << "/select," << QDir::toNativeSeparators(path);
+    QProcess::startDetached("explorer", processArgs);
 }
 
 void MRootDesktop::editUndo(){}

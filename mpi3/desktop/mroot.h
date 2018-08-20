@@ -76,19 +76,26 @@ private:
     bool m_resizeActive;
     bool m_moveActive;
     bool m_maximizeActive;
+
     void toggleMaximized();
 
 private:
     void setContextPanel();
     void setContainerDisplay();
     void setPlaybackSong(MSong *song);
-    void openFileLocation(const QString &path);
 
 private:
-    void headerContextMenu(const QPoint &point);
-    void songlistContextMenu(const QPoint &point);
-    void containersContextMenu(const QPoint &point);
+    void processAudioMediaStatus(Mpi3::MediaState state);
+    void processAudioEngineStatus(Mpi3::EngineState state);
+    void processAudioErrorStatus(Mpi3::ErrorState state);
+    void processAudioRequestStatus(Mpi3::EngineState state);
 
+private:
+    void contextMenuHeader(const QPoint &point);
+    void contextMenuSonglist(const QPoint &point);
+    void contextMenuContainers(const QPoint &point);
+
+private:
     void libImport();
     void libExport();
     void libBackup();
@@ -111,6 +118,7 @@ private:
     void objRemoveFrom();
     void objDuplicate();
     void objOpenFileLocation(QTreeView *treeParent);
+    void openFileLocation(const QString &path);
 
     void editUndo();
     void editRedo();

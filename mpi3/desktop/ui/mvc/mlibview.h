@@ -60,33 +60,33 @@ public:
 public:
     QSortFilterProxyModel *modelSortFilter();
     MModelSonglist *modelSonglist();
-
+    QMap<QString, QVariant> modelSettings();
+    void setSettings(QMap<QString, QVariant> settings);
     void setContainer(MMediaContainer *container);
 
 private:
+    QMap<QString, QVariant> m_containerSettings;
+    QVector<MSong*> m_playbackQueue;
+
     QSortFilterProxyModel *m_modelSortFilter = nullptr;
     MModelSonglist *m_modelSonglist = nullptr;
 
     MMediaContainer *m_playbackContainer = nullptr;
     MSong *m_playbackSong = nullptr;
 
-    QVector<MSong*> m_playbackQueue;
-
-    QMap<QString, QVariant> m_containerSettings;
-
-public slots:
-    void playNextItem();
-    void playPrevItem();
-
 private:
-    void playItem(const QModelIndex &idx);
-    void shiftItem(int offset);
-
     void populateSettings();
     void populateSettings(MMediaContainer *container);
 
     void populateQueue();
     void sortChanged(int logicalIndex, Qt::SortOrder order);
+
+public:
+    void playItem(const QModelIndex &idx);
+    void shiftItem(int offset);
+
+    void playNextItem();
+    void playPrevItem();
 
 signals:
     void playbackChanged(MSong *song);
