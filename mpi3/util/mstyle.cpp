@@ -100,13 +100,6 @@ QString MStyleSheet::removeComments(const QString &text){
 
 MStyle::MStyle(QStyle *style) : QProxyStyle(style){}
 
-MStyle::TV_IndicatorStyle MStyle::currentTVIndicatorStyle() const{
-    return m_currentTVIndicatorStyle;
-}
-void MStyle::setTVIndicatorStyle(MStyle::TV_IndicatorStyle tvIndicatorStyle){
-    m_currentTVIndicatorStyle = tvIndicatorStyle;
-}
-
 void MStyle::drawPrimitive(
         PrimitiveElement element, const QStyleOption *option,
         QPainter *painter, const QWidget *widget) const{
@@ -115,33 +108,6 @@ void MStyle::drawPrimitive(
         return;
     }
     else if(element == QStyle::PE_IndicatorItemViewItemDrop && !option->rect.isNull()){
-        if(painter){
-            QStyleOption opt(*option);
-            opt.rect.setLeft(0);
-
-            if(widget){
-                opt.rect.setRight(widget->width());
-            }
-
-            switch(m_currentTVIndicatorStyle){
-
-                case MStyle::TV_IndicatorStyleMove: {
-                    opt.rect.setHeight(0);
-                    break;
-                }
-
-                case MStyle::TV_IndicatorStyleDrop: {
-                    if(option->rect.y() % 21 > 0){
-                        opt.rect.setY(option->rect.y() - 21 + 1);
-                    }
-                    opt.rect.setHeight(21);
-                    break;
-                }
-            }
-
-            QProxyStyle::drawPrimitive(element, &opt, painter, widget);
-        }
-
         return;
     }
 

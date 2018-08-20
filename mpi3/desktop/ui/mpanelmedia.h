@@ -38,6 +38,9 @@ public:
     void changeView(MPanelMedia::View view);
     void setDisplay(const QString &title);
 
+    MTreeContainers *treeContainers();
+    MTreeSonglist *treeSonglist();
+
 private:
     MPanelMedia::View m_currentView;
 

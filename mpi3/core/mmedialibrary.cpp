@@ -878,6 +878,7 @@ void MMediaLibrary::move(MSong* moveSong, MPlaylist *parentPlaylist, int toPosit
     int pos = qBound(0, toPosition, parentPlaylist->m_songs.size());
 
     parentPlaylist->m_songs.move(fromPosition, pos);
+
     emit elementMoved(moveSong, parentPlaylist);
 }
 void MMediaLibrary::move(MPlaylist *movePlaylist, MFolder *toFolder, int toPosition){

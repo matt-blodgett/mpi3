@@ -8,6 +8,7 @@
 #include <QRadioButton>
 #include <QSplitter>
 #include <QLabel>
+#include <QScrollBar>
 
 
 MPanelMedia::MPanelMedia(QWidget *parent) : QWidget(parent){
@@ -111,8 +112,15 @@ void MPanelMedia::initializeLayout(){
 
     m_treeSonglist->setObjectName("TreeviewSonglist");
     m_treeContainers->setObjectName("TreeviewContainers");
+
     m_treeSonglist->header()->setObjectName("TreeviewSonglistHeader");
     m_treeContainers->header()->setObjectName("TreeviewContainersHeader");
+
+    m_treeSonglist->verticalScrollBar()->setObjectName("TreeviewScrollbar");
+    m_treeContainers->verticalScrollBar()->setObjectName("TreeviewScrollbar");
+
+    m_treeSonglist->horizontalScrollBar()->setObjectName("TreeviewScrollbar");
+    m_treeContainers->horizontalScrollBar()->setObjectName("TreeviewScrollbar");
 }
 
 MPanelMedia::View MPanelMedia::currentView() const{
@@ -160,6 +168,14 @@ void MPanelMedia::changeView(MPanelMedia::View view){
 void MPanelMedia::setDisplay(const QString &title){
     m_lblView->setText(title);
 }
+
+MTreeContainers *MPanelMedia::treeContainers(){
+    return m_treeContainers;
+}
+MTreeSonglist *MPanelMedia::treeSonglist(){
+    return m_treeSonglist;
+}
+
 void MPanelMedia::containerClicked(const QModelIndex &index){
     if(index.isValid()){
         changeView(MPanelMedia::ViewContainer);

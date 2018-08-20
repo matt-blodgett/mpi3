@@ -56,8 +56,6 @@ HEADERS += core/maudioengine.h
 SOURCES += core/maudioengine.cpp
 HEADERS += core/mmedialibrary.h
 SOURCES += core/mmedialibrary.cpp
-HEADERS += core/mcontentdelegate.h
-SOURCES += core/mcontentdelegate.cpp
 
 HEADERS += desktop/ui/mcontextbar.h
 SOURCES += desktop/ui/mcontextbar.cpp

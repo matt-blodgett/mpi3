@@ -31,15 +31,11 @@ private:
 
     QPushButton *m_btnLibImport = nullptr;
     QPushButton *m_btnLibExport = nullptr;
-    QPushButton *m_btnLibReset = nullptr;
-    QPushButton *m_btnLibOpenFile = nullptr;
 
     QLineEdit *m_boxLibName = nullptr;
     QLabel *m_lblLibAdded = nullptr;
-    QLabel *m_lblPlistCount = nullptr;
-    QLabel *m_lblSongCount = nullptr;
-    QLabel *m_lblArtistCount = nullptr;
 
+    QCheckBox *m_optCopyMedia = nullptr;
     QCheckBox *m_optOrganizeMedia = nullptr;
     QPushButton *m_btnSetMediaLoc = nullptr;
     QLineEdit *m_boxMediaLoc = nullptr;
@@ -49,6 +45,8 @@ private:
 
     QCheckBox *m_optBackupLibrary = nullptr;
     QPushButton *m_btnSetBackupLoc = nullptr;
+    QPushButton *m_btnBackupManual = nullptr;
+    QPushButton *m_btnBackupRestore = nullptr;
     QLineEdit *m_boxBackupLoc = nullptr;
     QComboBox *m_cbxBackupFreq = nullptr;
     QTreeView *m_treeBackupHist = nullptr;
@@ -56,7 +54,6 @@ private:
 private:
     void paintEvent(QPaintEvent *event);
     void showEvent(QShowEvent *event);
-
 };
 
 #endif

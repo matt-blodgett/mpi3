@@ -17,8 +17,8 @@ MModelContainers::MModelContainers(QObject *parent) : QAbstractItemModel(parent)
     m_rootItem->setData(0, "Playlists");
     insertColumns(0, 1);
 
-    m_icnFolder.addPixmap(QPixmap(":/icons/treeview/folder.png"));
-    m_icnPlaylist.addPixmap(QPixmap(":/icons/treeview/playlist.png"));
+    m_icnFolder.addPixmap(QPixmap(":/icons/treeview/folder_light.png"));
+    m_icnPlaylist.addPixmap(QPixmap(":/icons/treeview/playlist_light.png"));
 }
 MModelContainers::~MModelContainers(){
     delete m_rootItem;
@@ -116,6 +116,7 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
     MMediaElement *dropElement = m_mediaLibrary->getElement(getPID(dropIndex));
 
     if(!dropElement){
+
         if(actionIsMoveAction && dataIsContainer){
             QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
             MMediaElement *moveElement = m_mediaLibrary->getElement(pid);
@@ -145,6 +146,7 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
             return true;
         }
     }
+
     else if(dropElement->type() == Mpi3::PlaylistElement){
         MPlaylist *parentPlaylist = static_cast<MPlaylist*>(dropElement);
 
@@ -163,6 +165,7 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
             return true;
         }
     }
+
     else if(dropElement->type() == Mpi3::FolderElement){
         if(actionIsMoveAction && dataIsContainer){
             MFolder *parentFolder = static_cast<MFolder*>(dropElement);
@@ -541,9 +544,11 @@ void MModelContainers::elementRemoved(MMediaElement *elemRemoved, MMediaElement 
 }
 void MModelContainers::elementMoved(MMediaElement *elemMoved, MMediaElement *elemParent){
 
-    QModelIndex moveIndex = getIndex(elemMoved->pid());
-    QModelIndex sourceIndex = moveIndex.parent();
-    removeRows(moveIndex.row(), 1, sourceIndex);
+    if(elemMoved->type() != Mpi3::SongElement){
+        QModelIndex moveIndex = getIndex(elemMoved->pid());
+        QModelIndex sourceIndex = moveIndex.parent();
+        removeRows(moveIndex.row(), 1, sourceIndex);
+    }
 
     if(elemMoved->type() == Mpi3::PlaylistElement){
         MPlaylist *sc_movedPlaylist = static_cast<MPlaylist*>(elemMoved);
@@ -574,6 +579,7 @@ void MModelContainers::elementDeleted(MMediaElement *elemDeleted){
 
 
 MModelSonglist::MModelSonglist(QObject *parent) : QAbstractItemModel(parent){
+    m_headers << "#";
     m_headers << "Name";
     m_headers << "Artist";
     m_headers << "Album";
@@ -601,10 +607,7 @@ Qt::ItemFlags MModelSonglist::flags(const QModelIndex &index) const{
         idxFlags |= Qt::ItemIsEnabled;
         idxFlags |= Qt::ItemIsSelectable;
         idxFlags |= Qt::ItemNeverHasChildren;
-
-        if(m_container->type() == Mpi3::PlaylistElement){
-            idxFlags |= Qt::ItemIsDragEnabled;
-        }
+        idxFlags |= Qt::ItemIsDragEnabled;
 
         if(index.column() >= 0 && index.column() <= 2){
             idxFlags |= Qt::ItemIsEditable;
@@ -633,7 +636,7 @@ QMimeData *MModelSonglist::mimeData(const QModelIndexList &indexes) const{
     foreach(QModelIndex idx, indexes){
         MSong *song = songAt(idx);
         if(song && !selectedSongs.contains(song)){
-            selectedSongs.append(song);
+            selectedSongs.prepend(song);
         }
     }
 
@@ -675,6 +678,8 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
         bool actionIsCopyAction = action == Qt::CopyAction;
         bool actionIsMoveAction = action == Qt::MoveAction;
 
+        row = row < 0 ? rowCount() - 1: row;
+
         MPlaylist *parentPlaylist = nullptr;
         if(elemType == Mpi3::PlaylistElement){
             parentPlaylist = static_cast<MPlaylist*>(m_container);
@@ -709,10 +714,6 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
     return false;
 }
 
-void MModelSonglist::sort(int column, Qt::SortOrder order){
-    qDebug() << column << order;
-}
-
 int MModelSonglist::rowCount(const QModelIndex &) const{
     return m_songlist.size();
 }
@@ -740,24 +741,29 @@ QVariant MModelSonglist::data(const QModelIndex &index, int role) const{
         if(role == Qt::DisplayRole){
 
             switch(index.column()){
-                case 0: return song->name();
-                case 1: return song->artist();
-                case 2: return song->album();
-                case 3: return song->time_str();
-                case 4: return song->size_str();
-                case 5: return song->kind();
-                case 6: return song->path();
-                case 7: return song->bitRate();
-                case 8: return song->sampleRate();
+                case 0:
+                    if(m_container->type() == Mpi3::PlaylistElement){
+                        return m_songlist.indexOf(song) + 1;
+                    }
+                    break;
+                case 1: return song->name();
+                case 2: return song->artist();
+                case 3: return song->album();
+                case 4: return song->time_str();
+                case 5: return song->size_str();
+                case 6: return song->kind();
+                case 7: return song->path();
+                case 8: return song->bitRate();
+                case 9: return song->sampleRate();
             }
         }
 
         else if(role == Qt::EditRole){
 
             switch(index.column()){
-                case 0: return song->name();
-                case 1: return song->artist();
-                case 2: return song->album();
+                case 1: return song->name();
+                case 2: return song->artist();
+                case 3: return song->album();
             }
         }
     }
@@ -766,10 +772,10 @@ QVariant MModelSonglist::data(const QModelIndex &index, int role) const{
 }
 QVariant MModelSonglist::headerData(int section, Qt::Orientation orientation, int role) const{
 
-//    if(orientation == Qt::Horizontal && role == Qt::DecorationRole){
-//        return QIcon(":/icons/treeview/folder_open_light.png");
-//    }
-//http://doc.qt.io/qt-5/qtwidgets-itemviews-customsortfiltermodel-example.html
+    //    if(orientation == Qt::Horizontal && role == Qt::DecorationRole){
+    //        return QIcon(":/icons/treeview/folder_open_light.png");
+    //    }
+    //  http://doc.qt.io/qt-5/qtwidgets-itemviews-customsortfiltermodel-example.html
 
     if(orientation == Qt::Horizontal && role == Qt::DisplayRole){
         return m_headers.at(section);
@@ -783,18 +789,18 @@ bool MModelSonglist::setData(const QModelIndex &index, const QVariant &value, in
     if(index.isValid() && role == Qt::EditRole){
         MSong *song = m_songlist.at(index.row());
 
-        if(!song || (index.column() >= 0 && index.column() <= 2)){
+        if(!song || (index.column() >= 1 && index.column() <= 3)){
             return false;
         }
 
         MSong::MutableProperty attrib = MSong::SongName;
-        if(index.column() == 0){
+        if(index.column() == 1){
             attrib  = MSong::SongName;
         }
-        else if(index.column() == 1){
+        else if(index.column() == 2){
             attrib  = MSong::SongArtist;
         }
-        else if(index.column() == 2){
+        else if(index.column() == 3){
             attrib  = MSong::SongAlbum;
         }
 
@@ -898,6 +904,7 @@ QVector<MSong*> MModelSonglist::songlist() const {
     return m_songlist;
 }
 MSong *MModelSonglist::songAt(const QModelIndex &index) const{
+
     if(index.row() > -1 && index.row() < m_songlist.size()){
         return m_songlist.at(index.row());
     }
@@ -917,7 +924,6 @@ void MModelSonglist::elementModified(MMediaElement *elemModified){
     }
 }
 void MModelSonglist::elementInserted(MMediaElement *elemInserted, MMediaContainer *elemParent){
-    Q_UNUSED(elemParent)
 
     if(elemInserted->type() == Mpi3::SongElement && elemParent == m_container){
         MSong *sc_song = static_cast<MSong*>(elemInserted);
@@ -930,7 +936,6 @@ void MModelSonglist::elementInserted(MMediaElement *elemInserted, MMediaContaine
     }
 }
 void MModelSonglist::elementRemoved(MMediaElement *elemRemoved, MMediaContainer *elemParent){
-    Q_UNUSED(elemParent)
 
     if(elemRemoved->type() == Mpi3::SongElement && elemParent == m_container){
         MSong *sc_song = static_cast<MSong*>(elemRemoved);
@@ -956,6 +961,7 @@ void MModelSonglist::elementDeleted(MMediaElement *elemDeleted){
 
     if(elemDeleted->type() == Mpi3::SongElement){
         MSong *sc_song = static_cast<MSong*>(elemDeleted);
+
         if(m_songlist.contains(sc_song)){
             removeRows(m_songlist.indexOf(sc_song), 1);
             m_songlist.removeAll(sc_song);

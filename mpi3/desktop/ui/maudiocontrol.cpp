@@ -40,11 +40,11 @@ void MPanelPlayback::initializeLayout(){
 
     // -------------------------------------------------- PIXMAPS
 
-    m_pixNext = QPixmap(":/icons/playback/next.png");
-    m_pixPrev = QPixmap(":/icons/playback/prev.png");
-    m_pixPlay = QPixmap(":/icons/playback/play.png");
-    m_pixPaus = QPixmap(":/icons/playback/paus.png");
-    m_pixSearch = QPixmap(":/icons/playback/search.png");
+    m_pixNext = QPixmap(":/icons/playback/next_light.png");
+    m_pixPrev = QPixmap(":/icons/playback/prev_light.png");
+    m_pixPlay = QPixmap(":/icons/playback/play_light.png");
+    m_pixPaus = QPixmap(":/icons/playback/paus_light.png");
+    m_pixSearch = QPixmap(":/icons/playback/search_light.png");
 
     // -------------------------------------------------- VOLUME
 

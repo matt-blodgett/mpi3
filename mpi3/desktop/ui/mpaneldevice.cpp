@@ -15,11 +15,14 @@
 
 //#include <QFileSystemModel>
 #include <QHeaderView>
+#include <QScrollBar>
 
 
 
 MPanelDevice::MPanelDevice(QWidget *parent) : QWidget(parent){
     initializeLayout();
+
+    m_treeStorageDevices->setFocusPolicy(Qt::NoFocus);
 
     m_lblCurrentDevice->setText("RASPI (E:)");
 
@@ -29,6 +32,7 @@ MPanelDevice::MPanelDevice(QWidget *parent) : QWidget(parent){
     m_treeStorageDevices->setAlternatingRowColors(true);
 
     m_boxLibName->setText("Raspi Test Library");
+    m_lblLibAdded->setText("05/05/2018");
 
 //    QFileSystemModel *fsModel = new QFileSystemModel(this);
 //    fsModel->setRootPath("C:/Users/Matt/Desktop");
@@ -43,15 +47,15 @@ void MPanelDevice::setModel(QAbstractItemModel *lib){
 
 void MPanelDevice::initializeLayout(){
 
+    int w_split = 300;
+    int w_separator = 10;
+    int w_section = (w_split * 2) + w_separator;
+
     // -------------------------------------------------- CONTROL PANEl
 
     QWidget *frmControl = new QWidget(this);
 
     QGridLayout *layoutControl = new QGridLayout(this);
-    layoutControl->setRowStretch(0, 1);
-    layoutControl->setVerticalSpacing(0);
-    layoutControl->setHorizontalSpacing(0);
-    layoutControl->setMargin(0);
     frmControl->setLayout(layoutControl);
     frmControl->setMinimumWidth(120);
     frmControl->setMaximumWidth(400);
@@ -60,44 +64,39 @@ void MPanelDevice::initializeLayout(){
 
     QWidget *frmStorageSection = new QWidget(this);
 
-    QLabel *lblStorageTag = new QLabel(this);
     m_treeStorageDevices = new QTreeView(this);
 
     QGridLayout *layoutStorageWest = new QGridLayout();
-    layoutStorageWest->addWidget(lblStorageTag, 0, 0, 1, 1);
     layoutStorageWest->addWidget(m_treeStorageDevices, 1, 0, 1, 1);
-    layoutStorageWest->setVerticalSpacing(0);
-    layoutStorageWest->setHorizontalSpacing(0);
-    layoutStorageWest->setMargin(0);
 
-    QLabel *lblVolumesTag = new QLabel(this);
+    m_treeStorageDevices->setFixedHeight(200);
+
+    QLabel *lblVolumeTag = new QLabel(this);
     QLabel *lblCreateVolumeTag = new QLabel(this);
     QLabel *lblLoadVolumeTag = new QLabel(this);
     m_btnCreateVolume = new QPushButton(this);
     m_btnLoadVolume = new QPushButton(this);
 
     QGridLayout *layoutStorageEast = new QGridLayout();
-    layoutStorageEast->addWidget(lblVolumesTag, 0, 0, 1, 1);
+    layoutStorageEast->addWidget(lblVolumeTag, 0, 0, 1, 2);
     layoutStorageEast->addWidget(m_btnCreateVolume, 1, 0, 1, 1);
     layoutStorageEast->addWidget(lblCreateVolumeTag, 1, 1, 1, 1);
     layoutStorageEast->addWidget(m_btnLoadVolume, 2, 0, 1, 1);
     layoutStorageEast->addWidget(lblLoadVolumeTag, 2, 1, 1, 1);
     layoutStorageEast->setRowStretch(3, 1);
-    layoutStorageEast->setVerticalSpacing(0);
-    layoutStorageEast->setHorizontalSpacing(0);
-    layoutStorageEast->setMargin(0);
+
+    m_btnCreateVolume->setFixedWidth(120);
+    m_btnLoadVolume->setFixedWidth(120);
 
     QGridLayout *layoutStorage = new QGridLayout(this);
     layoutStorage->addLayout(layoutStorageWest, 0, 0, 1, 1);
     layoutStorage->addLayout(layoutStorageEast, 0, 2, 1, 1);
-    layoutStorage->setColumnMinimumWidth(0, 345);
-    layoutStorage->setColumnMinimumWidth(1, 10);
-    layoutStorage->setColumnMinimumWidth(2, 345);
-    layoutStorage->setVerticalSpacing(0);
-    layoutStorage->setHorizontalSpacing(0);
-    layoutStorage->setMargin(12);
+    layoutStorage->setColumnMinimumWidth(0, w_split);
+    layoutStorage->setColumnMinimumWidth(1, w_separator);
+    layoutStorage->setColumnMinimumWidth(2, w_split);
+    layoutStorage->setMargin(16);
     frmStorageSection->setLayout(layoutStorage);
-    frmStorageSection->setMaximumWidth(700);
+    frmStorageSection->setMaximumWidth(w_section);
 
     // -------------------------------------------------- MEDIA
 
@@ -114,23 +113,18 @@ void MPanelDevice::initializeLayout(){
     layoutLibraryWest->addWidget(m_boxLibName, 0, 1, 1, 1);
     layoutLibraryWest->addWidget(lblLibAddedTag, 1, 0, 1, 1);
     layoutLibraryWest->addWidget(m_lblLibAdded, 1, 1, 1, 1);
-    layoutLibraryWest->setVerticalSpacing(0);
-    layoutLibraryWest->setHorizontalSpacing(0);
-    layoutLibraryWest->setMargin(0);
 
     QGridLayout *layoutLibraryEast = new QGridLayout();
 
     QGridLayout *layoutLibrary = new QGridLayout(this);
     layoutLibrary->addLayout(layoutLibraryWest, 0, 0, 1, 1);
     layoutLibrary->addLayout(layoutLibraryEast, 0, 2, 1, 1);
-    layoutLibrary->setColumnMinimumWidth(0, 345);
-    layoutLibrary->setColumnMinimumWidth(1, 10);
-    layoutLibrary->setColumnMinimumWidth(2, 345);
-    layoutLibrary->setVerticalSpacing(0);
-    layoutLibrary->setHorizontalSpacing(0);
-    layoutLibrary->setMargin(12);
+    layoutLibrary->setColumnMinimumWidth(0, w_split);
+    layoutLibrary->setColumnMinimumWidth(1, w_separator);
+    layoutLibrary->setColumnMinimumWidth(2, w_split);
+    layoutLibrary->setMargin(16);
     frmLibrarySection->setLayout(layoutLibrary);
-    frmLibrarySection->setMaximumWidth(700);
+    frmLibrarySection->setMaximumWidth(w_section);
 
     // -------------------------------------------------- MEDIA
 
@@ -140,31 +134,22 @@ void MPanelDevice::initializeLayout(){
 
     QGridLayout *layoutMediaWest = new QGridLayout();
     layoutMediaWest->addWidget(m_lblCurrentDevice, 0, 0, 1, 1);
-    layoutMediaWest->setVerticalSpacing(0);
-    layoutMediaWest->setHorizontalSpacing(0);
-    layoutMediaWest->setMargin(0);
 
     QGridLayout *layoutMediaEast = new QGridLayout();
-    layoutMediaEast->setVerticalSpacing(0);
-    layoutMediaEast->setHorizontalSpacing(0);
-    layoutMediaEast->setMargin(0);
-
     m_frmStorageSpace = new QWidget(this);
 
     QGridLayout *layoutMedia = new QGridLayout(this);
     layoutMedia->addLayout(layoutMediaWest, 0, 0, 1, 1);
     layoutMedia->addLayout(layoutMediaEast, 0, 2, 1, 1);
     layoutMedia->addWidget(m_frmStorageSpace, 1, 0, 1, 3);
-    layoutMedia->setColumnMinimumWidth(0, 345);
-    layoutMedia->setColumnMinimumWidth(1, 10);
-    layoutMedia->setColumnMinimumWidth(2, 345);
+    layoutMedia->setColumnMinimumWidth(0, w_split);
+    layoutMedia->setColumnMinimumWidth(1, w_separator);
+    layoutMedia->setColumnMinimumWidth(2, w_split);
     layoutMedia->setRowMinimumHeight(0, 60);
     layoutMedia->setRowMinimumHeight(1, 60);
-    layoutMedia->setVerticalSpacing(0);
-    layoutMedia->setHorizontalSpacing(0);
-    layoutMedia->setMargin(12);
+    layoutMedia->setMargin(16);
     frmMediaSection->setLayout(layoutMedia);
-    frmMediaSection->setMaximumWidth(700);
+    frmMediaSection->setMaximumWidth(w_section);
 
     // -------------------------------------------------- DISPLAY PANEl
 
@@ -184,17 +169,15 @@ void MPanelDevice::initializeLayout(){
     layoutDisplay->addWidget(frmLibrarySection, 4, 0, 1, 1);
     layoutDisplay->addWidget(lblMediaHeader, 5, 0, 1, 1);
     layoutDisplay->addWidget(frmMediaSection, 6, 0, 1, 1);
-    layoutDisplay->setRowStretch(7, 1);
-    layoutDisplay->setColumnMinimumWidth(0, 700);
+    layoutDisplay->setColumnMinimumWidth(0, w_section);
+    layoutDisplay->setRowMinimumHeight(7, 40);
     layoutDisplay->setColumnStretch(0, 1);
-    layoutDisplay->setHorizontalSpacing(0);
-    layoutDisplay->setVerticalSpacing(0);
-    layoutDisplay->setMargin(12);
+    layoutDisplay->setRowStretch(8, 1);
+    layoutDisplay->setMargin(20);
     frmDisplay->setLayout(layoutDisplay);
 
     scrollArea->setWidget(frmDisplay);
     scrollArea->setWidgetResizable(true);
-    scrollArea->setLineWidth(0);
 
     // -------------------------------------------------- MAIN PANEl
 
@@ -202,13 +185,7 @@ void MPanelDevice::initializeLayout(){
 
     QGridLayout *layoutMain = new QGridLayout(this);
     layoutMain->addWidget(m_frmSplitter);
-    layoutMain->setColumnStretch(0, 1);
-    layoutMain->setRowStretch(0, 1);
-    layoutMain->setHorizontalSpacing(0);
-    layoutMain->setVerticalSpacing(0);
     layoutMain->setMargin(0);
-    layoutMain->setSpacing(0);
-    layoutMain->setContentsMargins(0, 0, 0, 0);
     setLayout(layoutMain);
 
     m_frmSplitter->addWidget(frmControl);
@@ -225,8 +202,7 @@ void MPanelDevice::initializeLayout(){
     lblLibraryHeader->setText("Library");
     lblMediaHeader->setText("Synced Media");
 
-    lblStorageTag->setText("Detected Devices");
-    lblVolumesTag->setText("Volume Manager");
+    lblVolumeTag->setText("Raspberry Pi Media Volumes:");
     m_btnCreateVolume->setText("Create");
     m_btnLoadVolume->setText("Load");
     lblCreateVolumeTag->setText("Create Volume");
@@ -239,10 +215,12 @@ void MPanelDevice::initializeLayout(){
 
     m_treeStorageDevices->setObjectName("PanelTree");
     m_treeStorageDevices->header()->setObjectName("PanelTreeHeader");
-    lblStorageTag->setObjectName("PanelTag");
-    lblVolumesTag->setObjectName("PanelTag");
-    lblCreateVolumeTag->setObjectName("PanelTag");
-    lblLoadVolumeTag->setObjectName("PanelTag");
+    m_treeStorageDevices->verticalScrollBar()->setObjectName("TreeviewScrollbar");
+    m_treeStorageDevices->horizontalScrollBar()->setObjectName("TreeviewScrollbar");
+
+    lblVolumeTag->setObjectName("PanelTag");
+    lblCreateVolumeTag->setObjectName("PanelValue");
+    lblLoadVolumeTag->setObjectName("PanelValue");
     m_btnCreateVolume->setObjectName("PanelButton");
     m_btnLoadVolume->setObjectName("PanelButton");
 
@@ -255,7 +233,7 @@ void MPanelDevice::initializeLayout(){
     m_frmStorageSpace->setObjectName("StorageWidget");
 
     scrollArea->setObjectName("PanelScrollArea");
-    frmDisplay->setObjectName("PanelLibrary");
+    frmDisplay->setObjectName("PanelDevice");
     frmControl->setObjectName("PanelControl");
 
     lblPanelTitle->setObjectName("PanelTitle");

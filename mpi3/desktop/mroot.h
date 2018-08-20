@@ -6,23 +6,25 @@
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-class QTreeView;
 class QPushButton;
+class QTreeView;
 QT_END_NAMESPACE
 
+
+#include "mglobal.h"
 
 class MStyleSheet;
 class MMediaLibrary;
 class MAudioEngine;
 class MContentDelegate;
+
 class MContextBar;
 class MPanelPlayback;
 class MPanelLibrary;
 class MPanelDevice;
 class MPanelMedia;
-class MModelContainers;
+
 class MTreeContainers;
-class MModelSonglist;
 class MTreeSonglist;
 
 
@@ -47,7 +49,6 @@ private:
     MStyleSheet *m_styleSheet = nullptr;
     MMediaLibrary *m_mediaLibrary = nullptr;
     MAudioEngine *m_audioEngine = nullptr;
-    MContentDelegate *m_contentDelegate = nullptr;
 
     MContextBar *m_contextBar = nullptr;
     MPanelPlayback *m_panelPlayback = nullptr;
@@ -55,9 +56,7 @@ private:
     MPanelDevice *m_panelDevice = nullptr;
     MPanelMedia *m_panelMedia = nullptr;
 
-    MModelContainers *m_modelContainers = nullptr;
     MTreeContainers *m_treeContainers = nullptr;
-    MModelSonglist *m_modelSonglist = nullptr;
     MTreeSonglist *m_treeSonglist = nullptr;
 
 private:
@@ -80,10 +79,9 @@ private:
     void toggleMaximized();
 
 private:
-    void currentSongChanged();
-    void contextPanelChanged();
-    void libraryViewChanged();
-    void setCurrentContent(const QModelIndex &idx);
+    void setContextPanel();
+    void setContainerDisplay();
+    void setPlaybackSong(MSong *song);
     void openFileLocation(const QString &path);
 
 private:

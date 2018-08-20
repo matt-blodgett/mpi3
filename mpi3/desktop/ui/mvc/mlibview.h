@@ -5,6 +5,15 @@
 
 #include <QTreeView>
 
+QT_BEGIN_NAMESPACE
+class QSortFilterProxyModel;
+QT_END_NAMESPACE
+
+
+#include "mglobal.h"
+
+class MModelContainers;
+class MModelSonglist;
 class MStyle;
 
 
@@ -27,10 +36,13 @@ class MTreeContainers : public MTreeView
 public:
     explicit MTreeContainers(QWidget *parent = nullptr);
 
+public:
+    MModelContainers *modelContainers();
+
 private:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
-    void dragLeaveEvent(QDragLeaveEvent *event);
+    MModelContainers *m_modelContainers = nullptr;
+
+private:
     void dropEvent(QDropEvent *event);
 };
 
@@ -45,9 +57,67 @@ public:
 public:
     void autoFitColumns();
 
+public:
+    QSortFilterProxyModel *modelSortFilter();
+    MModelSonglist *modelSonglist();
+
+    void setContainer(MMediaContainer *container);
+
 private:
+    QSortFilterProxyModel *m_modelSortFilter = nullptr;
+    MModelSonglist *m_modelSonglist = nullptr;
+
+    MMediaContainer *m_playbackContainer = nullptr;
+    MSong *m_playbackSong = nullptr;
+
+    QVector<MSong*> m_playbackQueue;
+
+    QMap<QString, QVariant> m_containerSettings;
+
+public slots:
+    void playNextItem();
+    void playPrevItem();
+
+private:
+    void playItem(const QModelIndex &idx);
+    void shiftItem(int offset);
+
+    void populateSettings();
+    void populateSettings(MMediaContainer *container);
+
+    void populateQueue();
+    void sortChanged(int logicalIndex, Qt::SortOrder order);
+
+signals:
+    void playbackChanged(MSong *song);
+
+private:
+    bool allowDragMove();
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
 };
 
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
