@@ -11,6 +11,7 @@
 
 #include <QDebug>
 
+
 #define PID_MAX_LENGTH 18
 
 static const QString PrefixBase         = "E:";
@@ -186,6 +187,7 @@ MMediaContainer *MMediaContainer::getContainer(const QString &pid) const{
     return  folder ? folder : static_cast<MMediaContainer*>(getPlaylist(pid));
 }
 MPlaylist *MMediaContainer::getPlaylist(const QString &pid) const{
+
     foreach(MPlaylist *playlist, playlists()){
         if(playlist->pid() == pid){
             return playlist;
@@ -195,6 +197,7 @@ MPlaylist *MMediaContainer::getPlaylist(const QString &pid) const{
     return nullptr;
 }
 MFolder *MMediaContainer::getFolder(const QString &pid) const{
+
     foreach(MFolder *folder, folders()){
         if(folder->pid() == pid){
             return folder;
@@ -204,6 +207,7 @@ MFolder *MMediaContainer::getFolder(const QString &pid) const{
     return nullptr;
 }
 MSong *MMediaContainer::getSong(const QString &pid) const{
+
     foreach(MSong *song, songs()){
         if(song->pid() == pid){
             return song;
@@ -281,9 +285,6 @@ Mpi3::ElementType MMediaLibrary::type() const {
     return Mpi3::LibraryElement;
 }
 
-QString MMediaLibrary::filepath() const {
-    return m_filepath;
-}
 void MMediaLibrary::load(const QString &path){
 
     QFile loadFile(path);
@@ -300,7 +301,10 @@ void MMediaLibrary::load(const QString &path){
         m_pid = root.namedItem("pid").toElement().text();
         m_name = root.namedItem("name").toElement().text();
         m_added = root.namedItem("added").toElement().text();
-        m_filepath = path;
+        m_mediaPath = root.namedItem("mediaPath").toElement().text();
+        m_backupPath = root.namedItem("backupPath").toElement().text();
+        m_downloadPath = root.namedItem("downloadPath").toElement().text();
+        m_savePath = path;
 
         QDomNodeList xmlSongs = root.namedItem("songs").toElement().childNodes();
         QDomNodeList xmlPlaylists = root.namedItem("playlists").toElement().childNodes();
@@ -375,17 +379,15 @@ void MMediaLibrary::load(const QString &path){
         m_pid = generatePID(Mpi3::LibraryElement);
         m_name = "New Library";
         m_added = "03/07/2018";
-        m_filepath = path;
+        m_savePath = path;
         save();
     }
 }
 void MMediaLibrary::save(const QString &path){
 
-    if(!path.isNull()){
-        m_filepath = path;
-    }
+    m_savePath = path.isNull() ? m_savePath : path;
 
-    QFile saveFile(m_filepath);
+    QFile saveFile(m_savePath);
     if(saveFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)){
 
         QDomDocument xml("Mpi3Library");
@@ -395,6 +397,9 @@ void MMediaLibrary::save(const QString &path){
         xmlWriteElement(xml, root, "pid", m_pid);
         xmlWriteElement(xml, root, "name", m_name);
         xmlWriteElement(xml, root, "added", m_added);
+        xmlWriteElement(xml, root, "mediaPath", m_mediaPath);
+        xmlWriteElement(xml, root, "backupPath", m_backupPath);
+        xmlWriteElement(xml, root, "downloadPath", m_downloadPath);
 
         QDomElement xmlSongs = xml.createElement("songs");
         QDomElement xmlPlaylists = xml.createElement("playlists");
@@ -478,10 +483,38 @@ void MMediaLibrary::save(const QString &path){
         xmlStream << xml.toString();
     }
 }
+
+void MMediaLibrary::setMediaPath(const QString &path){
+    m_mediaPath = path;
+}
+void MMediaLibrary::setBackupPath(const QString &path){
+    m_backupPath = path;
+}
+void MMediaLibrary::setDownloadPath(const QString &path){
+    m_downloadPath = path;
+}
+
 void MMediaLibrary::reset(){
     m_libSongs.clear();
     m_libPlaylists.clear();
     m_libFolders.clear();
+
+    m_mediaPath = QString();
+    m_backupPath = QString();
+    m_downloadPath = QString();
+}
+
+QString MMediaLibrary::savePath() const {
+    return m_savePath;
+}
+QString MMediaLibrary::mediaPath() const {
+    return m_mediaPath;
+}
+QString MMediaLibrary::backupPath() const {
+    return m_backupPath;
+}
+QString MMediaLibrary::downloadPath() const {
+    return m_downloadPath;
 }
 
 QVector<MSong*> MMediaLibrary::songs() const{
@@ -520,6 +553,7 @@ QVector<MPlaylist*> MMediaLibrary::rootPlaylists() const{
 }
 
 MSong *MMediaLibrary::newSong(const QString &fpath) const{
+
     MSong *song = new MSong();
     song->m_pid = generatePID(Mpi3::SongElement);
 
@@ -559,6 +593,7 @@ MSong *MMediaLibrary::newSong(const QString &fpath) const{
     return song;
 }
 MPlaylist *MMediaLibrary::newPlaylist(bool named) const{
+
     MPlaylist *playlist = new MPlaylist();
     playlist->m_pid = generatePID(Mpi3::PlaylistElement);
 
@@ -582,6 +617,7 @@ MPlaylist *MMediaLibrary::newPlaylist(bool named) const{
     return playlist;
 }
 MFolder *MMediaLibrary::newFolder(bool named) const{
+
     MFolder *folder = new MFolder();
     folder->m_pid = generatePID(Mpi3::FolderElement);
 
@@ -605,6 +641,7 @@ MFolder *MMediaLibrary::newFolder(bool named) const{
     return folder;
 }
 QString MMediaLibrary::generatePID(Mpi3::ElementType elemType) const{
+
     QString pid;
 
     switch(elemType){
@@ -649,6 +686,7 @@ QString MMediaLibrary::generatePID(Mpi3::ElementType elemType) const{
 }
 
 void MMediaLibrary::importItunesPlist(const QString &path, MFolder *parentFolder){
+
     QFile loadFile(path);
     if(loadFile.open(QIODevice::ReadOnly)){
 

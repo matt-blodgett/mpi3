@@ -257,7 +257,7 @@ void MRootDesktop::initializeMainMenu(){
     connect(act_libExport, &QAction::triggered, this, [this](){libExport();});
     connect(act_libBackup, &QAction::triggered, this, [this](){libBackup();});
     connect(act_libReset, &QAction::triggered, this, [this](){libReset();});
-    connect(act_libOpenFileLoc, &QAction::triggered, [=](){openFileLocation(m_mediaLibrary->filepath());});
+    connect(act_libOpenFileLoc, &QAction::triggered, [=](){openFileLocation(m_mediaLibrary->savePath());});
     connect(act_libNewPlaylist, &QAction::triggered, this, [this](){libNewPlaylist();});
     connect(act_libNewFolder, &QAction::triggered, this, [this](){libNewFolder();});
     connect(act_libImportPlaylists, &QAction::triggered, this, [this](){libImportPlaylists();});
@@ -355,7 +355,11 @@ void MRootDesktop::initializeLayout(){
 void MRootDesktop::initializeState(){
     QString appDataLoc = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
-    if(!QFile::exists(appDataLoc + M_APPDATA_PATH_PROFILE)){return;}
+    if(!QFile::exists(appDataLoc + M_APPDATA_PATH_PROFILE)){
+        QFile defaultProfile(":/profiles/default.xml");
+        defaultProfile.copy(appDataLoc + M_APPDATA_PATH_PROFILE);
+    }
+
     MSettingsXml settings(appDataLoc + M_APPDATA_PATH_PROFILE);
 
     settings.beginGroup("RootWindow");
@@ -432,6 +436,7 @@ void MRootDesktop::initializeState(){
         QStringList strSort = settings.value("sort", QString()).toString().split(";");
 
         if(!strHidden.isNull()){
+
             QList<QVariant> colWidths;
             QList<QVariant> colHidden;
             QList<QVariant> colSort;
@@ -468,12 +473,10 @@ void MRootDesktop::initializeState(){
 
     m_contextBar->changeView(static_cast<MContextBar::View>(view_contextbar));
 
-//    MMediaContainer *container = m_treeSonglist->modelSonglist()->container();
-//    if(container){
-//        if(container->songs().size() > 0){
-//            m_contentDelegate->setContent(container, container->songs().at(0));
-//        }
-//    }
+    m_panelLibrary->allowCopyMedia(false);
+    m_panelLibrary->allowAutoBackups(false);
+    m_panelLibrary->setLibrary(m_mediaLibrary);
+
 }
 void MRootDesktop::initializeStyle(){
     QFontDatabase fdb;
@@ -525,9 +528,7 @@ void MRootDesktop::saveSettings(){
 
     settings->beginGroup("UserApplicationPaths");
     settings->setValue("style", m_styleSheet->qssPath());
-    settings->setValue("library", m_mediaLibrary->filepath());
-    settings->setValue("media", "");
-    settings->setValue("downloads", "");
+    settings->setValue("library", m_mediaLibrary->savePath());
     settings->endGroup();
 
     settings->beginGroup("UserApplicationValues");
@@ -964,7 +965,7 @@ void MRootDesktop::libBackup(){
     QString saveTimeStr = yrs + mth + day + "_" + hrs + min + sec;
     QString saveDir = appDataLoc + M_APPDATA_PATH_LIBRARYBACKUPS;
     QString savePath = "/backup_" + saveTimeStr + M_LIBRARY_FILE_EXT;
-    QString oldPath = m_mediaLibrary->filepath();
+    QString oldPath = m_mediaLibrary->savePath();
 
     m_mediaLibrary->save(saveDir + savePath);
     m_mediaLibrary->save(oldPath);
@@ -1036,6 +1037,7 @@ void MRootDesktop::libImportPlaylists(){
     }
 }
 void MRootDesktop::libImportSongs(QTreeView *treeParent){
+
     QStringList songFiles;
     QString pathDesktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
     songFiles = QFileDialog::getOpenFileNames(this, "Add Media Files", pathDesktop, "All Files (*.*)");

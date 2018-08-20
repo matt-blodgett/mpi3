@@ -451,6 +451,12 @@ QWidget#PanelButton:pressed {
     color: #000000;
 }
 
+QWidget#PanelButton:disabled {
+    border: 1px solid #696969;
+    background: #999999;
+    color: #565656;
+}
+
 // ----------------------------------------------------------------- PanelCheck
 QWidget#PanelCheck {
     background: transparent;
@@ -467,6 +473,11 @@ QWidget#PanelCheck {
     spacing: 6px;
 }
 
+QWidget#PanelCheck:disabled {
+    color: #777777;
+}
+
+
 
 // ----------------------------------------------------------------- PanelEdit
 QWidget#PanelEdit {
@@ -479,6 +490,11 @@ QWidget#PanelEdit {
     border-radius: 1px;
     margin: 0px 0px 0px 0px;
     padding: 1px;
+}
+
+QWidget#PanelEdit:disabled {
+    background: #999999;
+    color: #777777;
 }
 
 
@@ -527,6 +543,10 @@ QWidget#PanelTag {
     padding: 0px;
 }
 
+QWidget#PanelTag:disabled {
+    color: #777777;
+}
+
 
 // ----------------------------------------------------------------- PanelValue
 QWidget#PanelValue {
@@ -539,6 +559,9 @@ QWidget#PanelValue {
     padding: 0px;
 }
 
+QWidget#PanelValue:disabled {
+    color: #777777;
+}
 
 
 

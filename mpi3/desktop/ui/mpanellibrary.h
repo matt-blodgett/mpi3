@@ -14,6 +14,8 @@ class QLabel;
 QT_END_NAMESPACE
 
 
+#include "mglobal.h"
+
 
 class MPanelLibrary : public QWidget
 {
@@ -26,13 +28,24 @@ public:
 private:
     void initializeLayout();
 
+public:
+    void allowCopyMedia(bool allow);
+    void allowOrganizeMedia(bool allow);
+    void allowAutoBackups(bool allow);
+
+    void setLibrary(MMediaLibrary *library);
+
+private:
+    MMediaLibrary *m_mediaLibrary = nullptr;
+
 private:
     QSplitter *m_frmSplitter = nullptr;
 
     QPushButton *m_btnLibImport = nullptr;
     QPushButton *m_btnLibExport = nullptr;
-
+    QPushButton *m_btnSetLibPath = nullptr;
     QLineEdit *m_boxLibName = nullptr;
+    QLineEdit *m_boxLibPath = nullptr;
     QLabel *m_lblLibAdded = nullptr;
 
     QCheckBox *m_optCopyMedia = nullptr;
@@ -40,7 +53,6 @@ private:
     QPushButton *m_btnSetMediaLoc = nullptr;
     QLineEdit *m_boxMediaLoc = nullptr;
     QLabel *m_lblMediaSize = nullptr;
-    QLabel *m_lblMediaFolderCount = nullptr;
     QLabel *m_lblMediaFileCount = nullptr;
 
     QCheckBox *m_optBackupLibrary = nullptr;

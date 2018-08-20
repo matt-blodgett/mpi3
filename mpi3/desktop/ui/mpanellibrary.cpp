@@ -1,4 +1,5 @@
 #include "mpanellibrary.h"
+#include "core/mmedialibrary.h"
 
 #include <QStyleOption>
 #include <QPainter>
@@ -9,26 +10,61 @@
 
 #include <QPushButton>
 #include <QLineEdit>
-#include <QLabel>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QTreeView>
 #include <QHeaderView>
 #include <QScrollBar>
+#include <QLabel>
+
+
+#include <QDebug>
 
 
 MPanelLibrary::MPanelLibrary(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
-    m_boxLibName->setText("Library Name");
-    m_lblLibAdded->setText("07/07/2017");
+//    m_lblMediaSize->setText("68.01 MB");
+//    m_lblMediaFileCount->setText("16 Folders, 76 Files");
 
-    m_lblMediaSize->setText("68.01 MB");
-    m_lblMediaFileCount->setText("16 Folders, 76 Files");
-    m_boxMediaLoc->setText("C:/Users/Matt/Desktop");
-    m_boxBackupLoc->setText("F:/Backups/Media");
+    connect(m_optCopyMedia, &QCheckBox::toggled, this, &MPanelLibrary::allowCopyMedia);
+    connect(m_optOrganizeMedia, &QCheckBox::toggled, this, &MPanelLibrary::allowOrganizeMedia);
+    connect(m_optBackupLibrary, &QCheckBox::toggled, this, &MPanelLibrary::allowAutoBackups);
 }
 MPanelLibrary::~MPanelLibrary(){}
+
+void MPanelLibrary::allowCopyMedia(bool allow){
+    m_optCopyMedia->setChecked(allow);
+    m_optOrganizeMedia->setChecked(false);
+
+    m_optOrganizeMedia->setDisabled(!allow);
+    m_btnSetMediaLoc->setDisabled(!allow);
+    m_boxMediaLoc->setDisabled(!allow);
+
+    m_lblMediaSize->setVisible(allow);
+    m_lblMediaFileCount->setVisible(allow);
+}
+void MPanelLibrary::allowOrganizeMedia(bool allow){
+    m_optOrganizeMedia->setChecked(allow);
+}
+void MPanelLibrary::allowAutoBackups(bool allow){
+    m_optBackupLibrary->setChecked(allow);
+
+    m_cbxBackupFreq->setDisabled(!allow);
+    m_boxBackupLoc->setDisabled(!allow);
+    m_btnSetBackupLoc->setDisabled(!allow);
+}
+
+void MPanelLibrary::setLibrary(MMediaLibrary *library){
+    m_mediaLibrary = library;
+
+    m_boxLibName->setText(m_mediaLibrary->name());
+    m_lblLibAdded->setText(m_mediaLibrary->added());
+
+    m_boxLibPath->setText(m_mediaLibrary->savePath());
+    m_boxMediaLoc->setText(m_mediaLibrary->mediaPath());
+    m_boxBackupLoc->setText(m_mediaLibrary->backupPath());
+}
 
 void MPanelLibrary::initializeLayout(){
 
@@ -74,9 +110,22 @@ void MPanelLibrary::initializeLayout(){
     m_btnLibImport->setFixedWidth(120);
     m_btnLibExport->setFixedWidth(120);
 
+    QLabel *lblLibPathTag = new QLabel(this);
+    m_boxLibPath = new QLineEdit(this);
+    m_btnSetLibPath = new QPushButton(this);
+
+    QGridLayout *layoutLibrarySouth = new QGridLayout();
+    layoutLibrarySouth->addWidget(lblLibPathTag, 0, 0, 1, 1);
+    layoutLibrarySouth->addWidget(m_boxLibPath, 1, 0, 1, 1);
+    layoutLibrarySouth->addWidget(m_btnSetLibPath, 1, 1, 1, 1);
+
+    m_btnSetLibPath->setFixedWidth(100);
+
     QGridLayout *layoutLibrary = new QGridLayout(this);
     layoutLibrary->addLayout(layoutLibraryWest, 1, 0, 1, 1);
     layoutLibrary->addLayout(layoutLibraryEast, 1, 2, 1, 1);
+    layoutLibrary->addLayout(layoutLibrarySouth, 2, 0, 1, 3);
+    layoutLibrary->setRowMinimumHeight(1, w_separator);
     layoutLibrary->setColumnMinimumWidth(0, w_split);
     layoutLibrary->setColumnMinimumWidth(1, w_separator);
     layoutLibrary->setColumnMinimumWidth(2, w_split);
@@ -227,15 +276,25 @@ void MPanelLibrary::initializeLayout(){
     m_frmSplitter->setOrientation(Qt::Horizontal);
     m_frmSplitter->setStretchFactor(1, 1);
 
+    // -------------------------------------------------- STATIC CONNECTIONS
+
+    connect(m_optCopyMedia, &QCheckBox::toggled, [=](){lblMediaLocTag->setDisabled(!m_optCopyMedia->isChecked());});
+    connect(m_optCopyMedia, &QCheckBox::toggled, [=](){lblMediaSizeTag->setDisabled(!m_optCopyMedia->isChecked());});
+
+    connect(m_optBackupLibrary, &QCheckBox::toggled, [=](){lblBackupFreqTag->setDisabled(!m_optBackupLibrary->isChecked());});
+    connect(m_optBackupLibrary, &QCheckBox::toggled, [=](){lblBackupLocTag->setDisabled(!m_optBackupLibrary->isChecked());});
+
     // -------------------------------------------------- STATIC TEXT
 
     lblPanelTitle->setText("Local Library");
     lblLibraryHeader->setText("Library");
     lblMediaHeader->setText("Media Files");
     lblBackupHeader->setText("Backups");
+    m_btnSetLibPath->setText("Change");
 
     lblLibNameTag->setText("Library Name:");
     lblLibAddedTag->setText("Date Created:");
+    lblLibPathTag->setText("File Location:");
 
     m_optCopyMedia->setText("Make Local Copies of Files");
     m_optOrganizeMedia->setText("Keep Files Organized");
@@ -245,11 +304,11 @@ void MPanelLibrary::initializeLayout(){
 
     m_optBackupLibrary->setText("Backup Library Automatically");
     lblBackupLocTag->setText("Backup Folder:");
-    m_btnSetBackupLoc->setText("Change");
     lblBackupFreqTag->setText("Backup Frequency:");
     lblBackupHistTag->setText("Backup History");
     m_btnBackupRestore->setText("Restore Backup");
     m_btnBackupManual->setText("Backup Now");
+    m_btnSetBackupLoc->setText("Change");
 
     m_btnLibImport->setText("Import");
     m_btnLibExport->setText("Export");
@@ -258,8 +317,11 @@ void MPanelLibrary::initializeLayout(){
 
     m_boxLibName->setObjectName("PanelEditHidden");
     m_lblLibAdded->setObjectName("PanelValue");
+    m_boxLibPath->setObjectName("PanelEdit");
+    m_btnSetLibPath->setObjectName("PanelButton");
     lblLibNameTag->setObjectName("PanelTag");
     lblLibAddedTag->setObjectName("PanelTag");
+    lblLibPathTag->setObjectName("PanelTag");
 
     m_optCopyMedia->setObjectName("PanelCheck");
     m_optOrganizeMedia->setObjectName("PanelCheck");

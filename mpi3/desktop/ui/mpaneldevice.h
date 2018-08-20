@@ -4,12 +4,12 @@
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
-class QSplitter;
+class QAbstractItemModel;
 class QTreeView;
+class QSplitter;
 class QPushButton;
 class QLineEdit;
 class QLabel;
-class QAbstractItemModel;
 QT_END_NAMESPACE
 
 

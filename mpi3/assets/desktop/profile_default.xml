@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mpi3config>
+	<UserApplicationValues>
+		<volume>50</volume>
+	</UserApplicationValues>
+	<UserApplicationPaths>
+                <style>:/styles/default.qss</style>
+		<media></media>
+                <library></library>
+		<downloads></downloads>
+	</UserApplicationPaths>
+	<TreeViewProperties>
+	</TreeViewProperties>
+	<RootWindow>
+                <width></width>
+                <rooty></rooty>
+                <rootx></rootx>
+		<maximized>false</maximized>
+                <height></height>
+	</RootWindow>
+	<LastSelectedContexts>
+                <treeview></treeview>
+                <contextbar>0</contextbar>
+	</LastSelectedContexts>
+</mpi3config>

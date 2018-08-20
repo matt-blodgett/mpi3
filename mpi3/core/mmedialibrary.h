@@ -154,12 +154,21 @@ public:
     explicit MMediaLibrary();
     Mpi3::ElementType type() const override;
 
-    QString filepath() const;
     void load(const QString &path = QString());
     void save(const QString &path = QString());
+
+    void setMediaPath(const QString &path);
+    void setBackupPath(const QString &path);
+    void setDownloadPath(const QString &path);
+
     void reset();
 
-public:
+public:    
+    QString savePath() const;
+    QString mediaPath() const;
+    QString backupPath() const;
+    QString downloadPath() const;
+
     QVector<MSong*> songs() const override;
     QVector<MPlaylist*> playlists() const override;
     QVector<MFolder*> folders() const override;
@@ -186,7 +195,11 @@ public:
     static QString sizeToString(double size);
 
 private:
-    QString m_filepath;
+    QString m_savePath;
+    QString m_mediaPath;
+    QString m_backupPath;
+    QString m_downloadPath;
+
     QVector<MSong*> m_libSongs;
     QVector<MPlaylist*> m_libPlaylists;
     QVector<MFolder*> m_libFolders;
