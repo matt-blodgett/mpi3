@@ -61,6 +61,16 @@ void MPanelLibrary::allowAutoBackups(bool allow){
     m_btnSetBackupLoc->setDisabled(!allow);
 }
 
+bool MPanelLibrary::valCopyMedia() const {
+    return m_optCopyMedia->isChecked();
+}
+bool MPanelLibrary::valOrganizeMedia() const {
+    return m_optOrganizeMedia->isChecked();
+}
+bool MPanelLibrary::valAutoBackups() const {
+    return m_optBackupLibrary->isChecked();
+}
+
 void MPanelLibrary::setLibrary(MMediaLibrary *library){
     m_mediaLibrary = library;
 

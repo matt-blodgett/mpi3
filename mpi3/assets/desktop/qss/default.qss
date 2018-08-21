@@ -663,13 +663,12 @@ QWidget#PanelControl {
 // ----------------------------------------------------------------- PanelTreesButton
 QWidget#PanelTreesButton {
     background: transparent;
-    border: 0px;
     color: #FFFFFF;
+    border: 1px solid transparent;
     text-align: left;
     font-size: 14px;
     font-weight: normal;
     padding: 2px 2px 2px 2px;
-    border: 1px solid transparent;
 }
 
 QWidget#PanelTreesButton::indicator {

@@ -33,6 +33,10 @@ public:
     void allowOrganizeMedia(bool allow);
     void allowAutoBackups(bool allow);
 
+    bool valCopyMedia() const;
+    bool valOrganizeMedia() const;
+    bool valAutoBackups() const;
+
     void setLibrary(MMediaLibrary *library);
 
 private:

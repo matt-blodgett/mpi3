@@ -365,8 +365,7 @@ void MRootDesktop::initializeLayout(){
 void MRootDesktop::initializeState(){
 
     if(!QFile::exists(PathAppData + M_APPDATA_PATH_PROFILE)){
-        QFile defaultProfile(":/profiles/default.xml");
-        defaultProfile.copy(PathAppData + M_APPDATA_PATH_PROFILE);
+        QFile(":/profiles/default.xml").copy(PathAppData + M_APPDATA_PATH_PROFILE);
         QFile(PathAppData + M_APPDATA_PATH_PROFILE).setPermissions(QFile::WriteOwner);
     }
 
@@ -380,7 +379,7 @@ void MRootDesktop::initializeState(){
     int wnd_rooty = settings.value("rooty", d_rooty).toInt();
     int wnd_width = settings.value("width", 800).toInt();
     int wnd_height = settings.value("height", 600).toInt();
-    bool wnd_maximized = settings.value("maximized").toBool();
+    bool wnd_maximized = settings.value("maximized", false).toBool();
     settings.endGroup();
 
     settings.beginGroup("LastSelectedContexts");
@@ -390,6 +389,9 @@ void MRootDesktop::initializeState(){
 
     settings.beginGroup("UserApplicationValues");
     int val_volume = settings.value("volume", 50).toInt();
+    bool val_copyMedia = settings.value("copyMedia", false).toBool();
+    bool val_organizeMedia = settings.value("organizeMedia", false).toBool();
+    bool val_backupMedia = settings.value("autoBackups", false).toBool();
     settings.endGroup();
 
     settings.beginGroup("UserApplicationPaths");
@@ -483,9 +485,10 @@ void MRootDesktop::initializeState(){
 
     m_contextBar->changeView(static_cast<MContextBar::View>(view_contextbar));
 
-    m_panelLibrary->allowCopyMedia(false);
-    m_panelLibrary->allowAutoBackups(false);
     m_panelLibrary->setLibrary(m_mediaLibrary);
+    m_panelLibrary->allowCopyMedia(val_copyMedia);
+    m_panelLibrary->allowOrganizeMedia(val_organizeMedia);
+    m_panelLibrary->allowAutoBackups(val_backupMedia);
 
 }
 void MRootDesktop::initializeStyle(){
@@ -542,6 +545,9 @@ void MRootDesktop::saveSettings(){
 
     settings->beginGroup("UserApplicationValues");
     settings->setValue("volume", m_panelPlayback->volume());
+    settings->setValue("copyMedia", m_panelLibrary->valCopyMedia());
+    settings->setValue("organizeMedia", m_panelLibrary->valOrganizeMedia());
+    settings->setValue("autoBackups", m_panelLibrary->valAutoBackups());
     settings->endGroup();
 
     settings->beginGroup("TreeViewProperties");
@@ -671,6 +677,7 @@ void MRootDesktop::processAudioErrorStatus(Mpi3::ErrorState state){
     qDebug() << state;
 }
 void MRootDesktop::processAudioRequestStatus(Mpi3::EngineState state){
+
     if(state == Mpi3::EngineActive && m_audioEngine->empty()){
         if(m_treeSonglist->model()->rowCount() > 0){
             QModelIndex idx = m_treeSonglist->modelSortFilter()->index(0, 0);
@@ -1057,10 +1064,9 @@ void MRootDesktop::themeSet(){
     }
 }
 void MRootDesktop::themeRefresh(){
-    if(m_styleSheet){
-        m_styleSheet->load();
-        setStyleSheet(m_styleSheet->qssStyle());
-    }
+
+    m_styleSheet->load();
+    setStyleSheet(m_styleSheet->qssStyle());
 }
 
 void MRootDesktop::libNewFolder(){
@@ -1142,6 +1148,7 @@ void MRootDesktop::objAddTo(){}
 void MRootDesktop::objRemoveFrom(){}
 void MRootDesktop::objDuplicate(){}
 void MRootDesktop::objOpenFileLocation(QTreeView *treeParent){
+
     if(treeParent == m_treeSonglist && m_treeSonglist->selectionModel()->selectedRows().size() == 1){
         MSong *song = m_treeSonglist->modelSonglist()->songAt(treeParent->currentIndex());
         if(song){
