@@ -484,7 +484,7 @@ QWidget#PanelEdit {
     background: #FFFFFF;
     color: #000000;
     text-align: left;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: normal;
     border: 1px solid #777777;
     border-radius: 1px;

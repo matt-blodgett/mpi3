@@ -98,6 +98,9 @@ private:
 private:
     void libImport();
     void libExport();
+    void libSetSavePath();
+    void libSetMediaPath();
+    void libSetBackupPath();
     void libBackup();
     void libReset();
 

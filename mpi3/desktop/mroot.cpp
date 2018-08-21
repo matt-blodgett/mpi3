@@ -47,6 +47,9 @@
 #define M_APPDATA_PATH_LIBRARYDEFAULT   "/newlibrary" + M_LIBRARY_FILE_EXT
 #define M_APPDATA_PATH_LIBRARYBACKUPS   "/backups"
 
+static const QString PathDesktop = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+static const QString PathAppData = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/mpi3desktop";
+
 
 MRootDesktop::MRootDesktop(){}
 MRootDesktop::~MRootDesktop(){
@@ -115,6 +118,13 @@ void MRootDesktop::initializeObjects(){
     connect(m_btnClose, &QPushButton::released, this, &QMainWindow::close);
 
     m_panelLibrary = new MPanelLibrary(this);
+
+    connect(m_panelLibrary, &MPanelLibrary::libImport, this, &MRootDesktop::libImport);
+    connect(m_panelLibrary, &MPanelLibrary::libExport, this, &MRootDesktop::libExport);
+    connect(m_panelLibrary, &MPanelLibrary::libSetSavePath, this, &MRootDesktop::libSetSavePath);
+    connect(m_panelLibrary, &MPanelLibrary::libSetMediaPath, this, &MRootDesktop::libSetMediaPath);
+    connect(m_panelLibrary, &MPanelLibrary::libSetBackupPath, this, &MRootDesktop::libSetBackupPath);
+
     m_panelDevice = new MPanelDevice(this);
 
     m_contextBar = new MContextBar(this);
@@ -353,14 +363,14 @@ void MRootDesktop::initializeLayout(){
     installEventFilter(this);
 }
 void MRootDesktop::initializeState(){
-    QString appDataLoc = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
-    if(!QFile::exists(appDataLoc + M_APPDATA_PATH_PROFILE)){
+    if(!QFile::exists(PathAppData + M_APPDATA_PATH_PROFILE)){
         QFile defaultProfile(":/profiles/default.xml");
-        defaultProfile.copy(appDataLoc + M_APPDATA_PATH_PROFILE);
+        defaultProfile.copy(PathAppData + M_APPDATA_PATH_PROFILE);
+        QFile(PathAppData + M_APPDATA_PATH_PROFILE).setPermissions(QFile::WriteOwner);
     }
 
-    MSettingsXml settings(appDataLoc + M_APPDATA_PATH_PROFILE);
+    MSettingsXml settings(PathAppData + M_APPDATA_PATH_PROFILE);
 
     settings.beginGroup("RootWindow");
     QRect screenSize = QApplication::desktop()->availableGeometry(this);
@@ -384,7 +394,7 @@ void MRootDesktop::initializeState(){
 
     settings.beginGroup("UserApplicationPaths");
     QString qss_path = settings.value("style", ":/styles/default.qss").toString();
-    QString lib_path = settings.value("library", appDataLoc + M_APPDATA_PATH_LIBRARYDEFAULT).toString();
+    QString lib_path = settings.value("library", PathAppData + M_APPDATA_PATH_LIBRARYDEFAULT).toString();
     settings.endGroup();
 
     if(wnd_maximized){
@@ -508,10 +518,9 @@ void MRootDesktop::initializeStyle(){
     setStyleSheet(m_styleSheet->qssStyle());
 }
 void MRootDesktop::saveSettings(){
-    QString appDataLoc = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
-    QDir().remove(appDataLoc + M_APPDATA_PATH_PROFILE);
-    MSettingsXml *settings = new MSettingsXml(appDataLoc + M_APPDATA_PATH_PROFILE);
+    QDir().remove(PathAppData + M_APPDATA_PATH_PROFILE);
+    MSettingsXml *settings = new MSettingsXml(PathAppData + M_APPDATA_PATH_PROFILE);
 
     settings->beginGroup("RootWindow");
     settings->setValue("rootx", x());
@@ -592,6 +601,7 @@ void MRootDesktop::toggleMaximized(){
 void MRootDesktop::setContextPanel(){
 
     switch(m_contextBar->currentView()){
+
         case MContextBar::ViewMedia:{
             m_panelMedia->show();
             m_panelLibrary->hide();
@@ -912,23 +922,77 @@ void MRootDesktop::contextMenuContainers(const QPoint &point){
 }
 
 void MRootDesktop::libImport(){
+
     QString libFile;
-    QString pathDesktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
-    libFile = QFileDialog::getOpenFileName(this, "Open Mpi3Library File", pathDesktop, "Mpi3Lib Files (*.mpi3lib)");
+    libFile = QFileDialog::getOpenFileName(
+                this, "Open Mpi3Library File",
+                PathDesktop, "Mpi3Lib Files (*.mpi3lib)");
 
     if(libFile != ""){
         m_mediaLibrary->load(libFile);
         m_treeContainers->modelContainers()->setLibrary(m_mediaLibrary);
         m_treeSonglist->modelSonglist()->setLibrary(m_mediaLibrary);
-        themeRefresh();
+        m_panelLibrary->setLibrary(m_mediaLibrary);
     }
 }
+void MRootDesktop::libExport(){
+
+    QString libFile;
+    libFile = QFileDialog::getSaveFileName(
+                this, "Export Mpi3Library File",
+                PathDesktop, "Mpi3Lib Files (*.mpi3lib)");
+
+    if(libFile != ""){
+        QString oldPath = m_mediaLibrary->savePath();
+        m_mediaLibrary->save(libFile);
+        m_mediaLibrary->save(oldPath);
+    }
+}
+void MRootDesktop::libSetSavePath(){
+
+    QString libFile;
+    libFile = QFileDialog::getExistingDirectory(
+                this, "Set Library Save Path",
+                m_mediaLibrary->savePath());
+
+
+    if(libFile != ""){
+        libFile += "/" + m_mediaLibrary->name();
+        libFile += M_LIBRARY_FILE_EXT;
+
+        m_mediaLibrary->save(libFile);
+        m_panelLibrary->setLibrary(m_mediaLibrary);
+    }
+}
+void MRootDesktop::libSetMediaPath(){
+
+    QString libFile;
+    libFile = QFileDialog::getExistingDirectory(
+                this, "Set Library Media Path",
+                m_mediaLibrary->mediaPath());
+
+    if(libFile != ""){
+        m_mediaLibrary->setMediaPath(libFile);
+        m_panelLibrary->setLibrary(m_mediaLibrary);
+    }
+}
+void MRootDesktop::libSetBackupPath(){
+
+    QString libFile;
+    libFile = QFileDialog::getSaveFileName(
+                this, "Set Library Backup Path",
+                m_mediaLibrary->backupPath(), "Mpi3Lib Files (*.mpi3lib)");
+
+    if(libFile != ""){
+        m_mediaLibrary->setBackupPath(libFile);
+        m_panelLibrary->setLibrary(m_mediaLibrary);
+    }
+}
+
 void MRootDesktop::libBackup(){
 
-    QString appDataLoc = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-
-    if(!QDir().exists(appDataLoc + M_APPDATA_PATH_LIBRARYBACKUPS)){
-        QDir().mkdir(appDataLoc + M_APPDATA_PATH_LIBRARYBACKUPS);
+    if(!QDir().exists(PathAppData + M_APPDATA_PATH_LIBRARYBACKUPS)){
+        QDir().mkdir(PathAppData + M_APPDATA_PATH_LIBRARYBACKUPS);
     }
 
     QDate cdate = QDate().currentDate();
@@ -963,21 +1027,12 @@ void MRootDesktop::libBackup(){
     }
 
     QString saveTimeStr = yrs + mth + day + "_" + hrs + min + sec;
-    QString saveDir = appDataLoc + M_APPDATA_PATH_LIBRARYBACKUPS;
+    QString saveDir = PathAppData + M_APPDATA_PATH_LIBRARYBACKUPS;
     QString savePath = "/backup_" + saveTimeStr + M_LIBRARY_FILE_EXT;
     QString oldPath = m_mediaLibrary->savePath();
 
     m_mediaLibrary->save(saveDir + savePath);
     m_mediaLibrary->save(oldPath);
-}
-void MRootDesktop::libExport(){
-    QString libFile;
-    QString pathDesktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
-    libFile = QFileDialog::getSaveFileName(this, "Export Mpi3Library File", pathDesktop, "Mpi3Lib Files (*.mpi3lib)");
-
-    if(libFile != ""){
-        m_mediaLibrary->save(libFile);
-    }
 }
 void MRootDesktop::libReset(){
     m_mediaLibrary->reset();
@@ -985,13 +1040,16 @@ void MRootDesktop::libReset(){
 
     m_treeContainers->modelContainers()->setLibrary(m_mediaLibrary);
     m_treeSonglist->modelSonglist()->setLibrary(m_mediaLibrary);
+    m_panelLibrary->setLibrary(m_mediaLibrary);
     m_panelMedia->changeView(MPanelMedia::ViewAllSongs);
 }
 
 void MRootDesktop::themeSet(){
+
     QString qssFile;
-    QString pathDesktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
-    qssFile = QFileDialog::getOpenFileName(this, "Open QSS Theme File", pathDesktop, "QSS Files (*.qss)");
+    qssFile = QFileDialog::getOpenFileName(
+                this, "Open QSS Theme File",
+                PathDesktop, "QSS Files (*.qss)");
 
     if(qssFile != ""){
         m_styleSheet->load(qssFile);
@@ -1024,9 +1082,11 @@ void MRootDesktop::libNewPlaylist(){
     m_treeContainers->expand(currentIndex);
 }
 void MRootDesktop::libImportPlaylists(){
+
     QString plistFile;
-    QString pathDesktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
-    plistFile = QFileDialog::getOpenFileName(this, "Open Itunes Plist File", pathDesktop, "XML Files (*.xml)");
+    plistFile = QFileDialog::getOpenFileName(
+                this, "Open Itunes Plist File",
+                PathDesktop, "XML Files (*.xml)");
 
     if(plistFile != ""){
         QModelIndex currentIndex = m_treeContainers->currentIndex();
@@ -1039,8 +1099,9 @@ void MRootDesktop::libImportPlaylists(){
 void MRootDesktop::libImportSongs(QTreeView *treeParent){
 
     QStringList songFiles;
-    QString pathDesktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
-    songFiles = QFileDialog::getOpenFileNames(this, "Add Media Files", pathDesktop, "All Files (*.*)");
+    songFiles = QFileDialog::getOpenFileNames(
+                this, "Add Media Files",
+                PathDesktop, "All Files (*.*)");
 
     if(songFiles.size() < 1){
         return;

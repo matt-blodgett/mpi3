@@ -63,9 +63,29 @@ private:
     QComboBox *m_cbxBackupFreq = nullptr;
     QTreeView *m_treeBackupHist = nullptr;
 
+signals:
+    void libImport();
+    void libExport();
+    void libSetSavePath();
+    void libSetMediaPath();
+    void libSetBackupPath();
+
 private:
     void paintEvent(QPaintEvent *event);
     void showEvent(QShowEvent *event);
 };
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+

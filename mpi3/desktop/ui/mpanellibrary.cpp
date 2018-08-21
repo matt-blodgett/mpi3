@@ -30,6 +30,12 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : QWidget(parent){
     connect(m_optCopyMedia, &QCheckBox::toggled, this, &MPanelLibrary::allowCopyMedia);
     connect(m_optOrganizeMedia, &QCheckBox::toggled, this, &MPanelLibrary::allowOrganizeMedia);
     connect(m_optBackupLibrary, &QCheckBox::toggled, this, &MPanelLibrary::allowAutoBackups);
+
+    connect(m_btnLibImport, &QPushButton::released, this, &MPanelLibrary::libImport);
+    connect(m_btnLibExport, &QPushButton::released, this, &MPanelLibrary::libExport);
+    connect(m_btnSetLibPath, &QPushButton::released, this, &MPanelLibrary::libSetSavePath);
+    connect(m_btnSetMediaLoc, &QPushButton::released, this, &MPanelLibrary::libSetMediaPath);
+    connect(m_btnSetBackupLoc, &QPushButton::released, this, &MPanelLibrary::libSetBackupPath);
 }
 MPanelLibrary::~MPanelLibrary(){}
 

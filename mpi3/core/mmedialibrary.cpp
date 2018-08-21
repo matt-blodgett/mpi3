@@ -304,7 +304,7 @@ void MMediaLibrary::load(const QString &path){
         m_mediaPath = root.namedItem("mediaPath").toElement().text();
         m_backupPath = root.namedItem("backupPath").toElement().text();
         m_downloadPath = root.namedItem("downloadPath").toElement().text();
-        m_savePath = path;
+        m_savePath = QDir::toNativeSeparators(path);
 
         QDomNodeList xmlSongs = root.namedItem("songs").toElement().childNodes();
         QDomNodeList xmlPlaylists = root.namedItem("playlists").toElement().childNodes();
@@ -386,6 +386,7 @@ void MMediaLibrary::load(const QString &path){
 void MMediaLibrary::save(const QString &path){
 
     m_savePath = path.isNull() ? m_savePath : path;
+    m_savePath = QDir::toNativeSeparators(m_savePath);
 
     QFile saveFile(m_savePath);
     if(saveFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)){
@@ -485,13 +486,13 @@ void MMediaLibrary::save(const QString &path){
 }
 
 void MMediaLibrary::setMediaPath(const QString &path){
-    m_mediaPath = path;
+    m_mediaPath = QDir::toNativeSeparators(path);
 }
 void MMediaLibrary::setBackupPath(const QString &path){
-    m_backupPath = path;
+    m_backupPath = QDir::toNativeSeparators(path);;
 }
 void MMediaLibrary::setDownloadPath(const QString &path){
-    m_downloadPath = path;
+    m_downloadPath = QDir::toNativeSeparators(path);;
 }
 
 void MMediaLibrary::reset(){
