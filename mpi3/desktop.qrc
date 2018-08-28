@@ -26,11 +26,16 @@
         <file alias="branch_more.png">assets/desktop/icons/treeview/branch_more.png</file>
         <file alias="branch_vline.png">assets/desktop/icons/treeview/branch_vline.png</file>
     </qresource>
+    <qresource prefix="/icons/indicators">
+        <file alias="ind_down_light.png">assets/desktop/icons/indicators/ind_down_light.png</file>
+        <file alias="ind_up_light.png">assets/desktop/icons/indicators/ind_up_light.png</file>
+    </qresource>
     <qresource prefix="/icons/window">
         <file alias="close.png">assets/desktop/icons/window/close.png</file>
         <file alias="minimize.png">assets/desktop/icons/window/minimize.png</file>
         <file alias="maximize.png">assets/desktop/icons/window/maximize.png</file>
         <file alias="demaximize.png">assets/desktop/icons/window/demaximize.png</file>
+        <file alias="mpi3.ico">assets/desktop/icons/window/mpi3.ico</file>
     </qresource>
     <qresource prefix="/styles">
         <file alias="default.qss">assets/desktop/qss/default.qss</file>

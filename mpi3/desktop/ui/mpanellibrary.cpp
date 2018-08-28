@@ -27,6 +27,16 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : QWidget(parent){
 //    m_lblMediaSize->setText("68.01 MB");
 //    m_lblMediaFileCount->setText("16 Folders, 76 Files");
 
+    QStringList cbxItems;
+    cbxItems << "Continuous";
+    cbxItems << "Daily";
+    cbxItems << "Weekly";
+    cbxItems << "Monthly";
+
+    m_cbxBackupFreq->addItems(cbxItems);
+
+    m_cbxBackupFreq->setEditable(false);
+
     connect(m_optCopyMedia, &QCheckBox::toggled, this, &MPanelLibrary::allowCopyMedia);
     connect(m_optOrganizeMedia, &QCheckBox::toggled, this, &MPanelLibrary::allowOrganizeMedia);
     connect(m_optBackupLibrary, &QCheckBox::toggled, this, &MPanelLibrary::allowAutoBackups);
@@ -55,10 +65,7 @@ void MPanelLibrary::allowOrganizeMedia(bool allow){
 }
 void MPanelLibrary::allowAutoBackups(bool allow){
     m_optBackupLibrary->setChecked(allow);
-
     m_cbxBackupFreq->setDisabled(!allow);
-    m_boxBackupLoc->setDisabled(!allow);
-    m_btnSetBackupLoc->setDisabled(!allow);
 }
 
 bool MPanelLibrary::valCopyMedia() const {
@@ -84,7 +91,7 @@ void MPanelLibrary::setLibrary(MMediaLibrary *library){
 
 void MPanelLibrary::initializeLayout(){
 
-    int w_split = 300;
+    int w_split = 400;
     int w_separator = 10;
     int w_section = (w_split * 2) + w_separator;
 
@@ -104,24 +111,23 @@ void MPanelLibrary::initializeLayout(){
     m_boxLibName = new QLineEdit(this);
     m_lblLibAdded = new QLabel(this);
 
-    QLabel *lblLibNameTag = new QLabel(this);
     QLabel *lblLibAddedTag = new QLabel(this);
 
     QGridLayout *layoutLibraryWest = new QGridLayout();
-    layoutLibraryWest->addWidget(lblLibNameTag, 0, 0, 1, 1);
-    layoutLibraryWest->addWidget(m_boxLibName, 0, 1, 1, 1);
+    layoutLibraryWest->addWidget(m_boxLibName, 0, 0, 1, 3);
     layoutLibraryWest->addWidget(lblLibAddedTag, 1, 0, 1, 1);
     layoutLibraryWest->addWidget(m_lblLibAdded, 1, 1, 1, 1);
     layoutLibraryWest->setRowStretch(2, 1);
+    layoutLibraryWest->setColumnStretch(2, 1);
 
     m_btnLibImport = new QPushButton(this);
     m_btnLibExport = new QPushButton(this);
 
     QGridLayout *layoutLibraryEast = new QGridLayout();
-    layoutLibraryEast->addWidget(m_btnLibImport, 0, 0, 1, 1);
-    layoutLibraryEast->addWidget(m_btnLibExport, 1, 0, 1, 1);
-    layoutLibraryEast->setColumnStretch(1, 1);
-    layoutLibraryEast->setRowStretch(2, 1);
+    layoutLibraryEast->addWidget(m_btnLibImport, 0, 1, 1, 1);
+    layoutLibraryEast->addWidget(m_btnLibExport, 1, 1, 1, 1);
+    layoutLibraryEast->setColumnStretch(0, 1);
+    layoutLibraryEast->setRowStretch(1, 1);
 
     m_btnLibImport->setFixedWidth(120);
     m_btnLibExport->setFixedWidth(120);
@@ -135,7 +141,7 @@ void MPanelLibrary::initializeLayout(){
     layoutLibrarySouth->addWidget(m_boxLibPath, 1, 0, 1, 1);
     layoutLibrarySouth->addWidget(m_btnSetLibPath, 1, 1, 1, 1);
 
-    m_btnSetLibPath->setFixedWidth(100);
+    m_btnSetLibPath->setFixedWidth(120);
 
     QGridLayout *layoutLibrary = new QGridLayout(this);
     layoutLibrary->addLayout(layoutLibraryWest, 1, 0, 1, 1);
@@ -217,9 +223,9 @@ void MPanelLibrary::initializeLayout(){
     m_btnBackupRestore = new QPushButton(this);
 
     QGridLayout *layoutBackupEast = new QGridLayout();
-    layoutBackupEast->addWidget(m_btnBackupManual, 0, 0, 1, 1);
-    layoutBackupEast->addWidget(m_btnBackupRestore, 1, 0, 1, 1);
-    layoutBackupEast->setColumnStretch(1, 1);
+    layoutBackupEast->addWidget(m_btnBackupManual, 0, 1, 1, 1);
+    layoutBackupEast->addWidget(m_btnBackupRestore, 1, 1, 1, 1);
+    layoutBackupEast->setColumnStretch(0, 1);
     layoutBackupEast->setRowStretch(2, 1);
 
     m_btnBackupManual->setFixedWidth(120);
@@ -234,7 +240,7 @@ void MPanelLibrary::initializeLayout(){
     layoutBackupSouth->addWidget(m_boxBackupLoc, 1, 0, 1, 1);
     layoutBackupSouth->addWidget(m_btnSetBackupLoc, 1, 1, 1, 1);
 
-    m_btnSetBackupLoc->setFixedWidth(100);
+    m_btnSetBackupLoc->setFixedWidth(120);
 
     QGridLayout *layoutBackup = new QGridLayout(this);
     layoutBackup->addLayout(layoutBackupWest, 0, 0, 1, 1);
@@ -298,7 +304,6 @@ void MPanelLibrary::initializeLayout(){
     connect(m_optCopyMedia, &QCheckBox::toggled, [=](){lblMediaSizeTag->setDisabled(!m_optCopyMedia->isChecked());});
 
     connect(m_optBackupLibrary, &QCheckBox::toggled, [=](){lblBackupFreqTag->setDisabled(!m_optBackupLibrary->isChecked());});
-    connect(m_optBackupLibrary, &QCheckBox::toggled, [=](){lblBackupLocTag->setDisabled(!m_optBackupLibrary->isChecked());});
 
     // -------------------------------------------------- STATIC TEXT
 
@@ -308,7 +313,6 @@ void MPanelLibrary::initializeLayout(){
     lblBackupHeader->setText("Backups");
     m_btnSetLibPath->setText("Change");
 
-    lblLibNameTag->setText("Library Name:");
     lblLibAddedTag->setText("Date Created:");
     lblLibPathTag->setText("File Location:");
 
@@ -335,7 +339,6 @@ void MPanelLibrary::initializeLayout(){
     m_lblLibAdded->setObjectName("PanelValue");
     m_boxLibPath->setObjectName("PanelEdit");
     m_btnSetLibPath->setObjectName("PanelButton");
-    lblLibNameTag->setObjectName("PanelTag");
     lblLibAddedTag->setObjectName("PanelTag");
     lblLibPathTag->setObjectName("PanelTag");
 

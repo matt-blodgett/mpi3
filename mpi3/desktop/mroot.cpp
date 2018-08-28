@@ -67,6 +67,10 @@ void MRootDesktop::initialize(){
     initializeLayout();
     initializeState();
     initializeStyle();
+
+
+    m_panelDevice->setModel(m_treeContainers->modelContainers());
+
     centralWidget()->show();
 }
 void MRootDesktop::initializeObjects(){
@@ -351,16 +355,17 @@ void MRootDesktop::initializeLayout(){
     layoutMain->setMargin(0);
     windowMain->setLayout(layoutMain);
 
-    m_panelLibrary->hide();
-    m_panelDevice->hide();
-
     setMinimumHeight(300);
     setMinimumWidth(700);
     setContentsMargins(1, 1, 1, 1);
     setCentralWidget(windowMain);
     setMenuWidget(m_menuWidget);
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+    setWindowIcon(QIcon(":/icons/window/mpi3.ico"));
     installEventFilter(this);
+
+    m_panelLibrary->hide();
+    m_panelDevice->hide();
 }
 void MRootDesktop::initializeState(){
 
@@ -660,6 +665,7 @@ void MRootDesktop::setContainerDisplay(){
     }
 }
 void MRootDesktop::setPlaybackSong(MSong *song){
+
     if(song){
         m_audioEngine->stop();
         m_audioEngine->open(song->path());
@@ -1166,18 +1172,20 @@ void MRootDesktop::editUndo(){}
 void MRootDesktop::editRedo(){}
 
 void MRootDesktop::objCut(QTreeView *treeParent){
+
     if(treeParent == m_treeSonglist){
 //        QApplication::clipboard()->setMimeData()
     }
 }
 void MRootDesktop::objCopy(QTreeView *treeParent){
+
     if(treeParent == m_treeSonglist){
         QModelIndexList selectedIndexes = m_treeSonglist->selectionModel()->selectedIndexes();
         QApplication::clipboard()->setMimeData(m_treeSonglist->modelSonglist()->mimeData(selectedIndexes));
-
     }
 }
 void MRootDesktop::objPaste(QTreeView *treeParent){
+
     if(treeParent == m_treeSonglist){
         QModelIndex currentIndex = m_treeSonglist->currentIndex();
         const QMimeData *data = QApplication::clipboard()->mimeData(QClipboard::Clipboard);
@@ -1189,6 +1197,7 @@ void MRootDesktop::objPaste(QTreeView *treeParent){
     }
 }
 void MRootDesktop::objDelete(QTreeView *treeParent){
+
     if(treeParent == m_treeContainers && m_treeContainers->selectionModel()->selectedRows().size() > 0){
         QModelIndex index = m_treeContainers->currentIndex();
 
@@ -1255,8 +1264,10 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             m_lastRootPoint = pos();
             m_lastCursorPoint = sc_event->pos();
 
-            m_moveActive = !(m_resizeWest || m_resizeEast || m_resizeNorth || m_resizeSouth);
-            m_resizeActive = !m_moveActive;
+            QWidget *child = childAt(x_event, y_event);
+
+            m_resizeActive = (m_resizeWest || m_resizeEast || m_resizeNorth || m_resizeSouth);
+            m_moveActive = !m_resizeActive && (child == m_panelPlayback || child == m_menuWidget);
         }
 
         else if(event->type() == QEvent::MouseButtonRelease){

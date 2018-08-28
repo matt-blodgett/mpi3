@@ -427,6 +427,67 @@ QWidget#PanelTree {
 
 }
 
+// ----------------------------------------------------------------- PanelCombo
+QWidget#PanelCombo {
+    background: #222222;
+    color: #FFFFFF;
+    font-family: "Open Sans";
+    font-size: 12px;
+    font-weight: normal;
+    border: 1px solid #696969;
+    border-radius: 2px;
+    padding: 1px 18px 1px 3px;
+    min-width: 6em;
+}
+
+QWidget#PanelCombo:!editable:disabled {
+    background: #999999;
+    color: #777777;
+}
+
+QWidget#PanelCombo:!editable {
+    background: #222222;
+}
+
+QWidget#PanelCombo:!editable:on {
+    background: #222222;
+}
+
+QWidget#PanelCombo:on {
+    background: #222222;
+    padding-top: 3px;
+    padding-left: 4px;
+}
+
+QWidget#PanelCombo::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: #888888;
+    border-left-style: solid;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox::down-arrow {
+    image: url(:/icons/indicators/ind_down_light.png);
+}
+
+QComboBox::down-arrow:on {
+    top: 1px;
+    left: 1px;
+}
+
+QComboBox QAbstractItemView {
+    background: #222222;
+    color: #FFFFFF;
+    border: 1px solid #696969;
+    margin-top: 0px;
+    padding-bottom: 0px;
+}
+
+
 // ----------------------------------------------------------------- PanelButton
 QWidget#PanelButton {
     background: #191919;
@@ -481,16 +542,18 @@ QWidget#PanelCheck:disabled {
 
 // ----------------------------------------------------------------- PanelEdit
 QWidget#PanelEdit {
-    background: #FFFFFF;
-    color: #000000;
+    background: #222222;
+    color: #FFFFFF;
+    selection-background-color: #898989;
     text-align: left;
     font-size: 13px;
     font-weight: normal;
     border: 1px solid #777777;
     border-radius: 1px;
     margin: 0px 0px 0px 0px;
-    padding: 1px;
+    padding: 1px;    
 }
+
 
 QWidget#PanelEdit:disabled {
     background: #999999;
@@ -503,8 +566,9 @@ QWidget#PanelEditHidden {
     background: transparent;
     color: #FFFFFF;
     text-align: left;
-    font-size: 12px;
-    font-weight: normal;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: "Open Sans";
     border: 1px solid transparent;
     border-radius: 1px;
     margin: 0px 0px 0px 0px;
@@ -512,23 +576,13 @@ QWidget#PanelEditHidden {
 }
 
 QWidget#PanelEditHidden:hover {
-    background: transparent;
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 12px;
-    font-weight: normal;
     border: 1px solid #FFFFFF;
-    border-radius: 1px;
 }
 
 QWidget#PanelEditHidden:focus {
     background: #FFFFFF;
     color: #000000;
-    text-align: left;
-    font-size: 12px;
-    font-weight: normal;
     border: 1px solid #777777;
-    border-radius: 1px;
 }
 
 
@@ -882,7 +936,7 @@ QHeaderView::section:hover {
 }
 
 QHeaderView::down-arrow {
-    image: url(:/icons/treeview/arrow_down_light.png);
+    image: url(:/icons/indicators/ind_down_light.png);
     subcontrol-origin: padding;
     subcontrol-position: center right;
     padding: 4px 4px 4px 4px;
@@ -890,7 +944,7 @@ QHeaderView::down-arrow {
 }
 
 QHeaderView::up-arrow {
-    image: url(:/icons/treeview/arrow_up_light.png);
+    image: url(:/icons/indicators/ind_up_light.png);
     subcontrol-origin: padding;
     subcontrol-position: center right;
     padding: 4px 4px 4px 4px;

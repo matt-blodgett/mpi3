@@ -38,7 +38,7 @@ DEPENDPATH += $$PWD/lib/libav
 
 RESOURCES += fonts.qrc
 RESOURCES += desktop.qrc
-
+RC_FILE = desktop.rc
 
 HEADERS += mglobal.h
 SOURCES += mglobal.cpp
@@ -74,3 +74,5 @@ HEADERS += desktop/ui/mvc/mlibview.h
 SOURCES += desktop/ui/mvc/mlibview.cpp
 HEADERS += desktop/ui/mvc/mlibmodel.h
 SOURCES += desktop/ui/mvc/mlibmodel.cpp
+HEADERS += desktop/ui/mvc/mdrivemodel.h
+SOURCES += desktop/ui/mvc/mdrivemodel.cpp

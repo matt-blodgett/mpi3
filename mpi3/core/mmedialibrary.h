@@ -192,7 +192,8 @@ public:
     static bool validMediaFiles(QList<QUrl> mediaUrls);
 
     static QString timeToString(double time);
-    static QString sizeToString(double size);
+    static QString sizeToString(double size, int prec = 2);
+    static QString percentToString(double percent, int prec = 2);
 
 private:
     QString m_savePath;

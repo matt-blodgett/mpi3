@@ -136,6 +136,7 @@ QVector<MFolder*> MMediaContainer::folders() const{
 }
 
 MFolder *MMediaContainer::parentFolder() const{
+
     if(m_parent){
         if(m_parent->type() == Mpi3::FolderElement){
             return static_cast<MFolder*>(m_parent);
@@ -173,6 +174,7 @@ QVector<MMediaElement*> MMediaContainer::childElements(Mpi3::ElementType elemTyp
     return children;
 }
 MMediaElement *MMediaContainer::getElement(const QString &pid, Mpi3::ElementType elemType) const{
+
     foreach(MMediaElement *element, childElements(elemType)){
         if(element->pid() == pid){
             return element;
@@ -280,7 +282,9 @@ QVector<MMediaContainer*> MFolder::childContainers() const {
 }
 
 
-MMediaLibrary::MMediaLibrary() : MMediaContainer(){}
+MMediaLibrary::MMediaLibrary() : MMediaContainer(){
+    m_added = "14/03/1994";
+}
 Mpi3::ElementType MMediaLibrary::type() const {
     return Mpi3::LibraryElement;
 }
@@ -746,6 +750,7 @@ void MMediaLibrary::importItunesPlist(const QString &path, MFolder *parentFolder
 }
 
 bool MMediaLibrary::validMediaFiles(QUrl mediaUrl){
+
     if(mediaUrl.toString().endsWith(".mp3") || mediaUrl.toString().endsWith(".wav")){
         return true;
     }
@@ -753,6 +758,7 @@ bool MMediaLibrary::validMediaFiles(QUrl mediaUrl){
     return false;
 }
 bool MMediaLibrary::validMediaFiles(QList<QUrl> mediaUrls){
+
     if(mediaUrls.size() == 0){
         return false;
     }
@@ -817,7 +823,7 @@ QString MMediaLibrary::timeToString(double time){
 
     return QString(mins + ":" + secs);
 }
-QString MMediaLibrary::sizeToString(double size){
+QString MMediaLibrary::sizeToString(double size, int prec){
     QString unit("B");
     QStringListIterator i(FileSizeSuffixes);
     while(size >= 1024.0 && i.hasNext()) {
@@ -825,11 +831,14 @@ QString MMediaLibrary::sizeToString(double size){
         size /= 1024.0;
     }
 
-    return QString().setNum(size,'f', 2) + " " + unit;
+    return QString().setNum(size,'f', prec) + " " + unit;
+}
+QString MMediaLibrary::percentToString(double percent, int prec){
+    return QString().setNum(percent * 100.0,'f', prec) + " %";
 }
 
 void MMediaLibrary::modify(const QString &pid, const QString &value){
-    MMediaElement *modifyElement = getElement(pid);
+    MMediaElement *modifyElement = pid == this->pid() ? this : getElement(pid);
     if(modifyElement){
         modifyElement->m_name = value;
         emit elementModified(modifyElement);
