@@ -83,6 +83,7 @@ private:
     void setContextPanel();
     void setContainerDisplay();
     void setPlaybackSong(MSong *song);
+    void containerChanged();
 
 private:
     void processAudioMediaStatus(Mpi3::MediaState state);

@@ -104,6 +104,8 @@ void MRootDesktop::initializeObjects(){
     connect(m_treeSonglist, &MTreeSonglist::playbackChanged, this, &MRootDesktop::setPlaybackSong);
     connect(m_panelMedia, &MPanelMedia::viewChanged, this, &MRootDesktop::setContainerDisplay);
 
+    connect(m_treeContainers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){containerChanged();});
+
     connect(m_treeContainers, &QTreeView::customContextMenuRequested, this, &MRootDesktop::contextMenuContainers);
     connect(m_treeSonglist, &QTreeView::customContextMenuRequested, this, &MRootDesktop::contextMenuSonglist);
     connect(m_treeSonglist->header(), &QHeaderView::customContextMenuRequested, this, &MRootDesktop::contextMenuHeader);
@@ -668,6 +670,13 @@ void MRootDesktop::setPlaybackSong(MSong *song){
         m_audioEngine->start();
     }
 }
+void MRootDesktop::containerChanged(){
+    QModelIndex idx = m_treeContainers->selectionModel()->currentIndex();
+    if(idx.isValid()){
+        m_panelMedia->changeView(MPanelMedia::ViewContainer);
+        setContainerDisplay();
+    }
+}
 
 void MRootDesktop::processAudioMediaStatus(Mpi3::MediaState state){
     qDebug() << state;
@@ -873,11 +882,12 @@ void MRootDesktop::contextMenuContainers(const QPoint &point){
     menu_context->addSeparator();
     menu_context->addAction(act_objDelete);
 
-    QModelIndex index = m_treeContainers->indexAt(point);
-    m_treeContainers->setCurrentIndex(index);
-
-    QString pid = m_treeContainers->modelContainers()->getPID(index);
+    QModelIndex idx_at = m_treeContainers->indexAt(point);
+    QModelIndex idx_last = m_treeContainers->selectionModel()->currentIndex();
+    QString pid = m_treeContainers->modelContainers()->getPID(idx_at);
     MMediaElement *element = m_mediaLibrary->getElement(pid);
+
+    m_treeContainers->setCurrentIndex(idx_at);
 
     if(!element){
         act_itemExpand->setDisabled(true);
@@ -920,14 +930,10 @@ void MRootDesktop::contextMenuContainers(const QPoint &point){
     menu_context->exec(m_treeContainers->mapToGlobal(point));
     delete menu_context;
 
+    if(m_panelMedia->currentView() == MPanelMedia::ViewContainer){
+        m_treeContainers->selectionModel()->setCurrentIndex(idx_last, QItemSelectionModel::ClearAndSelect);
+    }
 
-//    else if (pid != m_mediaLibrary->pid()){
-//        tree_containers->setCurrentIndex(m_modelContainers->getIndex(pid));
-//        m_panelLibview->changeView(PanelLibrary::ViewContainer);
-//    }
-//    else {
-//        tree_containers->selectionModel()->clear();
-//    }
 }
 
 void MRootDesktop::libImport(){

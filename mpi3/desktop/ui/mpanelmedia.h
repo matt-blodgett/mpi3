@@ -35,9 +35,6 @@ public:
     MTreeSonglist *treeSonglist();
 
 private:
-    void containerClicked(const QModelIndex &index);
-
-private:
     MPanelMedia::View m_currentView;
 
 private:

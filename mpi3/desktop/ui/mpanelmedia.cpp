@@ -33,7 +33,6 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanelContext(parent){
     connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewAllSongs);});
     connect(m_btnArtists, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewArtists);});
     connect(m_btnAlbums, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewAlbums);});
-    connect(m_treeContainers, &QTreeView::clicked, this, &MPanelMedia::containerClicked);
 }
 
 void MPanelMedia::initializeLayout(){
@@ -80,6 +79,9 @@ MPanelMedia::View MPanelMedia::currentView() const{
 void MPanelMedia::changeView(MPanelMedia::View view){
     m_currentView = view;
 
+
+    m_treeContainers->selectionModel()->blockSignals(true);
+
     switch(m_currentView){
 
         case MPanelMedia::ViewAllSongs: {
@@ -114,6 +116,9 @@ void MPanelMedia::changeView(MPanelMedia::View view){
         }
     }
 
+    m_treeContainers->selectionModel()->blockSignals(false);
+    m_treeContainers->update();
+
     emit viewChanged();
 }
 void MPanelMedia::setDisplay(const QString &title){
@@ -126,14 +131,6 @@ MTreeContainers *MPanelMedia::treeContainers(){
 MTreeSonglist *MPanelMedia::treeSonglist(){
     return m_treeSonglist;
 }
-
-void MPanelMedia::containerClicked(const QModelIndex &index){
-
-    if(index.isValid()){
-        changeView(MPanelMedia::ViewContainer);
-    }
-}
-
 
 
 
