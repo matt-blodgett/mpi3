@@ -14,6 +14,7 @@
 
 
 MPanelDevice::MPanelDevice(QWidget *parent) : MPanelContext(parent){
+    initializeLayoutType(true);
     initializeLayout();
 
     setTitle("Raspberry Pi");
@@ -42,6 +43,7 @@ MPanelDevice::MPanelDevice(QWidget *parent) : MPanelContext(parent){
     m_treeStorageDevices->setSortingEnabled(true);
     m_treeStorageDevices->setAlternatingRowColors(true);
     m_treeStorageDevices->viewport()->installEventFilter(this);
+    m_treeStorageDevices->setFixedHeight(200);
 
     connect(m_treeStorageDevices->selectionModel(),
             &QItemSelectionModel::selectionChanged,
@@ -60,8 +62,8 @@ void MPanelDevice::initializeLayout() {
 
     m_lblSelectedDrive = addLabelTag();
     m_lblSelectedLibrary = addLabelValue();
-    m_btnCreateVolume = addButton();
-    m_btnLoadVolume = addButton();
+    m_btnCreateVolume = addPushButton();
+    m_btnLoadVolume = addPushButton();
     m_treeStorageDevices = addTreeView();
 
     m_boxLibName = addLineEditHidden();
@@ -89,8 +91,8 @@ void MPanelDevice::initializeLayout() {
     library_gridWest->addWidget(m_boxLibName, 0, 0, 1, 3);
     library_gridWest->addWidget(m_lblLibAddedTag, 1, 0, 1, 1);
     library_gridWest->addWidget(m_lblLibAdded, 1, 1, 1, 1);
-    library_gridWest->setRowStretch(2, 1);
     library_gridWest->setColumnStretch(2, 1);
+    library_gridWest->setRowStretch(2, 1);
 
     library_gridEast->addWidget(m_lblSyncMediaTag, 0, 0, 1, 1);
     library_gridEast->addWidget(m_treeSyncMedia, 1, 0, 1, 1);

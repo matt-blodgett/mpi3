@@ -488,8 +488,39 @@ QComboBox QAbstractItemView {
 }
 
 
-// ----------------------------------------------------------------- PanelButton
-QWidget#PanelButton {
+// ----------------------------------------------------------------- PanelRadioButton
+QWidget#PanelRadioButton {
+    background: transparent;
+    color: #FFFFFF;
+    border: 1px solid transparent;
+    text-align: left;
+    font-size: 14px;
+    font-weight: normal;
+    padding: 2px 2px 2px 2px;
+}
+
+QWidget#PanelRadioButton::indicator {
+    width: 0px;
+    height: 0px;
+}
+
+QWidget#PanelRadioButton:hover {
+    background: transparent;
+    border: 1px solid #FFFFFF;
+}
+
+QWidget#PanelRadioButton:pushed {
+    background: #FFFFFF;
+}
+
+QWidget#PanelRadioButton:checked {
+    background: #E2E2E2;
+    color: #000000;
+}
+
+
+// ----------------------------------------------------------------- PanelPushButton
+QWidget#PanelPushButton {
     background: #191919;
     color: #FFFFFF;
     text-align: center;
@@ -502,17 +533,17 @@ QWidget#PanelButton {
     padding: 2px;
 }
 
-QWidget#PanelButton:hover {
+QWidget#PanelPushButton:hover {
     background: #292929;
     border: 1px solid #696969;
 }
 
-QWidget#PanelButton:pressed {
+QWidget#PanelPushButton:pressed {
     background: #AAAAAA;
     color: #000000;
 }
 
-QWidget#PanelButton:disabled {
+QWidget#PanelPushButton:disabled {
     border: 1px solid #696969;
     background: #999999;
     color: #565656;
@@ -588,6 +619,7 @@ QWidget#PanelEditHidden:focus {
 
 // ----------------------------------------------------------------- PanelTag
 QWidget#PanelTag {
+    background: transparent;
     color: #FFFFFF;
     text-align: left;
     font-size: 12px;
@@ -600,7 +632,6 @@ QWidget#PanelTag {
 QWidget#PanelTag:disabled {
     color: #777777;
 }
-
 
 // ----------------------------------------------------------------- PanelValue
 QWidget#PanelValue {
@@ -646,10 +677,9 @@ QWidget#PanelTitle {
     font-family: "Open Sans";
     font-size: 32px;
     font-weight: bold;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
+    margin: 0px;
+    padding: 0px;
 }
-
 
 // ----------------------------------------------------------------- SectionHeader
 QWidget#SectionHeader {
@@ -671,7 +701,6 @@ QWidget#PanelDisplay {
     margin: 0px;
 }
 
-
 // ----------------------------------------------------------------- PanelScrollArea
 QWidget#PanelScrollArea {
     background: transparent;
@@ -679,19 +708,6 @@ QWidget#PanelScrollArea {
     margin: 0px;
 }
 
-
-// ----------------------------------------------------------------- StorageWidget
-QWidget#StorageWidget {
-    background: #FFFFFF;
-    border: 1px solid #000000;
-    border-radius: 3px;
-    padding: 4px;
-    margin: 6px;
-}
-
-
-// ****************************************************************************************************
-// ****************************************************************************************************
 
 
 // ----------------------------------------------------------------- PanelControl
@@ -701,69 +717,13 @@ QWidget#PanelControl {
     margin: 0px;
 }
 
-
-// ****************************************************************************************************
-// ****************************************************************************************************
-
-
-// ----------------------------------------------------------------- PanelTreesButton
-QWidget#PanelTreesButton {
-    background: transparent;
-    color: #FFFFFF;
-    border: 1px solid transparent;
-    text-align: left;
-    font-size: 14px;
-    font-weight: normal;
-    padding: 2px 2px 2px 2px;
-}
-
-QWidget#PanelTreesButton::indicator {
-    width: 0px;
-    height: 0px;
-}
-
-QWidget#PanelTreesButton:hover {
-    background: transparent;
-    border: 1px solid #FFFFFF;
-}
-
-QWidget#PanelTreesButton:pushed {
+// ----------------------------------------------------------------- StorageWidget
+QWidget#StorageWidget {
     background: #FFFFFF;
-}
-
-QWidget#PanelTreesButton:checked {
-    background: #E2E2E2;
-    color: #000000;
-}
-
-
-// ----------------------------------------------------------------- PanelTrees
-QWidget#PanelTrees {
-    background: #222222;
-    border-left: 1px solid #696969;
-    border-bottom: 1px solid #696969;
-}
-
-
-// ----------------------------------------------------------------- PanelTreesLabel
-QWidget#PanelTreesLabel {
-    background: transparent;
-    border-top: 1px solid #696969;
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 14px;
-    font-weight: normal;
-    padding: 4px 2px 4px 2px;
-}
-
-
-// ----------------------------------------------------------------- PanelTreesTitle
-QWidget#PanelTreesTitle {
-    background: transparent;
-    color: #FFFFFF;
-    font-size: 20px;
-    font-family: "Open Sans";
-    font-weight: bold;
+    border: 1px solid #000000;
+    border-radius: 3px;
+    padding: 4px;
+    margin: 6px;
 }
 
 

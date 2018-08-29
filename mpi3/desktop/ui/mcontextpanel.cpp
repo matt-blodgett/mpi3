@@ -2,9 +2,11 @@
 
 #include <QStyleOption>
 #include <QPainter>
+
 #include <QGridLayout>
 #include <QSplitter>
 #include <QScrollArea>
+#include <QRadioButton>
 #include <QPushButton>
 #include <QTreeView>
 #include <QHeaderView>
@@ -13,6 +15,9 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QLabel>
+
+
+#include <QDebug>
 
 
 static const int WidthSplit = 400;
@@ -78,42 +83,29 @@ MPanelContext::MPanelContext(QWidget *parent) : QWidget(parent){
     m_frmSplitter = new QSplitter(this);
     m_frmControl = new QWidget(this);
     m_frmDisplay = new QWidget(this);
-    m_frmScrollArea = new QScrollArea(this);
-    m_lblPanelTitle = new QLabel(this);
 
-    m_frmScrollArea->setWidget(m_frmDisplay);
-    m_frmSplitter->addWidget(m_frmControl);
-    m_frmSplitter->addWidget(m_frmScrollArea);
+    m_gridControl = new QGridLayout();
+    m_frmControl->setLayout(m_gridControl);
+
+    m_gridDisplay = new QGridLayout();
+    m_frmDisplay->setLayout(m_gridDisplay);
 
     m_gridMain = new QGridLayout();
     m_gridMain->addWidget(m_frmSplitter);
     m_gridMain->setMargin(0);
     setLayout(m_gridMain);
 
-    m_gridControl = new QGridLayout();
-    m_frmControl->setLayout(m_gridControl);
+    m_frmControl->setMinimumWidth(120);
+    m_frmControl->setMaximumWidth(400);
 
-    m_gridDisplay = new QGridLayout();
-    m_gridDisplay->addWidget(m_lblPanelTitle, 0, 0, 1, 1);
-    m_gridDisplay->setColumnMinimumWidth(0, WidthSection);
-    m_gridDisplay->setColumnStretch(0, 1);
-    m_gridDisplay->setRowStretch(0, 1);
-    m_gridDisplay->setMargin(20);
-    m_frmDisplay->setLayout(m_gridDisplay);
-
+    m_frmSplitter->addWidget(m_frmControl);
     m_frmSplitter->setHandleWidth(0);
     m_frmSplitter->setStretchFactor(1, 1);
     m_frmSplitter->setChildrenCollapsible(false);
     m_frmSplitter->setOrientation(Qt::Horizontal);
-    m_frmControl->setMinimumWidth(120);
-    m_frmControl->setMaximumWidth(400);
-    m_frmScrollArea->setWidgetResizable(true);
-    m_lblPanelTitle->setFixedWidth(WidthSection);
 
-    m_lblPanelTitle->setObjectName("PanelTitle");
     m_frmDisplay->setObjectName("PanelDisplay");
     m_frmControl->setObjectName("PanelControl");
-    m_frmScrollArea->setObjectName("PanelScrollArea");
 }
 
 QGridLayout *MPanelContext::gridMain(){
@@ -124,6 +116,33 @@ QGridLayout *MPanelContext::gridControl(){
 }
 QGridLayout *MPanelContext::gridDisplay(){
     return m_gridDisplay;
+}
+
+void MPanelContext::initializeLayoutType(bool sectioned){
+
+    if(sectioned){
+        m_lblPanelTitle = new QLabel(this);
+        m_frmScrollArea = new QScrollArea(this);
+
+        m_lblPanelTitle->setObjectName("PanelTitle");
+        m_frmScrollArea->setObjectName("PanelScrollArea");
+
+        m_frmScrollArea->setWidget(m_frmDisplay);
+        m_frmSplitter->addWidget(m_frmScrollArea);
+
+        m_gridDisplay->addWidget(m_lblPanelTitle, 0, 0, 1, 1);
+        m_gridDisplay->setAlignment(m_lblPanelTitle, Qt::AlignCenter);
+        m_gridDisplay->setColumnMinimumWidth(0, WidthSection);
+        m_gridDisplay->setColumnStretch(0, 1);
+        m_gridDisplay->setRowStretch(0, 1);
+        m_gridDisplay->setMargin(20);
+
+        m_lblPanelTitle->setFixedWidth(WidthSection);
+        m_frmScrollArea->setWidgetResizable(true);
+    }
+    else {
+        m_frmSplitter->addWidget(m_frmDisplay);
+    }
 }
 
 QString MPanelContext::title() const {
@@ -172,18 +191,15 @@ QLineEdit *MPanelContext::addLineEditHidden(){
     edit->setObjectName("PanelEditHidden");
     return edit;
 }
-QPushButton *MPanelContext::addButton(){
-    QPushButton *button = new QPushButton(this);
-    button->setObjectName("PanelButton");
-    button->setFixedWidth(120);
-    return button;
+QPushButton *MPanelContext::addPushButton(){
+    QPushButton *push = new QPushButton(this);
+    push->setObjectName("PanelPushButton");
+    push->setFixedWidth(120);
+    return push;
 }
 QTreeView *MPanelContext::addTreeView(){
     QTreeView *tree = new QTreeView(this);
-    tree->setObjectName("PanelTree");
-    tree->header()->setObjectName("PanelTreeHeader");
-    tree->verticalScrollBar()->setObjectName("TreeviewScrollbar");
-    tree->horizontalScrollBar()->setObjectName("TreeviewScrollbar");
+    addTreeView(tree);
     return tree;
 }
 QCheckBox *MPanelContext::addCheckBox(){
@@ -195,6 +211,18 @@ QComboBox *MPanelContext::addComboBox(){
     QComboBox *combo = new QComboBox(this);
     combo->setObjectName("PanelCombo");
     return combo;
+}
+QRadioButton *MPanelContext::addRadioButton(){
+    QRadioButton *radio = new QRadioButton(this);
+    radio->setObjectName("PanelRadioButton");
+    return radio;
+}
+
+void MPanelContext::addTreeView(QTreeView *tree){
+    tree->setObjectName("PanelTree");
+    tree->header()->setObjectName("PanelTreeHeader");
+    tree->verticalScrollBar()->setObjectName("TreeviewScrollbar");
+    tree->horizontalScrollBar()->setObjectName("TreeviewScrollbar");
 }
 
 void MPanelContext::paintEvent(QPaintEvent *event){
@@ -208,6 +236,11 @@ void MPanelContext::paintEvent(QPaintEvent *event){
 }
 void MPanelContext::showEvent(QShowEvent *event){
     m_frmSplitter->setSizes({180, width()-180});
+
+    foreach(MPanelSection *panel, findChildren<MPanelSection*>()){
+        panel->setFixedHeight(panel->height());
+    }
+
     QWidget::showEvent(event);
 }
 

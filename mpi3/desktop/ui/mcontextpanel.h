@@ -9,6 +9,7 @@ QT_BEGIN_NAMESPACE
 class QGridLayout;
 class QSplitter;
 class QScrollArea;
+class QRadioButton;
 class QPushButton;
 class QTreeView;
 class QCheckBox;
@@ -58,6 +59,9 @@ public:
     explicit MPanelContext(QWidget *parent = nullptr);
 
 public:
+    void initializeLayoutType(bool sectioned);
+
+public:
     QGridLayout *gridMain();
     QGridLayout *gridControl();
     QGridLayout *gridDisplay();
@@ -78,10 +82,13 @@ public:
     QLabel *addLabelValue();
     QLineEdit *addLineEdit();
     QLineEdit *addLineEditHidden();
-    QPushButton *addButton();
+    QPushButton *addPushButton();
     QTreeView *addTreeView();
     QCheckBox *addCheckBox();
     QComboBox *addComboBox();
+    QRadioButton *addRadioButton();
+
+    void addTreeView(QTreeView *tree);
 
 private:
     QSplitter *m_frmSplitter = nullptr;

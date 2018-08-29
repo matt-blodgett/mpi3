@@ -16,6 +16,7 @@ static const QStringList AutoBackupOptions = {"Continuous", "Daily", "Weekly", "
 
 
 MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanelContext(parent){
+    initializeLayoutType(true);
     initializeLayout();
 
     setTitle("Local Library");
@@ -64,11 +65,11 @@ void MPanelLibrary::initializeLayout(){
     m_boxLibName = addLineEditHidden();
     m_lblLibAddedTag = addLabelTag();
     m_lblLibAdded = addLabelValue();
-    m_btnLibImport = addButton();
-    m_btnLibExport = addButton();
+    m_btnLibImport = addPushButton();
+    m_btnLibExport = addPushButton();
     m_lblLibPathTag = addLabelTag();
     m_boxLibPath = addLineEdit();
-    m_btnSetLibPath = addButton();
+    m_btnSetLibPath = addPushButton();
 
     m_optCopyMedia = addCheckBox();
     m_optOrganizeMedia = addCheckBox();
@@ -77,16 +78,16 @@ void MPanelLibrary::initializeLayout(){
     m_lblMediaFileCount = addLabelValue();
     m_lblMediaLocTag = addLabelTag();
     m_boxMediaLoc = addLineEdit();
-    m_btnSetMediaLoc = addButton();
+    m_btnSetMediaLoc = addPushButton();
 
     m_optBackupLibrary = addCheckBox();
     m_lblBackupFreqTag = addLabelTag();
     m_cbxBackupFreq = addComboBox();
-    m_btnBackupManual = addButton();
-    m_btnBackupRestore = addButton();
+    m_btnBackupManual = addPushButton();
+    m_btnBackupRestore = addPushButton();
     m_lblBackupLocTag = addLabelTag();
     m_boxBackupLoc = addLineEdit();
-    m_btnSetBackupLoc = addButton();
+    m_btnSetBackupLoc = addPushButton();
 
     QGridLayout *library_gridWest = m_sectionLibrary->gridWest();
     QGridLayout *library_gridEast = m_sectionLibrary->gridEast();
