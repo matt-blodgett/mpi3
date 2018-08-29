@@ -4,14 +4,8 @@
 #define MDRIVEMODEL_H
 
 #include <QAbstractItemModel>
-
-#include <QIcon>
-
 #include <QStorageInfo>
-
-//QT_BEGIN_NAMESPACE
-
-//QT_END_NAMESPACE
+#include <QIcon>
 
 
 #include "mglobal.h"
@@ -39,12 +33,10 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 public:
-
     QList<MMediaLibrary*> raspiLibraries() const;
     MMediaLibrary *raspiLibraryAt(const QModelIndex &idx);
 
     void refresh();
-
 
 private:
     QStorageInfo m_storageInfo;

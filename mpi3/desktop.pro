@@ -40,6 +40,7 @@ RESOURCES += fonts.qrc
 RESOURCES += desktop.qrc
 RC_FILE = desktop.rc
 
+
 HEADERS += mglobal.h
 SOURCES += mglobal.cpp
 
@@ -57,10 +58,12 @@ SOURCES += core/maudioengine.cpp
 HEADERS += core/mmedialibrary.h
 SOURCES += core/mmedialibrary.cpp
 
-HEADERS += desktop/ui/mcontextbar.h
-SOURCES += desktop/ui/mcontextbar.cpp
 HEADERS += desktop/ui/maudiocontrol.h
 SOURCES += desktop/ui/maudiocontrol.cpp
+HEADERS += desktop/ui/mcontextbar.h
+SOURCES += desktop/ui/mcontextbar.cpp
+HEADERS += desktop/ui/mcontextpanel.h
+SOURCES += desktop/ui/mcontextpanel.cpp
 HEADERS += desktop/ui/mpanellibrary.h
 SOURCES += desktop/ui/mpanellibrary.cpp
 HEADERS += desktop/ui/mpaneldevice.h

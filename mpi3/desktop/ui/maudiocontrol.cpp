@@ -52,14 +52,14 @@ void MPanelPlayback::initializeLayout(){
 
     m_sldVolume = new QSlider(this);
 
-    QGridLayout *layoutVolume = new QGridLayout(this);
-    layoutVolume->addWidget(m_sldVolume, 1, 0, 1, 1);
-    layoutVolume->setColumnStretch(0, 1);
-    layoutVolume->setRowMinimumHeight(1, 20);
-    layoutVolume->setHorizontalSpacing(0);
-    layoutVolume->setVerticalSpacing(0);
-    layoutVolume->setMargin(0);
-    frmVolume->setLayout(layoutVolume);
+    QGridLayout *gridVolume = new QGridLayout(this);
+    gridVolume->addWidget(m_sldVolume, 1, 0, 1, 1);
+    gridVolume->setColumnStretch(0, 1);
+    gridVolume->setRowMinimumHeight(1, 20);
+    gridVolume->setHorizontalSpacing(0);
+    gridVolume->setVerticalSpacing(0);
+    gridVolume->setMargin(0);
+    frmVolume->setLayout(gridVolume);
 
     m_sldVolume->setOrientation(Qt::Horizontal);
 
@@ -81,26 +81,26 @@ void MPanelPlayback::initializeLayout(){
     m_btnFade = new QPushButton(this);
     m_sldPosition = new QSlider(this);
 
-    QGridLayout *layoutControl = new QGridLayout(this);
-    layoutControl->addWidget(m_lblTitle, 0, 2, 1, 1);
-    layoutControl->addWidget(m_lblArtist, 1, 2, 3, 1);
-    layoutControl->addWidget(m_lblPositionMin,  3, 1, 1, 1);
-    layoutControl->addWidget(m_lblPositionMax, 3, 3, 1, 1);
-    layoutControl->addWidget(m_sldPosition, 4, 1, 1, 3);
-    layoutControl->addWidget(m_btnPrev, 0, 0, 5, 1);
-    layoutControl->addWidget(m_btnFade, 0, 1, 5, 3);
-    layoutControl->addWidget(m_btnNext, 0, 4, 5, 1);
-    layoutControl->setColumnMinimumWidth(1, 22);
-    layoutControl->setColumnMinimumWidth(3, 22);
-    layoutControl->setColumnStretch(0, 0);
-    layoutControl->setColumnStretch(1, 0);
-    layoutControl->setColumnStretch(2, 1);
-    layoutControl->setColumnStretch(3, 0);
-    layoutControl->setColumnStretch(4, 0);
-    layoutControl->setHorizontalSpacing(0);
-    layoutControl->setVerticalSpacing(0);
-    layoutControl->setMargin(0);
-    frmPlayback->setLayout(layoutControl);
+    QGridLayout *gridControl = new QGridLayout(this);
+    gridControl->addWidget(m_lblTitle, 0, 2, 1, 1);
+    gridControl->addWidget(m_lblArtist, 1, 2, 3, 1);
+    gridControl->addWidget(m_lblPositionMin,  3, 1, 1, 1);
+    gridControl->addWidget(m_lblPositionMax, 3, 3, 1, 1);
+    gridControl->addWidget(m_sldPosition, 4, 1, 1, 3);
+    gridControl->addWidget(m_btnPrev, 0, 0, 5, 1);
+    gridControl->addWidget(m_btnFade, 0, 1, 5, 3);
+    gridControl->addWidget(m_btnNext, 0, 4, 5, 1);
+    gridControl->setColumnMinimumWidth(1, 22);
+    gridControl->setColumnMinimumWidth(3, 22);
+    gridControl->setColumnStretch(0, 0);
+    gridControl->setColumnStretch(1, 0);
+    gridControl->setColumnStretch(2, 1);
+    gridControl->setColumnStretch(3, 0);
+    gridControl->setColumnStretch(4, 0);
+    gridControl->setHorizontalSpacing(0);
+    gridControl->setVerticalSpacing(0);
+    gridControl->setMargin(0);
+    frmPlayback->setLayout(gridControl);
 
     frmPlayback->setFixedHeight(uHeight-1);
 
@@ -141,17 +141,17 @@ void MPanelPlayback::initializeLayout(){
     m_boxSearch = new QLineEdit(this);
     m_btnSearch = new QPushButton(this);
 
-    QGridLayout *layoutSearchbar = new QGridLayout(this);
-    layoutSearchbar->addWidget(m_btnSearch, 1, 0, 1, 1);
-    layoutSearchbar->addWidget(m_boxSearch, 1, 1, 1, 1);
-    layoutSearchbar->setColumnStretch(1, 1);
-    layoutSearchbar->setRowStretch(0, 1);
-    layoutSearchbar->setRowStretch(2, 1);
-    layoutSearchbar->setRowMinimumHeight(1, 20);
-    layoutSearchbar->setHorizontalSpacing(0);
-    layoutSearchbar->setVerticalSpacing(0);
-    layoutSearchbar->setMargin(0);
-    frmSearchbar->setLayout(layoutSearchbar);
+    QGridLayout *gridSearchbar = new QGridLayout(this);
+    gridSearchbar->addWidget(m_btnSearch, 1, 0, 1, 1);
+    gridSearchbar->addWidget(m_boxSearch, 1, 1, 1, 1);
+    gridSearchbar->setColumnStretch(1, 1);
+    gridSearchbar->setRowStretch(0, 1);
+    gridSearchbar->setRowStretch(2, 1);
+    gridSearchbar->setRowMinimumHeight(1, 20);
+    gridSearchbar->setHorizontalSpacing(0);
+    gridSearchbar->setVerticalSpacing(0);
+    gridSearchbar->setMargin(0);
+    frmSearchbar->setLayout(gridSearchbar);
 
     m_btnSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_boxSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -163,38 +163,38 @@ void MPanelPlayback::initializeLayout(){
 
     // -------------------------------------------------- PLAYBACK PANEl
 
-    QGridLayout *layoutMain = new QGridLayout(this);
-    layoutMain->addWidget(frmVolume, 0, 1, 1, 1);
-    layoutMain->addWidget(m_btnPlay, 0, 3, 1, 1);
-    layoutMain->addWidget(frmPlayback, 0, 5, 1, 1);
-    layoutMain->addWidget(frmSearchbar, 0, 9, 1, 1);
-    layoutMain->setRowMinimumHeight(0, uHeight);
-    layoutMain->setColumnMinimumWidth(0, 20);
-    layoutMain->setColumnMinimumWidth(1, 150);
-    layoutMain->setColumnMinimumWidth(2, 10);
-    layoutMain->setColumnMinimumWidth(3, 40);
-    layoutMain->setColumnMinimumWidth(4, 10);
-    layoutMain->setColumnMinimumWidth(5, 400);
-    layoutMain->setColumnMinimumWidth(6, 10);
-    layoutMain->setColumnMinimumWidth(7, 40);
-    layoutMain->setColumnMinimumWidth(8, 10);
-    layoutMain->setColumnMinimumWidth(9, 150);
-    layoutMain->setColumnMinimumWidth(10, 20);
-    layoutMain->setColumnStretch(0, 0);
-    layoutMain->setColumnStretch(1, 0);
-    layoutMain->setColumnStretch(2, 1);
-    layoutMain->setColumnStretch(3, 0);
-    layoutMain->setColumnStretch(4, 1);
-    layoutMain->setColumnStretch(5, 6);
-    layoutMain->setColumnStretch(6, 1);
-    layoutMain->setColumnStretch(7, 0);
-    layoutMain->setColumnStretch(8, 1);
-    layoutMain->setColumnStretch(9, 0);
-    layoutMain->setColumnStretch(10, 0);
-    layoutMain->setHorizontalSpacing(0);
-    layoutMain->setVerticalSpacing(0);
-    layoutMain->setMargin(0);
-    setLayout(layoutMain);
+    QGridLayout *gridMain = new QGridLayout(this);
+    gridMain->addWidget(frmVolume, 0, 1, 1, 1);
+    gridMain->addWidget(m_btnPlay, 0, 3, 1, 1);
+    gridMain->addWidget(frmPlayback, 0, 5, 1, 1);
+    gridMain->addWidget(frmSearchbar, 0, 9, 1, 1);
+    gridMain->setRowMinimumHeight(0, uHeight);
+    gridMain->setColumnMinimumWidth(0, 20);
+    gridMain->setColumnMinimumWidth(1, 150);
+    gridMain->setColumnMinimumWidth(2, 10);
+    gridMain->setColumnMinimumWidth(3, 40);
+    gridMain->setColumnMinimumWidth(4, 10);
+    gridMain->setColumnMinimumWidth(5, 400);
+    gridMain->setColumnMinimumWidth(6, 10);
+    gridMain->setColumnMinimumWidth(7, 40);
+    gridMain->setColumnMinimumWidth(8, 10);
+    gridMain->setColumnMinimumWidth(9, 150);
+    gridMain->setColumnMinimumWidth(10, 20);
+    gridMain->setColumnStretch(0, 0);
+    gridMain->setColumnStretch(1, 0);
+    gridMain->setColumnStretch(2, 1);
+    gridMain->setColumnStretch(3, 0);
+    gridMain->setColumnStretch(4, 1);
+    gridMain->setColumnStretch(5, 6);
+    gridMain->setColumnStretch(6, 1);
+    gridMain->setColumnStretch(7, 0);
+    gridMain->setColumnStretch(8, 1);
+    gridMain->setColumnStretch(9, 0);
+    gridMain->setColumnStretch(10, 0);
+    gridMain->setHorizontalSpacing(0);
+    gridMain->setVerticalSpacing(0);
+    gridMain->setMargin(0);
+    setLayout(gridMain);
 
     // -------------------------------------------------- OBJECT NAMES
 

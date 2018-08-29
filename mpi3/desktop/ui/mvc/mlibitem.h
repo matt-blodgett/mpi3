@@ -4,7 +4,6 @@
 #define MLIBITEM_H
 
 #include <QVariant>
-#include <QVector>
 #include <QList>
 #include <QIcon>
 
@@ -37,10 +36,9 @@ public:
     bool removeColumns(int position, int columns);
 
 private:
-    QList<MModelItem*> m_childItems;
     MModelItem *m_parentItem;
-
-    QVector<QVariant> m_itemData;
+    QList<MModelItem*> m_childItems;
+    QList<QVariant> m_itemData;
     QIcon m_itemIcon;
 };
 

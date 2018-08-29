@@ -41,7 +41,7 @@ private:
 signals:
     void viewChanged();
 
-private:
+protected:
     void paintEvent(QPaintEvent *event);
 
 };

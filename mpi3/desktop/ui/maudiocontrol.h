@@ -94,7 +94,7 @@ signals:
 public:
     void elementModified(MMediaElement *elemModified);
 
-private:
+protected:
     void paintEvent(QPaintEvent *event);
 
 };

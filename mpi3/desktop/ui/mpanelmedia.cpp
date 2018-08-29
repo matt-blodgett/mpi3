@@ -38,18 +38,18 @@ void MPanelMedia::initializeLayout(){
     QLabel *lblPlaylist = new QLabel(this);
     m_treeContainers = new MTreeContainers(this);
 
-    QGridLayout *layoutControl = new QGridLayout(this);
-    layoutControl->addWidget(m_btnSongs, 0, 0, 1, 1);
-    layoutControl->addWidget(m_btnArtists, 1, 0, 1, 1);
-    layoutControl->addWidget(m_btnAlbums, 2, 0, 1, 1);
-    layoutControl->setRowMinimumHeight(3, 6);
-    layoutControl->addWidget(lblPlaylist, 4, 0, 1, 1);
-    layoutControl->addWidget(m_treeContainers, 5, 0, 1, 1);
-    layoutControl->setRowStretch(5, 1);
-    layoutControl->setVerticalSpacing(0);
-    layoutControl->setHorizontalSpacing(0);
-    layoutControl->setMargin(0);
-    frmControl->setLayout(layoutControl);
+    QGridLayout *gridControl = new QGridLayout(this);
+    gridControl->addWidget(m_btnSongs, 0, 0, 1, 1);
+    gridControl->addWidget(m_btnArtists, 1, 0, 1, 1);
+    gridControl->addWidget(m_btnAlbums, 2, 0, 1, 1);
+    gridControl->setRowMinimumHeight(3, 6);
+    gridControl->addWidget(lblPlaylist, 4, 0, 1, 1);
+    gridControl->addWidget(m_treeContainers, 5, 0, 1, 1);
+    gridControl->setRowStretch(5, 1);
+    gridControl->setVerticalSpacing(0);
+    gridControl->setHorizontalSpacing(0);
+    gridControl->setMargin(0);
+    frmControl->setLayout(gridControl);
     frmControl->setMinimumWidth(120);
     frmControl->setMaximumWidth(400);
 
@@ -60,31 +60,31 @@ void MPanelMedia::initializeLayout(){
     m_lblView = new QLabel(this);
     m_treeSonglist = new MTreeSonglist(this);
 
-    QGridLayout *layoutTrees = new QGridLayout(this);
-    layoutTrees->addWidget(m_lblView, 0, 1, 1, 1);
-    layoutTrees->addWidget(m_treeSonglist, 1, 0, 1, 2);
-    layoutTrees->setRowStretch(1, 1);
-    layoutTrees->setColumnStretch(1, 1);
-    layoutTrees->setRowMinimumHeight(0, 60);
-    layoutTrees->setColumnMinimumWidth(0, 8);
-    layoutTrees->setHorizontalSpacing(0);
-    layoutTrees->setVerticalSpacing(0);
-    layoutTrees->setMargin(0);
-    frmTreeViews->setLayout(layoutTrees);
+    QGridLayout *gridTrees = new QGridLayout(this);
+    gridTrees->addWidget(m_lblView, 0, 1, 1, 1);
+    gridTrees->addWidget(m_treeSonglist, 1, 0, 1, 2);
+    gridTrees->setRowStretch(1, 1);
+    gridTrees->setColumnStretch(1, 1);
+    gridTrees->setRowMinimumHeight(0, 60);
+    gridTrees->setColumnMinimumWidth(0, 8);
+    gridTrees->setHorizontalSpacing(0);
+    gridTrees->setVerticalSpacing(0);
+    gridTrees->setMargin(0);
+    frmTreeViews->setLayout(gridTrees);
 
     // -------------------------------------------------- MEDIA PANEl
 
     m_frmSplitter = new QSplitter(this);
 
-    QGridLayout *layoutMain = new QGridLayout(this);
-    layoutMain->addWidget(m_frmSplitter);
-    layoutMain->setColumnStretch(0, 1);
-    layoutMain->setRowStretch(0, 1);
-    layoutMain->setMargin(0);
-    layoutMain->setHorizontalSpacing(0);
-    layoutMain->setVerticalSpacing(0);
-    layoutMain->setMargin(0);
-    setLayout(layoutMain);
+    QGridLayout *gridMain = new QGridLayout(this);
+    gridMain->addWidget(m_frmSplitter);
+    gridMain->setColumnStretch(0, 1);
+    gridMain->setRowStretch(0, 1);
+    gridMain->setMargin(0);
+    gridMain->setHorizontalSpacing(0);
+    gridMain->setVerticalSpacing(0);
+    gridMain->setMargin(0);
+    setLayout(gridMain);
 
     m_frmSplitter->addWidget(frmControl);
     m_frmSplitter->addWidget(frmTreeViews);

@@ -4,7 +4,6 @@
 #define MLIBMODEL_H
 
 #include <QAbstractItemModel>
-#include <QScopedPointer>
 #include <QIcon>
 #include <QMap>
 
@@ -14,7 +13,6 @@ QT_END_NAMESPACE
 
 
 #include "mglobal.h"
-
 class MModelItem;
 
 

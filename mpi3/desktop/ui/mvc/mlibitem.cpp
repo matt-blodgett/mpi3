@@ -96,7 +96,7 @@ bool MModelItem::removeColumns(int position, int columns){
     }
 
     for (int column = 0; column < columns; ++column){
-        m_itemData.remove(position);
+        m_itemData.removeAt(position);
     }
 
     for(int i = 0; i < m_childItems.size(); i++){

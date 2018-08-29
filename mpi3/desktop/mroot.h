@@ -131,7 +131,7 @@ private:
     void objPaste(QTreeView *treeParent);
     void objDelete(QTreeView *treeParent);
 
-private:
+protected:
     bool eventFilter(QObject *object, QEvent *event);
     void paintEvent(QPaintEvent *event);
     void closeEvent(QCloseEvent *event);

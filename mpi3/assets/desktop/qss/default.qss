@@ -664,16 +664,8 @@ QWidget#SectionHeader {
 }
 
 
-// ----------------------------------------------------------------- PanelLibrary
-QWidget#PanelLibrary {
-    background: #222222;
-    border-left: 1px solid #696969;
-    margin: 0px 0px 0px 0px;
-}
-
-
-// ----------------------------------------------------------------- PanelDevice
-QWidget#PanelDevice {
+// ----------------------------------------------------------------- PanelDisplay
+QWidget#PanelDisplay {
     background: #222222;
     border-left: 1px solid #696969;
     margin: 0px;

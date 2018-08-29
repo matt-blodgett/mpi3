@@ -3,74 +3,56 @@
 #ifndef MPANELDEVICE_H
 #define MPANELDEVICE_H
 
-#include <QWidget>
-
-QT_BEGIN_NAMESPACE
-class QPushButton;
-class QTreeView;
-class QSplitter;
-class QLineEdit;
-class QLabel;
-
-class QAbstractItemModel;
-QT_END_NAMESPACE
-
-
 #include "mglobal.h"
+#include "mcontextpanel.h"
 class MModelStorageDrives;
 
 
-class MPanelDevice : public QWidget
+class MPanelDevice : public MPanelContext
 {
     Q_OBJECT
 
 public:
     explicit MPanelDevice(QWidget *parent = nullptr);
-    ~MPanelDevice();
 
-    void setModel(QAbstractItemModel *model);
+private:
+    void initializeLayout();
 
-
+public:
     void setLibrary(MMediaLibrary *mediaLib);
     void setRaspiLibrary(MMediaLibrary *raspiLib);
-
 
     void loadVolume();
     void createVolume();
 
 private:
-    MMediaLibrary *m_mediaLibrary = nullptr;
-    MMediaLibrary *m_deviceLibrary = nullptr;
-
-    void initializeLayout();
-    void test();
-
     void selectionChanged();
 
 private:
-    QSplitter *m_frmSplitter = nullptr;
-
-    QTreeView *m_treeStorageDevices = nullptr;
+    MMediaLibrary *m_mediaLibrary = nullptr;
+    MMediaLibrary *m_deviceLibrary = nullptr;
     MModelStorageDrives *m_modelStorageDrives = nullptr;
 
-    QLabel *m_lblLibAddedTag = nullptr;
-    QLabel *m_lblSelectedLibrary = nullptr;
+private:
+    MPanelSection *m_sectionDevices = nullptr;
+    MPanelSection *m_sectionLibrary = nullptr;
+
     QLabel *m_lblSelectedDrive = nullptr;
+    QLabel *m_lblSelectedLibrary = nullptr;
     QPushButton *m_btnCreateVolume = nullptr;
     QPushButton *m_btnLoadVolume = nullptr;
-
-    QTreeView *m_treeSyncMedia = nullptr;
+    QTreeView *m_treeStorageDevices = nullptr;
 
     QLineEdit *m_boxLibName = nullptr;
+    QLabel *m_lblLibAddedTag = nullptr;
     QLabel *m_lblLibAdded = nullptr;
-
+    QLabel *m_lblSyncMediaTag = nullptr;
+    QTreeView *m_treeSyncMedia = nullptr;
     QLabel *m_lblCurrentDevice = nullptr;
     QWidget *m_frmStorageSpace = nullptr;
 
-private:
-    void paintEvent(QPaintEvent *event);
+protected:
     void showEvent(QShowEvent *event);
-
     bool eventFilter(QObject *obj, QEvent *event);
 };
 

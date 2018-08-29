@@ -59,7 +59,7 @@ private:
 signals:
     void viewChanged();
 
-private:
+protected:
     void showEvent(QShowEvent *event);
 };
 

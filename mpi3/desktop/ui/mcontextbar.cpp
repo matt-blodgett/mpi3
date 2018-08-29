@@ -31,19 +31,19 @@ void MContextBar::initializeLayout(){
     m_btnLibrary = new QRadioButton(this);
     m_btnDevice = new QRadioButton(this);
 
-    QGridLayout *layoutMain = new QGridLayout(this);
-    layoutMain->addWidget(m_btnMedia, 1, 1, 1, 1);
-    layoutMain->addWidget(m_btnLibrary, 1, 2, 1, 1);
-    layoutMain->addWidget(m_btnDevice, 1, 3, 1, 1);
-    layoutMain->setColumnStretch(0, 1);
-    layoutMain->setColumnStretch(4, 1);
-    layoutMain->setRowMinimumHeight(0, 1);
-    layoutMain->setRowMinimumHeight(1, 28);
-    layoutMain->setRowMinimumHeight(2, 1);
-    layoutMain->setHorizontalSpacing(0);
-    layoutMain->setVerticalSpacing(0);
-    layoutMain->setMargin(0);
-    setLayout(layoutMain);
+    QGridLayout *gridMain = new QGridLayout(this);
+    gridMain->addWidget(m_btnMedia, 1, 1, 1, 1);
+    gridMain->addWidget(m_btnLibrary, 1, 2, 1, 1);
+    gridMain->addWidget(m_btnDevice, 1, 3, 1, 1);
+    gridMain->setColumnStretch(0, 1);
+    gridMain->setColumnStretch(4, 1);
+    gridMain->setRowMinimumHeight(0, 1);
+    gridMain->setRowMinimumHeight(1, 28);
+    gridMain->setRowMinimumHeight(2, 1);
+    gridMain->setHorizontalSpacing(0);
+    gridMain->setVerticalSpacing(0);
+    gridMain->setMargin(0);
+    setLayout(gridMain);
 
     m_btnMedia->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_btnLibrary->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));

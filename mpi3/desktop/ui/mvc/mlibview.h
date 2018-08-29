@@ -9,9 +9,7 @@ QT_BEGIN_NAMESPACE
 class QSortFilterProxyModel;
 QT_END_NAMESPACE
 
-
 #include "mglobal.h"
-
 class MModelContainers;
 class MModelSonglist;
 class MStyle;
@@ -42,7 +40,7 @@ public:
 private:
     MModelContainers *m_modelContainers = nullptr;
 
-private:
+protected:
     void dropEvent(QDropEvent *event);
 };
 
@@ -91,7 +89,7 @@ public:
 signals:
     void playbackChanged(MSong *song);
 
-private:
+protected:
     bool allowDragMove();
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);

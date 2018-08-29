@@ -67,10 +67,6 @@ void MRootDesktop::initialize(){
     initializeLayout();
     initializeState();
     initializeStyle();
-
-
-    m_panelDevice->setModel(m_treeContainers->modelContainers());
-
     centralWidget()->show();
 }
 void MRootDesktop::initializeObjects(){
@@ -318,16 +314,16 @@ void MRootDesktop::initializeLayout(){
     menuBar()->setObjectName("MainMenu");
     setObjectName("RootWindow");
 
-    QGridLayout *layoutMenu = new QGridLayout(m_menuWidget);
-    layoutMenu->addWidget(menuBar(), 0, 0, 1, 1);
-    layoutMenu->addWidget(m_btnMinimize, 0, 2, 1, 1);
-    layoutMenu->addWidget(m_btnMaximize, 0, 3, 1, 1);
-    layoutMenu->addWidget(m_btnClose, 0, 4, 1, 1);
-    layoutMenu->setColumnMinimumWidth(5, 4);
-    layoutMenu->setColumnStretch(0, 0);
-    layoutMenu->setColumnStretch(1, 1);
-    layoutMenu->setMargin(0);
-    m_menuWidget->setLayout(layoutMenu);
+    QGridLayout *gridMenu = new QGridLayout(m_menuWidget);
+    gridMenu->addWidget(menuBar(), 0, 0, 1, 1);
+    gridMenu->addWidget(m_btnMinimize, 0, 2, 1, 1);
+    gridMenu->addWidget(m_btnMaximize, 0, 3, 1, 1);
+    gridMenu->addWidget(m_btnClose, 0, 4, 1, 1);
+    gridMenu->setColumnMinimumWidth(5, 4);
+    gridMenu->setColumnStretch(0, 0);
+    gridMenu->setColumnStretch(1, 1);
+    gridMenu->setMargin(0);
+    m_menuWidget->setLayout(gridMenu);
 
     m_btnMinimize->setIcon(QIcon(":/icons/window/minimize.png"));
     m_btnMaximize->setIcon(QIcon(":/icons/window/maximize.png"));
@@ -342,18 +338,18 @@ void MRootDesktop::initializeLayout(){
     m_btnClose->setFlat(true);
 
     QWidget *windowMain = new QWidget(this);
-    QGridLayout *layoutMain = new QGridLayout(windowMain);
-    layoutMain->addWidget(m_panelPlayback, 0, 0, 1, 1);
-    layoutMain->addWidget(m_contextBar, 1, 0, 1, 1);
-    layoutMain->addWidget(m_panelMedia, 2, 0, 1, 1);
-    layoutMain->addWidget(m_panelLibrary, 2, 0, 1, 1);
-    layoutMain->addWidget(m_panelDevice, 2, 0, 1, 1);
-    layoutMain->setColumnStretch(0, 1);
-    layoutMain->setRowStretch(2, 1);
-    layoutMain->setHorizontalSpacing(0);
-    layoutMain->setVerticalSpacing(0);
-    layoutMain->setMargin(0);
-    windowMain->setLayout(layoutMain);
+    QGridLayout *gridMain = new QGridLayout(windowMain);
+    gridMain->addWidget(m_panelPlayback, 0, 0, 1, 1);
+    gridMain->addWidget(m_contextBar, 1, 0, 1, 1);
+    gridMain->addWidget(m_panelMedia, 2, 0, 1, 1);
+    gridMain->addWidget(m_panelLibrary, 2, 0, 1, 1);
+    gridMain->addWidget(m_panelDevice, 2, 0, 1, 1);
+    gridMain->setColumnStretch(0, 1);
+    gridMain->setRowStretch(2, 1);
+    gridMain->setHorizontalSpacing(0);
+    gridMain->setVerticalSpacing(0);
+    gridMain->setMargin(0);
+    windowMain->setLayout(gridMain);
 
     setMinimumHeight(300);
     setMinimumWidth(700);

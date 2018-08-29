@@ -1,34 +1,23 @@
 #ifndef MPANELLIBRARY_H
 #define MPANELLIBRARY_H
 
-#include <QWidget>
-
-QT_BEGIN_NAMESPACE
-class QSplitter;
-class QPushButton;
-class QLineEdit;
-class QCheckBox;
-class QComboBox;
-class QTreeView;
-class QLabel;
-QT_END_NAMESPACE
-
-
 #include "mglobal.h"
+#include "mcontextpanel.h"
 
 
-class MPanelLibrary : public QWidget
+class MPanelLibrary : public MPanelContext
 {
     Q_OBJECT
 
 public:
     explicit MPanelLibrary(QWidget *parent = nullptr);
-    ~MPanelLibrary();
 
 private:
     void initializeLayout();
 
 public:
+    void setLibrary(MMediaLibrary *library);
+
     void allowCopyMedia(bool allow);
     void allowOrganizeMedia(bool allow);
     void allowAutoBackups(bool allow);
@@ -37,35 +26,40 @@ public:
     bool valOrganizeMedia() const;
     bool valAutoBackups() const;
 
-    void setLibrary(MMediaLibrary *library);
-
 private:
     MMediaLibrary *m_mediaLibrary = nullptr;
 
 private:
-    QSplitter *m_frmSplitter = nullptr;
+    MPanelSection *m_sectionLibrary = nullptr;
+    MPanelSection *m_sectionMedia = nullptr;
+    MPanelSection *m_sectionBackup = nullptr;
 
+    QLineEdit *m_boxLibName = nullptr;
+    QLabel *m_lblLibAddedTag = nullptr;
+    QLabel *m_lblLibAdded = nullptr;
     QPushButton *m_btnLibImport = nullptr;
     QPushButton *m_btnLibExport = nullptr;
-    QPushButton *m_btnSetLibPath = nullptr;
-    QLineEdit *m_boxLibName = nullptr;
     QLineEdit *m_boxLibPath = nullptr;
-    QLabel *m_lblLibAdded = nullptr;
+    QLabel *m_lblLibPathTag = nullptr;
+    QPushButton *m_btnSetLibPath = nullptr;
 
     QCheckBox *m_optCopyMedia = nullptr;
     QCheckBox *m_optOrganizeMedia = nullptr;
-    QPushButton *m_btnSetMediaLoc = nullptr;
-    QLineEdit *m_boxMediaLoc = nullptr;
+    QLabel *m_lblMediaSizeTag = nullptr;
     QLabel *m_lblMediaSize = nullptr;
     QLabel *m_lblMediaFileCount = nullptr;
+    QLabel *m_lblMediaLocTag = nullptr;
+    QLineEdit *m_boxMediaLoc = nullptr;
+    QPushButton *m_btnSetMediaLoc = nullptr;
 
     QCheckBox *m_optBackupLibrary = nullptr;
-    QPushButton *m_btnSetBackupLoc = nullptr;
+    QLabel *m_lblBackupFreqTag = nullptr;
+    QComboBox *m_cbxBackupFreq = nullptr;
     QPushButton *m_btnBackupManual = nullptr;
     QPushButton *m_btnBackupRestore = nullptr;
+    QLabel *m_lblBackupLocTag = nullptr;
     QLineEdit *m_boxBackupLoc = nullptr;
-    QComboBox *m_cbxBackupFreq = nullptr;
-    QTreeView *m_treeBackupHist = nullptr;
+    QPushButton *m_btnSetBackupLoc = nullptr;
 
 signals:
     void libImport();
@@ -73,10 +67,6 @@ signals:
     void libSetSavePath();
     void libSetMediaPath();
     void libSetBackupPath();
-
-private:
-    void paintEvent(QPaintEvent *event);
-    void showEvent(QShowEvent *event);
 };
 
 #endif
