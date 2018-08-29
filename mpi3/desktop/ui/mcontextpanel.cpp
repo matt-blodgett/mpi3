@@ -1,31 +1,23 @@
 #include "mcontextpanel.h"
 
-
-
 #include <QStyleOption>
 #include <QPainter>
-
 #include <QGridLayout>
 #include <QSplitter>
 #include <QScrollArea>
-#include <QLabel>
-
-#include <QLineEdit>
 #include <QPushButton>
 #include <QTreeView>
-
 #include <QHeaderView>
 #include <QScrollBar>
-
 #include <QCheckBox>
 #include <QComboBox>
-
+#include <QLineEdit>
+#include <QLabel>
 
 
 static const int WidthSplit = 400;
 static const int WidthSeparator = 10;
 static const int WidthSection = (WidthSplit * 2) + WidthSeparator;
-
 
 
 MPanelSection::MPanelSection(QWidget *parent) : QWidget(parent){
@@ -214,7 +206,6 @@ void MPanelContext::paintEvent(QPaintEvent *event){
 
     QWidget::paintEvent(event);
 }
-
 void MPanelContext::showEvent(QShowEvent *event){
     m_frmSplitter->setSizes({180, width()-180});
     QWidget::showEvent(event);

@@ -7,14 +7,14 @@
 
 QT_BEGIN_NAMESPACE
 class QGridLayout;
-class QScrollArea;
 class QSplitter;
-class QLabel;
-class QLineEdit;
+class QScrollArea;
 class QPushButton;
 class QTreeView;
 class QCheckBox;
 class QComboBox;
+class QLineEdit;
+class QLabel;
 QT_END_NAMESPACE
 
 
@@ -47,7 +47,6 @@ private:
 public:
     QString header() const;
     void setHeader(const QString &header);
-
 };
 
 
@@ -94,7 +93,6 @@ private:
 protected:
     void paintEvent(QPaintEvent *event);
     void showEvent(QShowEvent *event);
-
 };
 
 
