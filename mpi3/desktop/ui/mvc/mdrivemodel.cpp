@@ -1,20 +1,11 @@
-
 #include "mdrivemodel.h"
-
-
 #include "core/mmedialibrary.h"
 
-
-#include <QFileInfo>
-#include <QStorageInfo>
-
-
 #include <QFileIconProvider>
-
+#include <QFileInfo>
 
 
 #include <QDebug>
-
 
 
 MModelStorageDrives::MModelStorageDrives(QObject *parent) : QAbstractItemModel(parent){
@@ -23,7 +14,6 @@ MModelStorageDrives::MModelStorageDrives(QObject *parent) : QAbstractItemModel(p
     m_headers << "Free Space";
     m_headers << "Total Size";
     m_headers << "Available";
-
     refresh();
 }
 
@@ -44,19 +34,15 @@ QModelIndex MModelStorageDrives::parent(const QModelIndex &) const{
 QVariant MModelStorageDrives::data(const QModelIndex &index, int role) const{
 
     if(index.isValid()){
-
         if(role == Qt::DisplayRole){
             QList<QVariant> deviceData = m_deviceData.at(index.row()).toList();
             return deviceData.at(index.column());
         }
-
         else if(role == Qt::TextAlignmentRole){
-
             if(index.column() > 1){
                 return Qt::AlignRight;
             }
         }
-
         else if(role == Qt::DecorationRole && index.column() == 0){
             return m_deviceIcons.at(index.row());
         }
@@ -67,12 +53,10 @@ QVariant MModelStorageDrives::data(const QModelIndex &index, int role) const{
 QVariant MModelStorageDrives::headerData(int section, Qt::Orientation orientation, int role) const{
 
     if(orientation == Qt::Horizontal){
-
         if(role == Qt::DisplayRole){
             return m_headers.at(section);
         }
         else if(role == Qt::TextAlignmentRole){
-
             if(section > 1){
                 return Qt::AlignCenter;
             }
@@ -86,12 +70,11 @@ QList<MMediaLibrary*> MModelStorageDrives::raspiLibraries() const{
     return m_raspiLibraries.values();
 }
 MMediaLibrary *MModelStorageDrives::raspiLibraryAt(const QModelIndex &idx) {
-    QString label = data(index(idx.row(), 0)).toString();
-    if(m_raspiLibraries.keys().contains(label)){
-        return m_raspiLibraries[label];
-    }
-
-    return nullptr;
+    return m_raspiLibraries[rootPathAt(idx)];
+}
+QString MModelStorageDrives::rootPathAt(const QModelIndex &idx)const {
+    QStorageInfo sInfo = m_storageInfo.mountedVolumes().at(idx.row());
+    return sInfo.rootPath();
 }
 
 void MModelStorageDrives::refresh(){
@@ -103,37 +86,54 @@ void MModelStorageDrives::refresh(){
 
     m_storageInfo.refresh();
 
+    QStringList rootPathList;
     foreach(QStorageInfo sInfo, m_storageInfo.mountedVolumes()){
 
-        QList<QString> deviceData;
+        QString rootPath = sInfo.rootPath();
+        rootPathList.append(rootPath);
 
         QString label = sInfo.name();
-        QString letter = sInfo.rootPath().replace("/", "");
-        label += " (" + letter + ")";
+        QString letter = rootPath;
+        label += " (" + letter.replace("/", "") + ")";
 
-        deviceData.append(label);
-
-        if(QDir().exists(sInfo.rootPath() + "mpi3")){
-            MMediaLibrary *raspiLib = new MMediaLibrary();
-            raspiLib->modify(raspiLib->pid(), "Raspi Lib");
-
-            m_raspiLibraries[label] = raspiLib;
-            deviceData.append(raspiLib->name());
+        if(!m_raspiLibraries.contains(rootPath)){
+            m_raspiLibraries[rootPath] = nullptr;
         }
-        else {
-            deviceData.append("");
+
+        MMediaLibrary *raspiLib = m_raspiLibraries[rootPath];
+        bool raspiLibExists = MMediaLibrary::detectRaspiVolume(rootPath);
+
+        if(!raspiLib && raspiLibExists){
+            raspiLib = MMediaLibrary::loadRaspiVolume(rootPath);
+            m_raspiLibraries[rootPath] = raspiLib;
+        }
+        else if(raspiLib && !raspiLibExists){
+            m_raspiLibraries[rootPath] = nullptr;
+            delete raspiLib;
+            raspiLib = nullptr;
         }
 
         double bfree = sInfo.bytesFree();
         double btotal = sInfo.bytesTotal();
 
-        deviceData.append(MMediaLibrary::sizeToString(sInfo.bytesFree(), 1));
-        deviceData.append(MMediaLibrary::sizeToString(sInfo.bytesTotal(), 1));
-        deviceData.append(MMediaLibrary::percentToString(bfree / btotal, 1));
-        deviceData.append(sInfo.fileSystemType());
+        QList<QString> deviceData;
+        deviceData << label;
+        deviceData << (raspiLib ? raspiLib->name() : "");
+        deviceData << MMediaLibrary::sizeToString(bfree, 1);
+        deviceData << MMediaLibrary::sizeToString(btotal, 1);
+        deviceData << MMediaLibrary::percentToString(bfree / btotal, 1);
+        deviceData << sInfo.fileSystemType();
 
-        m_deviceData.append(QVariant(deviceData));
-        m_deviceIcons.append(QFileIconProvider().icon(QFileInfo(sInfo.rootPath())));
+        m_deviceData << QVariant(deviceData);
+        m_deviceIcons << QFileIconProvider().icon(QFileInfo(sInfo.rootPath()));
+    }
+
+    QMap<QString, MMediaLibrary*>::const_iterator iter;
+    for(iter = m_raspiLibraries.begin(); iter != m_raspiLibraries.end(); iter++){
+        if(!rootPathList.contains(iter.key())){
+            m_raspiLibraries.remove(iter.key());
+            delete iter.value();
+        }
     }
 
     endResetModel();

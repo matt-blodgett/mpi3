@@ -282,11 +282,22 @@ QVector<MMediaContainer*> MFolder::childContainers() const {
 }
 
 
-MMediaLibrary::MMediaLibrary() : MMediaContainer(){
+MMediaLibrary::MMediaLibrary(QObject *parent) : MMediaContainer(){
+    setParent(parent);
     m_added = "14/03/1994";
 }
 Mpi3::ElementType MMediaLibrary::type() const {
     return Mpi3::LibraryElement;
+}
+
+void MMediaLibrary::reset(){
+    m_libSongs.clear();
+    m_libPlaylists.clear();
+    m_libFolders.clear();
+
+    m_mediaPath = QString();
+    m_backupPath = QString();
+    m_downloadPath = QString();
 }
 
 void MMediaLibrary::load(const QString &path){
@@ -483,10 +494,42 @@ void MMediaLibrary::save(const QString &path){
             xmlFolders.appendChild(folderElement);
         }
 
-
         QTextStream xmlStream(&saveFile);
         xmlStream << xml.toString();
     }
+}
+
+MMediaLibrary *MMediaLibrary::createRaspiVolume(const QString &rootPath){
+    MMediaLibrary *raspiLib = new MMediaLibrary();
+    raspiLib->m_pid = generatePID(Mpi3::LibraryElement);
+    raspiLib->m_name = "New Raspi Library";
+    raspiLib->m_added = "14/03/1994";
+
+    QString rootDir = rootPath + ".mpi3";
+    QString libPath = rootDir + "/lib.mpi3lib";
+
+    QDir().mkdir(rootDir);
+    raspiLib->save(libPath);
+
+    return raspiLib;
+}
+MMediaLibrary *MMediaLibrary::loadRaspiVolume(const QString &rootPath){
+    MMediaLibrary *raspiLib = nullptr;
+
+    QString rootDir = rootPath + ".mpi3";
+    QString libPath = rootDir + "/lib.mpi3lib";
+
+    if(QDir().exists(libPath)){
+        raspiLib = new MMediaLibrary();
+        raspiLib->load(libPath);
+    }
+
+    return raspiLib;
+}
+bool MMediaLibrary::detectRaspiVolume(const QString &rootPath){
+    QString rootDir = rootPath + ".mpi3";
+    QString libPath = rootDir + "/lib.mpi3lib";
+    return QDir().exists(libPath);
 }
 
 void MMediaLibrary::setMediaPath(const QString &path){
@@ -497,16 +540,6 @@ void MMediaLibrary::setBackupPath(const QString &path){
 }
 void MMediaLibrary::setDownloadPath(const QString &path){
     m_downloadPath = QDir::toNativeSeparators(path);;
-}
-
-void MMediaLibrary::reset(){
-    m_libSongs.clear();
-    m_libPlaylists.clear();
-    m_libFolders.clear();
-
-    m_mediaPath = QString();
-    m_backupPath = QString();
-    m_downloadPath = QString();
 }
 
 QString MMediaLibrary::savePath() const {

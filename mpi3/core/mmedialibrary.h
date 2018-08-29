@@ -151,24 +151,28 @@ class MMediaLibrary : public MMediaContainer
     Q_DISABLE_COPY(MMediaLibrary)
 
 public:    
-    explicit MMediaLibrary();
+    explicit MMediaLibrary(QObject *parent = nullptr);
     Mpi3::ElementType type() const override;
+
+    void reset();
 
     void load(const QString &path = QString());
     void save(const QString &path = QString());
+
+    MMediaLibrary *createRaspiVolume(const QString &rootPath);
+    static MMediaLibrary *loadRaspiVolume(const QString &rootPath);
+    static bool detectRaspiVolume(const QString &rootPath);
 
     void setMediaPath(const QString &path);
     void setBackupPath(const QString &path);
     void setDownloadPath(const QString &path);
 
-    void reset();
-
-public:    
     QString savePath() const;
     QString mediaPath() const;
     QString backupPath() const;
     QString downloadPath() const;
 
+public:
     QVector<MSong*> songs() const override;
     QVector<MPlaylist*> playlists() const override;
     QVector<MFolder*> folders() const override;

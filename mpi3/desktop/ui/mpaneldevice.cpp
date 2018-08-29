@@ -125,7 +125,10 @@ void MPanelDevice::loadVolume(){
     setRaspiLibrary(raspiLib);
 }
 void MPanelDevice::createVolume(){
-
+    QModelIndex idx = m_treeStorageDevices->selectionModel()->currentIndex();
+    QString rootPath = m_modelStorageDrives->rootPathAt(idx);
+    MMediaLibrary *raspiLib = m_mediaLibrary->createRaspiVolume(rootPath);
+    qDebug() << raspiLib->name();
 }
 
 void MPanelDevice::selectionChanged(){
@@ -177,6 +180,9 @@ bool MPanelDevice::eventFilter(QObject *obj, QEvent *event){
     if(obj == m_treeStorageDevices->viewport()){
         if(event->type() == QEvent::MouseButtonPress){
             m_treeStorageDevices->selectionModel()->clear();
+
+            m_modelStorageDrives->refresh();
+
         }
     }
 

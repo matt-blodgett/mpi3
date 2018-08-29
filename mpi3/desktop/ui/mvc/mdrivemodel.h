@@ -35,6 +35,7 @@ public:
 public:
     QList<MMediaLibrary*> raspiLibraries() const;
     MMediaLibrary *raspiLibraryAt(const QModelIndex &idx);
+    QString rootPathAt(const QModelIndex &idx) const;
 
     void refresh();
 
@@ -43,7 +44,6 @@ private:
     QList<QString> m_headers;
     QList<QIcon> m_deviceIcons;
     QList<QVariant> m_deviceData;
-
     QMap<QString, MMediaLibrary*> m_raspiLibraries;
 };
 
