@@ -8,3 +8,4 @@ build*
 
 # 3rd Party libraries
 mpi3/lib/**
+bin/**
