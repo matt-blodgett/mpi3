@@ -1,2 +1,8 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/styles">
+        <file alias="default.qss">device/styles/default.qss</file>
+    </qresource>
+    <qresource prefix="/profiles">
+        <file alias="default.xml">device/profile-default.xml</file>
+    </qresource>
+</RCC>

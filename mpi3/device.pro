@@ -3,6 +3,9 @@ DEFINES += QT_DEPRECATED_WARNINGS=0x010000
 DEFINES += QT_NO_NARROWING_CONVERSIONS_IN_CONNECT
 
 
+CONFIG += c++17
+
+
 QT += core
 QT += gui
 QT += widgets
@@ -21,13 +24,25 @@ target.path = /home/pi/Desktop/mpi3
 INSTALLS += target
 
 
-
 RESOURCES += assets/device.qrc
 
-#HEADERS += mglobal.h
-#SOURCES += mglobal.cpp
+
+HEADERS += mglobal.h
+SOURCES += mglobal.cpp
 
 SOURCES += device/main.cpp
 HEADERS += device/mroot.h
 SOURCES += device/mroot.cpp
+
+HEADERS += util/mstyle.h
+SOURCES += util/mstyle.cpp
+HEADERS += util/msettings.h
+SOURCES += util/msettings.cpp
+
+#HEADERS += core/maudioengine.h
+#SOURCES += core/maudioengine.cpp
+#HEADERS += core/mmedialibrary.h
+#SOURCES += core/mmedialibrary.cpp
+
+
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mpi3config>
+	<UserApplicationValues>
+		<volume>50</volume>
+	</UserApplicationValues>
+	<UserApplicationPaths>
+                <style>:/styles/default.qss</style>
+		<media></media>
+                <library></library>
+	</UserApplicationPaths>
+</mpi3config>

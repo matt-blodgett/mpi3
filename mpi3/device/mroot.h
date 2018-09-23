@@ -10,7 +10,7 @@ class QPushButton;
 QT_END_NAMESPACE
 
 
-//#include "mglobal.h"
+#include "mglobal.h"
 
 class MStyleSheet;
 class MMediaLibrary;

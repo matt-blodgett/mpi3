@@ -20,7 +20,9 @@ class MSong;
 
 namespace Mpi3 {
 
+#ifdef Q_NAMESPACE
     Q_NAMESPACE
+#endif
 
     enum ElementType {
         BaseElement,
@@ -29,19 +31,31 @@ namespace Mpi3 {
         PlaylistElement,
         FolderElement,
         LibraryElement
-    }; Q_ENUM_NS(ElementType)
+    };
+
+#ifdef Q_NAMESPACE
+    Q_ENUM_NS(ElementType)
+#endif
 
     enum MediaState {
         MediaEmpty,
         MediaReady,
         MediaBusy
-    }; Q_ENUM_NS(MediaState)
+    };
+
+#ifdef Q_NAMESPACE
+    Q_ENUM_NS(MediaState)
+#endif
 
     enum EngineState {
         EngineStopped,
         EngineActive,
         EngineIdle
-    }; Q_ENUM_NS(EngineState)
+    };
+
+#ifdef Q_NAMESPACE
+    Q_ENUM_NS(EngineState)
+#endif
 
     enum ErrorState {
         NoError,
@@ -49,7 +63,11 @@ namespace Mpi3 {
         FileFormatError,
         FileAccessError,
         FileInvalidError
-    }; Q_ENUM_NS(ErrorState)
+    };
+
+#ifdef Q_NAMESPACE
+    Q_ENUM_NS(ErrorState)
+#endif
 
     void register_global_metatypes();
 };

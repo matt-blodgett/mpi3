@@ -3,8 +3,8 @@
 //#include "core/mmedialibrary.h"
 //#include "core/maudioengine.h"
 
-//#include "util/msettings.h"
-//#include "util/mstyle.h"
+#include "util/msettings.h"
+#include "util/mstyle.h"
 
 #include <QGridLayout>
 #include <QStyleOption>
@@ -20,8 +20,8 @@ MRootDevice::MRootDevice(QWidget *parent): QMainWindow(parent){}
 MRootDevice::~MRootDevice(){
 //    m_audioEngine->stop();
 //    delete m_audioEngine;
-//    delete m_styleSheet;
 //    delete m_mediaLibrary;
+    delete m_styleSheet;
 //    Mpi3::external_libs_deinit();
 }
 
@@ -35,6 +35,16 @@ void MRootDevice::initialize(){
 }
 
 void MRootDevice::initializeObjects(){
+    m_styleSheet = new MStyleSheet();
+
+//    m_mediaLibrary = new MMediaLibrary();
+//    m_audioEngine = new MAudioEngine(this);
+
+//    connect(m_audioEngine, &MAudioEngine::notifyMediaStatus, this, &MRootDesktop::processAudioMediaStatus);
+//    connect(m_audioEngine, &MAudioEngine::notifyEngineStatus, this, &MRootDesktop::processAudioEngineStatus);
+//    connect(m_audioEngine, &MAudioEngine::notifyErrorStatus, this, &MRootDesktop::processAudioErrorStatus);
+//    connect(m_audioEngine, &MAudioEngine::notifyRequestStatus, this, &MRootDesktop::processAudioRequestStatus);
+
     m_testButton = new QPushButton(this);
 }
 void MRootDevice::initializeLayout(){
@@ -50,9 +60,10 @@ void MRootDevice::initializeLayout(){
     m_testButton->setText("close");
     connect(m_testButton, &QPushButton::released, this, [this](){this->close();});
 
-    setContentsMargins(1, 1, 1, 1);
     setCentralWidget(windowMain);
+    setContentsMargins(1, 1, 1, 1);
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+    setObjectName("RootWindow");
     showFullScreen();
 }
 void MRootDevice::initializeState(){
@@ -60,6 +71,11 @@ void MRootDevice::initializeState(){
 }
 void MRootDevice::initializeStyle(){
 
+    if(m_styleSheet->qssPath().isNull()){
+        m_styleSheet->load(":/styles/default.qss");
+    }
+
+    setStyleSheet(m_styleSheet->qssStyle());
 }
 void MRootDevice::saveSettings(){
 

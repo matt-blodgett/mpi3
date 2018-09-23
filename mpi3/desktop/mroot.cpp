@@ -54,8 +54,8 @@ MRootDesktop::MRootDesktop(){}
 MRootDesktop::~MRootDesktop(){
     m_audioEngine->stop();
     delete m_audioEngine;
-    delete m_styleSheet;
     delete m_mediaLibrary;
+    delete m_styleSheet;
     Mpi3::external_libs_deinit();
 }
 
