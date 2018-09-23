@@ -1,7 +1,7 @@
 #include "mroot.h"
 
-//#include "core/mmedialibrary.h"
 //#include "core/maudioengine.h"
+#include "core/mmedialibrary.h"
 
 #include "util/msettings.h"
 #include "util/mstyle.h"
@@ -37,7 +37,7 @@ void MRootDevice::initialize(){
 void MRootDevice::initializeObjects(){
     m_styleSheet = new MStyleSheet();
 
-//    m_mediaLibrary = new MMediaLibrary();
+    m_mediaLibrary = new MMediaLibrary();
 //    m_audioEngine = new MAudioEngine(this);
 
 //    connect(m_audioEngine, &MAudioEngine::notifyMediaStatus, this, &MRootDesktop::processAudioMediaStatus);

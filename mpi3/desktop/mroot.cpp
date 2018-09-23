@@ -1,7 +1,7 @@
 ﻿#include "mroot.h"
 
-#include "core/mmedialibrary.h"
 #include "core/maudioengine.h"
+#include "core/mmedialibrary.h"
 
 #include "util/msettings.h"
 #include "util/mstyle.h"

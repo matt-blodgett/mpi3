@@ -8,6 +8,7 @@ CONFIG += c++17
 
 QT += core
 QT += gui
+QT += xml
 QT += widgets
 
 
@@ -27,6 +28,19 @@ INSTALLS += target
 RESOURCES += assets/device.qrc
 
 
+#LIBS += $$PWD/lib/libao/libao.dll.a
+INCLUDEPATH += $$PWD/lib/libao
+DEPENDPATH += $$PWD/lib/libao
+
+
+#LIBS += $$PWD/lib/libav/avcodec.lib
+#LIBS += $$PWD/lib/libav/avformat.lib
+#LIBS += $$PWD/lib/libav/avresample.lib
+#LIBS += $$PWD/lib/libav/avutil.lib
+INCLUDEPATH += $$PWD/lib/libav
+DEPENDPATH += $$PWD/lib/libav
+
+
 HEADERS += mglobal.h
 SOURCES += mglobal.cpp
 
@@ -35,10 +49,10 @@ SOURCES += util/mstyle.cpp
 HEADERS += util/msettings.h
 SOURCES += util/msettings.cpp
 
-#HEADERS += core/maudioengine.h
-#SOURCES += core/maudioengine.cpp
-#HEADERS += core/mmedialibrary.h
-#SOURCES += core/mmedialibrary.cpp
+HEADERS += core/maudioengine.h
+SOURCES += core/maudioengine.cpp
+HEADERS += core/mmedialibrary.h
+SOURCES += core/mmedialibrary.cpp
 
 SOURCES += device/main.cpp
 HEADERS += device/mroot.h
