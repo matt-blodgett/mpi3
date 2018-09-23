@@ -23,6 +23,11 @@ QMAKE_TARGET_PRODUCT = "Mpi3Desktop"
 QMAKE_TARGET_DESCRIPTION = "Mpi3 Media Player"
 
 
+RESOURCES += assets/fonts.qrc
+RESOURCES += assets/desktop.qrc
+RC_FILE = assets/desktop.rc
+
+
 LIBS += $$PWD/lib/libao/libao.dll.a
 INCLUDEPATH += $$PWD/lib/libao
 DEPENDPATH += $$PWD/lib/libao
@@ -34,11 +39,6 @@ LIBS += $$PWD/lib/libav/avresample.lib
 LIBS += $$PWD/lib/libav/avutil.lib
 INCLUDEPATH += $$PWD/lib/libav
 DEPENDPATH += $$PWD/lib/libav
-
-
-RESOURCES += fonts.qrc
-RESOURCES += desktop.qrc
-RC_FILE = desktop.rc
 
 
 HEADERS += mglobal.h

@@ -21,9 +21,13 @@ target.path = /home/pi/Desktop/mpi3
 INSTALLS += target
 
 
+
+RESOURCES += assets/device.qrc
+
 #HEADERS += mglobal.h
 #SOURCES += mglobal.cpp
 
 SOURCES += device/main.cpp
 HEADERS += device/mroot.h
 SOURCES += device/mroot.cpp
+

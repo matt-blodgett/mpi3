@@ -471,7 +471,7 @@ QWidget#PanelCombo::drop-down {
 }
 
 QComboBox::down-arrow {
-    image: url(:/icons/indicators/ind_down_light.png);
+    image: url(:/icons/indicators/ind-down-light.png);
 }
 
 QComboBox::down-arrow:on {
@@ -769,54 +769,54 @@ QWidget#TreeviewContainers::branch:selected {
 }
 
 QWidget#TreeviewContainers::branch:has-siblings:!adjoins-item {
-    border-image: url(:/icons/treeview/branch_vline.png) 0;
+    border-image: url(:/icons/treeview/branch-vline.png) 0;
 }
 
 QWidget#TreeviewContainers::branch:has-siblings:adjoins-item {
-    border-image: url(:/icons/treeview/branch_more.png) 0;
+    border-image: url(:/icons/treeview/branch-more.png) 0;
 }
 
 QWidget#TreeviewContainers::branch:!has-children:!has-siblings:adjoins-item {
-    border-image: url(:/icons/treeview/branch_end.png) 0;
+    border-image: url(:/icons/treeview/branch-end.png) 0;
 }
 
 QWidget#TreeviewContainers::branch:has-children:!has-siblings:closed {
-    image: url(:/icons/treeview/arrow_right_light.png);
+    image: url(:/icons/treeview/arrow-right-light.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:closed:has-children:has-siblings {
-    image: url(:/icons/treeview/arrow_right_light.png);
+    image: url(:/icons/treeview/arrow-right-light.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:open:has-children:!has-siblings{
-    image: url(:/icons/treeview/arrow_down_light.png);
+    image: url(:/icons/treeview/arrow-down-light.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:open:has-children:has-siblings  {
-    image: url(:/icons/treeview/arrow_down_light.png);
+    image: url(:/icons/treeview/arrow-down-light.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:selected:has-children:!has-siblings:closed {
-    image: url(:/icons/treeview/arrow_right_dark.png);
+    image: url(:/icons/treeview/arrow-right-dark.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:selected:closed:has-children:has-siblings {
-    image: url(:/icons/treeview/arrow_right_dark.png);
+    image: url(:/icons/treeview/arrow-right-dark.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:selected:open:has-children:!has-siblings{
-    image: url(:/icons/treeview/arrow_down_dark.png);
+    image: url(:/icons/treeview/arrow-down-dark.png);
     border-image: none;
 }
 
 QWidget#TreeviewContainers::branch:selected:open:has-children:has-siblings  {
-    image: url(:/icons/treeview/arrow_down_dark.png);
+    image: url(:/icons/treeview/arrow-down-dark.png);
     border-image: none;
 }
 
@@ -888,7 +888,7 @@ QHeaderView::section:hover {
 }
 
 QHeaderView::down-arrow {
-    image: url(:/icons/indicators/ind_down_light.png);
+    image: url(:/icons/indicators/ind-down-light.png);
     subcontrol-origin: padding;
     subcontrol-position: center right;
     padding: 4px 4px 4px 4px;
@@ -896,7 +896,7 @@ QHeaderView::down-arrow {
 }
 
 QHeaderView::up-arrow {
-    image: url(:/icons/indicators/ind_up_light.png);
+    image: url(:/icons/indicators/ind-up-light.png);
     subcontrol-origin: padding;
     subcontrol-position: center right;
     padding: 4px 4px 4px 4px;
@@ -1083,35 +1083,35 @@ QScrollBar::add-page:vertical {
 
 // ----------------------------------------------------------------- QCheckBox
 //QWidget#PanelCheck::indicator:unchecked {
-//    image: url(:/images/checkbox_unchecked.png);
+//    image: url(:/images/checkbox-unchecked.png);
 //}
 
 //QWidget#PanelCheck::indicator:unchecked:hover {
-//    image: url(:/images/checkbox_unchecked_hover.png);
+//    image: url(:/images/checkbox-unchecked-hover.png);
 //}
 
 //QWidget#PanelCheck::indicator:unchecked:pressed {
-//    image: url(:/images/checkbox_unchecked_pressed.png);
+//    image: url(:/images/checkbox-unchecked-pressed.png);
 //}
 
 //QWidget#PanelCheck::indicator:checked {
-//    image: url(:/images/checkbox_checked.png);
+//    image: url(:/images/checkbox-checked.png);
 //}
 
 //QWidget#PanelCheck::indicator:checked:hover {
-//    image: url(:/images/checkbox_checked_hover.png);
+//    image: url(:/images/checkbox-checked-hover.png);
 //}
 
 //QWidget#PanelCheck::indicator:checked:pressed {
-//    image: url(:/images/checkbox_checked_pressed.png);
+//    image: url(:/images/checkbox-checked-pressed.png);
 //}
 
 //QWidget#PanelCheck::indicator:indeterminate:hover {
-//    image: url(:/images/checkbox_indeterminate_hover.png);
+//    image: url(:/images/checkbox-indeterminate-hover.png);
 //}
 
 //QWidget#PanelCheck::indicator:indeterminate:pressed {
-//    image: url(:/images/checkbox_indeterminate_pressed.png);
+//    image: url(:/images/checkbox-indeterminate-pressed.png);
 //}
 
 !THEME=END

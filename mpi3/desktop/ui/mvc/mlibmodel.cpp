@@ -17,8 +17,8 @@ MModelContainers::MModelContainers(QObject *parent) : QAbstractItemModel(parent)
     m_rootItem->setData(0, "Playlists");
     insertColumns(0, 1);
 
-    m_icnFolder.addPixmap(QPixmap(":/icons/treeview/folder_light.png"));
-    m_icnPlaylist.addPixmap(QPixmap(":/icons/treeview/playlist_light.png"));
+    m_icnFolder.addPixmap(QPixmap(":/icons/treeview/folder-light.png"));
+    m_icnPlaylist.addPixmap(QPixmap(":/icons/treeview/playlist-light.png"));
 }
 MModelContainers::~MModelContainers(){
     delete m_rootItem;
@@ -773,7 +773,7 @@ QVariant MModelSonglist::data(const QModelIndex &index, int role) const{
 QVariant MModelSonglist::headerData(int section, Qt::Orientation orientation, int role) const{
 
     //    if(orientation == Qt::Horizontal && role == Qt::DecorationRole){
-    //        return QIcon(":/icons/treeview/folder_open_light.png");
+    //        return QIcon(":/icons/treeview/folder-open-light.png");
     //    }
     //  http://doc.qt.io/qt-5/qtwidgets-itemviews-customsortfiltermodel-example.html
 

@@ -1,0 +1,46 @@
+<RCC>
+    <qresource prefix="/icons/playback">
+        <file alias="next-dark.png">assets/desktop/icons/playback/next-dark.png</file>
+        <file alias="paus-dark.png">assets/desktop/icons/playback/paus-dark.png</file>
+        <file alias="play-dark.png">assets/desktop/icons/playback/play-dark.png</file>
+        <file alias="prev-dark.png">assets/desktop/icons/playback/prev-dark.png</file>
+        <file alias="search-dark.png">assets/desktop/icons/playback/search-dark.png</file>
+        <file alias="next-light.png">assets/desktop/icons/playback/next-light.png</file>
+        <file alias="paus-light.png">assets/desktop/icons/playback/paus-light.png</file>
+        <file alias="play-light.png">assets/desktop/icons/playback/play-light.png</file>
+        <file alias="prev-light.png">assets/desktop/icons/playback/prev-light.png</file>
+        <file alias="search-light.png">assets/desktop/icons/playback/search-light.png</file>
+    </qresource>
+    <qresource prefix="/icons/treeview">
+        <file alias="folder-dark.png">assets/desktop/icons/treeview/folder-dark.png</file>
+        <file alias="playlist-dark.png">assets/desktop/icons/treeview/playlist-dark.png</file>
+        <file alias="arrow-up-dark.png">assets/desktop/icons/treeview/arrow-up-dark.png</file>
+        <file alias="arrow-down-dark.png">assets/desktop/icons/treeview/arrow-down-dark.png</file>
+        <file alias="arrow-right-dark.png">assets/desktop/icons/treeview/arrow-right-dark.png</file>
+        <file alias="folder-light.png">assets/desktop/icons/treeview/folder-light.png</file>
+        <file alias="playlist-light.png">assets/desktop/icons/treeview/playlist-light.png</file>
+        <file alias="arrow-up-light.png">assets/desktop/icons/treeview/arrow-up-light.png</file>
+        <file alias="arrow-down-light.png">assets/desktop/icons/treeview/arrow-down-light.png</file>
+        <file alias="arrow-right-light.png">assets/desktop/icons/treeview/arrow-right-light.png</file>
+        <file alias="branch-end.png">assets/desktop/icons/treeview/branch-end.png</file>
+        <file alias="branch-more.png">assets/desktop/icons/treeview/branch-more.png</file>
+        <file alias="branch-vline.png">assets/desktop/icons/treeview/branch-vline.png</file>
+    </qresource>
+    <qresource prefix="/icons/indicators">
+        <file alias="ind-down-light.png">assets/desktop/icons/indicators/ind-down-light.png</file>
+        <file alias="ind-up-light.png">assets/desktop/icons/indicators/ind-up-light.png</file>
+    </qresource>
+    <qresource prefix="/icons/window">
+        <file alias="close.png">assets/desktop/icons/window/close.png</file>
+        <file alias="minimize.png">assets/desktop/icons/window/minimize.png</file>
+        <file alias="maximize.png">assets/desktop/icons/window/maximize.png</file>
+        <file alias="demaximize.png">assets/desktop/icons/window/demaximize.png</file>
+        <file alias="mpi3.ico">assets/desktop/icons/window/mpi3.ico</file>
+    </qresource>
+    <qresource prefix="/styles">
+        <file alias="default.qss">assets/desktop/qss/default.qss</file>
+    </qresource>
+    <qresource prefix="/profiles">
+        <file alias="default.xml">assets/desktop/profile-default.xml</file>
+    </qresource>
+</RCC>
