@@ -4,7 +4,7 @@
 #include <QDebug>
 
 
-MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
+MPanelPlayback::MPanelPlayback(QWidget *parent) : MPanel(parent){
     initializeLayout();
 }
 

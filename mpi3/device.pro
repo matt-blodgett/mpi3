@@ -20,7 +20,7 @@ QMAKE_TARGET_PRODUCT = "Mpi3Device"
 QMAKE_TARGET_DESCRIPTION = "Mpi3 Media Player"
 
 
-target.path = /home/pi/Desktop/mpi3
+target.path = /home/pi/device/mpi3
 INSTALLS += target
 
 
@@ -44,14 +44,14 @@ SOURCES += device/main.cpp
 HEADERS += device/mroot.h
 SOURCES += device/mroot.cpp
 
-HEADERS += desktop/ui/mpanel.h
-SOURCES += desktop/ui/mpanel.cpp
-HEADERS += desktop/ui/mstatusbar.h
-SOURCES += desktop/ui/mstatusbar.cpp
-HEADERS += desktop/ui/mpanelhome.h
-SOURCES += desktop/ui/mpanelhome.cpp
-HEADERS += desktop/ui/mpanelmedia.h
-SOURCES += desktop/ui/mpanelmedia.cpp
-HEADERS += desktop/ui/mpanelplayback.h
-SOURCES += desktop/ui/mpanelplayback.cpp
+HEADERS += device/ui/mpanel.h
+SOURCES += device/ui/mpanel.cpp
+HEADERS += device/ui/mstatusbar.h
+SOURCES += device/ui/mstatusbar.cpp
+HEADERS += device/ui/mpanelhome.h
+SOURCES += device/ui/mpanelhome.cpp
+HEADERS += device/ui/mpanelmedia.h
+SOURCES += device/ui/mpanelmedia.cpp
+HEADERS += device/ui/mpanelplayback.h
+SOURCES += device/ui/mpanelplayback.cpp
 
