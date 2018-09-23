@@ -1,8 +1,10 @@
 ﻿#include "mroot.h"
-#include "mglobal.h"
 
 #include "core/mmedialibrary.h"
 #include "core/maudioengine.h"
+
+#include "util/msettings.h"
+#include "util/mstyle.h"
 
 #include "ui/mcontextbar.h"
 #include "ui/maudiocontrol.h"
@@ -11,9 +13,6 @@
 #include "ui/mpanelmedia.h"
 #include "ui/mvc/mlibmodel.h"
 #include "ui/mvc/mlibview.h"
-
-#include "util/msettings.h"
-#include "util/mstyle.h"
 
 #include <QApplication>
 #include <QDesktopWidget>

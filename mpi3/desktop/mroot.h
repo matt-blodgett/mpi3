@@ -16,7 +16,6 @@ QT_END_NAMESPACE
 class MStyleSheet;
 class MMediaLibrary;
 class MAudioEngine;
-class MContentDelegate;
 
 class MContextBar;
 class MPanelPlayback;
@@ -35,6 +34,8 @@ class MRootDesktop : public QMainWindow
 public:
     explicit MRootDesktop();
     ~MRootDesktop();
+
+public:
     void initialize();
 
 private:
@@ -50,6 +51,7 @@ private:
     MMediaLibrary *m_mediaLibrary = nullptr;
     MAudioEngine *m_audioEngine = nullptr;
 
+private:
     MContextBar *m_contextBar = nullptr;
     MPanelPlayback *m_panelPlayback = nullptr;
     MPanelLibrary *m_panelLibrary = nullptr;

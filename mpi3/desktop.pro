@@ -7,8 +7,8 @@ CONFIG += c++1z
 
 
 QT += core
-QT += xml
 QT += gui
+QT += xml
 QT += widgets
 QT += multimedia
 
