@@ -13,7 +13,7 @@
 #include <QDebug>
 
 
-MPanelDevice::MPanelDevice(QWidget *parent) : MPanelContext(parent){
+MPanelDevice::MPanelDevice(QWidget *parent) : MPanel(parent){
     initializeLayoutType(true);
     initializeLayout();
 
@@ -173,7 +173,7 @@ void MPanelDevice::showEvent(QShowEvent *event){
     int treeWidth = m_treeStorageDevices->width();
     m_treeStorageDevices->setColumnWidth(0, treeWidth - totalWidth - 2);
 
-    MPanelContext::showEvent(event);
+    MPanel::showEvent(event);
 }
 bool MPanelDevice::eventFilter(QObject *obj, QEvent *event){
 

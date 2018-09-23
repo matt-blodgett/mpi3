@@ -30,10 +30,6 @@ RESOURCES += assets/device.qrc
 HEADERS += mglobal.h
 SOURCES += mglobal.cpp
 
-SOURCES += device/main.cpp
-HEADERS += device/mroot.h
-SOURCES += device/mroot.cpp
-
 HEADERS += util/mstyle.h
 SOURCES += util/mstyle.cpp
 HEADERS += util/msettings.h
@@ -44,5 +40,18 @@ SOURCES += util/msettings.cpp
 #HEADERS += core/mmedialibrary.h
 #SOURCES += core/mmedialibrary.cpp
 
+SOURCES += device/main.cpp
+HEADERS += device/mroot.h
+SOURCES += device/mroot.cpp
 
+HEADERS += desktop/ui/mpanel.h
+SOURCES += desktop/ui/mpanel.cpp
+HEADERS += desktop/ui/mstatusbar.h
+SOURCES += desktop/ui/mstatusbar.cpp
+HEADERS += desktop/ui/mpanelhome.h
+SOURCES += desktop/ui/mpanelhome.cpp
+HEADERS += desktop/ui/mpanelmedia.h
+SOURCES += desktop/ui/mpanelmedia.cpp
+HEADERS += desktop/ui/mpanelplayback.h
+SOURCES += desktop/ui/mpanelplayback.cpp
 

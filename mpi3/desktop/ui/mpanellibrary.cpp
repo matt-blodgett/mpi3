@@ -15,7 +15,7 @@
 static const QStringList AutoBackupOptions = {"Continuous", "Daily", "Weekly", "Monthly"};
 
 
-MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanelContext(parent){
+MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanel(parent){
     initializeLayoutType(true);
     initializeLayout();
 

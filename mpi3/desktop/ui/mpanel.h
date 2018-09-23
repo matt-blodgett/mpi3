@@ -51,12 +51,12 @@ public:
 };
 
 
-class MPanelContext : public QWidget
+class MPanel : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MPanelContext(QWidget *parent = nullptr);
+    explicit MPanel(QWidget *parent = nullptr);
 
 public:
     void initializeLayoutType(bool sectioned);

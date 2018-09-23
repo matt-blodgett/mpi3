@@ -11,7 +11,7 @@
 #include <QDebug>
 
 
-MPanelMedia::MPanelMedia(QWidget *parent) : MPanelContext(parent){
+MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent){
     initializeLayoutType(false);
     initializeLayout();
 

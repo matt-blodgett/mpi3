@@ -4,11 +4,11 @@
 #define MPANELDEVICE_H
 
 #include "mglobal.h"
-#include "mcontextpanel.h"
+#include "mpanel.h"
 class MModelStorageDrives;
 
 
-class MPanelDevice : public MPanelContext
+class MPanelDevice : public MPanel
 {
     Q_OBJECT
 

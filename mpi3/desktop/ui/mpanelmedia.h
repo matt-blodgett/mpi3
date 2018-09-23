@@ -4,12 +4,12 @@
 #define MPANELMEDIA_H
 
 
-#include "mcontextpanel.h"
+#include "mpanel.h"
 class MTreeContainers;
 class MTreeSonglist;
 
 
-class MPanelMedia : public MPanelContext
+class MPanelMedia : public MPanel
 {
     Q_OBJECT
 

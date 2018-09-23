@@ -7,7 +7,7 @@
 #include "util/mstyle.h"
 
 #include "ui/mcontextbar.h"
-#include "ui/maudiocontrol.h"
+#include "ui/mpanelplayback.h"
 #include "ui/mpanellibrary.h"
 #include "ui/mpaneldevice.h"
 #include "ui/mpanelmedia.h"

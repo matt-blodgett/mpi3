@@ -1,4 +1,4 @@
-#include "maudiocontrol.h"
+#include "mpanelplayback.h"
 #include "core/mmedialibrary.h"
 
 #include <QGridLayout>

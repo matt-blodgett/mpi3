@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef MAUDIOCONTROL_H
-#define MAUDIOCONTROL_H
+#ifndef MPANELPLAYBACK_H
+#define MPANELPLAYBACK_H
 
 #include <QWidget>
 

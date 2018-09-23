@@ -2,10 +2,10 @@
 #define MPANELLIBRARY_H
 
 #include "mglobal.h"
-#include "mcontextpanel.h"
+#include "mpanel.h"
 
 
-class MPanelLibrary : public MPanelContext
+class MPanelLibrary : public MPanel
 {
     Q_OBJECT
 
