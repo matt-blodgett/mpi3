@@ -7,9 +7,10 @@
 
 
 extern "C" {
-#include <lib/libav/libavcodec/avcodec.h>
-#include <lib/libav/libavformat/avformat.h>
+#include <lib/ffmpeg/libavcodec/avcodec.h>
+#include <lib/ffmpeg/libavformat/avformat.h>
 }
+
 
 #include <lib/libao/ao/ao.h>
 
@@ -22,9 +23,11 @@ extern "C" {
 namespace Mpi3 {
     void external_libs_init() {
         // AV_LOG_QUIET
+//        av_log_set_flags(AV_LOG_VERBOSE);
         av_log_set_level(AV_LOG_VERBOSE);
-        avcodec_register_all();
-        av_register_all();
+
+//        avcodec_register_all();
+//        av_register_all();
         avformat_network_init();
         ao_initialize();
     }
@@ -87,6 +90,7 @@ static int decode_audio_frame(
     if(error == AVERROR(EAGAIN)) {
         error = 0;
     }
+
     else if(error == AVERROR_EOF) {
         *finished = 1;
         error = 0;
@@ -137,6 +141,10 @@ static int load_contexts(
         return error;
     }
 
+    if(strncmp(codec->name, "mp3float", 8) == 0){
+        codec = avcodec_find_decoder_by_name("mp3");
+    }
+
     *codecCtx = avcodec_alloc_context3(codec);
     if(!codecCtx){
         std::cerr << "ERROR: error allocating codec context";
@@ -180,7 +188,7 @@ void MSongInfo::load(const QString &path){
     AVStream *stream = formatCtx->streams[stream_index];
     time = stream->duration * av_q2d(stream->time_base);
     size = QFileInfo(path).size();
-    bitRate = formatCtx->bit_rate;
+    bitRate = static_cast<int>(formatCtx->bit_rate);
     sampleRate = sample_rate;
     kind = codecCtx->codec->name;
 
@@ -275,6 +283,8 @@ void MAudioEngine::media_dealloc(){
     updateStatus(Mpi3::MediaEmpty);
 }
 void MAudioEngine::media_alloc(){
+
+    m_streamIdx = -1;
 
     int error = load_contexts(m_filepath.toStdString(), &m_formatCtx, &m_codecCtx, &m_streamIdx);
     if(error < 0 || m_streamIdx < 0){return;}
@@ -372,6 +382,8 @@ void MAudioEngine::engine_process(){
                 short data_processed = static_cast<short>(sample_processed);
 
                 ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
+//                ao_play(m_aoDevice, reinterpret_cast<char*>(&data_raw), static_cast<uint32_t>(bps));
+
             }
         }
 
@@ -386,7 +398,6 @@ halt:
 
     std::cout << "THREAD: media_dealloc" << std::endl;
     media_dealloc();
-
 
     QThread::currentThread()->quit();
 }

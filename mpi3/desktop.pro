@@ -33,12 +33,11 @@ INCLUDEPATH += $$PWD/lib/libao
 DEPENDPATH += $$PWD/lib/libao
 
 
-LIBS += $$PWD/lib/libav/avcodec.lib
-LIBS += $$PWD/lib/libav/avformat.lib
-LIBS += $$PWD/lib/libav/avresample.lib
-LIBS += $$PWD/lib/libav/avutil.lib
-INCLUDEPATH += $$PWD/lib/libav
-DEPENDPATH += $$PWD/lib/libav
+LIBS += $$PWD/lib/ffmpeg/avcodec.lib
+LIBS += $$PWD/lib/ffmpeg/avformat.lib
+LIBS += $$PWD/lib/ffmpeg/avutil.lib
+INCLUDEPATH += $$PWD/lib/ffmpeg
+DEPENDPATH += $$PWD/lib/ffmpeg
 
 
 HEADERS += mglobal.h

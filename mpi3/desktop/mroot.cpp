@@ -435,45 +435,45 @@ void MRootDesktop::initializeState(){
 
     QMap<QString, QVariant> modelSettings;
 
-    settings.beginGroup("TreeViewProperties");
+//    settings.beginGroup("TreeViewProperties");
 
-    foreach(QString pid, pidlist){
+//    foreach(QString pid, pidlist){
 
-        QString pidKey = pid;
-        pidKey.remove(0, 2);
+//        QString pidKey = pid;
+//        pidKey.remove(0, 2);
 
-        settings.beginGroup(pidKey);
+//        settings.beginGroup(pidKey);
 
-        QMap<QString, QVariant> containerSettings;
-        QStringList strWidths = settings.value("widths", QString()).toString().split(";");
-        QString strHidden = settings.value("hidden", QString()).toString();
-        QStringList strSort = settings.value("sort", QString()).toString().split(";");
+//        QMap<QString, QVariant> containerSettings;
+//        QStringList strWidths = settings.value("widths", QString()).toString().split(";");
+//        QString strHidden = settings.value("hidden", QString()).toString();
+//        QStringList strSort = settings.value("sort", QString()).toString().split(";");
 
-        if(!strHidden.isNull()){
+//        if(!strHidden.isNull()){
 
-            QList<QVariant> colWidths;
-            QList<QVariant> colHidden;
-            QList<QVariant> colSort;
+//            QList<QVariant> colWidths;
+//            QList<QVariant> colHidden;
+//            QList<QVariant> colSort;
 
-            for(int i = 0; i < strHidden.size(); i++){
-                colWidths.append(strWidths.at(i).toInt());
-                colHidden.append(strHidden[i] == "1");
-            }
+//            for(int i = 0; i < strHidden.size(); i++){
+//                colWidths.append(strWidths.at(i).toInt());
+//                colHidden.append(strHidden[i] == "1");
+//            }
 
-            colSort.append(strSort[0].toInt());
-            colSort.append(strSort[1].toInt());
+//            colSort.append(strSort[0].toInt());
+//            colSort.append(strSort[1].toInt());
 
-            containerSettings["widths"] = colWidths;
-            containerSettings["hidden"] = colHidden;
-            containerSettings["sort"] = colSort;
+//            containerSettings["widths"] = colWidths;
+//            containerSettings["hidden"] = colHidden;
+//            containerSettings["sort"] = colSort;
 
-            modelSettings[pid] = containerSettings;
-        }
+//            modelSettings[pid] = containerSettings;
+//        }
 
-        settings.endGroup();
-    }
+//        settings.endGroup();
+//    }
 
-    settings.endGroup();
+//    settings.endGroup();
 
     m_treeSonglist->setSettings(modelSettings);
     if(pid_songlist != m_mediaLibrary->pid() && pidlist.contains(pid_songlist)){
@@ -552,42 +552,42 @@ void MRootDesktop::saveSettings(){
     settings->setValue("autoBackups", m_panelLibrary->valAutoBackups());
     settings->endGroup();
 
-    settings->beginGroup("TreeViewProperties");
+//    settings->beginGroup("TreeViewProperties");
 
-    QMap<QString, QVariant>::iterator iter;
-    QMap<QString, QVariant> modelSettings = m_treeSonglist->modelSettings();
+//    QMap<QString, QVariant>::iterator iter;
+//    QMap<QString, QVariant> modelSettings = m_treeSonglist->modelSettings();
 
-    for(iter = modelSettings.begin(); iter != modelSettings.end(); iter++){
+//    for(iter = modelSettings.begin(); iter != modelSettings.end(); iter++){
 
-        QString pidKey = iter.key();
-        pidKey.remove(0, 2);
+//        QString pidKey = iter.key();
+//        pidKey.remove(0, 2);
 
-        settings->beginGroup(pidKey);
+//        settings->beginGroup(pidKey);
 
-        QMap<QString, QVariant> containerSettings = iter.value().toMap();
-        QList<QVariant> colWidths = containerSettings["widths"].toList();
-        QList<QVariant> colHidden = containerSettings["hidden"].toList();
-        QList<QVariant> colSort = containerSettings["sort"].toList();
+//        QMap<QString, QVariant> containerSettings = iter.value().toMap();
+//        QList<QVariant> colWidths = containerSettings["widths"].toList();
+//        QList<QVariant> colHidden = containerSettings["hidden"].toList();
+//        QList<QVariant> colSort = containerSettings["sort"].toList();
 
-        QString strWidths;
-        QString strHidden;
-        QString strSort;
+//        QString strWidths;
+//        QString strHidden;
+//        QString strSort;
 
-        for(int i = 0; i < colWidths.size(); i++){
-            strWidths += colWidths[i].toString() + ";";
-            strHidden += colHidden[i].toBool() ? "1" : "0";
-        }
+//        for(int i = 0; i < colWidths.size(); i++){
+//            strWidths += colWidths[i].toString() + ";";
+//            strHidden += colHidden[i].toBool() ? "1" : "0";
+//        }
 
-        strSort = colSort[0].toString() + ";" + colSort[1].toString();
+//        strSort = colSort[0].toString() + ";" + colSort[1].toString();
 
-        settings->setValue("widths", strWidths);
-        settings->setValue("hidden", strHidden);
-        settings->setValue("sort", strSort);
+//        settings->setValue("widths", strWidths);
+//        settings->setValue("hidden", strHidden);
+//        settings->setValue("sort", strSort);
 
-        settings->endGroup();
-    }
+//        settings->endGroup();
+//    }
 
-    settings->endGroup();
+//    settings->endGroup();
 
     m_mediaLibrary->save();
 }
