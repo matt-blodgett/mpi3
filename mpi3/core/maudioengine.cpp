@@ -340,6 +340,7 @@ void MAudioEngine::engine_process(){
     int bps = av_get_bytes_per_sample(m_codecCtx->sample_fmt);
     error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
 
+    int t = 3;
     std::cout << "THREAD: begin loop" << std::endl;
     while(!finished && !error) {
 
@@ -380,7 +381,26 @@ void MAudioEngine::engine_process(){
                 float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
                 short data_processed = static_cast<short>(sample_processed);
 
-                ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
+//                int p = ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
+
+                std::cout << frame->data[c] + bps*i << std::endl;
+                std::cout << frame->data[c]<< std::endl;
+                std::cout << (char*)(frame->data[c] + bps*i) << std::endl;
+
+                std::cout << data_raw << std::endl;
+                std::cout << sample_raw << std::endl;
+                std::cout << sample_processed << std::endl;
+                std::cout << data_processed << std::endl;
+
+                int p = ao_play(m_aoDevice, (char*)(frame->data[c] + bps*i), static_cast<uint32_t>(bps));
+
+//                int p = ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
+
+                if(p==0 && t-- == 0){
+                    std::cerr << "ao_play error" << std::endl;
+                    goto halt;
+
+                }
             }
         }
 

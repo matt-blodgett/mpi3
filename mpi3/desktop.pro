@@ -41,16 +41,11 @@ win32 {
     INCLUDEPATH += $$PWD/lib/ffmpeg
     DEPENDPATH += $$PWD/lib/ffmpeg
 }
-
-
 unix {
     LIBS += -lao
-    LIBS += -lswresample
-    LIBS += -lswscale
-    LIBS += -lpostproc
-    LIBS += -lavutil
     LIBS += -lavcodec
     LIBS += -lavformat
+    LIBS += -lavutil
 }
 
 
