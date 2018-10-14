@@ -5,11 +5,8 @@
 #include <QThread>
 #include <QMutex>
 
+#include <iostream>
 
-//extern "C" {
-//#include <lib/ffmpeg/libavcodec/avcodec.h>
-//#include <lib/ffmpeg/libavformat/avformat.h>
-//}
 
 extern "C"
 {
@@ -17,15 +14,10 @@ extern "C"
 #include <libavformat/avformat.h>
 }
 
-//#include <lib/libao/ao/ao.h>
-
 #include <ao/ao.h>
-//#include <ao/plugin.h>
-
 
 #define BIT_DEPTH 16
 #define BIT_RANGE (1<<(BIT_DEPTH - 1))
-#include <iostream>
 
 
 namespace Mpi3
@@ -291,13 +283,13 @@ void MAudioEngine::media_alloc(){
     int error = load_contexts(m_filepath.toStdString(), &m_formatCtx, &m_codecCtx, &m_streamIdx);
     if(error < 0 || m_streamIdx < 0){return;}
 
-//    for(uint32_t i = 0; i < m_formatCtx->nb_streams; i++){
-//        if(m_formatCtx->streams[i]->index != m_streamIdx){
-//            m_formatCtx->streams[i]->discard = AVDISCARD_ALL;
-//        }
-//    }
+    for(uint32_t i = 0; i < m_formatCtx->nb_streams; i++){
+        if(m_formatCtx->streams[i]->index != m_streamIdx){
+            m_formatCtx->streams[i]->discard = AVDISCARD_ALL;
+        }
+    }
 
-//    m_formatCtx->streams[m_streamIdx]->discard = AVDISCARD_DEFAULT;
+    m_formatCtx->streams[m_streamIdx]->discard = AVDISCARD_DEFAULT;
     avformat_seek_file(m_formatCtx, 0, 0, 0, 0, 0);
 
     error = 0;

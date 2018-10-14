@@ -35,17 +35,11 @@ win32 {
     LIBS += $$PWD/lib/ffmpeg/avformat.lib
     LIBS += $$PWD/lib/ffmpeg/avutil.lib
 
-    LIBS += $$PWD/lib/libao/libao.dll.a
     INCLUDEPATH += $$PWD/lib/libao
     DEPENDPATH += $$PWD/lib/libao
 
-
-    LIBS += $$PWD/lib/ffmpeg/avcodec.lib
-    LIBS += $$PWD/lib/ffmpeg/avformat.lib
-    LIBS += $$PWD/lib/ffmpeg/avutil.lib
     INCLUDEPATH += $$PWD/lib/ffmpeg
     DEPENDPATH += $$PWD/lib/ffmpeg
-
 }
 
 
