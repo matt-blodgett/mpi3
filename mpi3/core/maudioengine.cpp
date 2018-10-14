@@ -340,13 +340,20 @@ void MAudioEngine::engine_process(){
     int bps = av_get_bytes_per_sample(m_codecCtx->sample_fmt);
     error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
 
-    int t = 3;
+    std::cout << av_get_sample_fmt_name(m_codecCtx->sample_fmt) << std::endl;
+    std::cout << av_get_sample_fmt_name(AV_SAMPLE_FMT_S16) << std::endl;
+
+
     std::cout << "THREAD: begin loop" << std::endl;
     while(!finished && !error) {
 
 //        if(m_position > 10.00){break;}
 
         for(int i = 0; i < frame->nb_samples; i++){
+
+            char *buffer = (char*)(frame->data[0] + bps * i);
+            ao_play(m_aoDevice, buffer, 4);
+
 
             if(requestedStatus() == Mpi3::EngineIdle){
 
@@ -370,38 +377,27 @@ void MAudioEngine::engine_process(){
                 goto halt;
             }
 
-            for(int c = 0; c < m_codecCtx->channels; c++){
+//            for(int c = 0; c < m_codecCtx->channels; c++){
 
-                short *data_raw = reinterpret_cast<short*>(frame->data[c] + bps*i);
-                float sample_raw = static_cast<float>(*data_raw) / static_cast<float>(BIT_RANGE);
+//                short *data_raw = reinterpret_cast<short*>(frame->data[c] + bps*i);
+//                float sample_raw = static_cast<float>(*data_raw) / static_cast<float>(BIT_RANGE);
 
-                sample_raw *= m_vol_dbratio;
-                sample_raw *= BIT_RANGE;
+//                sample_raw *= m_vol_dbratio;
+//                sample_raw *= BIT_RANGE;
 
-                float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
-                short data_processed = static_cast<short>(sample_processed);
+//                float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
+//                short data_processed = static_cast<short>(sample_processed);
 
-//                int p = ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
-
-                std::cout << frame->data[c] + bps*i << std::endl;
-                std::cout << frame->data[c]<< std::endl;
-                std::cout << (char*)(frame->data[c] + bps*i) << std::endl;
-
-                std::cout << data_raw << std::endl;
-                std::cout << sample_raw << std::endl;
-                std::cout << sample_processed << std::endl;
-                std::cout << data_processed << std::endl;
-
-                int p = ao_play(m_aoDevice, (char*)(frame->data[c] + bps*i), static_cast<uint32_t>(bps));
+////                int p = ao_play(m_aoDevice, (char*)(frame->data[c] + bps*i), static_cast<uint32_t>(bps));
 
 //                int p = ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
 
-                if(p==0 && t-- == 0){
-                    std::cerr << "ao_play error" << std::endl;
-                    goto halt;
+//                if(p==0 && t-- == 0){
+//                    std::cerr << "ao_play error" << std::endl;
+//                    goto halt;
 
-                }
-            }
+//                }
+//            }
         }
 
         m_position = frame->pkt_dts * av_q2d(stream->time_base);
