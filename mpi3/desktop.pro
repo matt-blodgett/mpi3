@@ -27,17 +27,37 @@ RESOURCES += assets/fonts.qrc
 RESOURCES += assets/desktop.qrc
 RC_FILE = assets/desktop.rc
 
+#http://doc.qt.io/archives/qt-4.8/qmake-advanced-usage.html
 
-LIBS += $$PWD/lib/libao/libao.dll.a
-INCLUDEPATH += $$PWD/lib/libao
-DEPENDPATH += $$PWD/lib/libao
+win32 {
+    LIBS += $$PWD/lib/libao/libao.dll.a
+    LIBS += $$PWD/lib/ffmpeg/avcodec.lib
+    LIBS += $$PWD/lib/ffmpeg/avformat.lib
+    LIBS += $$PWD/lib/ffmpeg/avutil.lib
+
+    LIBS += $$PWD/lib/libao/libao.dll.a
+    INCLUDEPATH += $$PWD/lib/libao
+    DEPENDPATH += $$PWD/lib/libao
 
 
-LIBS += $$PWD/lib/ffmpeg/avcodec.lib
-LIBS += $$PWD/lib/ffmpeg/avformat.lib
-LIBS += $$PWD/lib/ffmpeg/avutil.lib
-INCLUDEPATH += $$PWD/lib/ffmpeg
-DEPENDPATH += $$PWD/lib/ffmpeg
+    LIBS += $$PWD/lib/ffmpeg/avcodec.lib
+    LIBS += $$PWD/lib/ffmpeg/avformat.lib
+    LIBS += $$PWD/lib/ffmpeg/avutil.lib
+    INCLUDEPATH += $$PWD/lib/ffmpeg
+    DEPENDPATH += $$PWD/lib/ffmpeg
+
+}
+
+
+unix {
+    LIBS += -lao
+    LIBS += -lswresample
+    LIBS += -lswscale
+    LIBS += -lpostproc
+    LIBS += -lavutil
+    LIBS += -lavcodec
+    LIBS += -lavformat
+}
 
 
 HEADERS += mglobal.h

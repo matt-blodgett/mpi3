@@ -129,7 +129,6 @@ signals:
     void notifyEngineStatus(Mpi3::EngineState state);
     void notifyErrorStatus(Mpi3::ErrorState state);
     void notifyRequestStatus(Mpi3::EngineState state);
-
 };
 
 #endif

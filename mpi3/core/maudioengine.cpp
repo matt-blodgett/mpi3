@@ -6,13 +6,21 @@
 #include <QMutex>
 
 
-extern "C" {
-#include <lib/ffmpeg/libavcodec/avcodec.h>
-#include <lib/ffmpeg/libavformat/avformat.h>
+//extern "C" {
+//#include <lib/ffmpeg/libavcodec/avcodec.h>
+//#include <lib/ffmpeg/libavformat/avformat.h>
+//}
+
+extern "C"
+{
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
 }
 
+//#include <lib/libao/ao/ao.h>
 
-#include <lib/libao/ao/ao.h>
+#include <ao/ao.h>
+//#include <ao/plugin.h>
 
 
 #define BIT_DEPTH 16
@@ -20,26 +28,30 @@ extern "C" {
 #include <iostream>
 
 
-namespace Mpi3 {
-    void external_libs_init() {
-        // AV_LOG_QUIET
-//        av_log_set_flags(AV_LOG_VERBOSE);
-        av_log_set_level(AV_LOG_VERBOSE);
-
-//        avcodec_register_all();
-//        av_register_all();
-        avformat_network_init();
+namespace Mpi3
+{
+    void external_libs_init() {        
+        av_log_set_level(AV_LOG_VERBOSE); // AV_LOG_QUIET
+        av_register_all();
         ao_initialize();
     }
     void external_libs_deinit() {
-        avformat_network_deinit();
         ao_shutdown();
     }
+
 };
 
 
-Q_DECL_UNUSED static int flush_codec(
-        AVCodecContext *codec_ctx){
+Q_DECL_UNUSED static void list_ao_drivers(){
+    ao_info *info = nullptr;
+    for(int i = 0; i < 20; i++){
+        info = ao_driver_info(i);
+        if(info){
+            std::cout << info->name << std::endl;
+        }
+    }
+}
+Q_DECL_UNUSED static int flush_codec(AVCodecContext *codec_ctx){
 
     AVFrame *frame;
     frame = av_frame_alloc();
@@ -57,11 +69,7 @@ Q_DECL_UNUSED static int flush_codec(
     return 0;
 }
 
-static int decode_audio_frame(
-        AVFrame *frame,
-        AVFormatContext *format_ctx,
-        AVCodecContext *codec_ctx,
-        int *finished) {
+static int decode_audio_frame(AVFrame *frame, AVFormatContext *format_ctx, AVCodecContext *codec_ctx, int *finished) {
 
     AVPacket pckt;
     av_init_packet(&pckt);
@@ -90,7 +98,6 @@ static int decode_audio_frame(
     if(error == AVERROR(EAGAIN)) {
         error = 0;
     }
-
     else if(error == AVERROR_EOF) {
         *finished = 1;
         error = 0;
@@ -103,18 +110,13 @@ static int decode_audio_frame(
     av_packet_unref(&pckt);
     return error;
 }
-
-static int load_contexts(
-        std::string filepath,
-        AVFormatContext **formatCtx,
-        AVCodecContext **codecCtx,
-        int *streamIdx){
+static int load_contexts(std::string filepath, AVFormatContext **formatCtx, AVCodecContext **codecCtx, int *streamIdx){
 
     int error = 0;
 
     error = avformat_open_input(formatCtx, filepath.c_str(), nullptr, nullptr);
     if(error < 0){
-        std::cerr << "ERROR: error opening input file";
+        std::cerr << "ERROR: error opening input file" << std::endl;
         return error;
     }
 
@@ -289,13 +291,13 @@ void MAudioEngine::media_alloc(){
     int error = load_contexts(m_filepath.toStdString(), &m_formatCtx, &m_codecCtx, &m_streamIdx);
     if(error < 0 || m_streamIdx < 0){return;}
 
-    for(uint32_t i = 0; i < m_formatCtx->nb_streams; i++){
-        if(m_formatCtx->streams[i]->index != m_streamIdx){
-            m_formatCtx->streams[i]->discard = AVDISCARD_ALL;
-        }
-    }
+//    for(uint32_t i = 0; i < m_formatCtx->nb_streams; i++){
+//        if(m_formatCtx->streams[i]->index != m_streamIdx){
+//            m_formatCtx->streams[i]->discard = AVDISCARD_ALL;
+//        }
+//    }
 
-    m_formatCtx->streams[m_streamIdx]->discard = AVDISCARD_DEFAULT;
+//    m_formatCtx->streams[m_streamIdx]->discard = AVDISCARD_DEFAULT;
     avformat_seek_file(m_formatCtx, 0, 0, 0, 0, 0);
 
     error = 0;
@@ -311,18 +313,22 @@ void MAudioEngine::media_alloc(){
     av_frame_free(&frame);
 
     int default_driver = ao_default_driver_id();
+    if(default_driver < 0){
+        std::cerr << "ERROR: error finding default driver" << std::endl;
+        return;
+    }
+
     ao_info *info = ao_driver_info(default_driver);
+    ao_sample_format ao_format;
+    memset(&ao_format, 0, sizeof(ao_format));
 
-    ao_sample_format output_format;
-    memset(&output_format, 0, sizeof(output_format));
+    ao_format.bits = BIT_DEPTH;
+    ao_format.channels = m_codecCtx->channels;
+    ao_format.rate = sample_rate;
+    ao_format.byte_format = info->preferred_byte_format;
+    ao_format.matrix = nullptr;
 
-    output_format.bits = BIT_DEPTH;
-    output_format.channels = m_codecCtx->channels;
-    output_format.rate = sample_rate;
-    output_format.byte_format = info->preferred_byte_format;
-    output_format.matrix = nullptr;
-
-    m_aoDevice = ao_open_live(default_driver, &output_format, nullptr);
+    m_aoDevice = ao_open_live(default_driver, &ao_format, nullptr);
     if(!m_aoDevice){
         std::cerr << "ERROR: error opening output device" << std::endl;
         return;
@@ -342,6 +348,7 @@ void MAudioEngine::engine_process(){
     int bps = av_get_bytes_per_sample(m_codecCtx->sample_fmt);
     error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
 
+    std::cout << "THREAD: begin loop" << std::endl;
     while(!finished && !error) {
 
 //        if(m_position > 10.00){break;}
@@ -382,8 +389,6 @@ void MAudioEngine::engine_process(){
                 short data_processed = static_cast<short>(sample_processed);
 
                 ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
-//                ao_play(m_aoDevice, reinterpret_cast<char*>(&data_raw), static_cast<uint32_t>(bps));
-
             }
         }
 
