@@ -340,8 +340,9 @@ void MAudioEngine::engine_process(){
     int bps = av_get_bytes_per_sample(m_codecCtx->sample_fmt);
     error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
 
-    std::cout << av_get_sample_fmt_name(m_codecCtx->sample_fmt) << std::endl;
-    std::cout << av_get_sample_fmt_name(AV_SAMPLE_FMT_S16) << std::endl;
+
+//    std::cout << av_get_sample_fmt_name(m_codecCtx->sample_fmt) << std::endl;
+//    std::cout << av_get_sample_fmt_name(AV_SAMPLE_FMT_S16) << std::endl;
 
 
     std::cout << "THREAD: begin loop" << std::endl;
@@ -349,56 +350,293 @@ void MAudioEngine::engine_process(){
 
 //        if(m_position > 10.00){break;}
 
-        for(int i = 0; i < frame->nb_samples; i++){
-
-            char *buffer = (char*)(frame->data[0] + bps * i);
-            ao_play(m_aoDevice, buffer, 4);
-
-
-            if(requestedStatus() == Mpi3::EngineIdle){
-
-                updateStatus(Mpi3::EngineIdle);
-
-                m_processMutex->lock();
-                m_processCondition->wait(m_processMutex);
-                m_processMutex->unlock();
-
-                switch(requestedStatus()){
-                    case Mpi3::EngineActive:
-                        updateStatus(Mpi3::EngineActive);
-                        break;
-                    case Mpi3::EngineStopped:
-                        goto halt;
-                    case Mpi3::EngineIdle:
-                        continue;
-                }
+        int16_t *dst = (int16_t*)av_malloc(frame->channels * frame->nb_samples * 2);
+        int16_t **src = (int16_t **)frame->extended_data;
+        for (int i = 0; i < frame->nb_samples; i++) {
+            for (int ch = 0; ch < frame->channels; ch++) {
+                dst[i * frame->channels + ch] = src[ch][i];
             }
-            else if(requestedStatus() == Mpi3::EngineStopped){
-                goto halt;
+        }
+
+        int num = (frame->channels * frame->nb_samples * 2);
+
+//        std::cout << num << std::endl;
+//        std::cout << sizeof (dst) << std::endl;
+
+
+        ao_play(m_aoDevice, (char*)dst, num);
+
+
+
+        if(requestedStatus() == Mpi3::EngineIdle){
+
+            updateStatus(Mpi3::EngineIdle);
+
+            m_processMutex->lock();
+            m_processCondition->wait(m_processMutex);
+            m_processMutex->unlock();
+
+            switch(requestedStatus()){
+                case Mpi3::EngineActive:
+                    updateStatus(Mpi3::EngineActive);
+                    break;
+                case Mpi3::EngineStopped:
+                    goto halt;
+                case Mpi3::EngineIdle:
+                    continue;
             }
+        }
+        else if(requestedStatus() == Mpi3::EngineStopped){
+            goto halt;
+        }
 
-//            for(int c = 0; c < m_codecCtx->channels; c++){
 
-//                short *data_raw = reinterpret_cast<short*>(frame->data[c] + bps*i);
-//                float sample_raw = static_cast<float>(*data_raw) / static_cast<float>(BIT_RANGE);
 
-//                sample_raw *= m_vol_dbratio;
-//                sample_raw *= BIT_RANGE;
 
-//                float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
-//                short data_processed = static_cast<short>(sample_processed);
 
-////                int p = ao_play(m_aoDevice, (char*)(frame->data[c] + bps*i), static_cast<uint32_t>(bps));
+//        std::cout << " - " << std::endl;
 
-//                int p = ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
+//        for(int i = 0; i < num; i++){
 
-//                if(p==0 && t-- == 0){
-//                    std::cerr << "ao_play error" << std::endl;
-//                    goto halt;
+//            char *buf = (char*)dst[i];
 
+//            ao_play(m_aoDevice, buf, sizeof(buf));
+
+
+//        }
+
+//        for(int i = 0; i < frame->nb_samples; i++){
+
+
+
+
+//            // WORKS
+////            char *buffer = (char*)(frame->data[0] + bps * i);
+////            ao_play(m_aoDevice, buffer, 4);
+
+
+
+
+
+////            char *buffer = (char*)(frame->data[0] + bps * i);
+
+////            std::cout << sizeof (buffer) << std::endl;
+////            std::cout << sizeof (frame->data[0]) << std::endl;
+////            std::cout << sizeof (frame->data[1]) << std::endl;
+
+
+////            std::cout << buffer << std::endl;
+////            std::cout << std::endl;
+
+////            std::cout << frame->data[0] << std::endl;
+
+
+
+
+
+//////            uint32_t number = static_cast<uint_32>(*buffer);
+////            uint32_t number = reinterpret_cast<uint_32>(buffer);
+
+//////            uint16_t number = 0xfacb;                                        // decimal: 64203
+
+////            uint16_t low_byte = static_cast<uint16_t>(number & 0xFF);          // low byte: 203
+////            uint16_t high_byte = static_cast<uint16_t>((number & ~0xFF) >> 16); // high byte: 250
+
+//////            std::cout << std::bitset<16>(number) << " " << std::bitset<8>(high_byte) << " " << std::bitset<8>(low_byte) << "\n";
+//////            std::cout << number << " " << static_cast<unsigned short>(high_byte) << " " << static_cast<unsigned short>(low_byte) << "\n";
+
+
+////            std::cout << sizeof (buffer) << std::endl;
+////            std::cout << sizeof (number) << std::endl;
+////            std::cout << sizeof (low_byte) << std::endl;
+////            std::cout << sizeof (high_byte) << std::endl;
+
+
+////            ao_play(m_aoDevice, (char*)low_byte, 2);
+////            ao_play(m_aoDevice, (char*)high_byte, 2);
+
+////            ao_play(m_aoDevice, test, 4);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////            char *buffer = (char*)(frame->data[0] + bps * i);
+
+////            uint16_t number = static_cast<uint_16>(*buffer);
+//////            uint16_t number = 0xfacb;                                        // decimal: 64203
+
+////            uint8_t low_byte = static_cast<uint8_t>(number & 0xFF);          // low byte: 203
+////            uint8_t high_byte = static_cast<uint8_t>((number & ~0xFF) >> 8); // high byte: 250
+
+//////            std::cout << std::bitset<16>(number) << " " << std::bitset<8>(high_byte) << " " << std::bitset<8>(low_byte) << "\n";
+//////            std::cout << number << " " << static_cast<unsigned short>(high_byte) << " " << static_cast<unsigned short>(low_byte) << "\n";
+
+
+////            std::cout << sizeof (buffer) << std::endl;
+////            std::cout << sizeof (number) << std::endl;
+////            std::cout << sizeof (low_byte) << std::endl;
+////            std::cout << sizeof (high_byte) << std::endl;
+
+
+////            ao_play(m_aoDevice, (char*)low_byte, 2);
+////            ao_play(m_aoDevice, (char*)high_byte, 2);
+
+//////            ao_play(m_aoDevice, test, 4);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////            char *buffer = (char*)(frame->data[0] + bps * i);
+
+
+////            int ch = 2;
+
+////            char test[2];
+
+////            for(int j = 0; j < ch; j++){
+
+////                float sample_raw = static_cast<float>(buffer[ch]) / static_cast<float>(BIT_RANGE);
+
+////                sample_raw *= m_vol_dbratio;
+////                sample_raw *= BIT_RANGE;
+
+////                float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
+
+
+////                test[ch] = *reinterpret_cast<char*>(&sample_processed);
+
+
+
+////            }
+
+
+
+////            ao_play(m_aoDevice, test, 4);
+
+
+
+
+
+////            float sample_raw = static_cast<float>(*buffer) / static_cast<float>(BIT_RANGE);
+
+////            sample_raw *= m_vol_dbratio;
+////            sample_raw *= BIT_RANGE;
+
+////            float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
+
+////            char *test = reinterpret_cast<char*>(&sample_processed);
+
+
+
+
+
+
+
+
+////            char *buffer = (char*)(frame->data[0] + bps * i);
+
+////            short *data_raw = reinterpret_cast<short*>(frame->data[0] + bps * i);
+////            float sample_raw = static_cast<float>(*data_raw) / static_cast<float>(BIT_RANGE);
+
+
+////            sample_raw *= m_vol_dbratio;
+////            sample_raw *= BIT_RANGE;
+
+////            float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
+////            short data_processed = static_cast<short>(sample_processed);
+
+////            char *test = reinterpret_cast<char*>(&sample_processed);
+
+
+////            char *buffer = (char*)(frame->data[0] + bps * i);
+////            ao_play(m_aoDevice, test, 4);
+
+
+
+
+
+
+
+
+//            if(requestedStatus() == Mpi3::EngineIdle){
+
+//                updateStatus(Mpi3::EngineIdle);
+
+//                m_processMutex->lock();
+//                m_processCondition->wait(m_processMutex);
+//                m_processMutex->unlock();
+
+//                switch(requestedStatus()){
+//                    case Mpi3::EngineActive:
+//                        updateStatus(Mpi3::EngineActive);
+//                        break;
+//                    case Mpi3::EngineStopped:
+//                        goto halt;
+//                    case Mpi3::EngineIdle:
+//                        continue;
 //                }
 //            }
-        }
+//            else if(requestedStatus() == Mpi3::EngineStopped){
+//                goto halt;
+//            }
+
+////            for(int c = 0; c < m_codecCtx->channels; c++){
+
+////                short *data_raw = reinterpret_cast<short*>(frame->data[c] + bps*i);
+////                float sample_raw = static_cast<float>(*data_raw) / static_cast<float>(BIT_RANGE);
+
+////                sample_raw *= m_vol_dbratio;
+////                sample_raw *= BIT_RANGE;
+
+////                float sample_processed = av_clipf_c(sample_raw, -BIT_RANGE, BIT_RANGE-1);
+////                short data_processed = static_cast<short>(sample_processed);
+
+//////                int p = ao_play(m_aoDevice, (char*)(frame->data[c] + bps*i), static_cast<uint32_t>(bps));
+
+////                int p = ao_play(m_aoDevice, reinterpret_cast<char*>(&data_processed), static_cast<uint32_t>(bps));
+
+////                if(p==0 && t-- == 0){
+////                    std::cerr << "ao_play error" << std::endl;
+////                    goto halt;
+
+////                }
+////            }
+//        }
+
 
         m_position = frame->pkt_dts * av_q2d(stream->time_base);
         emit notifyPosition(m_position);
