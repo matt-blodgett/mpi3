@@ -257,8 +257,6 @@ MAudioEngine::~MAudioEngine(){
 
     delete m_formatCtx;
     delete m_codecCtx;
-
-    std::cout << "THREAD: ENGINE DESTROYED" << std::endl;
 }
 
 void MAudioEngine::media_dealloc(){
@@ -337,46 +335,36 @@ void MAudioEngine::engine_process(){
 
     int error = 0;
     int finished = 0;
-    int bps = av_get_bytes_per_sample(m_codecCtx->sample_fmt);
     error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
 
-
-//    std::cout << av_get_sample_fmt_name(m_codecCtx->sample_fmt) << std::endl;
-//    std::cout << av_get_sample_fmt_name(AV_SAMPLE_FMT_S16) << std::endl;
-
-
-    std::cout << "THREAD: begin loop" << std::endl;
     while(!finished && !error) {
 
-//        if(m_position > 10.00){break;}
-
-        int buf_size = (frame->channels * frame->nb_samples * 2);
-
-        int16_t *buf = (int16_t*)av_malloc(buf_size);
-        int16_t **data = (int16_t **)frame->extended_data;
+        size_t buf_size = static_cast<size_t>(frame->channels * frame->nb_samples * 2);
+        int16_t *buf = static_cast<int16_t*>(av_malloc(buf_size));
+        int16_t **data = reinterpret_cast<int16_t**>(frame->extended_data);
 
         for(int i = 0; i < frame->nb_samples; i++){
 
             for(int ch = 0; ch < frame->channels; ch++){
 
-                int16_t d = data[ch][i];
+                float sample = static_cast<float>(data[ch][i]);
 
-                float sample = static_cast<float>(d);
                 sample /= static_cast<float>(BIT_RANGE);
                 sample *= m_vol_dbratio;
                 sample *= BIT_RANGE;
+                sample = av_clipf_c(sample, -BIT_RANGE, BIT_RANGE-1);
 
-                float vol_sample = av_clipf_c(sample, -BIT_RANGE, BIT_RANGE-1);
-
-                int16_t x = static_cast<int16_t>(vol_sample);
-
-                buf[i * frame->channels + ch] = x;
+                buf[i * frame->channels + ch] = static_cast<int16_t>(sample);
 
             }
 
         }
 
-        ao_play(m_aoDevice, (char*)buf, buf_size);
+        ao_play(m_aoDevice, reinterpret_cast<char*>(buf), buf_size);
+
+        m_position = frame->pkt_dts * av_q2d(stream->time_base);
+        emit notifyPosition(m_position);
+        error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
 
         if(requestedStatus() == Mpi3::EngineIdle){
 
@@ -399,19 +387,11 @@ void MAudioEngine::engine_process(){
         else if(requestedStatus() == Mpi3::EngineStopped){
             goto halt;
         }
-
-        m_position = frame->pkt_dts * av_q2d(stream->time_base);
-        emit notifyPosition(m_position);
-        error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
     }
 
 halt:
-    std::cout << "THREAD: loop ended" << std::endl;
     av_frame_free(&frame);
-
-    std::cout << "THREAD: media_dealloc" << std::endl;
     media_dealloc();
-
     QThread::currentThread()->quit();
 }
 
@@ -419,14 +399,8 @@ void MAudioEngine::open(const QString &path){
 
     if(empty()){
 
-        std::cout << "OPEN: media_dealloc" << std::endl;
         media_dealloc();
-
-        std::cout << "OPEN: m_filepath" << std::endl;
-
         m_filepath = path;
-
-        std::cout << "OPEN: media_alloc" << std::endl;
         media_alloc();
 
     }
@@ -437,7 +411,6 @@ void MAudioEngine::start(){
     if(ready()){
 
         if(m_processThread){
-            std::cout << "START: delete thread" << std::endl;
             delete m_processThread;
             m_processThread = nullptr;
         }
@@ -445,15 +418,14 @@ void MAudioEngine::start(){
         if(!m_processThread){
             m_processThread = QThread::create([this](){engine_process();});
 
-            std::cout << "START: update status" << std::endl;
             updateStatus(Mpi3::MediaBusy);
             updateStatus(m_playpauseStatus);
             m_requestStatus = m_playpauseStatus;
 
-            std::cout << "START: start thread" << std::endl;
             m_processThread->start();
             m_processThread->setPriority(QThread::HighestPriority);
         }
+
     }
 }
 void MAudioEngine::stop(){
@@ -466,6 +438,7 @@ void MAudioEngine::stop(){
             m_processThread->wait();
             updateStatus(Mpi3::EngineStopped);
         }
+
     }
 }
 
