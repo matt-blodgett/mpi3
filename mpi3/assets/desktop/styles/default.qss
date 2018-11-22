@@ -288,7 +288,7 @@ QWidget#ButtonFade {
 }
 
 QWidget#ButtonFade:pressed {
-    background: #FFFFFF;
+
 }
 
 QWidget#ButtonFade:flat {
