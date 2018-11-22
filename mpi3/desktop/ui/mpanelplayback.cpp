@@ -297,32 +297,29 @@ void MPanelPlayback::setPosition(double position){
 }
 void MPanelPlayback::setState(Mpi3::EngineState state){
 
-    if(m_seeking && state == Mpi3::EngineIdle){
-        m_currentState = state;
-        return;
+    if(m_seeking){
+        m_seeking = state == Mpi3::EngineIdle;
     }
-    else if(m_seeking) {
-        m_seeking = false;
-        m_currentState = state;
-        return;
-    }
+    else {
 
-    if(state == Mpi3::EngineActive){
-        m_btnPlay->setIcon(QIcon(m_pixPaus));
-        m_btnFade->setIcon(QIcon(m_pixPlay));
-    }
-    else if(state == Mpi3::EngineIdle) {
-        m_btnPlay->setIcon(QIcon(m_pixPlay));
-        m_btnFade->setIcon(QIcon(m_pixPaus));
-    }
+        if(state == Mpi3::EngineActive){
+            m_btnPlay->setIcon(QIcon(m_pixPaus));
+            m_btnFade->setIcon(QIcon(m_pixPlay));
+        }
+        else if(state == Mpi3::EngineIdle) {
+            m_btnPlay->setIcon(QIcon(m_pixPlay));
+            m_btnFade->setIcon(QIcon(m_pixPaus));
+        }
 
-    if(!m_navigating && state != m_currentState){
-        m_btnFade->setVisible(true);
-        m_fadeTimer->start(300);
-    }
+        if(!m_navigating && state != m_currentState){
+            m_btnFade->setVisible(true);
+            m_fadeTimer->start(300);
+        }
 
-    if(state != Mpi3::EngineStopped){
-        m_navigating = false;
+        if(state != Mpi3::EngineStopped){
+            m_navigating = false;
+        }
+
     }
 
     m_currentState = state;
@@ -334,6 +331,7 @@ void MPanelPlayback::setDisplay(MSong *song){
     m_lblArtist->setText(song->artist());
     m_lblPositionMax->setText(song->time_str());
     m_lblPositionMin->setText("0:00");
+    m_pidCurrentSong = song->pid();
 }
 
 void MPanelPlayback::clickedPlay(){
@@ -363,11 +361,8 @@ void MPanelPlayback::positionChanged(int position){
 }
 
 void MPanelPlayback::elementModified(MMediaElement *elemModified){
-    if(elemModified->type() == Mpi3::SongElement){
-        MSong *sc_song = static_cast<MSong*>(elemModified);
-        if(sc_song->pid() == m_pidCurrentSong){
-            setDisplay(sc_song);
-        }
+    if(elemModified->pid() == m_pidCurrentSong){
+        setDisplay(static_cast<MSong*>(elemModified));
     }
 }
 
@@ -380,8 +375,3 @@ void MPanelPlayback::paintEvent(QPaintEvent *event){
 
     QWidget::paintEvent(event);
 }
-
-
-
-
-
