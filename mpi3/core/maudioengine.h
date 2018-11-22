@@ -99,7 +99,6 @@ private:
     void updateRequest(Mpi3::EngineState state);
 
 private:
-    mutable QMutex *m_attribMtx = nullptr;
     mutable QMutex *m_processMutex = nullptr;
     QWaitCondition *m_processCondition = nullptr;
     QThread *m_processThread = nullptr;
@@ -132,15 +131,3 @@ signals:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-

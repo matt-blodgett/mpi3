@@ -8,13 +8,14 @@
 #include <iostream>
 
 
-extern "C"
-{
+#include <ao/ao.h>
+
+
+extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 }
 
-#include <ao/ao.h>
 
 #define BIT_DEPTH 16
 #define BIT_RANGE (1<<(BIT_DEPTH - 1))
@@ -36,30 +37,30 @@ namespace Mpi3
 
 static int decode_audio_frame(AVFrame *frame, AVFormatContext *format_ctx, AVCodecContext *codec_ctx, int *finished) {
 
+    int error = 0;
+
     AVPacket pckt;
     av_init_packet(&pckt);
 
-    int error = 0;
-    if((error = av_read_frame(format_ctx, &pckt)) < 0) {
+    error = av_read_frame(format_ctx, &pckt);
+    if(error < 0) {
 
         if(error == AVERROR_EOF){
             *finished = 1;
         }
         else {
-            std::cerr << "ERROR: could not read frame";
-            std::cerr << "(error " << error << ")" << std::endl;
+            std::cerr << "ERROR: could not read frame" << std::endl;
             return error;
         }
     }
 
-    if((error = avcodec_send_packet(codec_ctx, &pckt)) < 0) {
-        std::cerr << "ERROR: could not send packet for decoding";
-        std::cerr << "(error " << error << ")" << std::endl;
+    error = avcodec_send_packet(codec_ctx, &pckt);
+    if(error < 0) {
+        std::cerr << "ERROR: could not send packet for decoding" << std::endl;
         return error;
     }
 
     error = avcodec_receive_frame(codec_ctx, frame);
-
     if(error == AVERROR(EAGAIN)) {
         error = 0;
     }
@@ -68,8 +69,7 @@ static int decode_audio_frame(AVFrame *frame, AVFormatContext *format_ctx, AVCod
         error = 0;
     }
     else if(error < 0) {
-        std::cerr << "ERROR: could not decode frame";
-        std::cerr << "(error " << error << ")" << std::endl;
+        std::cerr << "ERROR: could not decode frame" << std::endl;
     }
 
     av_packet_unref(&pckt);
@@ -130,27 +130,29 @@ static int load_contexts(std::string filepath, AVFormatContext **formatCtx, AVCo
 
 void MSongInfo::load(const QString &path){
 
+    loaded = false;
+
     AVFormatContext *formatCtx = nullptr;
     AVCodecContext *codecCtx = nullptr;
 
     int stream_index = -1;
-
     int error = load_contexts(path.toStdString(), &formatCtx, &codecCtx, &stream_index);
     if(error < 0 || stream_index < 0){
-        loaded = false;
         return;
     }
+
+    AVFrame *frame = av_frame_alloc();
 
     error = 0;
     int finished = 0;
     int sample_rate = -1;
-    AVFrame *frame = av_frame_alloc();
     while((!finished && !error) && sample_rate <= 0){
         error = decode_audio_frame(frame, formatCtx, codecCtx, &finished);
         sample_rate = frame->sample_rate;
     }
 
     AVStream *stream = formatCtx->streams[stream_index];
+
     time = stream->duration * av_q2d(stream->time_base);
     size = QFileInfo(path).size();
     bitRate = static_cast<int>(formatCtx->bit_rate);
@@ -159,6 +161,7 @@ void MSongInfo::load(const QString &path){
 
     AVDictionary *meta = formatCtx->metadata;
     AVDictionaryEntry *tag = nullptr;
+
     while ((tag = av_dict_get(meta, "", tag, AV_DICT_IGNORE_SUFFIX))){
 
         if(strncmp(tag->key, "title", 5) == 0){
@@ -196,7 +199,6 @@ void MSongInfo::load(const QString &path){
 
 
 MAudioEngine::MAudioEngine(QObject *parent) : QObject(parent){
-    m_attribMtx = new QMutex();
     m_processMutex = new QMutex();
     m_processCondition = new QWaitCondition();
     m_processThread = nullptr;
@@ -221,7 +223,6 @@ MAudioEngine::~MAudioEngine(){
     stop();
     media_dealloc();
 
-    delete m_attribMtx;
     delete m_processMutex;
     delete m_processCondition;
     delete m_processThread;
@@ -426,10 +427,9 @@ void MAudioEngine::pause(){
 
 void MAudioEngine::seek(int pos){
 
-    AVStream *stream = m_formatCtx->streams[m_streamIdx];
-
     avcodec_flush_buffers(m_codecCtx);
 
+    AVStream *stream = m_formatCtx->streams[m_streamIdx];
     double time = stream->duration * av_q2d(stream->time_base);
     double seek_pos = (pos / time) * stream->duration;
 
