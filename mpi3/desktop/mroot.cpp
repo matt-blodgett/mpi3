@@ -84,7 +84,7 @@ void MRootDesktop::initializeObjects(){
     connect(m_panelPlayback, &MPanelPlayback::audioPlay, m_audioEngine, &MAudioEngine::play);
     connect(m_panelPlayback, &MPanelPlayback::audioPause, m_audioEngine, &MAudioEngine::pause);
     connect(m_panelPlayback, &MPanelPlayback::changeVolume, m_audioEngine, &MAudioEngine::gain);
-    connect(m_panelPlayback, &MPanelPlayback::changePosition, m_audioEngine, &MAudioEngine::seek);
+    connect(m_panelPlayback, &MPanelPlayback::audioSeek, m_audioEngine, &MAudioEngine::seek);
 
     connect(m_audioEngine, &MAudioEngine::notifyVolume, m_panelPlayback, &MPanelPlayback::setVolume);
     connect(m_audioEngine, &MAudioEngine::notifyPosition, m_panelPlayback, &MPanelPlayback::setPosition);
@@ -678,13 +678,13 @@ void MRootDesktop::containerChanged(){
 }
 
 void MRootDesktop::processAudioMediaStatus(Mpi3::MediaState state){
-    qDebug() << state;
+    Q_UNUSED(state)
 }
 void MRootDesktop::processAudioEngineStatus(Mpi3::EngineState state){
-    qDebug() << state;
+    Q_UNUSED(state)
 }
 void MRootDesktop::processAudioErrorStatus(Mpi3::ErrorState state){
-    qDebug() << state;
+    Q_UNUSED(state)
 }
 void MRootDesktop::processAudioRequestStatus(Mpi3::EngineState state){
 

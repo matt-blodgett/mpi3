@@ -34,33 +34,6 @@ namespace Mpi3
 };
 
 
-Q_DECL_UNUSED static void list_ao_drivers(){
-    ao_info *info = nullptr;
-    for(int i = 0; i < 20; i++){
-        info = ao_driver_info(i);
-        if(info){
-            std::cout << info->name << std::endl;
-        }
-    }
-}
-Q_DECL_UNUSED static int flush_codec(AVCodecContext *codec_ctx){
-
-    AVFrame *frame;
-    frame = av_frame_alloc();
-
-    avcodec_send_packet(codec_ctx, nullptr);
-
-    int eof = 0;
-    while(eof != AVERROR_EOF){
-        eof = avcodec_receive_frame(codec_ctx, frame);
-    }
-
-    av_frame_free(&frame);
-    avcodec_flush_buffers(codec_ctx);
-
-    return 0;
-}
-
 static int decode_audio_frame(AVFrame *frame, AVFormatContext *format_ctx, AVCodecContext *codec_ctx, int *finished) {
 
     AVPacket pckt;
@@ -167,8 +140,6 @@ void MSongInfo::load(const QString &path){
         loaded = false;
         return;
     }
-
-    avformat_seek_file(formatCtx, 0, 0, 0, 0, 0);
 
     error = 0;
     int finished = 0;
@@ -288,7 +259,6 @@ void MAudioEngine::media_alloc(){
     }
 
     m_formatCtx->streams[m_streamIdx]->discard = AVDISCARD_DEFAULT;
-    avformat_seek_file(m_formatCtx, 0, 0, 0, 0, 0);
 
     error = 0;
     int finished = 0;
@@ -328,8 +298,6 @@ void MAudioEngine::media_alloc(){
 }
 void MAudioEngine::engine_process(){
 
-    avformat_seek_file(m_formatCtx, 0, 0, 0, 0, 0);
-
     AVStream *stream = m_formatCtx->streams[m_streamIdx];
     AVFrame *frame = av_frame_alloc();
 
@@ -364,7 +332,6 @@ void MAudioEngine::engine_process(){
 
         m_position = frame->pkt_dts * av_q2d(stream->time_base);
         emit notifyPosition(m_position);
-        error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
 
         if(requestedStatus() == Mpi3::EngineIdle){
 
@@ -375,18 +342,24 @@ void MAudioEngine::engine_process(){
             m_processMutex->unlock();
 
             switch(requestedStatus()){
+
                 case Mpi3::EngineActive:
                     updateStatus(Mpi3::EngineActive);
                     break;
+
                 case Mpi3::EngineStopped:
                     goto halt;
+
                 case Mpi3::EngineIdle:
                     continue;
+
             }
         }
         else if(requestedStatus() == Mpi3::EngineStopped){
             goto halt;
         }
+
+        error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
     }
 
 halt:
@@ -451,8 +424,22 @@ void MAudioEngine::pause(){
     updateRequest(Mpi3::EngineIdle);
 }
 
-void MAudioEngine::seek(double pos){
-    Q_UNUSED(pos);
+void MAudioEngine::seek(int pos){
+
+    AVStream *stream = m_formatCtx->streams[m_streamIdx];
+
+    avcodec_flush_buffers(m_codecCtx);
+
+    double time = stream->duration * av_q2d(stream->time_base);
+    double seek_pos = (pos / time) * stream->duration;
+
+    int error = av_seek_frame(m_formatCtx, m_streamIdx, static_cast<int>(seek_pos), AVSEEK_FLAG_BACKWARD);
+    if(error < 0){
+        std::cerr << "ERROR: error seeking to frame" << std::endl;
+        return;
+    }
+
+    play();
 }
 void MAudioEngine::gain(int vol){
     m_vol_percent = av_clipf_c(static_cast<float>(vol)/100.0f, 0.0f, 1.0f);

@@ -70,7 +70,7 @@ public:
     void play();
     void pause();
 
-    void seek(double pos);
+    void seek(int pos);
     void gain(int vol);
 
 public:

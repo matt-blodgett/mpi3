@@ -18,6 +18,9 @@
 #include <QDebug>
 
 
+
+
+
 MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
@@ -32,6 +35,14 @@ MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
     connect(m_btnPlay, &QPushButton::released, this, &MPanelPlayback::clickedPlay);
     connect(m_btnNext, &QPushButton::released, this, &MPanelPlayback::clickedNext);
     connect(m_btnPrev, &QPushButton::released, this, &MPanelPlayback::clickedPrev);
+
+
+    connect(m_sldPosition, &QSlider::sliderPressed, this, &MPanelPlayback::seekBegin);
+    connect(m_sldPosition, &QSlider::sliderReleased, this, &MPanelPlayback::seekEnd);
+
+    connect(m_sldPosition, &QSlider::valueChanged, this, &MPanelPlayback::positionChanged);
+
+
     connect(m_sldVolume, &QSlider::valueChanged, this, &MPanelPlayback::volumeChanged);
 }
 MPanelPlayback::~MPanelPlayback(){}
@@ -136,6 +147,7 @@ void MPanelPlayback::initializeLayout(){
     m_btnPlay->setFlat(true);
 
     // -------------------------------------------------- SEARCHBAR
+
     QWidget *frmSearchbar = new QWidget(this);
 
     m_boxSearch = new QLineEdit(this);
@@ -242,7 +254,9 @@ void MPanelPlayback::setButtonOpacity(double opacity){
     }
 }
 void MPanelPlayback::animateFadeButton(){
+
     if(!stopped()){
+
         QPropertyAnimation *animation = new QPropertyAnimation(this);
         animation->setPropertyName("buttonOpacity");
         animation->setTargetObject(this);
@@ -250,6 +264,7 @@ void MPanelPlayback::animateFadeButton(){
         animation->setEndValue(0.00);
         animation->setDuration(700);
         animation->start(QAbstractAnimation::DeleteWhenStopped);
+
     }
 }
 
@@ -282,6 +297,16 @@ void MPanelPlayback::setPosition(double position){
 }
 void MPanelPlayback::setState(Mpi3::EngineState state){
 
+    if(m_seeking && state == Mpi3::EngineIdle){
+        m_currentState = state;
+        return;
+    }
+    else if(m_seeking) {
+        m_seeking = false;
+        m_currentState = state;
+        return;
+    }
+
     if(state == Mpi3::EngineActive){
         m_btnPlay->setIcon(QIcon(m_pixPaus));
         m_btnFade->setIcon(QIcon(m_pixPlay));
@@ -303,14 +328,12 @@ void MPanelPlayback::setState(Mpi3::EngineState state){
     m_currentState = state;
 }
 void MPanelPlayback::setDisplay(MSong *song){
-    if(song){
-        m_sldPosition->setMinimum(0);
-        m_sldPosition->setMaximum(static_cast<int>(song->time()));
-        m_lblTitle->setText(song->name());
-        m_lblArtist->setText(song->artist());
-        m_lblPositionMax->setText(song->time_str());
-        m_lblPositionMin->setText("0:00");
-    }
+    m_sldPosition->setMinimum(0);
+    m_sldPosition->setMaximum(static_cast<int>(song->time()));
+    m_lblTitle->setText(song->name());
+    m_lblArtist->setText(song->artist());
+    m_lblPositionMax->setText(song->time_str());
+    m_lblPositionMin->setText("0:00");
 }
 
 void MPanelPlayback::clickedPlay(){
@@ -326,6 +349,17 @@ void MPanelPlayback::clickedPrev(){
 }
 void MPanelPlayback::volumeChanged(){
     emit changeVolume(volume());
+}
+
+void MPanelPlayback::seekBegin(){
+    m_seeking = true;
+    emit audioPause();
+}
+void MPanelPlayback::seekEnd(){
+    emit audioSeek(m_sldPosition->value());
+}
+void MPanelPlayback::positionChanged(int position){
+    setPosition(static_cast<double>(position));
 }
 
 void MPanelPlayback::elementModified(MMediaElement *elemModified){

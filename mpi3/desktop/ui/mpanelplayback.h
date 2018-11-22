@@ -47,12 +47,13 @@ public:
     void setVolume(int volume);
     void setPosition(double position);
     void setState(Mpi3::EngineState state);
-    void setDisplay(MSong *song = nullptr);
+    void setDisplay(MSong *song);
 
 private:
     Mpi3::EngineState m_currentState;
     QString m_pidCurrentSong;
     bool m_navigating;
+    bool m_seeking;
 
 private:
     QLabel *m_lblTitle = nullptr;
@@ -83,13 +84,18 @@ private slots:
     void clickedPrev();
     void volumeChanged();
 
+    void seekBegin();
+    void seekEnd();
+    void positionChanged(int position);
+
 signals:
     void audioPlay();
     void audioPause();
+    void audioSeek(int position);
+
     void navigateNext();
     void navigatePrev();
     void changeVolume(int volume);
-    void changePosition(double position);
 
 public:
     void elementModified(MMediaElement *elemModified);

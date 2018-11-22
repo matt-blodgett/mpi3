@@ -27,7 +27,6 @@ RESOURCES += assets/fonts.qrc
 RESOURCES += assets/desktop.qrc
 RC_FILE = assets/desktop.rc
 
-#http://doc.qt.io/archives/qt-4.8/qmake-advanced-usage.html
 
 win32 {
     LIBS += $$PWD/lib/libao/libao.dll.a
