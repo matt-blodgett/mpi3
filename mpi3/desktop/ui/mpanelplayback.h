@@ -39,13 +39,9 @@ public:
     int volume() const;
     double position() const;
 
-    bool stopped() const;
-    bool playing() const;
-    bool paused() const;
-    Mpi3::EngineState currentState() const;
-
     void setVolume(int volume);
     void setPosition(double position);
+
     void setState(Mpi3::EngineState state);
     void setDisplay(MSong *song);
 
@@ -83,7 +79,6 @@ private slots:
     void clickedNext();
     void clickedPrev();
     void volumeChanged();
-
     void seekBegin();
     void seekEnd();
     void positionChanged(int position);
@@ -92,12 +87,11 @@ signals:
     void audioPlay();
     void audioPause();
     void audioSeek(int position);
-
+    void changeVolume(int volume);
     void navigateNext();
     void navigatePrev();
-    void changeVolume(int volume);
 
-public:
+public slots:
     void elementModified(MMediaElement *elemModified);
 
 protected:

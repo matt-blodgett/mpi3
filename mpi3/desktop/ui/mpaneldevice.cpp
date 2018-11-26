@@ -1,6 +1,5 @@
 #include "mpaneldevice.h"
 #include "core/mmedialibrary.h"
-#include "mvc/mdrivemodel.h"
 
 #include <QGridLayout>
 #include <QTreeView>
@@ -18,11 +17,7 @@ MPanelDevice::MPanelDevice(QWidget *parent) : MPanel(parent){
     initializeLayout();
 
     setTitle("Raspberry Pi");
-    m_sectionDevices->setHeader("Storage Devices");
     m_sectionLibrary->setHeader("Device Library");
-
-    m_btnCreateVolume->setText("Create");
-    m_btnLoadVolume->setText("Load");
 
     m_lblSyncMediaTag->setText("Sync Media");
     m_lblLibAddedTag->setText("");
@@ -31,40 +26,47 @@ MPanelDevice::MPanelDevice(QWidget *parent) : MPanel(parent){
     m_lblLibAdded->setText("");
     m_boxLibName->setText("");
 
+
+
+    m_lblDevices->setText("Devices");
+
+    m_lblDevices->setStyleSheet("QLabel {border-bottom: 1px solid #696969;"
+                                 "font-size: 14px; padding: 4px 2px 4px 2px;}");
+
     m_frmStorageSpace->setObjectName("StorageWidget");
-
-    m_modelStorageDrives = new MModelStorageDrives(this);
-    m_treeStorageDevices->setModel(m_modelStorageDrives);
-    m_treeStorageDevices->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_treeStorageDevices->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_treeStorageDevices->setFocusPolicy(Qt::NoFocus);
-    m_treeStorageDevices->setIndentation(0);
-    m_treeStorageDevices->setItemsExpandable(false);
-    m_treeStorageDevices->setSortingEnabled(true);
-    m_treeStorageDevices->setAlternatingRowColors(true);
-    m_treeStorageDevices->viewport()->installEventFilter(this);
-    m_treeStorageDevices->setFixedHeight(200);
-
-    connect(m_treeStorageDevices->selectionModel(),
-            &QItemSelectionModel::selectionChanged,
-            this, [this](){selectionChanged();});
-
-    connect(m_btnCreateVolume, &QPushButton::released, this, &MPanelDevice::createVolume);
-    connect(m_btnLoadVolume, &QPushButton::released, this, &MPanelDevice::loadVolume);
-
-    selectionChanged();
 }
 
 void MPanelDevice::initializeLayout() {
 
-    m_sectionDevices = addSection();
-    m_sectionLibrary = addSection();
 
-    m_lblSelectedDrive = addLabelTag();
-    m_lblSelectedLibrary = addLabelValue();
+    m_lblDevices = addLabelTag();
+
+//    m_btnRefreshVolumes = new QPushButton(this);
+//    m_btnCreateVolume = new QPushButton(this);
+    m_btnRefreshVolumes = addPushButton();
     m_btnCreateVolume = addPushButton();
-    m_btnLoadVolume = addPushButton();
-    m_treeStorageDevices = addTreeView();
+
+
+    m_btnRefreshVolumes->setFixedWidth(20);
+    m_btnCreateVolume->setFixedWidth(20);
+
+
+
+    QGridLayout *gridHeader = new QGridLayout();
+    gridHeader->addWidget(m_lblDevices, 0, 0, 1, 1);
+    gridHeader->setColumnStretch(1, 1);
+    gridHeader->addWidget(m_btnRefreshVolumes, 0, 2, 1, 1);
+    gridHeader->addWidget(m_btnCreateVolume, 0, 3, 1, 1);
+
+    gridControl()->addLayout(gridHeader, 0, 0, 1, 1);
+    gridControl()->setRowStretch(1, 1);
+    gridControl()->setVerticalSpacing(0);
+    gridControl()->setHorizontalSpacing(0);
+    gridControl()->setMargin(0);
+
+
+
+    m_sectionLibrary = addSection();
 
     m_boxLibName = addLineEditHidden();
     m_lblLibAddedTag = addLabelTag();
@@ -73,16 +75,6 @@ void MPanelDevice::initializeLayout() {
     m_treeSyncMedia = addTreeView();
     m_lblCurrentDevice = addLabelTag();
     m_frmStorageSpace = new QWidget(this);
-
-    QGridLayout *device_gridNorth = m_sectionDevices->gridNorth();
-    device_gridNorth->addWidget(m_lblSelectedDrive, 0, 0, 1, 1);
-    device_gridNorth->addWidget(m_lblSelectedLibrary, 1, 0, 1, 1);
-    device_gridNorth->addWidget(m_btnCreateVolume, 3, 0, 1, 1);
-    device_gridNorth->addWidget(m_btnLoadVolume, 3, 0, 1, 1);
-    device_gridNorth->addWidget(m_treeStorageDevices, 0, 2, 4, 1);
-    device_gridNorth->setColumnMinimumWidth(0, m_btnCreateVolume->width());
-    device_gridNorth->setColumnMinimumWidth(1, 10);
-    device_gridNorth->setRowStretch(2, 1);
 
     QGridLayout *library_gridWest = m_sectionLibrary->gridWest();
     QGridLayout *library_gridEast = m_sectionLibrary->gridEast();
@@ -118,89 +110,3 @@ void MPanelDevice::setRaspiLibrary(MMediaLibrary *raspiLib){
         m_boxLibName->setText(m_deviceLibrary->name());
     }
 }
-
-void MPanelDevice::loadVolume(){
-    QModelIndex idx = m_treeStorageDevices->selectionModel()->currentIndex();
-    MMediaLibrary *raspiLib = m_modelStorageDrives->raspiLibraryAt(idx);
-    setRaspiLibrary(raspiLib);
-}
-void MPanelDevice::createVolume(){
-    QModelIndex idx = m_treeStorageDevices->selectionModel()->currentIndex();
-    QString rootPath = m_modelStorageDrives->rootPathAt(idx);
-    MMediaLibrary *raspiLib = m_mediaLibrary->createRaspiVolume(rootPath);
-    qDebug() << raspiLib->name();
-}
-
-void MPanelDevice::selectionChanged(){
-
-    bool deviceSelected = m_treeStorageDevices->selectionModel()->selectedRows().size() == 1;
-
-    if(deviceSelected){
-        QModelIndex idx = m_treeStorageDevices->selectionModel()->currentIndex();
-        QModelIndex idx_driveName = m_modelStorageDrives->index(idx.row(), 0);
-        QModelIndex idx_libName = m_modelStorageDrives->index(idx.row(), 1);
-
-        QString str_driveName = m_modelStorageDrives->data(idx_driveName).toString();
-        QString str_libName = m_modelStorageDrives->data(idx_libName).toString();
-
-        bool nolibrary = str_libName == "";
-
-        m_lblSelectedDrive->setText(str_driveName);
-        m_lblSelectedLibrary->setText(str_libName);
-
-        m_btnCreateVolume->setVisible(nolibrary);
-        m_btnLoadVolume->setVisible(!nolibrary);
-    }
-    else {
-        m_lblSelectedDrive->setText("");
-        m_lblSelectedLibrary->setText("");
-
-        m_btnCreateVolume->setVisible(false);
-        m_btnLoadVolume->setVisible(false);
-    }
-}
-
-void MPanelDevice::showEvent(QShowEvent *event){
-
-    int totalWidth = 0;
-    QList<int> colWidths = {0, 240, 85, 85, 85};
-
-    for(int i = 0; i < colWidths.size(); i++){
-        m_treeStorageDevices->setColumnWidth(i, colWidths[i]);
-        totalWidth += colWidths[i];
-    }
-
-    int treeWidth = m_treeStorageDevices->width();
-    m_treeStorageDevices->setColumnWidth(0, treeWidth - totalWidth - 2);
-
-    MPanel::showEvent(event);
-}
-bool MPanelDevice::eventFilter(QObject *obj, QEvent *event){
-
-    if(obj == m_treeStorageDevices->viewport()){
-        if(event->type() == QEvent::MouseButtonPress){
-            m_treeStorageDevices->selectionModel()->clear();
-
-            m_modelStorageDrives->refresh();
-
-        }
-    }
-
-    return QWidget::eventFilter(obj, event);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

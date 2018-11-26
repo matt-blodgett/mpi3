@@ -185,6 +185,8 @@ void MPanelLibrary::allowAutoBackups(bool allow){
     m_lblBackupFreqTag->setDisabled(!allow);
     m_optBackupLibrary->setChecked(allow);
     m_cbxBackupFreq->setDisabled(!allow);
+    m_boxBackupLoc->setDisabled(!allow);
+    m_btnSetBackupLoc->setDisabled(!allow);
 }
 
 bool MPanelLibrary::valCopyMedia() const {
@@ -196,45 +198,3 @@ bool MPanelLibrary::valOrganizeMedia() const {
 bool MPanelLibrary::valAutoBackups() const {
     return m_optBackupLibrary->isChecked();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -36,7 +36,6 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent){
 }
 
 void MPanelMedia::initializeLayout(){
-
     m_treeContainers = new MTreeContainers(this);
     m_treeSonglist = new MTreeSonglist(this);
 
@@ -77,11 +76,10 @@ MPanelMedia::View MPanelMedia::currentView() const{
     return m_currentView;
 }
 void MPanelMedia::changeView(MPanelMedia::View view){
-    m_currentView = view;
-
 
     m_treeContainers->selectionModel()->blockSignals(true);
 
+    m_currentView = view;
     switch(m_currentView){
 
         case MPanelMedia::ViewAllSongs: {
@@ -131,30 +129,3 @@ MTreeContainers *MPanelMedia::treeContainers(){
 MTreeSonglist *MPanelMedia::treeSonglist(){
     return m_treeSonglist;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

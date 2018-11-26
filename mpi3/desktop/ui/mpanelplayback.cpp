@@ -18,9 +18,6 @@
 #include <QDebug>
 
 
-
-
-
 MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
     initializeLayout();
 
@@ -36,12 +33,9 @@ MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
     connect(m_btnNext, &QPushButton::released, this, &MPanelPlayback::clickedNext);
     connect(m_btnPrev, &QPushButton::released, this, &MPanelPlayback::clickedPrev);
 
-
     connect(m_sldPosition, &QSlider::sliderPressed, this, &MPanelPlayback::seekBegin);
     connect(m_sldPosition, &QSlider::sliderReleased, this, &MPanelPlayback::seekEnd);
-
     connect(m_sldPosition, &QSlider::valueChanged, this, &MPanelPlayback::positionChanged);
-
 
     connect(m_sldVolume, &QSlider::valueChanged, this, &MPanelPlayback::volumeChanged);
 }
@@ -232,7 +226,8 @@ double MPanelPlayback::buttonOpacity() const{
 void MPanelPlayback::setButtonOpacity(double opacity){
     m_btnOpacity = opacity;
 
-    QPixmap pixCurrent = playing() ? m_pixPlay : m_pixPaus;
+    bool playing = m_currentState == Mpi3::EngineActive;
+    QPixmap pixCurrent = playing ? m_pixPlay : m_pixPaus;
 
     if(m_btnOpacity > 0.00){
         QPixmap pixMask = QPixmap(pixCurrent);
@@ -255,8 +250,7 @@ void MPanelPlayback::setButtonOpacity(double opacity){
 }
 void MPanelPlayback::animateFadeButton(){
 
-    if(!stopped()){
-
+    if(m_currentState != Mpi3::EngineStopped){
         QPropertyAnimation *animation = new QPropertyAnimation(this);
         animation->setPropertyName("buttonOpacity");
         animation->setTargetObject(this);
@@ -264,7 +258,6 @@ void MPanelPlayback::animateFadeButton(){
         animation->setEndValue(0.00);
         animation->setDuration(700);
         animation->start(QAbstractAnimation::DeleteWhenStopped);
-
     }
 }
 
@@ -273,15 +266,6 @@ int MPanelPlayback::volume() const{
 }
 double MPanelPlayback::position() const {
     return m_sldPosition->value();
-}
-bool MPanelPlayback::stopped() const {
-    return m_currentState == Mpi3::EngineStopped;
-}
-bool MPanelPlayback::playing() const {
-    return m_currentState == Mpi3::EngineActive;
-}
-bool MPanelPlayback::paused() const {
-    return m_currentState == Mpi3::EngineIdle;
 }
 
 void MPanelPlayback::setVolume(int volume){
@@ -335,7 +319,9 @@ void MPanelPlayback::setDisplay(MSong *song){
 }
 
 void MPanelPlayback::clickedPlay(){
-    emit paused() || stopped() ? audioPlay() : audioPause();
+    bool paused = m_currentState == Mpi3::EngineIdle;
+    bool stopped = m_currentState == Mpi3::EngineStopped;
+    emit paused || stopped ? audioPlay() : audioPause();
 }
 void MPanelPlayback::clickedNext(){
     m_navigating = true;
