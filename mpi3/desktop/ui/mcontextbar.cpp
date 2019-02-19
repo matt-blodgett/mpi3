@@ -7,24 +7,29 @@
 #include <QStyleOption>
 #include <QPainter>
 
+
 #include <QDebug>
 
 
-MContextBar::MContextBar(QWidget *parent) : QWidget(parent){
+MContextBar::MContextBar(QWidget *parent) : QWidget(parent)
+{
     initializeLayout();
 
     m_btnMedia->setStyle(new MStyle(m_btnMedia->style()));
     m_btnLibrary->setStyle(new MStyle(m_btnLibrary->style()));
     m_btnDevice->setStyle(new MStyle(m_btnDevice->style()));
 
-    connect(m_btnMedia, &QRadioButton::released, this, [this](){changeView(MContextBar::ViewMedia);});
-    connect(m_btnLibrary, &QRadioButton::released, this, [this](){changeView(MContextBar::ViewLibrary);});
-    connect(m_btnDevice, &QRadioButton::released, this, [this](){changeView(MContextBar::ViewDevice);});
+    connect(m_btnMedia, &QRadioButton::released, this, [this]() {changeView(MContextBar::ViewMedia);});
+    connect(m_btnLibrary, &QRadioButton::released, this, [this]() {changeView(MContextBar::ViewLibrary);});
+    connect(m_btnDevice, &QRadioButton::released, this, [this]() {changeView(MContextBar::ViewDevice);});
 }
-MContextBar::~MContextBar(){}
+MContextBar::~MContextBar()
+{
 
-void MContextBar::initializeLayout(){
+}
 
+void MContextBar::initializeLayout()
+{
     // -------------------------------------------------- CONTEXT BAR
 
     m_btnMedia = new QRadioButton(this);
@@ -71,13 +76,15 @@ void MContextBar::initializeLayout(){
     setObjectName("ContextBar");
 }
 
-MContextBar::View MContextBar::currentView() const{
+MContextBar::View MContextBar::currentView() const
+{
     return m_currentView;
 }
-void MContextBar::changeView(MContextBar::View view){
+void MContextBar::changeView(MContextBar::View view)
+{
     m_currentView = view;
 
-    switch(m_currentView){
+    switch(m_currentView) {
         case MContextBar::ViewMedia: {
             m_btnMedia->toggle();
             break;
@@ -95,7 +102,8 @@ void MContextBar::changeView(MContextBar::View view){
     emit viewChanged();
 }
 
-void MContextBar::paintEvent(QPaintEvent *event){
+void MContextBar::paintEvent(QPaintEvent *event)
+{
     QStyleOption opt;
     opt.initFrom(this);
 

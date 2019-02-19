@@ -11,8 +11,8 @@
 #include "mglobal.h"
 
 
-class MModelStorageDrives : public QAbstractItemModel {
-
+class MModelStorageDrives : public QAbstractItemModel
+{
     Q_OBJECT
 
 public:

@@ -7,25 +7,29 @@ typedef class MSettingsXmlNode XmlNode;
 static const QString RootName = "mpi3config";
 
 
-MSettingsXml::MSettingsXml(const QString &settingsPath) : QSettings (settingsPath, XmlSettingsFormat){}
+MSettingsXml::MSettingsXml(const QString &settingsPath) : QSettings (settingsPath, XmlSettingsFormat)
+{
+
+}
 
 const QSettings::Format MSettingsXml::XmlSettingsFormat = QSettings::registerFormat(
             "xml", &MSettingsXml::readSettingsXml, &MSettingsXml::writeSettingsXml);
 
-bool MSettingsXml::readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map) {
+bool MSettingsXml::readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map)
+{
     QXmlStreamReader xml(&device);
     XmlNode *curNode = nullptr;
 
     while(!xml.atEnd()) {
         switch(xml.readNext()) {
             case QXmlStreamReader::StartElement: {
-                if(curNode){
+                if(curNode) {
                     curNode = new XmlNode(xml.name().toString(), QString(), curNode);
                 }
-                else if(xml.name().toString() == RootName){
+                else if(xml.name().toString() == RootName) {
                     curNode = new XmlNode(RootName);
                 }
-                else{
+                else {
                     return false;
                 }
                 break;
@@ -35,13 +39,13 @@ bool MSettingsXml::readSettingsXml(QIODevice &device, QMap<QString, QVariant> &m
                     delete curNode;
                     return true;
                 }
-                else{
+                else {
                     curNode = static_cast<XmlNode*>(QScopedPointer<XmlNode>(curNode)->parent());
                 }
                 break;
             }
             case QXmlStreamReader::Characters: {
-                if(!xml.isWhitespace()){
+                if(!xml.isWhitespace()) {
                     map[curNode->fullPath()] = xml.text().toString();
                 }
                 break;
@@ -55,11 +59,12 @@ bool MSettingsXml::readSettingsXml(QIODevice &device, QMap<QString, QVariant> &m
     map.clear();
     return false;
 }
-bool MSettingsXml::writeSettingsXml(QIODevice &device, const QMap<QString, QVariant> &map) {
+bool MSettingsXml::writeSettingsXml(QIODevice &device, const QMap<QString, QVariant> &map)
+{
     XmlNode *root = new XmlNode(RootName);
 
     QMap<QString, QVariant>::const_iterator unsplitKey;
-    for(unsplitKey = map.begin(); unsplitKey != map.end(); unsplitKey++){
+    for(unsplitKey = map.begin(); unsplitKey != map.end(); unsplitKey++) {
         QStringList segs = unsplitKey.key().split("/", QString::SkipEmptyParts);
         QString val = unsplitKey.value().toString();
 
@@ -79,7 +84,7 @@ bool MSettingsXml::writeSettingsXml(QIODevice &device, const QMap<QString, QVari
                     }
                 }
 
-                if(!foundItem){
+                if(!foundItem) {
                     foundItem = new XmlNode(segs[i], QString(), cur);
                 }
 
@@ -111,11 +116,11 @@ bool MSettingsXml::writeSettingsXml(QIODevice &device, const QMap<QString, QVari
         xml.writeStartElement(cur->tagName);
         stack << nullptr;
 
-        if(cur->children().size() == 0){
+        if(cur->children().size() == 0) {
             xml.writeCharacters(cur->subtext);
         }
         else {
-            for(int i = 0; i < cur->children().length(); i++){
+            for(int i = 0; i < cur->children().length(); i++) {
                 stack << static_cast<XmlNode*>(cur->children()[i]);
             }
         }
@@ -125,16 +130,18 @@ bool MSettingsXml::writeSettingsXml(QIODevice &device, const QMap<QString, QVari
 }
 
 
-MSettingsXmlNode::MSettingsXmlNode(const QString &name, const QString &text, QObject *parent) : QObject(parent){
+MSettingsXmlNode::MSettingsXmlNode(const QString &name, const QString &text, QObject *parent) : QObject(parent)
+{
     tagName = name;
     subtext = text;
 }
 
-QString MSettingsXmlNode::fullPath() const {
+QString MSettingsXmlNode::fullPath() const
+{
     const XmlNode *cur = this;
     QString path = tagName;
 
-    while((cur = static_cast<XmlNode*>(cur->parent()))){
+    while((cur = static_cast<XmlNode*>(cur->parent()))) {
         path.prepend(cur->tagName + "/");
     }
 

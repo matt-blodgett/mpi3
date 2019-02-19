@@ -6,15 +6,19 @@
 #include <QFile>
 
 
-MStyleSheet::MStyleSheet(){}
+MStyleSheet::MStyleSheet()
+{
 
-void MStyleSheet::load(const QString &path){
-    if(!path.isNull()){
+}
+
+void MStyleSheet::load(const QString &path)
+{
+    if(!path.isNull()) {
         m_filepath = path;
     }
 
     QFile loadFile(m_filepath);
-    if(loadFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+    if(loadFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QString raw = loadFile.readAll();
         QString qss = removeComments(raw);
 
@@ -22,11 +26,11 @@ void MStyleSheet::load(const QString &path){
         QString themeEnd = "!THEME=END";
 
         int i = 0;
-        while(i < qss.length()){
+        while(i < qss.length()) {
             int n = qss.indexOf("\n", i);
             QString line = qss.mid(i, n-i);
 
-            if(line.startsWith(themeBegin)){
+            if(line.startsWith(themeBegin)) {
                 n = qss.indexOf(themeEnd);
                 QString rawStyle = qss.mid(i, n);
 
@@ -43,47 +47,53 @@ void MStyleSheet::load(const QString &path){
         }
     }
 }
-void MStyleSheet::save(const QString &path){
-    if(!path.isNull()){
+void MStyleSheet::save(const QString &path)
+{
+    if(!path.isNull()) {
         m_filepath = path;
     }
 
     QFile saveFile(m_filepath);
-    if(saveFile.open(QFile::ReadWrite)){
+    if(saveFile.open(QFile::ReadWrite)) {
 
     }
 }
 
-QString MStyleSheet::qssName() const {
+QString MStyleSheet::qssName() const
+{
     return m_name;
 }
-QString MStyleSheet::qssStyle() const {
+QString MStyleSheet::qssStyle() const
+{
     return m_style;
 }
-QString MStyleSheet::qssPath() const {
+QString MStyleSheet::qssPath() const
+{
     return m_filepath;
 }
 
-void MStyleSheet::setProperty(const QString &line){
+void MStyleSheet::setProperty(const QString &line)
+{
     int split = line.indexOf("=", 0);
 
     QString pName = line.mid(1, split-1);
     QString pValue = line.right(line.length() - split-1);
 
-    if(pName == "NAME"){
+    if(pName == "NAME") {
         m_name = pValue;
     }
 }
-QString MStyleSheet::removeComments(const QString &text){
+QString MStyleSheet::removeComments(const QString &text)
+{
     QString parsed;
 
     int i = 0;
-    while(i < text.length()){
+    while(i < text.length()) {
         int n = text.indexOf("\n", i);
         QString line = text.mid(i, n-i);
 
         int s = line.indexOf("//", 0);
-        if(s > -1){
+        if(s > -1) {
             parsed += line.left(s);
         }
         else {
@@ -98,16 +108,19 @@ QString MStyleSheet::removeComments(const QString &text){
 }
 
 
-MStyle::MStyle(QStyle *style) : QProxyStyle(style){}
+MStyle::MStyle(QStyle *style) : QProxyStyle(style)
+{
+
+}
 
 void MStyle::drawPrimitive(
         PrimitiveElement element, const QStyleOption *option,
-        QPainter *painter, const QWidget *widget) const{
-
-    if(element == QStyle::PE_IndicatorRadioButton){
+        QPainter *painter, const QWidget *widget) const
+{
+    if(element == QStyle::PE_IndicatorRadioButton) {
         return;
     }
-    else if(element == QStyle::PE_IndicatorItemViewItemDrop && !option->rect.isNull()){
+    else if(element == QStyle::PE_IndicatorItemViewItemDrop && !option->rect.isNull()) {
         return;
     }
 

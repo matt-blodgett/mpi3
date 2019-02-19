@@ -102,46 +102,5 @@ protected:
     void showEvent(QShowEvent *event);
 };
 
-
-
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

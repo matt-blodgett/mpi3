@@ -10,7 +10,8 @@
 #include <ao/ao.h>
 
 
-extern "C" {
+extern "C"
+{
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 }
@@ -20,8 +21,8 @@ extern "C" {
 #define BIT_RANGE (1<<(BIT_DEPTH - 1))
 
 
-static int decode_audio_frame(AVFrame *frame, AVFormatContext *format_ctx, AVCodecContext *codec_ctx, int *finished) {
-
+static int decode_audio_frame(AVFrame *frame, AVFormatContext *format_ctx, AVCodecContext *codec_ctx, int *finished)
+{
     int error = 0;
 
     AVPacket pckt;
@@ -30,7 +31,7 @@ static int decode_audio_frame(AVFrame *frame, AVFormatContext *format_ctx, AVCod
     error = av_read_frame(format_ctx, &pckt);
     if(error < 0) {
 
-        if(error == AVERROR_EOF){
+        if(error == AVERROR_EOF) {
             *finished = 1;
         }
         else {
@@ -60,18 +61,18 @@ static int decode_audio_frame(AVFrame *frame, AVFormatContext *format_ctx, AVCod
     av_packet_unref(&pckt);
     return error;
 }
-static int load_contexts(std::string filepath, AVFormatContext **formatCtx, AVCodecContext **codecCtx, int *streamIdx){
-
+static int load_contexts(std::string filepath, AVFormatContext **formatCtx, AVCodecContext **codecCtx, int *streamIdx)
+{
     int error = 0;
 
     error = avformat_open_input(formatCtx, filepath.c_str(), nullptr, nullptr);
-    if(error < 0){
+    if(error < 0) {
         std::cerr << "ERROR: error opening input file" << std::endl;
         return error;
     }
 
     error = avformat_find_stream_info(*formatCtx, nullptr);
-    if(error < 0){
+    if(error < 0) {
         std::cerr << "ERROR: error finding stream info" << std::endl;
         return error;
     }
@@ -80,31 +81,31 @@ static int load_contexts(std::string filepath, AVFormatContext **formatCtx, AVCo
     *streamIdx = av_find_best_stream(
         *formatCtx, AVMEDIA_TYPE_AUDIO, -1, -1, &codec, 0);
 
-    if(*streamIdx == AVERROR_STREAM_NOT_FOUND){
+    if(*streamIdx == AVERROR_STREAM_NOT_FOUND) {
         std::cerr << "ERROR: error finding audio stream" << std::endl;
         return error;
     }
-    else if(*streamIdx == AVERROR_DECODER_NOT_FOUND){
+    else if(*streamIdx == AVERROR_DECODER_NOT_FOUND) {
         std::cerr << "ERROR: error finding decoder" << std::endl;
         return error;
     }
-    else if(!codec){
+    else if(!codec) {
         std::cerr << "ERROR: error loading codec" << std::endl;
         return error;
     }
 
-    if(strncmp(codec->name, "mp3float", 8) == 0){
+    if(strncmp(codec->name, "mp3float", 8) == 0) {
         codec = avcodec_find_decoder_by_name("mp3");
     }
 
     *codecCtx = avcodec_alloc_context3(codec);
-    if(!codecCtx){
+    if(!codecCtx) {
         std::cerr << "ERROR: error allocating codec context";
         return error;
     }
 
     error = avcodec_open2(*codecCtx, codec, nullptr);
-    if(error < 0){
+    if(error < 0) {
         std::cerr << "ERROR: error opening codec";
         return error;
     }
@@ -113,8 +114,8 @@ static int load_contexts(std::string filepath, AVFormatContext **formatCtx, AVCo
 }
 
 
-void MSongInfo::load(const QString &path){
-
+void MSongInfo::load(const QString &path)
+{
     loaded = false;
 
     AVFormatContext *formatCtx = nullptr;
@@ -122,7 +123,7 @@ void MSongInfo::load(const QString &path){
 
     int stream_index = -1;
     int error = load_contexts(path.toStdString(), &formatCtx, &codecCtx, &stream_index);
-    if(error < 0 || stream_index < 0){
+    if(error < 0 || stream_index < 0) {
         return;
     }
 
@@ -131,7 +132,7 @@ void MSongInfo::load(const QString &path){
     error = 0;
     int finished = 0;
     int sample_rate = -1;
-    while((!finished && !error) && sample_rate <= 0){
+    while((!finished && !error) && sample_rate <= 0) {
         error = decode_audio_frame(frame, formatCtx, codecCtx, &finished);
         sample_rate = frame->sample_rate;
     }
@@ -147,27 +148,27 @@ void MSongInfo::load(const QString &path){
     AVDictionary *meta = formatCtx->metadata;
     AVDictionaryEntry *tag = nullptr;
 
-    while ((tag = av_dict_get(meta, "", tag, AV_DICT_IGNORE_SUFFIX))){
+    while ((tag = av_dict_get(meta, "", tag, AV_DICT_IGNORE_SUFFIX))) {
 
-        if(strncmp(tag->key, "title", 5) == 0){
+        if(strncmp(tag->key, "title", 5) == 0) {
             title = tag->value;
         }
-        else if(strncmp(tag->key, "artist", 6) == 0){
+        else if(strncmp(tag->key, "artist", 6) == 0) {
             artist = tag->value;
         }
-        else if(strncmp(tag->key, "album", 5) == 0){
+        else if(strncmp(tag->key, "album", 5) == 0) {
             album = tag->value;
         }
-        else if(strncmp(tag->key, "major_brand", 11) == 0){
+        else if(strncmp(tag->key, "major_brand", 11) == 0) {
             majorBrand = tag->value;
         }
-        else if(strncmp(tag->key, "minor_version", 13) == 0){
+        else if(strncmp(tag->key, "minor_version", 13) == 0) {
             minorVersion = tag->value;
         }
-        else if(strncmp(tag->key, "compatible_brands", 7) == 0){
+        else if(strncmp(tag->key, "compatible_brands", 7) == 0) {
             compatibleBrands = tag->value;
         }
-        else if(strncmp(tag->key, "encoder", 7) == 0){
+        else if(strncmp(tag->key, "encoder", 7) == 0) {
             encoder = tag->value;
         }
 
@@ -183,7 +184,8 @@ void MSongInfo::load(const QString &path){
 }
 
 
-MAudioEngine::MAudioEngine(QObject *parent) : QObject(parent){
+MAudioEngine::MAudioEngine(QObject *parent) : QObject(parent)
+{
     m_processMutex = new QMutex();
     m_processCondition = new QWaitCondition();
     m_processThread = nullptr;
@@ -204,7 +206,8 @@ MAudioEngine::MAudioEngine(QObject *parent) : QObject(parent){
     m_aoDevice = nullptr;
     m_streamIdx = -1;
 }
-MAudioEngine::~MAudioEngine(){
+MAudioEngine::~MAudioEngine()
+{
     stop();
     media_dealloc();
 
@@ -216,23 +219,25 @@ MAudioEngine::~MAudioEngine(){
     delete m_codecCtx;
 }
 
-void MAudioEngine::environ_init(){
+void MAudioEngine::environ_init()
+{
     av_log_set_level(AV_LOG_VERBOSE); // AV_LOG_QUIET
     av_register_all();
     ao_initialize();
 }
-void MAudioEngine::environ_deinit(){
+void MAudioEngine::environ_deinit()
+{
     ao_shutdown();
 }
 
-void MAudioEngine::media_dealloc(){
-
-    if(m_formatCtx){
+void MAudioEngine::media_dealloc()
+{
+    if(m_formatCtx) {
         avformat_close_input(&m_formatCtx);
         avformat_free_context(m_formatCtx);
     }
 
-    if(m_codecCtx){
+    if(m_codecCtx) {
         avcodec_close(m_codecCtx);
         avcodec_free_context(&m_codecCtx);
     }
@@ -240,15 +245,15 @@ void MAudioEngine::media_dealloc(){
     m_filepath.clear();
     updateStatus(Mpi3::MediaEmpty);
 }
-void MAudioEngine::media_alloc(){
-
+void MAudioEngine::media_alloc()
+{
     m_streamIdx = -1;
 
     int error = load_contexts(m_filepath.toStdString(), &m_formatCtx, &m_codecCtx, &m_streamIdx);
-    if(error < 0 || m_streamIdx < 0){return;}
+    if(error < 0 || m_streamIdx < 0) {return;}
 
-    for(uint32_t i = 0; i < m_formatCtx->nb_streams; i++){
-        if(m_formatCtx->streams[i]->index != m_streamIdx){
+    for(uint32_t i = 0; i < m_formatCtx->nb_streams; i++) {
+        if(m_formatCtx->streams[i]->index != m_streamIdx) {
             m_formatCtx->streams[i]->discard = AVDISCARD_ALL;
         }
     }
@@ -260,7 +265,7 @@ void MAudioEngine::media_alloc(){
     int sample_rate = -1;
 
     AVFrame *frame = av_frame_alloc();
-    while((!finished && !error) && sample_rate <= 0){
+    while((!finished && !error) && sample_rate <= 0) {
         error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
         sample_rate = frame->sample_rate;
     }
@@ -268,12 +273,13 @@ void MAudioEngine::media_alloc(){
     av_frame_free(&frame);
 
     int default_driver = ao_default_driver_id();
-    if(default_driver < 0){
+    if(default_driver < 0) {
         std::cerr << "ERROR: error finding default driver" << std::endl;
         return;
     }
 
     ao_info *info = ao_driver_info(default_driver);
+
     ao_sample_format ao_format;
     memset(&ao_format, 0, sizeof(ao_format));
 
@@ -284,15 +290,15 @@ void MAudioEngine::media_alloc(){
     ao_format.matrix = nullptr;
 
     m_aoDevice = ao_open_live(default_driver, &ao_format, nullptr);
-    if(!m_aoDevice){
+    if(!m_aoDevice) {
         std::cerr << "ERROR: error opening output device" << std::endl;
         return;
     }
 
     updateStatus(Mpi3::MediaReady);
 }
-void MAudioEngine::engine_process(){
-
+void MAudioEngine::engine_process()
+{
     AVStream *stream = m_formatCtx->streams[m_streamIdx];
     AVFrame *frame = av_frame_alloc();
 
@@ -301,14 +307,13 @@ void MAudioEngine::engine_process(){
     error = decode_audio_frame(frame, m_formatCtx, m_codecCtx, &finished);
 
     while(!finished && !error) {
-
         size_t buf_size = static_cast<size_t>(frame->channels * frame->nb_samples * 2);
         int16_t *buf = static_cast<int16_t*>(av_malloc(buf_size));
         int16_t **data = reinterpret_cast<int16_t**>(frame->extended_data);
 
-        for(int i = 0; i < frame->nb_samples; i++){
+        for(int i = 0; i < frame->nb_samples; i++) {
 
-            for(int ch = 0; ch < frame->channels; ch++){
+            for(int ch = 0; ch < frame->channels; ch++) {
 
                 float sample = static_cast<float>(data[ch][i]);
 
@@ -318,9 +323,7 @@ void MAudioEngine::engine_process(){
                 sample = av_clipf_c(sample, -BIT_RANGE, BIT_RANGE-1);
 
                 buf[i * frame->channels + ch] = static_cast<int16_t>(sample);
-
             }
-
         }
 
         ao_play(m_aoDevice, reinterpret_cast<char*>(buf), buf_size);
@@ -328,7 +331,7 @@ void MAudioEngine::engine_process(){
         m_position = frame->pkt_dts * av_q2d(stream->time_base);
         emit notifyPosition(m_position);
 
-        if(requestedStatus() == Mpi3::EngineIdle){
+        if(requestedStatus() == Mpi3::EngineIdle) {
 
             updateStatus(Mpi3::EngineIdle);
 
@@ -336,7 +339,7 @@ void MAudioEngine::engine_process(){
             m_processCondition->wait(m_processMutex);
             m_processMutex->unlock();
 
-            switch(requestedStatus()){
+            switch(requestedStatus()) {
 
                 case Mpi3::EngineActive:
                     updateStatus(Mpi3::EngineActive);
@@ -350,7 +353,7 @@ void MAudioEngine::engine_process(){
 
             }
         }
-        else if(requestedStatus() == Mpi3::EngineStopped){
+        else if(requestedStatus() == Mpi3::EngineStopped) {
             goto halt;
         }
 
@@ -363,28 +366,25 @@ halt:
     QThread::currentThread()->quit();
 }
 
-void MAudioEngine::open(const QString &path){
-
-    if(empty()){
-
+void MAudioEngine::open(const QString &path)
+{
+    if(empty()) {
         media_dealloc();
         m_filepath = path;
         media_alloc();
-
     }
 }
 
-void MAudioEngine::start(){
-
-    if(ready()){
-
-        if(m_processThread){
+void MAudioEngine::start()
+{
+    if(ready()) {
+        if(m_processThread) {
             delete m_processThread;
             m_processThread = nullptr;
         }
 
-        if(!m_processThread){
-            m_processThread = QThread::create([this](){engine_process();});
+        if(!m_processThread) {
+            m_processThread = QThread::create([this]() {engine_process();});
 
             updateStatus(Mpi3::MediaBusy);
             updateStatus(m_playpauseStatus);
@@ -393,34 +393,33 @@ void MAudioEngine::start(){
             m_processThread->start();
             m_processThread->setPriority(QThread::HighestPriority);
         }
-
     }
 }
-void MAudioEngine::stop(){
-
-    if(busy()){
-
+void MAudioEngine::stop()
+{
+    if(busy()) {
         updateRequest(Mpi3::EngineStopped);
 
-        if(m_processThread){
+        if(m_processThread) {
             m_processThread->wait();
             updateStatus(Mpi3::EngineStopped);
         }
-
     }
 }
 
-void MAudioEngine::play(){
+void MAudioEngine::play()
+{
     m_playpauseStatus = Mpi3::EngineActive;
     updateRequest(Mpi3::EngineActive);
 }
-void MAudioEngine::pause(){
+void MAudioEngine::pause()
+{
     m_playpauseStatus = Mpi3::EngineIdle;
     updateRequest(Mpi3::EngineIdle);
 }
 
-void MAudioEngine::seek(int pos){
-
+void MAudioEngine::seek(int pos)
+{
     avcodec_flush_buffers(m_codecCtx);
 
     AVStream *stream = m_formatCtx->streams[m_streamIdx];
@@ -428,80 +427,98 @@ void MAudioEngine::seek(int pos){
     double seek_pos = (pos / time) * stream->duration;
 
     int error = av_seek_frame(m_formatCtx, m_streamIdx, static_cast<int>(seek_pos), AVSEEK_FLAG_BACKWARD);
-    if(error < 0){
+    if(error < 0) {
         std::cerr << "ERROR: error seeking to frame" << std::endl;
         return;
     }
 
     play();
 }
-void MAudioEngine::gain(int vol){
+void MAudioEngine::gain(int vol)
+{
     m_vol_percent = av_clipf_c(static_cast<float>(vol)/100.0f, 0.0f, 1.0f);
     m_vol_dbratio = av_clipf_c(log10f(1 - m_vol_percent) / -2.0f, 0.0f, 1.0f);
 
     emit notifyVolume(vol);
 }
 
-QString MAudioEngine::filepath() const {
+QString MAudioEngine::filepath() const
+{
     return m_filepath;
 }
 
-bool MAudioEngine::empty() const {
+bool MAudioEngine::empty() const
+{
     return m_mediaStatus == Mpi3::MediaEmpty;
 }
-bool MAudioEngine::ready() const{
+bool MAudioEngine::ready() const
+{
     return m_mediaStatus == Mpi3::MediaReady;
 }
-bool MAudioEngine::busy() const {
+bool MAudioEngine::busy() const
+{
     return m_mediaStatus == Mpi3::MediaBusy;
 }
 
-bool MAudioEngine::stopped() const {
+bool MAudioEngine::stopped() const
+{
     return m_engineStatus == Mpi3::EngineStopped;
 }
-bool MAudioEngine::playing() const{
+bool MAudioEngine::playing() const
+{
     return m_engineStatus == Mpi3::EngineActive;
 }
-bool MAudioEngine::paused() const{
+bool MAudioEngine::paused() const
+{
     return m_engineStatus == Mpi3::EngineIdle;;
 }
 
-float MAudioEngine::volume() const{
+float MAudioEngine::volume() const
+{
     return m_vol_percent;
 }
-double MAudioEngine::position() const{
+double MAudioEngine::position() const
+{
     return m_position;
 }
 
-Mpi3::MediaState MAudioEngine::mediaStatus() const {
+Mpi3::MediaState MAudioEngine::mediaStatus() const
+{
     return m_mediaStatus;
 }
-Mpi3::EngineState MAudioEngine::engineStatus() const {
+Mpi3::EngineState MAudioEngine::engineStatus() const
+{
     return m_engineStatus;
 }
-Mpi3::ErrorState MAudioEngine::errorStatus() const {
+Mpi3::ErrorState MAudioEngine::errorStatus() const
+{
     return m_errorStatus;
 }
-Mpi3::EngineState MAudioEngine::requestedStatus() const {
+Mpi3::EngineState MAudioEngine::requestedStatus() const
+{
     return m_requestStatus;
 }
 
-void MAudioEngine::updateStatus(Mpi3::MediaState state){
+void MAudioEngine::updateStatus(Mpi3::MediaState state)
+{
     m_mediaStatus = state;
     emit notifyMediaStatus(state);
 }
-void MAudioEngine::updateStatus(Mpi3::EngineState state){
+void MAudioEngine::updateStatus(Mpi3::EngineState state)
+{
     m_engineStatus = state;
     emit notifyEngineStatus(state);
 }
-void MAudioEngine::updateStatus(Mpi3::ErrorState state){
+void MAudioEngine::updateStatus(Mpi3::ErrorState state)
+{
     m_errorStatus = state;
     emit notifyErrorStatus(state);
 }
-void MAudioEngine::updateRequest(Mpi3::EngineState state){
+void MAudioEngine::updateRequest(Mpi3::EngineState state)
+{
     m_requestStatus = state;
 
-    if(state != Mpi3::EngineIdle){
+    if(state != Mpi3::EngineIdle) {
         m_processCondition->notify_all();
     }
 

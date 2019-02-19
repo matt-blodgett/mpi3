@@ -29,11 +29,9 @@ private:
     MMediaLibrary *m_deviceLibrary = nullptr;
 
 private:
-
     QLabel *m_lblDevices = nullptr;
     QPushButton *m_btnRefreshVolumes = nullptr;
     QPushButton *m_btnCreateVolume = nullptr;
-
 
     MPanelSection *m_sectionLibrary = nullptr;
 

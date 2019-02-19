@@ -19,7 +19,8 @@ struct ao_device;
 #include "mglobal.h"
 
 
-struct MSongInfo{
+struct MSongInfo
+{
     void load(const QString &path);
     bool loaded;
 

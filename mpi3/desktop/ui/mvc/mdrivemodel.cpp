@@ -8,7 +8,8 @@
 #include <QDebug>
 
 
-MModelStorageDrives::MModelStorageDrives(QObject *parent) : QAbstractItemModel(parent){
+MModelStorageDrives::MModelStorageDrives(QObject *parent) : QAbstractItemModel(parent)
+{
     m_headers << "Drive";
     m_headers << "Library";
     m_headers << "Free Space";
@@ -17,47 +18,51 @@ MModelStorageDrives::MModelStorageDrives(QObject *parent) : QAbstractItemModel(p
     refresh();
 }
 
-int MModelStorageDrives::rowCount(const QModelIndex &) const{
+int MModelStorageDrives::rowCount(const QModelIndex &) const
+{
     return m_deviceData.size();
 }
-int MModelStorageDrives::columnCount(const QModelIndex &) const{
+int MModelStorageDrives::columnCount(const QModelIndex &) const
+{
     return m_headers.size();
 }
 
-QModelIndex MModelStorageDrives::index(int row, int column, const QModelIndex &) const{
+QModelIndex MModelStorageDrives::index(int row, int column, const QModelIndex &) const
+{
     return createIndex(row, column);
 }
-QModelIndex MModelStorageDrives::parent(const QModelIndex &) const{
+QModelIndex MModelStorageDrives::parent(const QModelIndex &) const
+{
     return QModelIndex();
 }
 
-QVariant MModelStorageDrives::data(const QModelIndex &index, int role) const{
-
-    if(index.isValid()){
-        if(role == Qt::DisplayRole){
+QVariant MModelStorageDrives::data(const QModelIndex &index, int role) const
+{
+    if(index.isValid()) {
+        if(role == Qt::DisplayRole) {
             QList<QVariant> deviceData = m_deviceData.at(index.row()).toList();
             return deviceData.at(index.column());
         }
-        else if(role == Qt::TextAlignmentRole){
-            if(index.column() > 1){
+        else if(role == Qt::TextAlignmentRole) {
+            if(index.column() > 1) {
                 return Qt::AlignRight;
             }
         }
-        else if(role == Qt::DecorationRole && index.column() == 0){
+        else if(role == Qt::DecorationRole && index.column() == 0) {
             return m_deviceIcons.at(index.row());
         }
     }
 
     return QVariant();
 }
-QVariant MModelStorageDrives::headerData(int section, Qt::Orientation orientation, int role) const{
-
-    if(orientation == Qt::Horizontal){
-        if(role == Qt::DisplayRole){
+QVariant MModelStorageDrives::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if(orientation == Qt::Horizontal) {
+        if(role == Qt::DisplayRole) {
             return m_headers.at(section);
         }
-        else if(role == Qt::TextAlignmentRole){
-            if(section > 1){
+        else if(role == Qt::TextAlignmentRole) {
+            if(section > 1) {
                 return Qt::AlignCenter;
             }
         }
@@ -66,19 +71,22 @@ QVariant MModelStorageDrives::headerData(int section, Qt::Orientation orientatio
     return QVariant();
 }
 
-QList<MMediaLibrary*> MModelStorageDrives::raspiLibraries() const{
+QList<MMediaLibrary*> MModelStorageDrives::raspiLibraries() const
+{
     return m_raspiLibraries.values();
 }
-MMediaLibrary *MModelStorageDrives::raspiLibraryAt(const QModelIndex &idx) {
+MMediaLibrary *MModelStorageDrives::raspiLibraryAt(const QModelIndex &idx)
+{
     return m_raspiLibraries[rootPathAt(idx)];
 }
-QString MModelStorageDrives::rootPathAt(const QModelIndex &idx)const {
+QString MModelStorageDrives::rootPathAt(const QModelIndex &idx) const
+{
     QStorageInfo sInfo = m_storageInfo.mountedVolumes().at(idx.row());
     return sInfo.rootPath();
 }
 
-void MModelStorageDrives::refresh(){
-
+void MModelStorageDrives::refresh()
+{
     beginResetModel();
 
     m_deviceData.clear();
@@ -87,8 +95,7 @@ void MModelStorageDrives::refresh(){
     m_storageInfo.refresh();
 
     QStringList rootPathList;
-    foreach(QStorageInfo sInfo, m_storageInfo.mountedVolumes()){
-
+    foreach(QStorageInfo sInfo, m_storageInfo.mountedVolumes()) {
         QString rootPath = sInfo.rootPath();
         rootPathList.append(rootPath);
 
@@ -96,18 +103,18 @@ void MModelStorageDrives::refresh(){
         QString letter = rootPath;
         label += " (" + letter.replace("/", "") + ")";
 
-        if(!m_raspiLibraries.contains(rootPath)){
+        if(!m_raspiLibraries.contains(rootPath)) {
             m_raspiLibraries[rootPath] = nullptr;
         }
 
         MMediaLibrary *raspiLib = m_raspiLibraries[rootPath];
         bool raspiLibExists = MMediaLibrary::detectRaspiVolume(rootPath);
 
-        if(!raspiLib && raspiLibExists){
+        if(!raspiLib && raspiLibExists) {
             raspiLib = MMediaLibrary::loadRaspiVolume(rootPath);
             m_raspiLibraries[rootPath] = raspiLib;
         }
-        else if(raspiLib && !raspiLibExists){
+        else if(raspiLib && !raspiLibExists) {
             m_raspiLibraries[rootPath] = nullptr;
             delete raspiLib;
             raspiLib = nullptr;
@@ -129,8 +136,8 @@ void MModelStorageDrives::refresh(){
     }
 
     QMap<QString, MMediaLibrary*>::const_iterator iter;
-    for(iter = m_raspiLibraries.begin(); iter != m_raspiLibraries.end(); iter++){
-        if(!rootPathList.contains(iter.key())){
+    for(iter = m_raspiLibraries.begin(); iter != m_raspiLibraries.end(); iter++) {
+        if(!rootPathList.contains(iter.key())) {
             m_raspiLibraries.remove(iter.key());
             delete iter.value();
         }
@@ -138,37 +145,5 @@ void MModelStorageDrives::refresh(){
 
     endResetModel();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

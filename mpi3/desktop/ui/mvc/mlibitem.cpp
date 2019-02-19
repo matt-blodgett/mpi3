@@ -1,40 +1,49 @@
 #include "mlibitem.h"
 
 
-MModelItem::MModelItem(MModelItem *parent){
+MModelItem::MModelItem(MModelItem *parent)
+{
     m_parentItem = parent;
 }
 
-MModelItem::~MModelItem(){
+MModelItem::~MModelItem()
+{
     qDeleteAll(m_childItems);
 }
 
-MModelItem *MModelItem::parent(){
+MModelItem *MModelItem::parent()
+{
     return m_parentItem;
 }
-MModelItem *MModelItem::child(int row){
+MModelItem *MModelItem::child(int row)
+{
     return m_childItems.value(row);
 }
 
-int MModelItem::childCount() const{
+int MModelItem::childCount() const
+{
     return m_childItems.count();
 }
-int MModelItem::childNumber() const{
-    if(m_parentItem){
+int MModelItem::childNumber() const
+{
+    if(m_parentItem) {
         return m_parentItem->m_childItems.indexOf(const_cast<MModelItem*>(this));
     }
 
     return 0;
 }
-int MModelItem::columnCount() const{
+int MModelItem::columnCount() const
+{
     return m_itemData.count();
 }
 
-QVariant MModelItem::data(int column) const{
+QVariant MModelItem::data(int column) const
+{
     return m_itemData.value(column);
 }
-bool MModelItem::setData(int column, const QVariant &value){
-    if (column < 0 || column >= m_itemData.size()){
+bool MModelItem::setData(int column, const QVariant &value)
+{
+    if (column < 0 || column >= m_itemData.size()) {
         return false;
     }
 
@@ -42,19 +51,22 @@ bool MModelItem::setData(int column, const QVariant &value){
     return true;
 }
 
-QIcon MModelItem::icon() const{
+QIcon MModelItem::icon() const
+{
     return m_itemIcon;
 }
-void MModelItem::setIcon(const QIcon &icn){
+void MModelItem::setIcon(const QIcon &icn)
+{
     m_itemIcon = icn;
 }
 
-bool MModelItem::insertChildren(int position, int count, int columns){
-    if (position < 0 || position > m_childItems.size()){
+bool MModelItem::insertChildren(int position, int count, int columns)
+{
+    if (position < 0 || position > m_childItems.size()) {
         return false;
     }
 
-    for (int row = 0; row < count; ++row){
+    for (int row = 0; row < count; ++row) {
         MModelItem *item = new MModelItem(this);
         item->insertColumns(0, columns);
         m_childItems.insert(position, item);
@@ -62,16 +74,17 @@ bool MModelItem::insertChildren(int position, int count, int columns){
 
     return true;
 }
-bool MModelItem::insertColumns(int position, int columns){
-    if(position < 0 || position > m_itemData.size()){
+bool MModelItem::insertColumns(int position, int columns)
+{
+    if(position < 0 || position > m_itemData.size()) {
         return false;
     }
 
-    for(int column = 0; column < columns; ++column){
+    for(int column = 0; column < columns; ++column) {
         m_itemData.insert(position, QVariant());
     }
 
-    for(int i = 0; i < m_childItems.size(); i++){
+    for(int i = 0; i < m_childItems.size(); i++) {
         MModelItem *child = m_childItems.at(i);
         child->insertColumns(position, columns);
     }
@@ -79,27 +92,29 @@ bool MModelItem::insertColumns(int position, int columns){
     return true;
 }
 
-bool MModelItem::removeChildren(int position, int count){
-    if (position < 0 || position + count > m_childItems.size()){
+bool MModelItem::removeChildren(int position, int count)
+{
+    if (position < 0 || position + count > m_childItems.size()) {
         return false;
     }
 
-    for (int row = 0; row < count; ++row){
+    for (int row = 0; row < count; ++row) {
         delete m_childItems.takeAt(position);
     }
 
     return true;
 }
-bool MModelItem::removeColumns(int position, int columns){
-    if (position < 0 || position + columns > m_itemData.size()){
+bool MModelItem::removeColumns(int position, int columns)
+{
+    if (position < 0 || position + columns > m_itemData.size()) {
         return false;
     }
 
-    for (int column = 0; column < columns; ++column){
+    for (int column = 0; column < columns; ++column) {
         m_itemData.removeAt(position);
     }
 
-    for(int i = 0; i < m_childItems.size(); i++){
+    for(int i = 0; i < m_childItems.size(); i++) {
         MModelItem *child = m_childItems.at(i);
         child->removeColumns(position, columns);
     }

@@ -42,7 +42,8 @@ public:
     explicit MSong();
     Mpi3::ElementType type() const override;
 
-    enum MutableProperty {
+    enum MutableProperty
+    {
         SongName,
         SongArtist,
         SongAlbum

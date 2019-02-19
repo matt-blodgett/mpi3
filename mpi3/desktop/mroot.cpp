@@ -50,8 +50,12 @@ static const QString PathDesktop = QStandardPaths::writableLocation(QStandardPat
 static const QString PathAppData = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/mpi3desktop";
 
 
-MRootDesktop::MRootDesktop(){}
-MRootDesktop::~MRootDesktop(){
+MRootDesktop::MRootDesktop()
+{
+
+}
+MRootDesktop::~MRootDesktop()
+{
     m_audioEngine->stop();
     delete m_audioEngine;
     delete m_mediaLibrary;
@@ -59,7 +63,8 @@ MRootDesktop::~MRootDesktop(){
     MAudioEngine::environ_deinit();
 }
 
-void MRootDesktop::initialize(){
+void MRootDesktop::initialize()
+{
     MAudioEngine::environ_init();
     initializeObjects();
     initializeMainMenu();
@@ -68,7 +73,8 @@ void MRootDesktop::initialize(){
     initializeStyle();
     centralWidget()->show();
 }
-void MRootDesktop::initializeObjects(){
+void MRootDesktop::initializeObjects()
+{
     m_styleSheet = new MStyleSheet();
 
     m_mediaLibrary = new MMediaLibrary();
@@ -103,7 +109,7 @@ void MRootDesktop::initializeObjects(){
     connect(m_treeSonglist, &MTreeSonglist::playbackChanged, this, &MRootDesktop::setPlaybackSong);
     connect(m_panelMedia, &MPanelMedia::viewChanged, this, &MRootDesktop::setContainerDisplay);
 
-    connect(m_treeContainers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](){containerChanged();});
+    connect(m_treeContainers->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this]() {containerChanged();});
 
     connect(m_treeContainers, &QTreeView::customContextMenuRequested, this, &MRootDesktop::contextMenuContainers);
     connect(m_treeSonglist, &QTreeView::customContextMenuRequested, this, &MRootDesktop::contextMenuSonglist);
@@ -131,7 +137,8 @@ void MRootDesktop::initializeObjects(){
     m_contextBar = new MContextBar(this);
     connect(m_contextBar, &MContextBar::viewChanged, this, &MRootDesktop::setContextPanel);
 }
-void MRootDesktop::initializeMainMenu(){
+void MRootDesktop::initializeMainMenu()
+{
     QMenuBar *menu_main = menuBar();
 
     QAction *act_audioSettings = new QAction(menu_main);
@@ -262,29 +269,29 @@ void MRootDesktop::initializeMainMenu(){
     menu_help->addAction(act_helpAbout);
 
 //    connect(act_audioSettings
-    connect(act_wndExit, &QAction::triggered, this, [this](){window()->close();});
+    connect(act_wndExit, &QAction::triggered, this, [this]() {window()->close();});
 
-    connect(act_libImport, &QAction::triggered, this, [this](){libImport();});
-    connect(act_libExport, &QAction::triggered, this, [this](){libExport();});
-    connect(act_libBackup, &QAction::triggered, this, [this](){libBackup();});
-    connect(act_libReset, &QAction::triggered, this, [this](){libReset();});
-    connect(act_libOpenFileLoc, &QAction::triggered, [=](){openFileLocation(m_mediaLibrary->savePath());});
-    connect(act_libNewPlaylist, &QAction::triggered, this, [this](){libNewPlaylist();});
-    connect(act_libNewFolder, &QAction::triggered, this, [this](){libNewFolder();});
-    connect(act_libImportPlaylists, &QAction::triggered, this, [this](){libImportPlaylists();});
-    connect(act_libImportSongs, &QAction::triggered, this, [this](){libImportSongs(m_treeContainers);});
-    connect(act_libDownloadSongs, &QAction::triggered, this, [this](){libDownloadSongs(m_treeContainers);});
+    connect(act_libImport, &QAction::triggered, this, [this]() {libImport();});
+    connect(act_libExport, &QAction::triggered, this, [this]() {libExport();});
+    connect(act_libBackup, &QAction::triggered, this, [this]() {libBackup();});
+    connect(act_libReset, &QAction::triggered, this, [this]() {libReset();});
+    connect(act_libOpenFileLoc, &QAction::triggered, [=]() {openFileLocation(m_mediaLibrary->savePath());});
+    connect(act_libNewPlaylist, &QAction::triggered, this, [this]() {libNewPlaylist();});
+    connect(act_libNewFolder, &QAction::triggered, this, [this]() {libNewFolder();});
+    connect(act_libImportPlaylists, &QAction::triggered, this, [this]() {libImportPlaylists();});
+    connect(act_libImportSongs, &QAction::triggered, this, [this]() {libImportSongs(m_treeContainers);});
+    connect(act_libDownloadSongs, &QAction::triggered, this, [this]() {libDownloadSongs(m_treeContainers);});
 
-    connect(act_themeSet, &QAction::triggered, this, [this](){themeSet();});
-    connect(act_themeRefresh, &QAction::triggered, this, [this](){themeRefresh();});
+    connect(act_themeSet, &QAction::triggered, this, [this]() {themeSet();});
+    connect(act_themeRefresh, &QAction::triggered, this, [this]() {themeRefresh();});
 
-//    connect(act_editUndo, &QAction::triggered, this, [this](){editUndo();});
-//    connect(act_editRedo, &QAction::triggered, this, [this](){editRedo();});
-    connect(act_editCut, &QAction::triggered, this, [this](){objCut(m_treeSonglist);});
-    connect(act_editCopy, &QAction::triggered, this, [this](){objCopy(m_treeSonglist);});
-    connect(act_editPaste, &QAction::triggered, this, [this](){objPaste(m_treeSonglist);});
-    connect(act_treeSelectAll, &QAction::triggered, this, [this](){m_treeSonglist->selectAll();});
-    connect(act_treeSelectNone, &QAction::triggered, this, [this](){m_treeSonglist->selectionModel()->clear();});
+//    connect(act_editUndo, &QAction::triggered, this, [this]() {editUndo();});
+//    connect(act_editRedo, &QAction::triggered, this, [this]() {editRedo();});
+    connect(act_editCut, &QAction::triggered, this, [this]() {objCut(m_treeSonglist);});
+    connect(act_editCopy, &QAction::triggered, this, [this]() {objCopy(m_treeSonglist);});
+    connect(act_editPaste, &QAction::triggered, this, [this]() {objPaste(m_treeSonglist);});
+    connect(act_treeSelectAll, &QAction::triggered, this, [this]() {m_treeSonglist->selectAll();});
+    connect(act_treeSelectNone, &QAction::triggered, this, [this]() {m_treeSonglist->selectionModel()->clear();});
 
 //    connect(act_raspiConnect
 
@@ -292,11 +299,11 @@ void MRootDesktop::initializeMainMenu(){
 
 //    connect(act_helpAbout
 
-    connect(m_treeSonglist->selectionModel(), &QItemSelectionModel::selectionChanged, act_editCut, [=](){
+    connect(m_treeSonglist->selectionModel(), &QItemSelectionModel::selectionChanged, act_editCut, [=]() {
         act_editCut->setDisabled(m_treeSonglist->selectionModel()->selectedRows().size() == 0);});
-    connect(m_treeSonglist->selectionModel(), &QItemSelectionModel::selectionChanged, act_editCopy, [=](){
+    connect(m_treeSonglist->selectionModel(), &QItemSelectionModel::selectionChanged, act_editCopy, [=]() {
         act_editCut->setDisabled(m_treeSonglist->selectionModel()->selectedRows().size() == 0);});
-    connect(m_treeSonglist->selectionModel(), &QItemSelectionModel::selectionChanged, act_editDelete, [=](){
+    connect(m_treeSonglist->selectionModel(), &QItemSelectionModel::selectionChanged, act_editDelete, [=]() {
         act_editCut->setDisabled(m_treeSonglist->selectionModel()->selectedRows().size() == 0);});
 
     act_editCut->setDisabled(true);
@@ -309,8 +316,8 @@ void MRootDesktop::initializeMainMenu(){
     menu_main->addAction(act_RefreshThemeDirect);
 
 }
-void MRootDesktop::initializeLayout(){
-
+void MRootDesktop::initializeLayout()
+{
     m_menuWidget->setObjectName("MainMenuBar");
     menuBar()->setObjectName("MainMenu");
     setObjectName("RootWindow");
@@ -364,9 +371,9 @@ void MRootDesktop::initializeLayout(){
     m_panelLibrary->hide();
     m_panelDevice->hide();
 }
-void MRootDesktop::initializeState(){
-
-    if(!QFile::exists(PathAppData + M_APPDATA_PATH_PROFILE)){
+void MRootDesktop::initializeState()
+{
+    if(!QFile::exists(PathAppData + M_APPDATA_PATH_PROFILE)) {
         QFile(":/profiles/default.xml").copy(PathAppData + M_APPDATA_PATH_PROFILE);
         QFile(PathAppData + M_APPDATA_PATH_PROFILE).setPermissions(QFile::WriteOwner);
     }
@@ -401,11 +408,11 @@ void MRootDesktop::initializeState(){
     QString lib_path = settings.value("library", PathAppData + M_APPDATA_PATH_LIBRARYDEFAULT).toString();
     settings.endGroup();
 
-    if(wnd_maximized){
+    if(wnd_maximized) {
         m_maximizeActive = true;
         showMaximized();
     }
-    else{
+    else {
         m_maximizeActive = false;
         move(wnd_rootx, wnd_rooty);
         resize(wnd_width, wnd_height);
@@ -425,11 +432,11 @@ void MRootDesktop::initializeState(){
     QStringList pidlist;
     pidlist.append(m_mediaLibrary->pid());
 
-    foreach(MPlaylist *playlist, m_mediaLibrary->playlists()){
+    foreach(MPlaylist *playlist, m_mediaLibrary->playlists()) {
         pidlist.append(playlist->pid());
     }
 
-    foreach(MFolder *folder, m_mediaLibrary->folders()){
+    foreach(MFolder *folder, m_mediaLibrary->folders()) {
         pidlist.append(folder->pid());
     }
 
@@ -437,7 +444,7 @@ void MRootDesktop::initializeState(){
 
 //    settings.beginGroup("TreeViewProperties");
 
-//    foreach(QString pid, pidlist){
+//    foreach(QString pid, pidlist) {
 
 //        QString pidKey = pid;
 //        pidKey.remove(0, 2);
@@ -449,13 +456,13 @@ void MRootDesktop::initializeState(){
 //        QString strHidden = settings.value("hidden", QString()).toString();
 //        QStringList strSort = settings.value("sort", QString()).toString().split(";");
 
-//        if(!strHidden.isNull()){
+//        if(!strHidden.isNull()) {
 
 //            QList<QVariant> colWidths;
 //            QList<QVariant> colHidden;
 //            QList<QVariant> colSort;
 
-//            for(int i = 0; i < strHidden.size(); i++){
+//            for(int i = 0; i < strHidden.size(); i++) {
 //                colWidths.append(strWidths.at(i).toInt());
 //                colHidden.append(strHidden[i] == "1");
 //            }
@@ -476,7 +483,7 @@ void MRootDesktop::initializeState(){
 //    settings.endGroup();
 
     m_treeSonglist->setSettings(modelSettings);
-    if(pid_songlist != m_mediaLibrary->pid() && pidlist.contains(pid_songlist)){
+    if(pid_songlist != m_mediaLibrary->pid() && pidlist.contains(pid_songlist)) {
         QModelIndex idx = m_treeContainers->modelContainers()->getIndex(pid_songlist);
         m_treeContainers->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::ClearAndSelect);
         m_panelMedia->changeView(MPanelMedia::ViewContainer);
@@ -493,7 +500,8 @@ void MRootDesktop::initializeState(){
     m_panelLibrary->allowAutoBackups(val_backupMedia);
 
 }
-void MRootDesktop::initializeStyle(){
+void MRootDesktop::initializeStyle()
+{
     QFontDatabase fdb;
 
     fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Bold.ttf");
@@ -516,14 +524,14 @@ void MRootDesktop::initializeStyle(){
 //    fdb.addApplicationFont(":/fonts/lato/Lato-Semibold.ttf");
 //    fdb.addApplicationFont(":/fonts/lato/Lato-Thin.ttf");
 
-    if(m_styleSheet->qssPath().isNull()){
+    if(m_styleSheet->qssPath().isNull()) {
         m_styleSheet->load(":/styles/default.qss");
     }
 
     setStyleSheet(m_styleSheet->qssStyle());
 }
-void MRootDesktop::saveSettings(){
-
+void MRootDesktop::saveSettings()
+{
     QDir().remove(PathAppData + M_APPDATA_PATH_PROFILE);
     MSettingsXml *settings = new MSettingsXml(PathAppData + M_APPDATA_PATH_PROFILE);
 
@@ -557,7 +565,7 @@ void MRootDesktop::saveSettings(){
 //    QMap<QString, QVariant>::iterator iter;
 //    QMap<QString, QVariant> modelSettings = m_treeSonglist->modelSettings();
 
-//    for(iter = modelSettings.begin(); iter != modelSettings.end(); iter++){
+//    for(iter = modelSettings.begin(); iter != modelSettings.end(); iter++) {
 
 //        QString pidKey = iter.key();
 //        pidKey.remove(0, 2);
@@ -573,7 +581,7 @@ void MRootDesktop::saveSettings(){
 //        QString strHidden;
 //        QString strSort;
 
-//        for(int i = 0; i < colWidths.size(); i++){
+//        for(int i = 0; i < colWidths.size(); i++) {
 //            strWidths += colWidths[i].toString() + ";";
 //            strHidden += colHidden[i].toBool() ? "1" : "0";
 //        }
@@ -592,9 +600,9 @@ void MRootDesktop::saveSettings(){
     m_mediaLibrary->save();
 }
 
-void MRootDesktop::toggleMaximized(){
-
-    if(!m_maximizeActive){
+void MRootDesktop::toggleMaximized()
+{
+    if(!m_maximizeActive) {
         m_btnMaximize->setIcon(QIcon(":/icons/window/demaximize.png"));
         m_maximizeActive = true;
         showMaximized();
@@ -606,23 +614,23 @@ void MRootDesktop::toggleMaximized(){
     }
 }
 
-void MRootDesktop::setContextPanel(){
+void MRootDesktop::setContextPanel()
+{
+    switch(m_contextBar->currentView()) {
 
-    switch(m_contextBar->currentView()){
-
-        case MContextBar::ViewMedia:{
+        case MContextBar::ViewMedia: {
             m_panelMedia->show();
             m_panelLibrary->hide();
             m_panelDevice->hide();
             break;
         }
-        case MContextBar::ViewLibrary:{
+        case MContextBar::ViewLibrary: {
             m_panelMedia->hide();
             m_panelLibrary->show();
             m_panelDevice->hide();
             break;
         }
-        case MContextBar::ViewDevice:{
+        case MContextBar::ViewDevice: {
             m_panelMedia->hide();
             m_panelLibrary->hide();
             m_panelDevice->show();
@@ -630,8 +638,8 @@ void MRootDesktop::setContextPanel(){
         }
     }
 }
-void MRootDesktop::setContainerDisplay(){
-
+void MRootDesktop::setContainerDisplay()
+{
     switch(m_panelMedia->currentView()) {
 
         case MPanelMedia::ViewAllSongs: {
@@ -661,42 +669,47 @@ void MRootDesktop::setContainerDisplay(){
         }
     }
 }
-void MRootDesktop::setPlaybackSong(MSong *song){
-
-    if(song){
+void MRootDesktop::setPlaybackSong(MSong *song)
+{
+    if(song) {
         m_audioEngine->stop();
         m_audioEngine->open(song->path());
         m_audioEngine->start();
     }
 }
-void MRootDesktop::containerChanged(){
+void MRootDesktop::containerChanged()
+{
     QModelIndex idx = m_treeContainers->selectionModel()->currentIndex();
-    if(idx.isValid()){
+    if(idx.isValid()) {
         m_panelMedia->changeView(MPanelMedia::ViewContainer);
         setContainerDisplay();
     }
 }
 
-void MRootDesktop::processAudioMediaStatus(Mpi3::MediaState state){
+void MRootDesktop::processAudioMediaStatus(Mpi3::MediaState state)
+{
     Q_UNUSED(state)
 }
-void MRootDesktop::processAudioEngineStatus(Mpi3::EngineState state){
+void MRootDesktop::processAudioEngineStatus(Mpi3::EngineState state)
+{
     Q_UNUSED(state)
 }
-void MRootDesktop::processAudioErrorStatus(Mpi3::ErrorState state){
+void MRootDesktop::processAudioErrorStatus(Mpi3::ErrorState state)
+{
     Q_UNUSED(state)
 }
-void MRootDesktop::processAudioRequestStatus(Mpi3::EngineState state){
-
-    if(state == Mpi3::EngineActive && m_audioEngine->empty()){
-        if(m_treeSonglist->model()->rowCount() > 0){
+void MRootDesktop::processAudioRequestStatus(Mpi3::EngineState state)
+{
+    if(state == Mpi3::EngineActive && m_audioEngine->empty()) {
+        if(m_treeSonglist->model()->rowCount() > 0) {
             QModelIndex idx = m_treeSonglist->modelSortFilter()->index(0, 0);
             m_treeSonglist->playItem(m_treeSonglist->modelSortFilter()->mapToSource(idx));
         }
     }
 }
 
-void MRootDesktop::contextMenuHeader(const QPoint &point){
+void MRootDesktop::contextMenuHeader(const QPoint &point)
+{
     QMenu *menu_context = new QMenu(this);
 
     QAction *actAutoFitOne = new QAction(menu_context);
@@ -706,23 +719,23 @@ void MRootDesktop::contextMenuHeader(const QPoint &point){
     actAutoFitAll->setText("Auto All Fit Columns");
 
     QModelIndex index = m_treeSonglist->indexAt(point);
-    connect(actAutoFitOne, &QAction::triggered, this, [=](){
+    connect(actAutoFitOne, &QAction::triggered, this, [=]() {
         m_treeSonglist->resizeColumnToContents(index.column());});
-    connect(actAutoFitAll, &QAction::triggered, this, [=](){
+    connect(actAutoFitAll, &QAction::triggered, this, [=]() {
         m_treeSonglist->autoFitColumns();});
 
     menu_context->addAction(actAutoFitOne);
     menu_context->addAction(actAutoFitAll);
     menu_context->addSeparator();
 
-    for(int i = 0; i < m_treeSonglist->model()->columnCount(); i++){
+    for(int i = 0; i < m_treeSonglist->model()->columnCount(); i++) {
         QAction *act = new QAction(menu_context);
         act->setText(m_treeSonglist->model()->headerData(i, Qt::Horizontal).toString());
 
         act->setCheckable(true);
         act->setChecked(!m_treeSonglist->isColumnHidden(i));
 
-        connect(act, &QAction::triggered, this, [=](){
+        connect(act, &QAction::triggered, this, [=]() {
             m_treeSonglist->setColumnHidden(i, !m_treeSonglist->isColumnHidden(i));});
         menu_context->addAction(act);
     }
@@ -730,7 +743,8 @@ void MRootDesktop::contextMenuHeader(const QPoint &point){
     menu_context->exec(m_treeSonglist->mapToGlobal(point));
     delete menu_context;
 }
-void MRootDesktop::contextMenuSonglist(const QPoint &point){
+void MRootDesktop::contextMenuSonglist(const QPoint &point)
+{
     QMenu *menu_context = new QMenu(this);
 
     QAction *act_objPlay = new QAction(menu_context);
@@ -783,7 +797,7 @@ void MRootDesktop::contextMenuSonglist(const QPoint &point){
     menu_context->addAction(act_objDelete);
 
     QModelIndex idx = m_treeSonglist->indexAt(point);
-    if(!idx.isValid()){
+    if(!idx.isValid()) {
         act_objPlay->setDisabled(true);
         act_objEdit->setDisabled(true);
         act_objDetails->setDisabled(true);
@@ -795,43 +809,44 @@ void MRootDesktop::contextMenuSonglist(const QPoint &point){
         act_objDelete->setDisabled(true);
     }
 
-    if(m_treeSonglist->selectionModel()->selectedRows().size() > 1){
+    if(m_treeSonglist->selectionModel()->selectedRows().size() > 1) {
         act_objPlay->setDisabled(true);
         act_objEdit->setDisabled(true);
         act_objDetails->setDisabled(true);
         act_objOpenFileLocation->setDisabled(true);
     }
 
-    if(m_treeSonglist->modelSonglist()->container()->type() != Mpi3::PlaylistElement){
+    if(m_treeSonglist->modelSonglist()->container()->type() != Mpi3::PlaylistElement) {
         act_objRemove->setDisabled(true);
     }
 
-    if(!m_treeSonglist->modelSonglist()->flags(idx).testFlag(Qt::ItemIsEditable)){
+    if(!m_treeSonglist->modelSonglist()->flags(idx).testFlag(Qt::ItemIsEditable)) {
         act_objEdit->setDisabled(true);
     }
 
-    connect(act_objPlay, &QAction::triggered, this, [=](){objPlay(idx);});
-    connect(act_objEdit, &QAction::triggered, this, [=](){objEdit(idx);});
-    connect(act_objDetails, &QAction::triggered, this, [=](){objDetails(idx);});
+    connect(act_objPlay, &QAction::triggered, this, [=]() {objPlay(idx);});
+    connect(act_objEdit, &QAction::triggered, this, [=]() {objEdit(idx);});
+    connect(act_objDetails, &QAction::triggered, this, [=]() {objDetails(idx);});
 
-    connect(act_editCut, &QAction::triggered, this, [this](){objCut(m_treeSonglist);});
-    connect(act_editCopy, &QAction::triggered, this, [this](){objCopy(m_treeSonglist);});
-    connect(act_editPaste, &QAction::triggered, this, [this](){objPaste(m_treeSonglist);});
-    connect(act_objOpenFileLocation, &QAction::triggered, this, [this](){objOpenFileLocation(m_treeSonglist);});
+    connect(act_editCut, &QAction::triggered, this, [this]() {objCut(m_treeSonglist);});
+    connect(act_editCopy, &QAction::triggered, this, [this]() {objCopy(m_treeSonglist);});
+    connect(act_editPaste, &QAction::triggered, this, [this]() {objPaste(m_treeSonglist);});
+    connect(act_objOpenFileLocation, &QAction::triggered, this, [this]() {objOpenFileLocation(m_treeSonglist);});
 
-    connect(act_treeSelectAll, &QAction::triggered, m_treeSonglist, [this](){m_treeSonglist->selectAll();});
-    connect(act_treeSelectNone, &QAction::triggered, this, [this](){m_treeSonglist->selectionModel()->clear();});
+    connect(act_treeSelectAll, &QAction::triggered, m_treeSonglist, [this]() {m_treeSonglist->selectAll();});
+    connect(act_treeSelectNone, &QAction::triggered, this, [this]() {m_treeSonglist->selectionModel()->clear();});
 
-    connect(act_libImportSongs, &QAction::triggered, this, [this](){libImportSongs(m_treeSonglist);});
-    connect(act_libDownloadSongs, &QAction::triggered, this, [this](){libDownloadSongs(m_treeSonglist);});
+    connect(act_libImportSongs, &QAction::triggered, this, [this]() {libImportSongs(m_treeSonglist);});
+    connect(act_libDownloadSongs, &QAction::triggered, this, [this]() {libDownloadSongs(m_treeSonglist);});
 
 //    connect(act_objRemove, &QAction::triggered, this, &Mpi3RootDesktop::objRemoveFrom);
-    connect(act_objDelete, &QAction::triggered, this, [this](){objDelete(m_treeSonglist);});
+    connect(act_objDelete, &QAction::triggered, this, [this]() {objDelete(m_treeSonglist);});
 
     menu_context->exec(m_treeSonglist->mapToGlobal(point));
     delete menu_context;
 }
-void MRootDesktop::contextMenuContainers(const QPoint &point){
+void MRootDesktop::contextMenuContainers(const QPoint &point)
+{
     QMenu *menu_context = new QMenu(this);
 
     QAction *act_itemExpand = new QAction(menu_context);
@@ -888,7 +903,7 @@ void MRootDesktop::contextMenuContainers(const QPoint &point){
 
     m_treeContainers->setCurrentIndex(idx_at);
 
-    if(!element){
+    if(!element) {
         act_itemExpand->setDisabled(true);
         act_itemCollapse->setDisabled(true);
         act_objDuplicate->setDisabled(true);
@@ -896,81 +911,81 @@ void MRootDesktop::contextMenuContainers(const QPoint &point){
         act_objDetails->setDisabled(true);
         act_objDelete->setDisabled(true);
     }
-    else if(element->type() == Mpi3::PlaylistElement){
+    else if(element->type() == Mpi3::PlaylistElement) {
         act_itemExpand->setDisabled(true);
         act_itemCollapse->setDisabled(true);
     }
-    else if(element->type() == Mpi3::FolderElement){
+    else if(element->type() == Mpi3::FolderElement) {
         act_libImportSongs->setDisabled(true);
         act_libDownloadSongs->setDisabled(true);
         act_objDuplicate->setDisabled(true);
     }
 
-    connect(act_itemExpand, &QAction::triggered, this, [this](){
+    connect(act_itemExpand, &QAction::triggered, this, [this]() {
         m_treeContainers->expand(m_treeContainers->currentIndex());});
-    connect(act_itemCollapse, &QAction::triggered, this, [this](){
+    connect(act_itemCollapse, &QAction::triggered, this, [this]() {
         m_treeContainers->collapse(m_treeContainers->currentIndex());});
-    connect(act_itemExpandAll, &QAction::triggered, this, [this](){m_treeContainers->expandAll();});
-    connect(act_itemCollapseAll, &QAction::triggered, this, [this](){m_treeContainers->collapseAll();});
+    connect(act_itemExpandAll, &QAction::triggered, this, [this]() {m_treeContainers->expandAll();});
+    connect(act_itemCollapseAll, &QAction::triggered, this, [this]() {m_treeContainers->collapseAll();});
 
-    connect(act_libNewPlaylist, &QAction::triggered, this, [this](){libNewPlaylist();});
-    connect(act_libNewFolder, &QAction::triggered, this, [this](){libNewFolder();});
+    connect(act_libNewPlaylist, &QAction::triggered, this, [this]() {libNewPlaylist();});
+    connect(act_libNewFolder, &QAction::triggered, this, [this]() {libNewFolder();});
 
-    connect(act_libImportPlaylists, &QAction::triggered, this, [this](){libImportPlaylists();});
-    connect(act_libImportSongs, &QAction::triggered, this, [this](){libImportSongs(m_treeContainers);});
-    connect(act_libDownloadSongs, &QAction::triggered, this, [this](){libDownloadSongs(m_treeContainers);});
+    connect(act_libImportPlaylists, &QAction::triggered, this, [this]() {libImportPlaylists();});
+    connect(act_libImportSongs, &QAction::triggered, this, [this]() {libImportSongs(m_treeContainers);});
+    connect(act_libDownloadSongs, &QAction::triggered, this, [this]() {libDownloadSongs(m_treeContainers);});
 
 //    connect(act_objDuplicate, &QAction::triggered, this, &Mpi3RootDesktop::objDuplicate);
 //    connect(act_objEdit, &QAction::triggered, this, &Mpi3RootDesktop::objEdit);
 //    connect(act_objDetails, &QAction::triggered, this, &Mpi3RootDesktop::objDetails);
 
-    connect(act_objDelete, &QAction::triggered, this, [this](){objDelete(m_treeContainers);});
+    connect(act_objDelete, &QAction::triggered, this, [this]() {objDelete(m_treeContainers);});
 
     menu_context->exec(m_treeContainers->mapToGlobal(point));
     delete menu_context;
 
-    if(m_panelMedia->currentView() == MPanelMedia::ViewContainer){
+    if(m_panelMedia->currentView() == MPanelMedia::ViewContainer) {
         m_treeContainers->selectionModel()->setCurrentIndex(idx_last, QItemSelectionModel::ClearAndSelect);
     }
 
 }
 
-void MRootDesktop::libImport(){
-
+void MRootDesktop::libImport()
+{
     QString libFile;
     libFile = QFileDialog::getOpenFileName(
                 this, "Open Mpi3Library File",
                 PathDesktop, "Mpi3Lib Files (*.mpi3lib)");
 
-    if(libFile != ""){
+    if(libFile != "") {
         m_mediaLibrary->load(libFile);
         m_treeContainers->modelContainers()->setLibrary(m_mediaLibrary);
         m_treeSonglist->modelSonglist()->setLibrary(m_mediaLibrary);
         m_panelLibrary->setLibrary(m_mediaLibrary);
     }
 }
-void MRootDesktop::libExport(){
-
+void MRootDesktop::libExport()
+{
     QString libFile;
     libFile = QFileDialog::getSaveFileName(
                 this, "Export Mpi3Library File",
                 PathDesktop, "Mpi3Lib Files (*.mpi3lib)");
 
-    if(libFile != ""){
+    if(libFile != "") {
         QString oldPath = m_mediaLibrary->savePath();
         m_mediaLibrary->save(libFile);
         m_mediaLibrary->save(oldPath);
     }
 }
-void MRootDesktop::libSetSavePath(){
-
+void MRootDesktop::libSetSavePath()
+{
     QString libFile;
     libFile = QFileDialog::getExistingDirectory(
                 this, "Set Library Save Path",
                 m_mediaLibrary->savePath());
 
 
-    if(libFile != ""){
+    if(libFile != "") {
         libFile += "/" + m_mediaLibrary->name();
         libFile += M_LIBRARY_FILE_EXT;
 
@@ -978,34 +993,34 @@ void MRootDesktop::libSetSavePath(){
         m_panelLibrary->setLibrary(m_mediaLibrary);
     }
 }
-void MRootDesktop::libSetMediaPath(){
-
+void MRootDesktop::libSetMediaPath()
+{
     QString libFile;
     libFile = QFileDialog::getExistingDirectory(
                 this, "Set Library Media Path",
                 m_mediaLibrary->mediaPath());
 
-    if(libFile != ""){
+    if(libFile != "") {
         m_mediaLibrary->setMediaPath(libFile);
         m_panelLibrary->setLibrary(m_mediaLibrary);
     }
 }
-void MRootDesktop::libSetBackupPath(){
-
+void MRootDesktop::libSetBackupPath()
+{
     QString libFile;
     libFile = QFileDialog::getSaveFileName(
                 this, "Set Library Backup Path",
                 m_mediaLibrary->backupPath(), "Mpi3Lib Files (*.mpi3lib)");
 
-    if(libFile != ""){
+    if(libFile != "") {
         m_mediaLibrary->setBackupPath(libFile);
         m_panelLibrary->setLibrary(m_mediaLibrary);
     }
 }
 
-void MRootDesktop::libBackup(){
-
-    if(!QDir().exists(PathAppData + M_APPDATA_PATH_LIBRARYBACKUPS)){
+void MRootDesktop::libBackup()
+{
+    if(!QDir().exists(PathAppData + M_APPDATA_PATH_LIBRARYBACKUPS)) {
         QDir().mkdir(PathAppData + M_APPDATA_PATH_LIBRARYBACKUPS);
     }
 
@@ -1020,23 +1035,23 @@ void MRootDesktop::libBackup(){
     QString min = QString::number(ctime.minute());
     QString sec = QString::number(ctime.second());
 
-    if(mth.size() == 1){
+    if(mth.size() == 1) {
         mth.prepend("0");
     }
 
-    if(day.size() == 1){
+    if(day.size() == 1) {
         day.prepend("0");
     }
 
-    if(hrs.size() == 1){
+    if(hrs.size() == 1) {
         hrs.prepend("0");
     }
 
-    if(min.size() == 1){
+    if(min.size() == 1) {
         min.prepend("0");
     }
 
-    if(sec.size() == 1){
+    if(sec.size() == 1) {
         sec.prepend("0");
     }
 
@@ -1048,7 +1063,8 @@ void MRootDesktop::libBackup(){
     m_mediaLibrary->save(saveDir + savePath);
     m_mediaLibrary->save(oldPath);
 }
-void MRootDesktop::libReset(){
+void MRootDesktop::libReset()
+{
     m_mediaLibrary->reset();
     m_mediaLibrary->save();
 
@@ -1058,25 +1074,26 @@ void MRootDesktop::libReset(){
     m_panelMedia->changeView(MPanelMedia::ViewAllSongs);
 }
 
-void MRootDesktop::themeSet(){
-
+void MRootDesktop::themeSet()
+{
     QString qssFile;
     qssFile = QFileDialog::getOpenFileName(
                 this, "Open QSS Theme File",
                 PathDesktop, "QSS Files (*.qss)");
 
-    if(qssFile != ""){
+    if(qssFile != "") {
         m_styleSheet->load(qssFile);
         themeRefresh();
     }
 }
-void MRootDesktop::themeRefresh(){
-
+void MRootDesktop::themeRefresh()
+{
     m_styleSheet->load();
     setStyleSheet(m_styleSheet->qssStyle());
 }
 
-void MRootDesktop::libNewFolder(){
+void MRootDesktop::libNewFolder()
+{
     QModelIndex currentIndex = m_treeContainers->currentIndex();
 
     MFolder *parentFolder = m_treeContainers->modelContainers()->parentFolderAt(currentIndex);
@@ -1085,7 +1102,8 @@ void MRootDesktop::libNewFolder(){
     m_mediaLibrary->insert(insertFolder, parentFolder);
     m_treeContainers->expand(currentIndex);
 }
-void MRootDesktop::libNewPlaylist(){
+void MRootDesktop::libNewPlaylist()
+{
     QModelIndex currentIndex = m_treeContainers->currentIndex();
 
     MFolder *parentFolder = m_treeContainers->modelContainers()->parentFolderAt(currentIndex);
@@ -1094,14 +1112,14 @@ void MRootDesktop::libNewPlaylist(){
     m_mediaLibrary->insert(insertPlaylist, parentFolder);
     m_treeContainers->expand(currentIndex);
 }
-void MRootDesktop::libImportPlaylists(){
-
+void MRootDesktop::libImportPlaylists()
+{
     QString plistFile;
     plistFile = QFileDialog::getOpenFileName(
                 this, "Open Itunes Plist File",
                 PathDesktop, "XML Files (*.xml)");
 
-    if(plistFile != ""){
+    if(plistFile != "") {
         QModelIndex currentIndex = m_treeContainers->currentIndex();
         MFolder *parentFolder = m_treeContainers->modelContainers()->parentFolderAt(currentIndex);
 
@@ -1109,85 +1127,105 @@ void MRootDesktop::libImportPlaylists(){
         m_treeContainers->expand(currentIndex);
     }
 }
-void MRootDesktop::libImportSongs(QTreeView *treeParent){
-
+void MRootDesktop::libImportSongs(QTreeView *treeParent)
+{
     QStringList songFiles;
     songFiles = QFileDialog::getOpenFileNames(
                 this, "Add Media Files",
                 PathDesktop, "All Files (*.*)");
 
-    if(songFiles.size() < 1){
+    if(songFiles.size() < 1) {
         return;
     }
 
     MPlaylist *parentPlaylist = nullptr;
-    if(treeParent == m_treeContainers){
+    if(treeParent == m_treeContainers) {
         QModelIndex idx = m_treeContainers->currentIndex();
         QString pid = m_treeContainers->modelContainers()->getPID(idx);
         parentPlaylist = m_mediaLibrary->getPlaylist(pid);
     }
-    else if(treeParent == m_treeSonglist){
-        if(m_treeSonglist->modelSonglist()->container()->type() == Mpi3::PlaylistElement){
+    else if(treeParent == m_treeSonglist) {
+        if(m_treeSonglist->modelSonglist()->container()->type() == Mpi3::PlaylistElement) {
             parentPlaylist = static_cast<MPlaylist*>(m_treeSonglist->modelSonglist()->container());
         }
     }
 
-    for(int i = 0; i < songFiles.size(); i++){
+    for(int i = 0; i < songFiles.size(); i++) {
         MSong *addedSong = m_mediaLibrary->newSong(songFiles.at(i));
         m_mediaLibrary->insert(addedSong, parentPlaylist);
     }
 }
-void MRootDesktop::libDownloadSongs(QTreeView *treeParent){
+void MRootDesktop::libDownloadSongs(QTreeView *treeParent)
+{
     Q_UNUSED(treeParent)
 }
 
-void MRootDesktop::objPlay(const QModelIndex &idx){
+void MRootDesktop::objPlay(const QModelIndex &idx)
+{
     Q_UNUSED(idx)
 }
-void MRootDesktop::objEdit(const QModelIndex &idx){
+void MRootDesktop::objEdit(const QModelIndex &idx)
+{
     m_treeSonglist->edit(idx);
 }
-void MRootDesktop::objDetails(const QModelIndex &idx){
+void MRootDesktop::objDetails(const QModelIndex &idx)
+{
     Q_UNUSED(idx);
 }
 
-void MRootDesktop::objAddTo(){}
-void MRootDesktop::objRemoveFrom(){}
-void MRootDesktop::objDuplicate(){}
-void MRootDesktop::objOpenFileLocation(QTreeView *treeParent){
+void MRootDesktop::objAddTo()
+{
 
-    if(treeParent == m_treeSonglist && m_treeSonglist->selectionModel()->selectedRows().size() == 1){
+}
+void MRootDesktop::objRemoveFrom()
+{
+
+}
+void MRootDesktop::objDuplicate()
+{
+
+}
+void MRootDesktop::objOpenFileLocation(QTreeView *treeParent)
+{
+    if(treeParent == m_treeSonglist && m_treeSonglist->selectionModel()->selectedRows().size() == 1) {
         MSong *song = m_treeSonglist->modelSonglist()->songAt(treeParent->currentIndex());
-        if(song){
+        if(song) {
             openFileLocation(song->path());
         }
     }
 }
-void MRootDesktop::openFileLocation(const QString &path){
+void MRootDesktop::openFileLocation(const QString &path)
+{
     QStringList processArgs;
     processArgs << "/select," << QDir::toNativeSeparators(path);
     QProcess::startDetached("explorer", processArgs);
 }
 
-void MRootDesktop::editUndo(){}
-void MRootDesktop::editRedo(){}
+void MRootDesktop::editUndo()
+{
 
-void MRootDesktop::objCut(QTreeView *treeParent){
+}
+void MRootDesktop::editRedo()
+{
 
-    if(treeParent == m_treeSonglist){
+}
+
+void MRootDesktop::objCut(QTreeView *treeParent)
+{
+    if(treeParent == m_treeSonglist) {
 //        QApplication::clipboard()->setMimeData()
     }
 }
-void MRootDesktop::objCopy(QTreeView *treeParent){
-
-    if(treeParent == m_treeSonglist){
+void MRootDesktop::objCopy(QTreeView *treeParent)
+{
+    if(treeParent == m_treeSonglist) {
         QModelIndexList selectedIndexes = m_treeSonglist->selectionModel()->selectedIndexes();
         QApplication::clipboard()->setMimeData(m_treeSonglist->modelSonglist()->mimeData(selectedIndexes));
     }
 }
-void MRootDesktop::objPaste(QTreeView *treeParent){
-
-    if(treeParent == m_treeSonglist){
+void MRootDesktop::objPaste(QTreeView *treeParent)
+{
+    if(treeParent == m_treeSonglist) {
         QModelIndex currentIndex = m_treeSonglist->currentIndex();
         const QMimeData *data = QApplication::clipboard()->mimeData(QClipboard::Clipboard);
         m_treeSonglist->modelSonglist()->dropMimeData(
@@ -1197,46 +1235,47 @@ void MRootDesktop::objPaste(QTreeView *treeParent){
                     currentIndex.parent());
     }
 }
-void MRootDesktop::objDelete(QTreeView *treeParent){
-
-    if(treeParent == m_treeContainers && m_treeContainers->selectionModel()->selectedRows().size() > 0){
+void MRootDesktop::objDelete(QTreeView *treeParent)
+{
+    if(treeParent == m_treeContainers && m_treeContainers->selectionModel()->selectedRows().size() > 0) {
         QModelIndex index = m_treeContainers->currentIndex();
 
         QString pid = m_treeContainers->modelContainers()->getPID(index);
         MMediaElement *element = m_mediaLibrary->getElement(pid);
 
-        if(element == m_treeSonglist->modelSonglist()->container()){
+        if(element == m_treeSonglist->modelSonglist()->container()) {
             m_panelMedia->changeView(MPanelMedia::ViewAllSongs);
             m_treeSonglist->setContainer(m_mediaLibrary);
         }
 
-        if(!element){
+        if(!element) {
             return;
         }
-        else if(element->type() == Mpi3::FolderElement){
+        else if(element->type() == Mpi3::FolderElement) {
             m_mediaLibrary->discard(static_cast<MFolder*>(element));
         }
-        else if(element->type() == Mpi3::PlaylistElement){
+        else if(element->type() == Mpi3::PlaylistElement) {
             m_mediaLibrary->discard(static_cast<MPlaylist*>(element));
         }
     }
-    else if(treeParent == m_treeSonglist && m_treeSonglist->selectionModel()->selectedRows().size() > 0){
+    else if(treeParent == m_treeSonglist && m_treeSonglist->selectionModel()->selectedRows().size() > 0) {
         QModelIndexList currentIndexes = m_treeSonglist->selectionModel()->selectedIndexes();
 
         QVector<MSong*> delSongs;
-        foreach(QModelIndex idx, currentIndexes){
-            if(idx.column() == 0){
+        foreach(QModelIndex idx, currentIndexes) {
+            if(idx.column() == 0) {
                 delSongs.append(m_treeSonglist->modelSonglist()->songAt(idx));
             }    
         }
 
-        foreach(MSong *song, delSongs){
+        foreach(MSong *song, delSongs) {
             m_mediaLibrary->discard(song);
         }
     }
 }
 
-void MRootDesktop::paintEvent(QPaintEvent *event){
+void MRootDesktop::paintEvent(QPaintEvent *event)
+{
     QStyleOption opt;
     opt.initFrom(this);
 
@@ -1245,11 +1284,11 @@ void MRootDesktop::paintEvent(QPaintEvent *event){
 
     QWidget::paintEvent(event);
 }
-bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
+bool MRootDesktop::eventFilter(QObject *object, QEvent *event)
+{
+    if(object == this) {
 
-    if(object == this){
-
-        if(event->type() == QEvent::MouseButtonPress){
+        if(event->type() == QEvent::MouseButtonPress) {
             QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
 
             int x_event = sc_event->pos().x();
@@ -1271,7 +1310,7 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             m_moveActive = !m_resizeActive && (child == m_panelPlayback || child == m_menuWidget);
         }
 
-        else if(event->type() == QEvent::MouseButtonRelease){
+        else if(event->type() == QEvent::MouseButtonRelease) {
             m_moveActive = false;
             m_resizeActive = false;
 
@@ -1280,14 +1319,14 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             m_lastCursorPoint = QPoint();
         }
 
-        else if(event->type() == QEvent::MouseMove && m_moveActive && !m_maximizeActive){
+        else if(event->type() == QEvent::MouseMove && m_moveActive && !m_maximizeActive) {
             QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
             int x_move = m_lastCursorPoint.x() - sc_event->x();
             int y_move = m_lastCursorPoint.y() - sc_event->y();
             move(x() - x_move, y() - y_move);
         }
 
-        else if(event->type() == QEvent::MouseMove && m_resizeActive && !m_maximizeActive){
+        else if(event->type() == QEvent::MouseMove && m_resizeActive && !m_maximizeActive) {
 
             QMouseEvent *sc_event = static_cast<QMouseEvent*>(event);
 
@@ -1310,13 +1349,13 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             int move_ry = cursor().pos().ry();
 
             // bottom-right
-            if(m_resizeEast && m_resizeSouth){
+            if(m_resizeEast && m_resizeSouth) {
                 resize(m_lastSize.width() + w_diff, m_lastSize.height() + h_diff);
             }
 
             // top-right
-            else if(m_resizeEast && m_resizeNorth){
-                if(height() == minimumHeight() && h_diff >= 0){
+            else if(m_resizeEast && m_resizeNorth) {
+                if(height() == minimumHeight() && h_diff >= 0) {
                     resize(m_lastSize.width() + w_diff, height());
                 }
                 else {
@@ -1328,9 +1367,9 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             }
 
             // bottom-left
-            else if(m_resizeWest && m_resizeSouth){
+            else if(m_resizeWest && m_resizeSouth) {
 
-                if(width() == minimumWidth() && w_diff >= 0){
+                if(width() == minimumWidth() && w_diff >= 0) {
                     resize(width(), m_lastSize.height() + h_diff);
                 }
                 else {
@@ -1343,14 +1382,14 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             }
 
             // top-left
-            else if(m_resizeWest && m_resizeNorth){
+            else if(m_resizeWest && m_resizeNorth) {
 
-                if(height() == minimumHeight() && h_diff >= 0){
+                if(height() == minimumHeight() && h_diff >= 0) {
                     move_ry = pos().ry();
                     h_adjust = 0;
                 }
 
-                if(width() == minimumWidth() && w_diff >= 0){
+                if(width() == minimumWidth() && w_diff >= 0) {
                     move_rx = pos().rx();
                     w_adjust = 0;
                 }
@@ -1360,9 +1399,9 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             }
 
             // top
-            else if(m_resizeNorth){
+            else if(m_resizeNorth) {
 
-                if(height() == minimumHeight() && h_diff >= 0){
+                if(height() == minimumHeight() && h_diff >= 0) {
                     return QMainWindow::eventFilter(object, event);
                 }
 
@@ -1373,14 +1412,14 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             }
 
             // bottom
-            else if(m_resizeSouth){
+            else if(m_resizeSouth) {
                 resize(m_lastSize.width(), m_lastSize.height() + h_diff);
             }
 
             // right
-            else if(m_resizeWest){
+            else if(m_resizeWest) {
 
-                if(width() == minimumWidth() && w_diff >= 0){
+                if(width() == minimumWidth() && w_diff >= 0) {
                     return QMainWindow::eventFilter(object, event);
                 }
 
@@ -1391,14 +1430,14 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             }
 
             // left
-            else if (m_resizeEast){
+            else if (m_resizeEast) {
                 resize(m_lastSize.width() + w_diff, m_lastSize.height());
             }
         }
 
-        else if(event->type() == QEvent::HoverMove){
+        else if(event->type() == QEvent::HoverMove) {
 
-            if(m_resizeActive || m_maximizeActive){
+            if(m_resizeActive || m_maximizeActive) {
                 return QMainWindow::eventFilter(object, event);
             }
 
@@ -1423,37 +1462,37 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
             int y_root = pos().ry();
 
             // top-left
-            if((west && north_edge) || (north && west_edge)){
+            if((west && north_edge) || (north && west_edge)) {
                 cursor().setPos(x_root, y_root);
                 QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
             }
             // top-right
-            else if((east && north_edge) || (north && east_edge)){
+            else if((east && north_edge) || (north && east_edge)) {
                 cursor().setPos(x_root + width() - 1, y_root);
                 QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
             }
             // bottom-left
-            else if((west && south_edge) || (south && west_edge)){
+            else if((west && south_edge) || (south && west_edge)) {
                 cursor().setPos(x_root + 1, y_root + height() - 1);
                 QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
             }
             // bottom-right
-            else if((east && south_edge) || (south && east_edge)){
+            else if((east && south_edge) || (south && east_edge)) {
                 cursor().setPos(x_root + width() - 1, y_root + height() - 1);
                 QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
             }
             // left or right
-            else if(east || west){
+            else if(east || west) {
                 cursor().setPos(west ? x_root + 1 : x_root + width() - 1, cursor().pos().ry());
                 QApplication::setOverrideCursor(Qt::SizeHorCursor);
             }
             // top or bottom
-            else if(north || south){
+            else if(north || south) {
                 cursor().setPos(cursor().pos().rx(), north ? y_root + 1 : y_root + height() - 1);
                 QApplication::setOverrideCursor(Qt::SizeVerCursor);
             }
-            else{
-                while(QApplication::overrideCursor()){
+            else {
+                while(QApplication::overrideCursor()) {
                     QApplication::restoreOverrideCursor();
                 }
             }
@@ -1462,7 +1501,8 @@ bool MRootDesktop::eventFilter(QObject *object, QEvent *event){
 
     return QMainWindow::eventFilter(object, event);
 }
-void MRootDesktop::closeEvent(QCloseEvent *event){
+void MRootDesktop::closeEvent(QCloseEvent *event)
+{
     saveSettings();
     QMainWindow::closeEvent(event);
 }

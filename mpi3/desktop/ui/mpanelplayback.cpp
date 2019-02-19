@@ -18,7 +18,8 @@
 #include <QDebug>
 
 
-MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
+MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent)
+{
     initializeLayout();
 
     m_currentState = Mpi3::EngineStopped;
@@ -27,7 +28,7 @@ MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
 
     m_fadeTimer = new QTimer(this);
     m_fadeTimer->setSingleShot(true);
-    connect(m_fadeTimer, &QTimer::timeout, this, [this](){animateFadeButton();});
+    connect(m_fadeTimer, &QTimer::timeout, this, [this]() {animateFadeButton();});
 
     connect(m_btnPlay, &QPushButton::released, this, &MPanelPlayback::clickedPlay);
     connect(m_btnNext, &QPushButton::released, this, &MPanelPlayback::clickedNext);
@@ -39,10 +40,13 @@ MPanelPlayback::MPanelPlayback(QWidget *parent) : QWidget(parent){
 
     connect(m_sldVolume, &QSlider::valueChanged, this, &MPanelPlayback::volumeChanged);
 }
-MPanelPlayback::~MPanelPlayback(){}
+MPanelPlayback::~MPanelPlayback()
+{
 
-void MPanelPlayback::initializeLayout(){
+}
 
+void MPanelPlayback::initializeLayout()
+{
     // -------------------------------------------------- PIXMAPS
 
     m_pixNext = QPixmap(":/icons/playback/next-light.png");
@@ -220,16 +224,18 @@ void MPanelPlayback::initializeLayout(){
     setObjectName("PanelPlayback");
 }
 
-double MPanelPlayback::buttonOpacity() const{
+double MPanelPlayback::buttonOpacity() const
+{
     return m_btnOpacity;
 }
-void MPanelPlayback::setButtonOpacity(double opacity){
+void MPanelPlayback::setButtonOpacity(double opacity)
+{
     m_btnOpacity = opacity;
 
     bool playing = m_currentState == Mpi3::EngineActive;
     QPixmap pixCurrent = playing ? m_pixPlay : m_pixPaus;
 
-    if(m_btnOpacity > 0.00){
+    if(m_btnOpacity > 0.00) {
         QPixmap pixMask = QPixmap(pixCurrent);
 
         QImage imgMask(pixMask.size(), QImage::Format_ARGB32_Premultiplied);
@@ -248,9 +254,9 @@ void MPanelPlayback::setButtonOpacity(double opacity){
         m_btnFade->setIcon(QIcon(pixCurrent));
     }
 }
-void MPanelPlayback::animateFadeButton(){
-
-    if(m_currentState != Mpi3::EngineStopped){
+void MPanelPlayback::animateFadeButton()
+{
+    if(m_currentState != Mpi3::EngineStopped) {
         QPropertyAnimation *animation = new QPropertyAnimation(this);
         animation->setPropertyName("buttonOpacity");
         animation->setTargetObject(this);
@@ -261,32 +267,36 @@ void MPanelPlayback::animateFadeButton(){
     }
 }
 
-int MPanelPlayback::volume() const{
+int MPanelPlayback::volume() const
+{
     return m_sldVolume->value();
 }
-double MPanelPlayback::position() const {
+double MPanelPlayback::position() const
+{
     return m_sldPosition->value();
 }
 
-void MPanelPlayback::setVolume(int volume){
+void MPanelPlayback::setVolume(int volume)
+{
     m_sldVolume->blockSignals(true);
     m_sldVolume->setValue(volume);
     m_sldVolume->blockSignals(false);
 }
-void MPanelPlayback::setPosition(double position){
+void MPanelPlayback::setPosition(double position)
+{
     m_sldPosition->blockSignals(true);
     m_sldPosition->setValue(static_cast<int>(position));
     m_lblPositionMin->setText(MMediaLibrary::timeToString(position));
     m_sldPosition->blockSignals(false);
 }
-void MPanelPlayback::setState(Mpi3::EngineState state){
-
-    if(m_seeking){
+void MPanelPlayback::setState(Mpi3::EngineState state)
+{
+    if(m_seeking) {
         m_seeking = state == Mpi3::EngineIdle;
     }
     else {
 
-        if(state == Mpi3::EngineActive){
+        if(state == Mpi3::EngineActive) {
             m_btnPlay->setIcon(QIcon(m_pixPaus));
             m_btnFade->setIcon(QIcon(m_pixPlay));
         }
@@ -295,12 +305,12 @@ void MPanelPlayback::setState(Mpi3::EngineState state){
             m_btnFade->setIcon(QIcon(m_pixPaus));
         }
 
-        if(!m_navigating && state != m_currentState){
+        if(!m_navigating && state != m_currentState) {
             m_btnFade->setVisible(true);
             m_fadeTimer->start(300);
         }
 
-        if(state != Mpi3::EngineStopped){
+        if(state != Mpi3::EngineStopped) {
             m_navigating = false;
         }
 
@@ -308,7 +318,8 @@ void MPanelPlayback::setState(Mpi3::EngineState state){
 
     m_currentState = state;
 }
-void MPanelPlayback::setDisplay(MSong *song){
+void MPanelPlayback::setDisplay(MSong *song)
+{
     m_sldPosition->setMinimum(0);
     m_sldPosition->setMaximum(static_cast<int>(song->time()));
     m_lblTitle->setText(song->name());
@@ -318,41 +329,50 @@ void MPanelPlayback::setDisplay(MSong *song){
     m_pidCurrentSong = song->pid();
 }
 
-void MPanelPlayback::clickedPlay(){
+void MPanelPlayback::clickedPlay()
+{
     bool paused = m_currentState == Mpi3::EngineIdle;
     bool stopped = m_currentState == Mpi3::EngineStopped;
     emit paused || stopped ? audioPlay() : audioPause();
 }
-void MPanelPlayback::clickedNext(){
+void MPanelPlayback::clickedNext()
+{
     m_navigating = true;
     emit navigateNext();
 }
-void MPanelPlayback::clickedPrev(){
+void MPanelPlayback::clickedPrev()
+{
     m_navigating = true;
     emit navigatePrev();
 }
-void MPanelPlayback::volumeChanged(){
+void MPanelPlayback::volumeChanged()
+{
     emit changeVolume(volume());
 }
 
-void MPanelPlayback::seekBegin(){
+void MPanelPlayback::seekBegin()
+{
     m_seeking = true;
     emit audioPause();
 }
-void MPanelPlayback::seekEnd(){
+void MPanelPlayback::seekEnd()
+{
     emit audioSeek(m_sldPosition->value());
 }
-void MPanelPlayback::positionChanged(int position){
+void MPanelPlayback::positionChanged(int position)
+{
     setPosition(static_cast<double>(position));
 }
 
-void MPanelPlayback::elementModified(MMediaElement *elemModified){
-    if(elemModified->pid() == m_pidCurrentSong){
+void MPanelPlayback::elementModified(MMediaElement *elemModified)
+{
+    if(elemModified->pid() == m_pidCurrentSong) {
         setDisplay(static_cast<MSong*>(elemModified));
     }
 }
 
-void MPanelPlayback::paintEvent(QPaintEvent *event){
+void MPanelPlayback::paintEvent(QPaintEvent *event)
+{
     QStyleOption opt;
     opt.initFrom(this);
 

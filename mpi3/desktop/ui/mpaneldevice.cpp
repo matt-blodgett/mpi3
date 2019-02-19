@@ -12,7 +12,8 @@
 #include <QDebug>
 
 
-MPanelDevice::MPanelDevice(QWidget *parent) : MPanel(parent){
+MPanelDevice::MPanelDevice(QWidget *parent) : MPanel(parent)
+{
     initializeLayoutType(true);
     initializeLayout();
 
@@ -27,7 +28,6 @@ MPanelDevice::MPanelDevice(QWidget *parent) : MPanel(parent){
     m_boxLibName->setText("");
 
 
-
     m_lblDevices->setText("Devices");
 
     m_lblDevices->setStyleSheet("QLabel {border-bottom: 1px solid #696969;"
@@ -36,9 +36,8 @@ MPanelDevice::MPanelDevice(QWidget *parent) : MPanel(parent){
     m_frmStorageSpace->setObjectName("StorageWidget");
 }
 
-void MPanelDevice::initializeLayout() {
-
-
+void MPanelDevice::initializeLayout()
+{
     m_lblDevices = addLabelTag();
 
 //    m_btnRefreshVolumes = new QPushButton(this);
@@ -94,17 +93,19 @@ void MPanelDevice::initializeLayout() {
     library_gridSouth->setRowMinimumHeight(1, 40);
 }
 
-void MPanelDevice::setLibrary(MMediaLibrary *mediaLib){
+void MPanelDevice::setLibrary(MMediaLibrary *mediaLib)
+{
     m_mediaLibrary = mediaLib;
 }
-void MPanelDevice::setRaspiLibrary(MMediaLibrary *raspiLib){
+void MPanelDevice::setRaspiLibrary(MMediaLibrary *raspiLib)
+{
     m_deviceLibrary = raspiLib;
 
     m_lblLibAddedTag->setText("");
     m_lblLibAdded->setText("");
     m_boxLibName->setText("");
 
-    if(m_deviceLibrary){
+    if(m_deviceLibrary) {
         m_lblLibAddedTag->setText("Created:");
         m_lblLibAdded->setText(m_deviceLibrary->added());
         m_boxLibName->setText(m_deviceLibrary->name());

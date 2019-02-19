@@ -16,11 +16,12 @@ class MFolder;
 class MSong;
 
 
-namespace Mpi3 {
-
+namespace Mpi3
+{
     Q_NAMESPACE
 
-    enum ElementType {
+    enum ElementType
+    {
         BaseElement,
         SongElement,
         ContainerElement,
@@ -31,7 +32,8 @@ namespace Mpi3 {
 
     Q_ENUM_NS(ElementType)
 
-    enum MediaState {
+    enum MediaState
+    {
         MediaEmpty,
         MediaReady,
         MediaBusy
@@ -39,7 +41,8 @@ namespace Mpi3 {
 
     Q_ENUM_NS(MediaState)
 
-    enum EngineState {
+    enum EngineState
+    {
         EngineStopped,
         EngineActive,
         EngineIdle
@@ -47,7 +50,8 @@ namespace Mpi3 {
 
     Q_ENUM_NS(EngineState)
 
-    enum ErrorState {
+    enum ErrorState
+    {
         NoError,
         ResourceError,
         FileFormatError,
@@ -58,7 +62,6 @@ namespace Mpi3 {
     Q_ENUM_NS(ErrorState)
 
     void register_global_metatypes();
-
 };
 
 

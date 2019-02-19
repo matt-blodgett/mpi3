@@ -25,7 +25,8 @@ static const int WidthSeparator = 10;
 static const int WidthSection = (WidthSplit * 2) + WidthSeparator;
 
 
-MPanelSection::MPanelSection(QWidget *parent) : QWidget(parent){
+MPanelSection::MPanelSection(QWidget *parent) : QWidget(parent)
+{
     m_lblHeader = new QLabel(this);
     m_frmBody = new QWidget(this);
 
@@ -56,30 +57,38 @@ MPanelSection::MPanelSection(QWidget *parent) : QWidget(parent){
     m_frmBody->setObjectName("SectionFrame");
 }
 
-QGridLayout *MPanelSection::gridBody(){
+QGridLayout *MPanelSection::gridBody()
+{
     return m_gridBody;
 }
-QGridLayout *MPanelSection::gridNorth(){
+QGridLayout *MPanelSection::gridNorth()
+{
     return m_gridNorth;
 }
-QGridLayout *MPanelSection::gridSouth(){
+QGridLayout *MPanelSection::gridSouth()
+{
     return m_gridSouth;
 }
-QGridLayout *MPanelSection::gridEast(){
+QGridLayout *MPanelSection::gridEast()
+{
     return m_gridEast;
 }
-QGridLayout *MPanelSection::gridWest(){
+QGridLayout *MPanelSection::gridWest()
+{
     return m_gridWest;
 }
 
-QString MPanelSection::header() const {
+QString MPanelSection::header() const
+{
     return m_lblHeader->text();
 }
-void MPanelSection::setHeader(const QString &header){
+void MPanelSection::setHeader(const QString &header)
+{
     m_lblHeader->setText(header);
 }
 
-MPanel::MPanel(QWidget *parent) : QWidget(parent){
+MPanel::MPanel(QWidget *parent) : QWidget(parent)
+{
     m_frmSplitter = new QSplitter(this);
     m_frmControl = new QWidget(this);
     m_frmDisplay = new QWidget(this);
@@ -108,19 +117,22 @@ MPanel::MPanel(QWidget *parent) : QWidget(parent){
     m_frmControl->setObjectName("PanelControl");
 }
 
-QGridLayout *MPanel::gridMain(){
+QGridLayout *MPanel::gridMain()
+{
     return m_gridMain;
 }
-QGridLayout *MPanel::gridControl(){
+QGridLayout *MPanel::gridControl()
+{
     return m_gridControl;
 }
-QGridLayout *MPanel::gridDisplay(){
+QGridLayout *MPanel::gridDisplay()
+{
     return m_gridDisplay;
 }
 
-void MPanel::initializeLayoutType(bool sectioned){
-
-    if(sectioned){
+void MPanel::initializeLayoutType(bool sectioned)
+{
+    if(sectioned) {
         m_lblPanelTitle = new QLabel(this);
         m_frmScrollArea = new QScrollArea(this);
 
@@ -145,87 +157,102 @@ void MPanel::initializeLayoutType(bool sectioned){
     }
 }
 
-QString MPanel::title() const {
+QString MPanel::title() const
+{
     return m_lblPanelTitle->text();
 }
-void MPanel::setTitle(const QString &title){
+void MPanel::setTitle(const QString &title)
+{
     m_lblPanelTitle->setText(title);
 }
 
-MPanelSection *MPanel::addSection(){
+MPanelSection *MPanel::addSection()
+{
     MPanelSection *section = new MPanelSection(this);
 
     int row = m_gridDisplay->rowCount();
     m_gridDisplay->addWidget(section, row, 0, 1, 1);
     m_gridDisplay->setRowStretch(row + 1, 1);
 
-    for(int i = 0; i < row; i++){
+    for(int i = 0; i < row; i++) {
         m_gridDisplay->setRowStretch(i, 0);
     }
 
     return section;
 }
-MPanelSection *MPanel::addSection(const QString &header){
+MPanelSection *MPanel::addSection(const QString &header)
+{
     MPanelSection *section = addSection();
     section->setHeader(header);
     return section;
 }
 
-QLabel *MPanel::addLabelTag(){
+QLabel *MPanel::addLabelTag()
+{
     QLabel *label = new QLabel(this);
     label->setObjectName("PanelTag");
     return label;
 }
-QLabel *MPanel::addLabelValue(){
+QLabel *MPanel::addLabelValue()
+{
     QLabel *label = new QLabel(this);
     label->setObjectName("PanelValue");
     return label;
 }
-QLineEdit *MPanel::addLineEdit(){
+QLineEdit *MPanel::addLineEdit()
+{
     QLineEdit *edit = new QLineEdit(this);
     edit->setObjectName("PanelEdit");
     return edit;
 }
-QLineEdit *MPanel::addLineEditHidden(){
+QLineEdit *MPanel::addLineEditHidden()
+{
     QLineEdit *edit = new QLineEdit(this);
     edit->setObjectName("PanelEditHidden");
     return edit;
 }
-QPushButton *MPanel::addPushButton(){
+QPushButton *MPanel::addPushButton()
+{
     QPushButton *push = new QPushButton(this);
     push->setObjectName("PanelPushButton");
     push->setFixedWidth(120);
     return push;
 }
-QTreeView *MPanel::addTreeView(){
+QTreeView *MPanel::addTreeView()
+{
     QTreeView *tree = new QTreeView(this);
     addTreeView(tree);
     return tree;
 }
-QCheckBox *MPanel::addCheckBox(){
+QCheckBox *MPanel::addCheckBox()
+{
     QCheckBox *check = new QCheckBox(this);
     check->setObjectName("PanelCheck");
     return check;
 }
-QComboBox *MPanel::addComboBox(){
+QComboBox *MPanel::addComboBox()
+{
     QComboBox *combo = new QComboBox(this);
     combo->setObjectName("PanelCombo");
     return combo;
 }
-QRadioButton *MPanel::addRadioButton(){
+QRadioButton *MPanel::addRadioButton()
+{
     QRadioButton *radio = new QRadioButton(this);
     radio->setObjectName("PanelRadioButton");
     return radio;
 }
 
-void MPanel::addTreeView(QTreeView *tree){
+void MPanel::addTreeView(QTreeView *tree)
+{
     tree->setObjectName("PanelTree");
     tree->header()->setObjectName("PanelTreeHeader");
     tree->verticalScrollBar()->setObjectName("TreeviewScrollbar");
     tree->horizontalScrollBar()->setObjectName("TreeviewScrollbar");
 }
 
-void MPanel::paintEvent(QPaintEvent *event){
+void MPanel::paintEvent(QPaintEvent *event)
+{
     QStyleOption opt;
     opt.initFrom(this);
 
@@ -234,10 +261,11 @@ void MPanel::paintEvent(QPaintEvent *event){
 
     QWidget::paintEvent(event);
 }
-void MPanel::showEvent(QShowEvent *event){
+void MPanel::showEvent(QShowEvent *event)
+{
     m_frmSplitter->setSizes({180, width()-180});
 
-    foreach(MPanelSection *panel, findChildren<MPanelSection*>()){
+    foreach(MPanelSection *panel, findChildren<MPanelSection*>()) {
         panel->setFixedHeight(panel->height());
     }
 

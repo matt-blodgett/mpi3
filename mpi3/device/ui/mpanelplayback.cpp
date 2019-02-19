@@ -4,10 +4,12 @@
 #include <QDebug>
 
 
-MPanelPlayback::MPanelPlayback(QWidget *parent) : MPanel(parent){
+MPanelPlayback::MPanelPlayback(QWidget *parent) : MPanel(parent)
+{
     initializeLayout();
 }
 
-void MPanelPlayback::initializeLayout(){
+void MPanelPlayback::initializeLayout()
+{
 
 }

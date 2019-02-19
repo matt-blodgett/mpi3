@@ -4,9 +4,13 @@
 #include <QPainter>
 
 
-MPanel::MPanel(QWidget *parent) : QWidget(parent){}
+MPanel::MPanel(QWidget *parent) : QWidget(parent)
+{
 
-void MPanel::paintEvent(QPaintEvent *event){
+}
+
+void MPanel::paintEvent(QPaintEvent *event)
+{
     QStyleOption opt;
     opt.initFrom(this);
 

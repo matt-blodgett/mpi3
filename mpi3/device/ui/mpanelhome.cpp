@@ -4,11 +4,13 @@
 #include <QDebug>
 
 
-MPanelHome::MPanelHome(QWidget *parent) : MPanel(parent){
+MPanelHome::MPanelHome(QWidget *parent) : MPanel(parent)
+{
     initializeLayout();
 }
 
-void MPanelHome::initializeLayout(){
+void MPanelHome::initializeLayout()
+{
 
 }
 

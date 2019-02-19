@@ -2,7 +2,8 @@
 #include <QApplication>
 
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
     QApplication app(argc, argv);
     app.setApplicationDisplayName("Mpi3 Media Player");
     app.setApplicationName("mpi3device");

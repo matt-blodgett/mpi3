@@ -15,7 +15,8 @@
 static const QStringList AutoBackupOptions = {"Continuous", "Daily", "Weekly", "Monthly"};
 
 
-MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanel(parent){
+MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanel(parent)
+{
     initializeLayoutType(true);
     initializeLayout();
 
@@ -56,8 +57,8 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanel(parent){
     connect(m_btnSetBackupLoc, &QPushButton::released, this, &MPanelLibrary::libSetBackupPath);
 }
 
-void MPanelLibrary::initializeLayout(){
-
+void MPanelLibrary::initializeLayout()
+{
     m_sectionLibrary = addSection();
     m_sectionMedia = addSection();
     m_sectionBackup = addSection();
@@ -147,7 +148,8 @@ void MPanelLibrary::initializeLayout(){
 
 }
 
-void MPanelLibrary::setLibrary(MMediaLibrary *library){
+void MPanelLibrary::setLibrary(MMediaLibrary *library)
+{
     m_mediaLibrary = library;
 
     m_boxLibName->setText("");
@@ -156,7 +158,7 @@ void MPanelLibrary::setLibrary(MMediaLibrary *library){
     m_boxMediaLoc->setText("");
     m_boxBackupLoc->setText("");
 
-    if(m_mediaLibrary){
+    if(m_mediaLibrary) {
         m_boxLibName->setText(m_mediaLibrary->name());
         m_lblLibAdded->setText(m_mediaLibrary->added());
         m_boxLibPath->setText(m_mediaLibrary->savePath());
@@ -165,7 +167,8 @@ void MPanelLibrary::setLibrary(MMediaLibrary *library){
     }
 }
 
-void MPanelLibrary::allowCopyMedia(bool allow){
+void MPanelLibrary::allowCopyMedia(bool allow)
+{
     m_optCopyMedia->setChecked(allow);
     m_optOrganizeMedia->setChecked(false);
 
@@ -178,10 +181,12 @@ void MPanelLibrary::allowCopyMedia(bool allow){
     m_lblMediaSize->setVisible(allow);
     m_lblMediaFileCount->setVisible(allow);
 }
-void MPanelLibrary::allowOrganizeMedia(bool allow){
+void MPanelLibrary::allowOrganizeMedia(bool allow)
+{
     m_optOrganizeMedia->setChecked(allow);
 }
-void MPanelLibrary::allowAutoBackups(bool allow){
+void MPanelLibrary::allowAutoBackups(bool allow)
+{
     m_lblBackupFreqTag->setDisabled(!allow);
     m_optBackupLibrary->setChecked(allow);
     m_cbxBackupFreq->setDisabled(!allow);
@@ -189,12 +194,15 @@ void MPanelLibrary::allowAutoBackups(bool allow){
     m_btnSetBackupLoc->setDisabled(!allow);
 }
 
-bool MPanelLibrary::valCopyMedia() const {
+bool MPanelLibrary::valCopyMedia() const
+{
     return m_optCopyMedia->isChecked();
 }
-bool MPanelLibrary::valOrganizeMedia() const {
+bool MPanelLibrary::valOrganizeMedia() const
+{
     return m_optOrganizeMedia->isChecked();
 }
-bool MPanelLibrary::valAutoBackups() const {
+bool MPanelLibrary::valAutoBackups() const
+{
     return m_optBackupLibrary->isChecked();
 }

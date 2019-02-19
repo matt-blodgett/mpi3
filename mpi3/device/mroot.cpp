@@ -16,8 +16,12 @@
 #include <QDebug>
 
 
-MRootDevice::MRootDevice(QWidget *parent): QMainWindow(parent){}
-MRootDevice::~MRootDevice(){
+MRootDevice::MRootDevice(QWidget *parent): QMainWindow(parent)
+{
+
+}
+MRootDevice::~MRootDevice()
+{
 //    m_audioEngine->stop();
 //    delete m_audioEngine;
 //    delete m_mediaLibrary;
@@ -25,7 +29,8 @@ MRootDevice::~MRootDevice(){
 //    Mpi3::external_libs_deinit();
 }
 
-void MRootDevice::initialize(){
+void MRootDevice::initialize()
+{
 //    Mpi3::external_libs_init();
     initializeObjects();
     initializeLayout();
@@ -34,7 +39,8 @@ void MRootDevice::initialize(){
     centralWidget()->show();
 }
 
-void MRootDevice::initializeObjects(){
+void MRootDevice::initializeObjects()
+{
     m_styleSheet = new MStyleSheet();
 
 //    m_mediaLibrary = new MMediaLibrary();
@@ -47,7 +53,8 @@ void MRootDevice::initializeObjects(){
 
     m_testButton = new QPushButton(this);
 }
-void MRootDevice::initializeLayout(){
+void MRootDevice::initializeLayout()
+{
     QWidget *windowMain = new QWidget(this);
     QGridLayout *gridMain = new QGridLayout();
     gridMain->addWidget(m_testButton, 0, 0, 1, 1);
@@ -58,7 +65,7 @@ void MRootDevice::initializeLayout(){
     windowMain->setLayout(gridMain);
 
     m_testButton->setText("close");
-    connect(m_testButton, &QPushButton::released, this, [this](){this->close();});
+    connect(m_testButton, &QPushButton::released, this, [this]() {this->close();});
 
     setCentralWidget(windowMain);
     setContentsMargins(1, 1, 1, 1);
@@ -66,22 +73,25 @@ void MRootDevice::initializeLayout(){
     setObjectName("RootWindow");
     showFullScreen();
 }
-void MRootDevice::initializeState(){
+void MRootDevice::initializeState()
+{
 
 }
-void MRootDevice::initializeStyle() {
-
-    if(m_styleSheet->qssPath().isNull()){
+void MRootDevice::initializeStyle()
+{
+    if(m_styleSheet->qssPath().isNull()) {
         m_styleSheet->load(":/styles/default.qss");
     }
 
     setStyleSheet(m_styleSheet->qssStyle());
 }
-void MRootDevice::saveSettings(){
+void MRootDevice::saveSettings()
+{
 
 }
 
-void MRootDevice::paintEvent(QPaintEvent *event){
+void MRootDevice::paintEvent(QPaintEvent *event)
+{
     QStyleOption opt;
     opt.initFrom(this);
 
@@ -90,7 +100,8 @@ void MRootDevice::paintEvent(QPaintEvent *event){
 
     QWidget::paintEvent(event);
 }
-void MRootDevice::closeEvent(QCloseEvent *event){
+void MRootDevice::closeEvent(QCloseEvent *event)
+{
     saveSettings();
     QMainWindow::closeEvent(event);
 }

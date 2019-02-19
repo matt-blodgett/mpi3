@@ -4,11 +4,13 @@
 #include <QDebug>
 
 
-MStatusBar::MStatusBar(QWidget *parent) : MPanel(parent){
+MStatusBar::MStatusBar(QWidget *parent) : MPanel(parent)
+{
     initializeLayout();
 }
 
-void MStatusBar::initializeLayout(){
+void MStatusBar::initializeLayout()
+{
 
 }
 

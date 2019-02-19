@@ -11,7 +11,8 @@
 #include <QDebug>
 
 
-MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent){
+MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent)
+{
     initializeLayoutType(false);
     initializeLayout();
 
@@ -30,12 +31,13 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent){
     m_btnArtists->setStyle(new MStyle(m_btnArtists->style()));
     m_btnAlbums->setStyle(new MStyle(m_btnAlbums->style()));
 
-    connect(m_btnSongs, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewAllSongs);});
-    connect(m_btnArtists, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewArtists);});
-    connect(m_btnAlbums, &QRadioButton::released, this, [this](){changeView(MPanelMedia::ViewAlbums);});
+    connect(m_btnSongs, &QRadioButton::released, this, [this]() {changeView(MPanelMedia::ViewAllSongs);});
+    connect(m_btnArtists, &QRadioButton::released, this, [this]() {changeView(MPanelMedia::ViewArtists);});
+    connect(m_btnAlbums, &QRadioButton::released, this, [this]() {changeView(MPanelMedia::ViewAlbums);});
 }
 
-void MPanelMedia::initializeLayout(){
+void MPanelMedia::initializeLayout()
+{
     m_treeContainers = new MTreeContainers(this);
     m_treeSonglist = new MTreeSonglist(this);
 
@@ -72,15 +74,16 @@ void MPanelMedia::initializeLayout(){
     gridDisplay()->setMargin(0);
 }
 
-MPanelMedia::View MPanelMedia::currentView() const{
+MPanelMedia::View MPanelMedia::currentView() const
+{
     return m_currentView;
 }
-void MPanelMedia::changeView(MPanelMedia::View view){
-
+void MPanelMedia::changeView(MPanelMedia::View view)
+{
     m_treeContainers->selectionModel()->blockSignals(true);
 
     m_currentView = view;
-    switch(m_currentView){
+    switch(m_currentView) {
 
         case MPanelMedia::ViewAllSongs: {
             m_btnSongs->toggle();
@@ -119,13 +122,16 @@ void MPanelMedia::changeView(MPanelMedia::View view){
 
     emit viewChanged();
 }
-void MPanelMedia::setDisplay(const QString &title){
+void MPanelMedia::setDisplay(const QString &title)
+{
     m_lblView->setText(title);
 }
 
-MTreeContainers *MPanelMedia::treeContainers(){
+MTreeContainers *MPanelMedia::treeContainers()
+{
     return m_treeContainers;
 }
-MTreeSonglist *MPanelMedia::treeSonglist(){
+MTreeSonglist *MPanelMedia::treeSonglist()
+{
     return m_treeSonglist;
 }
