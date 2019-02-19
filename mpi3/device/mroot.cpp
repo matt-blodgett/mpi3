@@ -37,7 +37,7 @@ void MRootDevice::initialize(){
 void MRootDevice::initializeObjects(){
     m_styleSheet = new MStyleSheet();
 
-    m_mediaLibrary = new MMediaLibrary();
+//    m_mediaLibrary = new MMediaLibrary();
 //    m_audioEngine = new MAudioEngine(this);
 
 //    connect(m_audioEngine, &MAudioEngine::notifyMediaStatus, this, &MRootDesktop::processAudioMediaStatus);
@@ -69,7 +69,7 @@ void MRootDevice::initializeLayout(){
 void MRootDevice::initializeState(){
 
 }
-void MRootDevice::initializeStyle(){
+void MRootDevice::initializeStyle() {
 
     if(m_styleSheet->qssPath().isNull()){
         m_styleSheet->load(":/styles/default.qss");

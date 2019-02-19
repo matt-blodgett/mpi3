@@ -13,8 +13,8 @@ QT_END_NAMESPACE
 #include "mglobal.h"
 
 class MStyleSheet;
-class MMediaLibrary;
-class MAudioEngine;
+//class MMediaLibrary;
+//class MAudioEngine;
 
 
 class MRootDevice : public QMainWindow
@@ -40,8 +40,8 @@ private:
 
 private:
     MStyleSheet *m_styleSheet = nullptr;
-    MMediaLibrary *m_mediaLibrary = nullptr;
-    MAudioEngine *m_audioEngine = nullptr;
+//    MMediaLibrary *m_mediaLibrary = nullptr;
+//    MAudioEngine *m_audioEngine = nullptr;
 
 protected:
     void paintEvent(QPaintEvent *event);

@@ -21,24 +21,21 @@ QMAKE_TARGET_PRODUCT = "Mpi3Device"
 QMAKE_TARGET_DESCRIPTION = "Mpi3 Media Player"
 
 
-target.path = /home/pi/device/mpi3
+# sudo apt-get install -y libao4 libao-dev libao-common libc6-dev libc6 libasound2 libaudio2 libpulse0
+LIBS += -lao
+
+# sudo apt-get install -y ffmpeg libavcodec57 libavdevice57 libavfilter6 libavformat57 libavutil55 libpostproc54 libswresample2 libswscale4
+# sudo apt-get install -y libavcodec-dev libavdevice-dev libavfilter-dev libavformat-dev libavutil-dev libpostproc-dev libswresample-dev libswscale-dev
+LIBS += -lavcodec
+LIBS += -lavformat
+LIBS += -lavutil
+
+
+target.path = /home/pi/Desktop/mpi3
 INSTALLS += target
 
 
 RESOURCES += assets/device.qrc
-
-
-#LIBS += $$PWD/lib/libao/libao.dll.a
-INCLUDEPATH += $$PWD/lib/libao
-DEPENDPATH += $$PWD/lib/libao
-
-
-#LIBS += $$PWD/lib/libav/avcodec.lib
-#LIBS += $$PWD/lib/libav/avformat.lib
-#LIBS += $$PWD/lib/libav/avresample.lib
-#LIBS += $$PWD/lib/libav/avutil.lib
-INCLUDEPATH += $$PWD/lib/libav
-DEPENDPATH += $$PWD/lib/libav
 
 
 HEADERS += mglobal.h
@@ -68,4 +65,3 @@ HEADERS += device/ui/mpanelmedia.h
 SOURCES += device/ui/mpanelmedia.cpp
 HEADERS += device/ui/mpanelplayback.h
 SOURCES += device/ui/mpanelplayback.cpp
-

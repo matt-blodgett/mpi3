@@ -56,6 +56,10 @@ public:
     explicit MAudioEngine(QObject *parent = nullptr);
     ~MAudioEngine();
 
+public:
+    static void environ_init();
+    static void environ_deinit();
+
 private:
     void media_alloc();
     void media_dealloc();

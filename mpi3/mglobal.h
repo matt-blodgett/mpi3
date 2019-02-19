@@ -3,9 +3,7 @@
 #ifndef MGLOBAL_H
 #define MGLOBAL_H
 
-
 #include <QMetaType>
-
 
 typedef QColor QColour;
 
@@ -60,6 +58,7 @@ namespace Mpi3 {
     Q_ENUM_NS(ErrorState)
 
     void register_global_metatypes();
+
 };
 
 
