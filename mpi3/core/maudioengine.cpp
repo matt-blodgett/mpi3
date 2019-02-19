@@ -20,20 +20,6 @@ extern "C" {
 #define BIT_RANGE (1<<(BIT_DEPTH - 1))
 
 
-namespace Mpi3
-{
-    void external_libs_init() {        
-        av_log_set_level(AV_LOG_VERBOSE); // AV_LOG_QUIET
-        av_register_all();
-        ao_initialize();
-    }
-    void external_libs_deinit() {
-        ao_shutdown();
-    }
-
-};
-
-
 static int decode_audio_frame(AVFrame *frame, AVFormatContext *format_ctx, AVCodecContext *codec_ctx, int *finished) {
 
     int error = 0;
@@ -228,6 +214,15 @@ MAudioEngine::~MAudioEngine(){
 
     delete m_formatCtx;
     delete m_codecCtx;
+}
+
+void MAudioEngine::environ_init(){
+    av_log_set_level(AV_LOG_VERBOSE); // AV_LOG_QUIET
+    av_register_all();
+    ao_initialize();
+}
+void MAudioEngine::environ_deinit(){
+    ao_shutdown();
 }
 
 void MAudioEngine::media_dealloc(){

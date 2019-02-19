@@ -19,12 +19,6 @@ struct ao_device;
 #include "mglobal.h"
 
 
-namespace Mpi3 {
-    void external_libs_init();
-    void external_libs_deinit();
-};
-
-
 struct MSongInfo{
     void load(const QString &path);
     bool loaded;

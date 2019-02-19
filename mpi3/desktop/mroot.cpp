@@ -56,11 +56,11 @@ MRootDesktop::~MRootDesktop(){
     delete m_audioEngine;
     delete m_mediaLibrary;
     delete m_styleSheet;
-    Mpi3::external_libs_deinit();
+    MAudioEngine::environ_deinit();
 }
 
 void MRootDesktop::initialize(){
-    Mpi3::external_libs_init();
+    MAudioEngine::environ_init();
     initializeObjects();
     initializeMainMenu();
     initializeLayout();
