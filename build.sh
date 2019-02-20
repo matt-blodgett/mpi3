@@ -15,6 +15,7 @@ Options:
  -q| --qmake    path to qmake command
  -m| --make     path to make command
  -j| --jobs     make jobs
+ -w| --warn     use warn_on in qmake config
 
 Git: <https://github.com/matt-blodgett/mpi3.git>
 EOF
@@ -50,10 +51,11 @@ BUILD_SPEC=
 QMAKE_CMD=
 MAKE_CMD="/usr/bin/make"
 MAKE_JOBS="$(nproc --all)"
+QMAKE_WARN="warn_off"
 
 
-FLAGS_SHORT="b:d:h:s:q:m:j:"
-FLAGS_LONG="help,mode:,dest:,host:,spec:,qmake:,make:,jobs:"
+FLAGS_SHORT="b:d:h:s:q:m:j:w"
+FLAGS_LONG="help,mode:,dest:,host:,spec:,qmake:,make:,jobs:,warn"
 FLAGS=$(getopt -o "$FLAGS_SHORT" --longoptions "$FLAGS_LONG" -- "$@")
 if [[ "$?" != 0 ]]; then exit "$?"; fi
 
@@ -68,6 +70,7 @@ while [[ $# -gt 0 ]]; do
         -q|--qmake ) QMAKE_CMD="$2"; shift ;;
         -m|--make  ) MAKE_CMD="$2"; shift ;;
         -j|--jobs  ) MAKE_JOBS="$2"; shift ;;
+        -w|--warn  ) QMAKE_WARN="warn_on" ;;
         -- ) break ;;
         *  ) exit 1 ;;
     esac
@@ -106,6 +109,7 @@ cd "$BUILD_DIR"
 
 QMAKE_ARGS=()
 QMAKE_ARGS+=( "DESTDIR=$PWD/mpi3" )
+QMAKE_ARGS+=( "CONFIG+=$QMAKE_WARN" )
 QMAKE_ARGS+=( "CONFIG+=$BUILD_MODE" )
 
 if [[ "$BUILD_MODE" == "debug" ]]; then
@@ -117,6 +121,7 @@ if [[ "$BUILD_TARGET" == "device" ]]; then
 elif [[ "$BUILD_TARGET" == "desktop" ]]; then
     QMAKE_ARGS+=( "DEFINES+=MPI3_BUILD_DESKTOP" )
 fi
+
 
 
 MAKE_ARGS=()
@@ -133,6 +138,7 @@ fi
 "$MAKE_CMD" qmake_all
 "$MAKE_CMD" -f "$PWD/Makefile" qmake_all
 "$MAKE_CMD" "${MAKE_ARGS[@]}"
+"$MAKE_CMD" install
 
 
 if [[ "$BUILD_TARGET" == "device" && "$BUILD_HOST" && "$BUILD_DEST" ]]; then
