@@ -56,10 +56,9 @@ while [[ $# -gt 0 ]]; do
         --make     ) MAKE_CMD="$2"; shift ;;
         -j|--jobs  ) MAKE_JOBS="$2"; shift ;;
         -- ) break ;;
-        * ) exit 1 ;;
+        *  ) exit 1 ;;
     esac
     shift
-
 done
 
 
@@ -87,7 +86,7 @@ fi
 
 
 BUILD_DIR="build-$BUILD_TARGET-$BUILD_MODE"
-PRO_FILE="$PWD/src/src.pro"
+PRO_FILE="$PWD/src/build.pro"
 
 
 mkdir "$BUILD_DIR"
