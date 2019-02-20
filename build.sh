@@ -7,19 +7,20 @@
 
 function usage() {
     cat <<EOF
-Usage: build.sh TARGET [OPTIONS]
-Build script for the mpi3 project.
+Usage: build.sh [device|desktop] [OPTIONS]
+Build script for the mpi3 project
 
 Options:
    | --help     display this message and exit
- -m| --mode     build mode [debug,release]
+ -b| --mode     build mode [debug,release]
  -d| --dest     destination directory
  -h| --host     device host to deploy to [host@address]
  -s| --spec     qmakespec value for qmake
  -q| --qmake    path to qmake command
-   | --make     path to make command
+ -m| --make     path to make command
  -j| --jobs     make jobs
 
+Git: <https://github.com/matt-blodgett/mpi3.git>
 EOF
 
     if [[ ! "$1" ]]; then exit 1; else exit "$1"; fi
@@ -37,23 +38,24 @@ BUILD_HOST=
 BUILD_SPEC=
 QMAKE_CMD=
 MAKE_CMD="/usr/bin/make"
-MAKE_JOBS=""
+MAKE_JOBS="$(nproc --all)"
 
 
-
-FLAGS=$(getopt -o "m:d:h:s:q:j:" --longoptions "help,mode:,dest:,host:,spec:,qmake:,make:,jobs:" -- "$@")
+FLAGS_SHORT="b:d:h:s:q:m:j:"
+FLAGS_LONG="help,mode:,dest:,host:,spec:,qmake:,make:,jobs:"
+FLAGS=$(getopt -o "$FLAGS_SHORT" --longoptions "$FLAGS_LONG" -- "$@")
 if [[ "$?" != 0 ]]; then exit "$?"; fi
 
 eval set -- "$FLAGS"
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --help     ) usage 0 ;;
-        -m|--mode  ) BUILD_MODE="$2"; shift ;;
+           --help  ) usage 0 ;;
+        -b|--mode  ) BUILD_MODE="$2"; shift ;;
         -d|--dest  ) BUILD_DEST="$2"; shift ;;
         -h|--host  ) BUILD_HOST="$2"; shift ;;
         -s|--spec  ) BUILD_SPEC="$2"; shift ;;
         -q|--qmake ) QMAKE_CMD="$2"; shift ;;
-        --make     ) MAKE_CMD="$2"; shift ;;
+        -m|--make  ) MAKE_CMD="$2"; shift ;;
         -j|--jobs  ) MAKE_JOBS="$2"; shift ;;
         -- ) break ;;
         *  ) exit 1 ;;
@@ -109,7 +111,7 @@ fi
 
 
 MAKE_ARGS=()
-MAKE_ARGS+=( "-j12" )
+MAKE_ARGS+=( "-j$MAKE_JOBS" )
 
 if [[ "$BUILD_TARGET" == "device" ]]; then
     MAKE_ARGS+=( "--ignore-errors" )
