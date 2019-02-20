@@ -6,5 +6,5 @@ BUILD_TARGET = device
 BUILD_VERSION = 1.0.0
 include(common.pri)
 
-DEFINES += MPI3_BUILD_DEVICE
+DEFINES *= MPI3_BUILD_DEVICE
 include(mpi3.pri)

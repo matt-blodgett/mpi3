@@ -7,5 +7,5 @@ BUILD_TARGET = desktop
 BUILD_VERSION = 1.0.0
 include(common.pri)
 
-DEFINES += MPI3_BUILD_DESKTOP
+DEFINES *= MPI3_BUILD_DESKTOP
 include(mpi3.pri)

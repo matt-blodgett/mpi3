@@ -18,10 +18,16 @@ Options:
  -s| --spec     qmakespec value for qmake
  -q| --qmake    path to qmake command
    | --make     path to make command
+ -j| --jobs     make jobs
+
 EOF
 
     if [[ ! "$1" ]]; then exit 1; else exit "$1"; fi
 }
+
+if [[ "$#" == 0 ]];
+    then usage 1;
+fi
 
 
 BUILD_TARGET="$1"
@@ -31,22 +37,24 @@ BUILD_HOST=
 BUILD_SPEC=
 QMAKE_CMD=
 MAKE_CMD="/usr/bin/make"
+MAKE_JOBS=""
 
 
-if [[ "$#" == 0 ]]; then usage 1; fi
-FLAGS=$(getopt -o "m:d:h:s:q:" --longoptions "help,mode:,dest:,host:,spec:,qmake:,make:" -- "$@")
+
+FLAGS=$(getopt -o "m:d:h:s:q:j:" --longoptions "help,mode:,dest:,host:,spec:,qmake:,make:,jobs:" -- "$@")
 if [[ "$?" != 0 ]]; then exit "$?"; fi
 
 eval set -- "$FLAGS"
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --help    ) usage 0 ;;
-        -m|--mode ) BUILD_MODE="$2"; shift ;;
-        -d|--dest ) BUILD_DEST="$2"; shift ;;
-        -h|--host ) BUILD_HOST="$2"; shift ;;
-        -s|--spec ) BUILD_SPEC="$2"; shift ;;
+        --help     ) usage 0 ;;
+        -m|--mode  ) BUILD_MODE="$2"; shift ;;
+        -d|--dest  ) BUILD_DEST="$2"; shift ;;
+        -h|--host  ) BUILD_HOST="$2"; shift ;;
+        -s|--spec  ) BUILD_SPEC="$2"; shift ;;
         -q|--qmake ) QMAKE_CMD="$2"; shift ;;
-        --make ) MAKE_CMD="$2"; shift ;;
+        --make     ) MAKE_CMD="$2"; shift ;;
+        -j|--jobs  ) MAKE_JOBS="$2"; shift ;;
         -- ) break ;;
         * ) exit 1 ;;
     esac
@@ -89,12 +97,21 @@ cd "$BUILD_DIR"
 QMAKE_ARGS=()
 QMAKE_ARGS+=( "DESTDIR=$PWD/mpi3" )
 QMAKE_ARGS+=( "CONFIG+=$BUILD_MODE" )
+
 if [[ "$BUILD_MODE" == "debug" ]]; then
     QMAKE_ARGS+=( "CONFIG+=qml_debug" )
 fi
 
+if [[ "$BUILD_TARGET" == "device" ]]; then
+    QMAKE_ARGS+=( "DEFINES+=MPI3_BUILD_DEVICE" )
+elif [[ "$BUILD_TARGET" == "desktop" ]]; then
+    QMAKE_ARGS+=( "DEFINES+=MPI3_BUILD_DESKTOP" )
+fi
+
+
 MAKE_ARGS=()
 MAKE_ARGS+=( "-j12" )
+
 if [[ "$BUILD_TARGET" == "device" ]]; then
     MAKE_ARGS+=( "--ignore-errors" )
     MAKE_ARGS+=( "--keep-going" )
