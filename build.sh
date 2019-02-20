@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
 
-#./build.sh device --mode debug --dest /home/pi/Desktop/test --host pi@192.168.0.16 --spec devices/linux-rasp-pi3-g++ --qmake /opt/qtrpi/raspi/qt5/bin/qmake
-#./build.sh desktop --mode debug --spec linux-g++ --qmake /opt/qt5/5.12.0/gcc_64/bin/qmake
-
-
-function usage() {
+function print_usage() {
     cat <<EOF
 Usage: build.sh [device|desktop] [OPTIONS]
 Build script for the mpi3 project
@@ -26,9 +22,24 @@ EOF
     if [[ ! "$1" ]]; then exit 1; else exit "$1"; fi
 }
 
-if [[ "$#" == 0 ]];
-    then usage 1;
-fi
+
+function print_error() {
+    echo -ne "\e[1m"
+    echo -ne "\e[31m"
+    echo "$1"
+    echo -ne "\e[0m"
+}
+
+
+function print_message() {
+    echo -ne "\e[1m"
+    echo -ne "\e[36m"
+    echo "$1"
+    echo -ne "\e[0m"
+}
+
+
+if [[ "$#" == 0 ]]; then print_usage 1; fi
 
 
 BUILD_TARGET="$1"
@@ -49,7 +60,7 @@ if [[ "$?" != 0 ]]; then exit "$?"; fi
 eval set -- "$FLAGS"
 while [[ $# -gt 0 ]]; do
     case "$1" in
-           --help  ) usage 0 ;;
+           --help  ) print_usage 0 ;;
         -b|--mode  ) BUILD_MODE="$2"; shift ;;
         -d|--dest  ) BUILD_DEST="$2"; shift ;;
         -h|--host  ) BUILD_HOST="$2"; shift ;;
@@ -65,28 +76,26 @@ done
 
 
 if [[ ! "$BUILD_TARGET" =~ ^(device|desktop)$ ]]; then
-    echo "invalid target '$BUILD_TARGET'"
-    echo "valid targets are [device,desktop]"
+    print_error "invalid target '$BUILD_TARGET'; valid targets are [device,desktop]"
     exit 1
 fi
 
 if [[ ! "$BUILD_MODE" =~ ^(debug|release)$ ]]; then
-    echo "invalid mode '$BUILD_MODE'"
-    echo "valid modes are [debug,release]"
+    print_error "invalid mode '$BUILD_MODE' valid modes are [debug,release]"
     exit 1
 fi
 
 if [[ ! "$BUILD_SPEC" ]]; then
-    echo "missing qmakespec value [--spec]"
+    print_error "missing qmakespec value [--spec]"
     exit 1
 fi
 
 if [[ ! "$QMAKE_CMD" ]]; then
-    echo "missing qmake command [--qmake]"
+    print_error "missing qmake command [--qmake]"
     exit 1
 fi
 
-
+exit 0
 BUILD_DIR="build-$BUILD_TARGET-$BUILD_MODE"
 PRO_FILE="$PWD/src/build.pro"
 
@@ -128,7 +137,7 @@ fi
 
 if [[ "$BUILD_TARGET" == "device" && "$BUILD_HOST" && "$BUILD_DEST" ]]; then
     BUILD_ARGS=()
-    BUILD_ARGS+=( "-o" "./mpi3device.o" "main.o" "qrc_fonts.o" "qrc_device.o")
+    BUILD_ARGS+=( "-o" "./mpi3device" "main.o" "qrc_fonts.o" "qrc_device.o")
     BUILD_ARGS+=( "-L=/opt/vc/lib" )
     BUILD_ARGS+=( "libmpi3ui.a" "libmpi3core.a" "libmpi3utils.a" )
     BUILD_ARGS+=( "-lao" "-lavcodec" "-lavformat" "-lavutil" )
