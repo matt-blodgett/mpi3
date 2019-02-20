@@ -40,18 +40,17 @@ if [[ "$?" != 0 ]]; then exit "$?"; fi
 eval set -- "$FLAGS"
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --help    ) usage 0 ;;
-        -m|--mode ) BUILD_MODE="$2"; shift ;;
-        -d|--dest ) BUILD_DEST="$2"; shift ;;
-        -h|--host ) BUILD_HOST="$2"; shift ;;
-        -s|--spec ) BUILD_SPEC="$2"; shift ;;
+        --help     ) usage 0 ;;
+        -m|--mode  ) BUILD_MODE="$2"; shift ;;
+        -d|--dest  ) BUILD_DEST="$2"; shift ;;
+        -h|--host  ) BUILD_HOST="$2"; shift ;;
+        -s|--spec  ) BUILD_SPEC="$2"; shift ;;
         -q|--qmake ) QMAKE_CMD="$2"; shift ;;
-        --make ) MAKE_CMD="$2"; shift ;;
+        --make     ) MAKE_CMD="$2"; shift ;;
         -- ) break ;;
-        * ) exit 1 ;;
+        *  ) exit 1 ;;
     esac
     shift
-
 done
 
 
@@ -79,7 +78,7 @@ fi
 
 
 BUILD_DIR="build-$BUILD_TARGET-$BUILD_MODE"
-PRO_FILE="$PWD/src/src.pro"
+PRO_FILE="$PWD/src/build.pro"
 
 
 mkdir "$BUILD_DIR"
