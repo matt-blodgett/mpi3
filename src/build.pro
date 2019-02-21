@@ -11,7 +11,7 @@ contains(DEFINES, MPI3_BUILD_DEVICE):BUILD_TARGET = device
 
 message("build.pro")
 message("Build Target = $$BUILD_TARGET")
-message("Build .pro File = $$_PRO_FILE_")
+message("Build File = $$_PRO_FILE_")
 message("Build Dest Dir = $$DESTDIR")
 message("Qt Version = $$[QT_VERSION]")
 message("Qt Bin Dir = $$[QT_INSTALL_BINS]")
