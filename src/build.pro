@@ -27,8 +27,8 @@ message("Host Cores = $$QMAKE_HOST.cpu_count")
 
 
 TEMPLATE = subdirs
-SUBDIRS += mpi3/core
-SUBDIRS += mpi3/utils
-SUBDIRS += mpi3/$$BUILD_TARGET
-SUBDIRS += mpi3
+SUBDIRS += $$PWD/mpi3/core
+SUBDIRS += $$PWD/mpi3/utils
+SUBDIRS += $$PWD/mpi3/$$BUILD_TARGET
+SUBDIRS += $$PWD/mpi3
 CONFIG += ordered
