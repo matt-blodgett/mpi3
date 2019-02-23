@@ -13,11 +13,15 @@ Targets:
  --desktop          build desktop app
  --device           build device app
 
-Modes:
- --release          release build
- --debug            debug build
+Libraries:
+ --static           build static libraries
+ --shared           build shared libraries
 
-Build Variables:
+Modes:
+ --release          build in release mode
+ --debug            build in debug mode
+
+Variables:
  --qmake-path       path to qmake
  --qmake-spec       qmakespec value for qmake
  --qmake-arg        add additional qmake args
@@ -53,6 +57,7 @@ fi
 
 
 BUILD_TARGET=
+BUILD_LIBS=
 BUILD_MODE=
 BUILD_QMAKE=
 QMAKE_SPEC=
@@ -68,6 +73,8 @@ while [[ $# -gt 0 ]]; do
         --help    ) show_usage; exit 0; ;;
         --desktop ) BUILD_TARGET="desktop"; ;;
         --device  ) BUILD_TARGET="device"; ;;
+        --static  ) BUILD_LIBS="static"; ;;
+        --shared  ) BUILD_LIBS="shared"; ;;
         --debug   ) BUILD_MODE="debug"; ;;
         --release ) BUILD_MODE="release"; ;;
         --qmake-path ) BUILD_QMAKE="$2"; shift; ;;
@@ -84,6 +91,7 @@ done
 
 
 if [[ ! "$BUILD_TARGET" ]]; then show_error "missing required build target [--desktop|--device]"; fi
+if [[ ! "$BUILD_LIBS" ]]; then show_error "missing required build target [--static|--shared]"; fi
 if [[ ! "$BUILD_MODE" ]]; then show_error "missing required build mode [--release|--debug]"; fi
 if [[ ! "$BUILD_QMAKE" ]]; then show_error "missing required qmake path [--qmake-path]"; fi
 if [[ ! "$QMAKE_SPEC" ]]; then show_error "missing required qmakespec [--qmake-spec]"; fi
@@ -99,6 +107,7 @@ check_error "$?"
 CONFIG_FILE="config.sh"
 CONFIG_VARS=$(cat <<EOF
 BUILD_TARGET="$BUILD_TARGET"
+BUILD_LIBS="$BUILD_LIBS"
 BUILD_MODE="$BUILD_MODE"
 BUILD_QMAKE="$BUILD_QMAKE"
 QMAKE_SPEC="$QMAKE_SPEC"

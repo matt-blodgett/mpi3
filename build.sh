@@ -38,16 +38,21 @@ check_error "$?"
 
 
 BUILD_DIR="build-$BUILD_TARGET-$BUILD_MODE"
-mkdir "$BUILD_DIR" && cd "$BUILD_DIR"
+rm -rf "$BUILD_DIR" && mkdir "$BUILD_DIR" && cd "$BUILD_DIR"
 
 
+declare -A QMAKE_DEFINES=(
+    ["device"]="MPI3_BUILD_DEVICE"
+    ["desktop"]="MPI3_BUILD_DESKTOP"
+    ["static"]="MPI3_BUILD_STATIC"
+    ["shared"]="MPI3_BUILD_SHARED"
+)
+
+QMAKE_ARGS+=( "LIBS+=$PWD/mpi3" )
 QMAKE_ARGS+=( "DESTDIR=$PWD/mpi3" )
 QMAKE_ARGS+=( "CONFIG+=$BUILD_MODE" )
-if [[ "$BUILD_TARGET" == "device" ]]; then
-    QMAKE_ARGS+=( "DEFINES+=MPI3_BUILD_DEVICE" )
-elif [[ "$BUILD_TARGET" == "desktop" ]]; then
-    QMAKE_ARGS+=( "DEFINES+=MPI3_BUILD_DESKTOP" )
-fi
+QMAKE_ARGS+=( "DEFINES+=${QMAKE_DEFINES[$BUILD_TARGET]}" )
+QMAKE_ARGS+=( "DEFINES+=${QMAKE_DEFINES[$BUILD_LIBS]}" )
 
 
 MAKE_ARGS=()
