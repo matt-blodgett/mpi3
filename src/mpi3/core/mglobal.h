@@ -13,6 +13,7 @@ typedef QColor QColour;
 
 #include "mcore.h"
 
+
 class MMediaElement;
 class MMediaContainer;
 class MMediaLibrary;
@@ -30,29 +31,28 @@ namespace Mpi3
     Q_NAMESPACE
 #endif
 
-    enum ElementType
-    {
+    enum ElementType {
         BaseElement,
         SongElement,
         ContainerElement,
         PlaylistElement,
         FolderElement,
         LibraryElement
-    };
+    }; Q_ENUM_NS(ElementType)
 
-    enum MediaState
-    {
+
+    enum MediaState {
         MediaEmpty,
         MediaReady,
         MediaBusy
-    };
+    }; Q_ENUM_NS(MediaState)
 
     enum EngineState
     {
         EngineStopped,
         EngineActive,
         EngineIdle
-    };
+    }; Q_ENUM_NS(EngineState)
 
     enum ErrorState
     {
@@ -61,12 +61,8 @@ namespace Mpi3
         FileFormatError,
         FileAccessError,
         FileInvalidError
-    };
+    }; Q_ENUM_NS(ErrorState)
 
-    Q_ENUM_NS(ElementType)
-    Q_ENUM_NS(MediaState)
-    Q_ENUM_NS(EngineState)
-    Q_ENUM_NS(ErrorState)
 
 #ifdef MPI3_BUILD_SHARED
    MPI3_EXPORT_CORE void register_global_metatypes();
