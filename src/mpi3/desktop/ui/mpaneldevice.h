@@ -3,8 +3,8 @@
 #ifndef MPANELDEVICE_H
 #define MPANELDEVICE_H
 
-#include "mglobal.h"
 
+#include "mglobal.h"
 #include "mpanel.h"
 
 
@@ -45,5 +45,6 @@ private:
     QWidget *m_frmStorageSpace = nullptr;
 
 };
+
 
 #endif

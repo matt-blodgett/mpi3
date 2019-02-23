@@ -3,6 +3,7 @@
 #ifndef MPANELPLAYBACK_H
 #define MPANELPLAYBACK_H
 
+
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE

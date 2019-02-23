@@ -1,8 +1,10 @@
+#pragma once
+
 #ifndef MPANELLIBRARY_H
 #define MPANELLIBRARY_H
 
-#include "mglobal.h"
 
+#include "mglobal.h"
 #include "mpanel.h"
 
 
@@ -69,5 +71,6 @@ signals:
     void libSetMediaPath();
     void libSetBackupPath();
 };
+
 
 #endif

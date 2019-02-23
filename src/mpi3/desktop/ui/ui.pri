@@ -1,3 +1,5 @@
+include(mvc/mvc.pri)
+
 INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/mpanel.h

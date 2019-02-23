@@ -3,13 +3,16 @@
 #ifndef MLIBVIEW_H
 #define MLIBVIEW_H
 
+
 #include <QTreeView>
 
 QT_BEGIN_NAMESPACE
 class QSortFilterProxyModel;
 QT_END_NAMESPACE
 
+
 #include "mglobal.h"
+
 
 class MModelContainers;
 class MModelSonglist;
@@ -100,23 +103,3 @@ protected:
 
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

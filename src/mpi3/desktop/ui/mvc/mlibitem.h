@@ -3,6 +3,7 @@
 #ifndef MLIBITEM_H
 #define MLIBITEM_H
 
+
 #include <QVariant>
 #include <QList>
 #include <QIcon>
@@ -41,5 +42,6 @@ private:
     QList<QVariant> m_itemData;
     QIcon m_itemIcon;
 };
+
 
 #endif

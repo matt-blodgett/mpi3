@@ -1,8 +1,6 @@
-QT += xml
-QT += widgets
+include(mpi3.pri)
 
 
-TEMPLATE = app
 contains(DEFINES, MPI3_BUILD_DESKTOP) {
     BUILD_TARGET = desktop
     BUILD_VERSION = 1.0.0
@@ -12,25 +10,18 @@ contains(DEFINES, MPI3_BUILD_DEVICE) {
     BUILD_VERSION = 1.0.0
 }
 
+TEMPLATE = app
 include(common.pri)
 
 
-LIBS += "-L$$OUT_PWD"
-LIBS += -lmpi3ui
-LIBS += -lmpi3core
-LIBS += -lmpi3utils
-
-LIBS += -lao
-LIBS += -lavcodec
-LIBS += -lavformat
-LIBS += -lavutil
-
-INCLUDEPATH += core
-INCLUDEPATH += utils
-INCLUDEPATH += $$BUILD_TARGET
-
-DEFINES += MPI3_APP_NAME=\\\"$${TARGET}\\\"
-SOURCES += main.cpp
+contains(DEFINES, MPI3_BUILD_STATIC) {
+    LIBS += -lmpi3ui -lmpi3core -lmpi3utils
+    LIBS += -lavcodec -lavformat -lavutil
+    LIBS += -lao
+}
+contains(DEFINES, MPI3_BUILD_SHARED) {
+    LIBS += -lmpi3ui
+}
 
 
 RESOURCES += assets/fonts.qrc

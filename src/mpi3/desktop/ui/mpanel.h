@@ -3,6 +3,7 @@
 #ifndef MPANEL_H
 #define MPANEL_H
 
+
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -101,6 +102,7 @@ protected:
     void paintEvent(QPaintEvent *event);
     void showEvent(QShowEvent *event);
 };
+
 
 #endif
 

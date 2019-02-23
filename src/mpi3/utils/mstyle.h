@@ -3,7 +3,16 @@
 #ifndef MSTYLE_H
 #define MSTYLE_H
 
+
 #include <QProxyStyle>
+
+
+#include "mutils.h"
+
+#ifdef MPI3_BUILD_SHARED
+class MPI3_EXPORT_UTILS MStyleSheet;
+class MPI3_EXPORT_UTILS MStyle;
+#endif
 
 
 class MStyleSheet
@@ -41,8 +50,12 @@ public:
 
 public:
     void drawPrimitive(
-            PrimitiveElement element, const QStyleOption *option,
-            QPainter *painter, const QWidget *widget = nullptr) const;
+            PrimitiveElement element,
+            const QStyleOption *option,
+            QPainter *painter,
+            const QWidget *widget = nullptr
+        ) const;
 };
+
 
 #endif

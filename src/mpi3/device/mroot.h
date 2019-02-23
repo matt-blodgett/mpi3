@@ -3,6 +3,7 @@
 #ifndef MROOT_H
 #define MROOT_H
 
+
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -11,6 +12,12 @@ QT_END_NAMESPACE
 
 
 #include "mglobal.h"
+#include "mdevice.h"
+
+#ifdef MPI3_BUILD_SHARED
+class MPI3_EXPORT_UI MRootDevice;
+#endif
+
 
 class MStyleSheet;
 //class MMediaLibrary;
@@ -49,23 +56,4 @@ protected:
 };
 
 
-
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

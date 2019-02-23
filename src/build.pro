@@ -1,9 +1,16 @@
-if(!contains(DEFINES, MPI3_BUILD_DESKTOP):!contains(DEFINES, MPI3_BUILD_DEVICE)) {
-    error("define either MPI3_BUILD_DESKTOP or MPI3_BUILD_DEVICE when building")
+defineTest(mutexRequiredDefines) {
+    if(!contains(DEFINES, $$1):!contains(DEFINES, $$2)) {
+        error("define either $$1 or $$2 when building")
+    }
+    if(contains(DEFINES, $$1):contains(DEFINES, $$2)) {
+        error("define only one of $$1 or $$2 when building")
+    }
 }
-if(contains(DEFINES, MPI3_BUILD_DESKTOP):contains(DEFINES, MPI3_BUILD_DEVICE)) {
-    error("define only one of MPI3_BUILD_DESKTOP or MPI3_BUILD_DEVICE when building")
-}
+
+
+mutexRequiredDefines(MPI3_BUILD_DESKTOP, MPI3_BUILD_DEVICE)
+mutexRequiredDefines(MPI3_BUILD_STATIC, MPI3_BUILD_SHARED)
+
 
 contains(DEFINES, MPI3_BUILD_DESKTOP):BUILD_TARGET = desktop
 contains(DEFINES, MPI3_BUILD_DEVICE):BUILD_TARGET = device

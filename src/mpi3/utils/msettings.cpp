@@ -12,8 +12,10 @@ MSettingsXml::MSettingsXml(const QString &settingsPath) : QSettings (settingsPat
 
 }
 
+
 const QSettings::Format MSettingsXml::XmlSettingsFormat = QSettings::registerFormat(
             "xml", &MSettingsXml::readSettingsXml, &MSettingsXml::writeSettingsXml);
+
 
 bool MSettingsXml::readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map)
 {

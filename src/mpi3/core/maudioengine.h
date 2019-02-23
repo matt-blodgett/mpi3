@@ -3,6 +3,7 @@
 #ifndef MAUDIOENGINE_H
 #define MAUDIOENGINE_H
 
+
 #include <QObject>
 
 QT_BEGIN_NAMESPACE
@@ -11,12 +12,18 @@ class QMutex;
 QT_END_NAMESPACE
 
 
+#include "mglobal.h"
+#include "mcore.h"
+
+#ifdef MPI3_BUILD_SHARED
+struct MPI3_EXPORT_CORE MSongInfo;
+class MPI3_EXPORT_CORE MAudioEngine;
+#endif
+
+
 struct AVFormatContext;
 struct AVCodecContext;
 struct ao_device;
-
-
-#include "mglobal.h"
 
 
 struct MSongInfo
@@ -128,5 +135,6 @@ signals:
     void notifyErrorStatus(Mpi3::ErrorState state);
     void notifyRequestStatus(Mpi3::EngineState state);
 };
+
 
 #endif

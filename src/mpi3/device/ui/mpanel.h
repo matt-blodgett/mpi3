@@ -3,6 +3,7 @@
 #ifndef MPANEL_H
 #define MPANEL_H
 
+
 #include <QWidget>
 
 
@@ -19,43 +20,3 @@ protected:
 
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

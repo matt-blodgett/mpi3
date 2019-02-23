@@ -3,11 +3,20 @@
 #ifndef MSETTINGS_H
 #define MSETTINGS_H
 
+
 #include <QSettings>
 
 QT_BEGIN_NAMESPACE
 class QIODevice;
 QT_END_NAMESPACE
+
+
+#include "mutils.h"
+
+#ifdef MPI3_BUILD_SHARED
+class MPI3_EXPORT_UTILS MSettingsXml;
+class MPI3_EXPORT_UTILS MSettingsXmlNode;
+#endif
 
 
 class MSettingsXml : public QSettings
@@ -39,5 +48,6 @@ public:
     QString tagName;
     QString subtext;
 };
+
 
 #endif

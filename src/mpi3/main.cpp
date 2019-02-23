@@ -1,4 +1,4 @@
-#if defined (MPI3_BUILD_DESKTOP)
+#if defined(MPI3_BUILD_DESKTOP)
 #include "desktop/mroot.h"
 typedef MRootDesktop MRootWindow;
 #elif defined(MPI3_BUILD_DEVICE)
@@ -13,9 +13,7 @@ typedef MRootDevice MRootWindow;
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    app.setApplicationName(MPI3_APP_NAME);
-
-    MRootWindow wnd;
+    MRootWindow wnd;   
     wnd.initialize();
     wnd.show();
 

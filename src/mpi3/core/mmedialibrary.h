@@ -3,11 +3,22 @@
 #ifndef MMEDIALIBRARY_H
 #define MMEDIALIBRARY_H
 
+
 #include <QObject>
 #include <QVector>
 
 
 #include "mglobal.h"
+#include "mcore.h"
+
+#ifdef MPI3_BUILD_SHARED
+class MPI3_EXPORT_CORE MMediaElement;
+class MPI3_EXPORT_CORE MMediaContainer;
+class MPI3_EXPORT_CORE MSong;
+class MPI3_EXPORT_CORE MPlaylist;
+class MPI3_EXPORT_CORE MFolder;
+class MPI3_EXPORT_CORE MMediaLibrary;
+#endif
 
 
 class MMediaElement : public QObject
@@ -237,5 +248,6 @@ signals:
     void elementMoved(MMediaElement *elemMoved, MMediaContainer *elemParent);
     void elementDeleted(MMediaElement *elemDeleted);
 };
+
 
 #endif

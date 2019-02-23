@@ -73,6 +73,7 @@ void MRootDesktop::initialize()
     initializeStyle();
     centralWidget()->show();
 }
+
 void MRootDesktop::initializeObjects()
 {
     m_styleSheet = new MStyleSheet();

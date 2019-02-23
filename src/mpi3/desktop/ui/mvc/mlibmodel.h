@@ -3,6 +3,7 @@
 #ifndef MLIBMODEL_H
 #define MLIBMODEL_H
 
+
 #include <QAbstractItemModel>
 #include <QIcon>
 #include <QMap>
@@ -13,6 +14,7 @@ QT_END_NAMESPACE
 
 
 #include "mglobal.h"
+
 
 class MModelItem;
 

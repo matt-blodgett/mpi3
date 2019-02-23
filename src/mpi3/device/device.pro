@@ -1,13 +1,13 @@
-include(ui/ui.pri)
 include(device.pri)
 
-QT += widgets
-
-INCLUDEPATH += ../core
-INCLUDEPATH += ../utils
 
 TEMPLATE = lib
-CONFIG += staticlib
 BUILD_TARGET = ui
 BUILD_VERSION = 1.0.0
 include(../common.pri)
+
+
+contains(DEFINES, MPI3_BUILD_SHARED) {
+    DEFINES += MPI3_SHARED_LIBRARY_UI
+    LIBS += -lmpi3core -lmpi3utils
+}

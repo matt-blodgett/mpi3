@@ -3,10 +3,15 @@
 #ifndef MGLOBAL_H
 #define MGLOBAL_H
 
+
 #include <QMetaType>
 
+
+// Canadian (Sorry)
 typedef QColor QColour;
 
+
+#include "mcore.h"
 
 class MMediaElement;
 class MMediaContainer;
@@ -18,7 +23,12 @@ class MSong;
 
 namespace Mpi3
 {
+
+#ifdef MPI3_BUILD_SHARED
+    MPI3_EXPORT_CORE Q_NAMESPACE
+#else
     Q_NAMESPACE
+#endif
 
     enum ElementType
     {
@@ -30,8 +40,6 @@ namespace Mpi3
         LibraryElement
     };
 
-    Q_ENUM_NS(ElementType)
-
     enum MediaState
     {
         MediaEmpty,
@@ -39,16 +47,12 @@ namespace Mpi3
         MediaBusy
     };
 
-    Q_ENUM_NS(MediaState)
-
     enum EngineState
     {
         EngineStopped,
         EngineActive,
         EngineIdle
     };
-
-    Q_ENUM_NS(EngineState)
 
     enum ErrorState
     {
@@ -59,9 +63,18 @@ namespace Mpi3
         FileInvalidError
     };
 
+    Q_ENUM_NS(ElementType)
+    Q_ENUM_NS(MediaState)
+    Q_ENUM_NS(EngineState)
     Q_ENUM_NS(ErrorState)
 
+#ifdef MPI3_BUILD_SHARED
+   MPI3_EXPORT_CORE void register_global_metatypes();
+#else
     void register_global_metatypes();
+#endif
+
+
 };
 
 

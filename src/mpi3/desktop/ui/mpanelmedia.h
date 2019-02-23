@@ -5,6 +5,8 @@
 
 
 #include "mpanel.h"
+
+
 class MTreeContainers;
 class MTreeSonglist;
 
@@ -50,5 +52,6 @@ private:
 signals:
     void viewChanged();
 };
+
 
 #endif
