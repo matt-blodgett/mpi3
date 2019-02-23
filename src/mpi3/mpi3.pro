@@ -23,14 +23,9 @@ contains(DEFINES, MPI3_BUILD_SHARED) {
     LIBS += -lmpi3ui
 }
 
-
-RESOURCES += assets/fonts.qrc
-contains(DEFINES, MPI3_BUILD_DESKTOP) {
-    RESOURCES += assets/desktop.qrc
+LIBS += -lmpi3assets
+win32:contains(DEFINES, MPI3_BUILD_DESKTOP) {
     RC_FILE = assets/desktop.rc
-    win32:QMAKE_TARGET_PRODUCT = "Mpi3Desktop"
-    win32:QMAKE_TARGET_DESCRIPTION = "Mpi3 Media Player"
-}
-contains(DEFINES, MPI3_BUILD_DEVICE) {
-    RESOURCES += assets/device.qrc
+    QMAKE_TARGET_PRODUCT = "Mpi3Desktop"
+    QMAKE_TARGET_DESCRIPTION = "Mpi3 Media Player"
 }

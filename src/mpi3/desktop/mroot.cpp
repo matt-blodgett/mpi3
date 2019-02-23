@@ -53,6 +53,8 @@ static const QString PathAppData = QStandardPaths::writableLocation(QStandardPat
 MRootDesktop::MRootDesktop()
 {
     Mpi3::register_global_metatypes();
+    Q_INIT_RESOURCE(desktop);
+    Q_INIT_RESOURCE(fonts);
 }
 MRootDesktop::~MRootDesktop()
 {
@@ -506,24 +508,9 @@ void MRootDesktop::initializeStyle()
     QFontDatabase fdb;
 
     fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Bold.ttf");
-//    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-BoldItalic.ttf");
-//    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-ExtraBold.ttf");
-//    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Italic.ttf");
+    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Italic.ttf");
     fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Light.ttf");
     fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Regular.ttf");
-//    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Semibold.ttf");
-
-//    fdb.addApplicationFont(":/fonts/lato/Lato-Black.ttf");
-//    fdb.addApplicationFont(":/fonts/lato/Lato-Bold.ttf");
-//    fdb.addApplicationFont(":/fonts/lato/Lato-BoldItalic.ttf");
-//    fdb.addApplicationFont(":/fonts/lato/Lato-Hairline.ttf");
-//    fdb.addApplicationFont(":/fonts/lato/Lato-Heavy.ttf");
-//    fdb.addApplicationFont(":/fonts/lato/Lato-Italic.ttf");
-//    fdb.addApplicationFont(":/fonts/lato/Lato-Light.ttf");
-//    fdb.addApplicationFont(":/fonts/lato/Lato-Medium.ttf");
-//    fdb.addApplicationFont(":/fonts/lato/Lato-Regular.ttf");
-//    fdb.addApplicationFont(":/fonts/lato/Lato-Semibold.ttf");
-//    fdb.addApplicationFont(":/fonts/lato/Lato-Thin.ttf");
 
     if(m_styleSheet->qssPath().isNull()) {
         m_styleSheet->load(":/styles/default.qss");

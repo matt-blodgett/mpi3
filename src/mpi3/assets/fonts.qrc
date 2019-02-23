@@ -1,3 +1,4 @@
+<!-- ALL FONTS:
 <RCC>
     <qresource prefix="/fonts/open-sans">
         <file alias="OpenSans-Bold.ttf">common/fonts/open-sans/OpenSans-Bold.ttf</file>
@@ -20,5 +21,15 @@
         <file alias="Lato-Regular.ttf">common/fonts/lato/Lato-Regular.ttf</file>
         <file alias="Lato-Semibold.ttf">common/fonts/lato/Lato-Semibold.ttf</file>
         <file alias="Lato-Thin.ttf">common/fonts/lato/Lato-Thin.ttf</file>
+    </qresource>
+</RCC>
+-->
+
+<RCC>
+    <qresource prefix="/fonts/open-sans">
+        <file alias="OpenSans-Bold.ttf">common/fonts/open-sans/OpenSans-Bold.ttf</file>
+        <file alias="OpenSans-Italic.ttf">common/fonts/open-sans/OpenSans-Italic.ttf</file>
+        <file alias="OpenSans-Light.ttf">common/fonts/open-sans/OpenSans-Light.ttf</file>
+        <file alias="OpenSans-Regular.ttf">common/fonts/open-sans/OpenSans-Regular.ttf</file>
     </qresource>
 </RCC>
