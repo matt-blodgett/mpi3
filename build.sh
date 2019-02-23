@@ -30,14 +30,16 @@ check_error "$?"
 source config.sh
 check_error "$?"
 
+
 QMAKE_ARGS=()
 while IFS='' read -r line || [[ -n "$line" ]]; do
     QMAKE_ARGS+=( "$line" )
 done < config.txt
 check_error "$?"
+unset line
 
 
-BUILD_DIR="build-$BUILD_TARGET-$BUILD_MODE"
+BUILD_DIR="mpi3_build_$BUILD_TARGET-$BUILD_LIBS-$BUILD_MODE"
 rm -rf "$BUILD_DIR" && mkdir "$BUILD_DIR" && cd "$BUILD_DIR"
 
 
@@ -48,7 +50,6 @@ declare -A QMAKE_DEFINES=(
     ["shared"]="MPI3_BUILD_SHARED"
 )
 
-QMAKE_ARGS+=( "LIBS+=$PWD/mpi3" )
 QMAKE_ARGS+=( "DESTDIR=$PWD/mpi3" )
 QMAKE_ARGS+=( "CONFIG+=$BUILD_MODE" )
 QMAKE_ARGS+=( "DEFINES+=${QMAKE_DEFINES[$BUILD_TARGET]}" )

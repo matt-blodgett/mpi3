@@ -122,6 +122,7 @@ echo "$CONFIG_VARS" > "$CONFIG_FILE"
 
 
 CONFIG_FILE="config.txt"
+touch "$CONFIG_FILE"
 for ARG in "${QMAKE_ARGS[@]}"; do
     echo "$ARG" >> "$CONFIG_FILE"
 done
