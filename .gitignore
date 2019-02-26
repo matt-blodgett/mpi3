@@ -4,4 +4,4 @@
 
 # Builds and executables
 build/*
-
+build*/*
