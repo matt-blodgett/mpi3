@@ -1,7 +1,7 @@
 #include "mglobal.h"
 
 
-void Mpi3::register_global_metatypes()
+void Mpi3::initialize()
 {
     qRegisterMetaType<ElementType>();
     qRegisterMetaType<MediaState>();

@@ -21,61 +21,6 @@ QWidget {
 // ****************************************************************************************************
 
 
-// ----------------------------------------------------------------- RootWindow
-QWidget#RootWindow {
-    background: #777777;
-}
-
-
-// ----------------------------------------------------------------- ButtonRootWindow
-QWidget#ButtonRootWindow {
-    background: transparent;
-}
-
-QWidget#ButtonRootWindow:pressed {
-    background: #888888;
-}
-
-QWidget#ButtonRootWindow:hover {
-    background: #E2E2E2;
-}
-
-QWidget#ButtonRootWindow:flat {
-    border-radius: 2px;
-}
-
-
-// ----------------------------------------------------------------- MainMenuBar
-QWidget#MainMenuBar {
-    background: qlineargradient(
-        x1:0, y1:0, x2:0, y2:1,
-        stop:0 #212121, stop:1 #191919);
-    border-bottom: 1px solid #696969;
-}
-
-
-// ----------------------------------------------------------------- MainMenu
-QWidget#MainMenu {
-    background: transparent;
-    color: #FFFFFF;
-    border-bottom: 1px solid #696969;
-}
-
-QWidget#MainMenu::item {
-    background: transparent;
-    border-radius: 0px;
-    padding: 4px 6px 4px 6px;
-}
-QWidget#MainMenu::item:selected {
-    background: #E2E2E2;
-    color: #000000;
-}
-
-QWidget#MainMenu::item:pressed {
-    background: #ADADAD;
-}
-
-
 // ----------------------------------------------------------------- QMenu
 QMenu {
     background: #444444;
@@ -126,309 +71,99 @@ QMenu::indicator {
 // ****************************************************************************************************
 
 
-// ----------------------------------------------------------------- ContextBar
-QWidget#ContextBar {
-    background: #191919;
-    border-top: 1px solid #696969;
-    border-bottom: 1px solid #696969;
+// ----------------------------------------------------------------- QLineEdit
+QLineEdit {
+    background: #ADADAD;
+    color: #FFFFFF;
+    border: 1px solid #000000;
 }
 
 
-// ----------------------------------------------------------------- ButtonContextBar
-QWidget#ButtonContextBar {
+// ----------------------------------------------------------------- QPushButton
+QPushButton {
     background: #191919;
     color: #FFFFFF;
     text-align: center;
     font-family: "Open Sans";
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    padding: 0px 0px 0px 18px;
-    margin: 0px 2px 0px 2px;
+    font-size: 12px;
+    font-weight: normal;
+    border-radius: 2px;
+    border: 1px solid #696969;
+    margin: 0px;
+    padding: 2px;
 }
 
-QWidget#ButtonContextBar::indicator {
+QPushButton:hover {
+    background: #292929;
+    border: 1px solid #696969;
+}
+
+QPushButton:pressed {
+    background: #AAAAAA;
+    color: #000000;
+}
+
+QPushButton:disabled {
+    border: 1px solid #696969;
+    background: #999999;
+    color: #565656;
+}
+
+
+// ----------------------------------------------------------------- QCheckBox
+QCheckBox {
+    background: transparent;
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-bottom: 0px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    spacing: 6px;
+}
+
+QCheckBox:disabled {
+    color: #777777;
+}
+
+
+// ----------------------------------------------------------------- QRadioButton
+QRadioButton {
+    background: transparent;
+    color: #FFFFFF;
+    border: 1px solid transparent;
+    text-align: left;
+    font-size: 14px;
+    font-weight: normal;
+    padding: 2px 2px 2px 2px;
+}
+
+QRadioButton::indicator {
     width: 0px;
     height: 0px;
 }
 
-QWidget#ButtonContextBar:hover {
-    background: #1D1D1D;
-    border: 1px solid #696969;
-}
-
-QWidget#ButtonContextBar:pressed {
-
-}
-
-QWidget#ButtonContextBar:checked {
-    background: qradialgradient(
-        cx:0.4, cy:0.4, radius: 1, fx:0.4, fy:0.4,
-        stop:0 #1D1D1D, stop:1 #1D1D1D);
-    color: #FFFFFF;
-    border: 1px solid #ADADAD;
-}
-
-
-// ****************************************************************************************************
-// ****************************************************************************************************
-
-
-// ----------------------------------------------------------------- PanelPlayback
-QWidget#PanelPlayback {
-    background: #333333;
-}
-
-
-// ----------------------------------------------------------------- PlaybackControl
-QWidget#PlaybackControl {
-    background: #555555;
-}
-
-
-// ----------------------------------------------------------------- DisplayLabelSongTitle
-QWidget#DisplayLabelSongTitle {
+QRadioButton:hover {
     background: transparent;
-    color: #FFFFFF;
-    font-family: "Open Sans";
-    font-size: 12px;
-    font-weight: bold;
-    padding: 3px 0px 0px 0px;
-}
-
-
-// ----------------------------------------------------------------- DisplayLabelSongArtist
-QWidget#DisplayLabelSongArtist {
-    background: transparent;
-    color: #FFFFFF;
-    font-family: "Open Sans";
-    font-size: 11px;
-    padding: 0px 0px 6px 0px;
-}
-
-
-// ----------------------------------------------------------------- DisplayLabelSongPosition
-QWidget#DisplayLabelSongPosition {
-    background: transparent;
-    color: #FFFFFF;
-    font-family: "Open Sans";
-    font-size: 11px;
-    padding: 0px 3px 3px 3px;
-}
-
-
-// ----------------------------------------------------------------- ButtonPrev
-QWidget#ButtonPrev {
-    background: qlineargradient(
-        x1: 1, y1: 0, x2: 0, y2: 0,
-        stop: 0 #555555, stop: 1 #333333);
-}
-
-QWidget#ButtonPrev:hover {
-    background: #191919;
-}
-
-QWidget#ButtonPrev:pressed {
-    background: qlineargradient(
-        x1: 1, y1: 0, x2: 0, y2: 0,
-        stop: 0 #696969, stop: 1 #444444);
-}
-
-QWidget#ButtonPrev:flat {
-    border: none;
-}
-
-
-// ----------------------------------------------------------------- ButtonNext
-QWidget#ButtonNext {
-    background: qlineargradient(
-        x1: 1, y1: 0, x2: 0, y2: 0,
-        stop: 0 #333333, stop: 1 #555555);
-
-}
-
-QWidget#ButtonNext:hover {
-    background: #191919;
-}
-
-QWidget#ButtonNext:pressed {
-    background: qlineargradient(
-        x1: 1, y1: 0, x2: 0, y2: 0,
-        stop: 0 #CCCCCC, stop: 1 #E2E2E2);
-}
-
-QWidget#ButtonNext:flat {
-    border: none;
-}
-
-
-// ----------------------------------------------------------------- ButtonPlay
-QWidget#ButtonPlay {
-    background: transparent;
-}
-
-QWidget#ButtonPlay:hover {
-    background: #191919;
-}
-
-QWidget#ButtonPlay:pressed {
-    background: #FFFFFF;
-}
-
-QWidget#ButtonPlay:flat {
-    border: 3px solid #ADADAD;
-    border-radius: 6px;
-}
-
-
-// ----------------------------------------------------------------- ButtonFade
-QWidget#ButtonFade {
-    background: #555555;
-}
-
-QWidget#ButtonFade:pressed {
-
-}
-
-QWidget#ButtonFade:flat {
-    border: none;
-}
-
-
-// ----------------------------------------------------------------- SliderVolume
-QWidget#SliderVolume {
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    height: 20px;
-}
-
-QWidget#SliderVolume::handle:horizontal {
-    background: #FFFFFF;
-    width: 16px;
-    margin: -2px 0;
-}
-
-QWidget#SliderVolume::groove:horizontal {
-    background: #000000;
-    position: absolute;
-    height: 4px;
-    left: 4px;
-    right: 4px;
-}
-
-QWidget#SliderVolume::add-page:horizontal {
-    background: #ADADAD;
-}
-
-QWidget#SliderVolume::sub-page:horizontal {
-    background: #EDEDED;
-}
-
-
-// ----------------------------------------------------------------- SliderPosition
-QWidget#SliderPosition {
-    border: 0px solid transparent;
-}
-
-QWidget#SliderPosition::handle:horizontal {
-    background: #FFFFFF;
-    width: 16px;
-    margin: -1px 0;
-}
-
-QWidget#SliderPosition::groove:horizontal {
-    background: #AAAAAA;
-    position: absolute;
-    height: 4px;
-    left: 8px;
-    right: 8px;
-}
-
-QWidget#SliderPosition::add-page:horizontal {
-    background: #ADADAD;
-}
-
-QWidget#SliderPosition::sub-page:horizontal {
-    background: #EDEDED;
-}
-
-
-// ----------------------------------------------------------------- BoxSearch
-QWidget#BoxSearch {
-    background: #696969;
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 12px;
-    font-weight: normal;
-    border-top: 1px solid #FFFFFF;
-    border-left: 1px solid #ADADAD;
-    border-right: 1px solid #FFFFFF;
-    border-bottom: 1px solid #FFFFFF;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 4px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 4px;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-}
-
-QWidget#BoxSearch:hover {
-    background: #ADADAD;
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 12px;
-    font-weight: normal;
     border: 1px solid #FFFFFF;
 }
 
-QWidget#BoxSearch:focus {
-    background: #DDDDDD;
+QRadioButton:pushed {
+    background: #FFFFFF;
+}
+
+QRadioButton:checked {
+    background: #E2E2E2;
     color: #000000;
-    text-align: left;
-    font-size: 12px;
-    font-weight: normal;
-    border: 1px solid #FFFFFF;
 }
 
 
-// ----------------------------------------------------------------- ButtonSearch
-QWidget#ButtonSearch {
-    background: transparent;
-}
-
-QWidget#ButtonSearch:hover {
-    background: #191919;
-}
-
-QWidget#ButtonSearch:pressed {
-    background: #FFFFFF;
-}
-
-QWidget#ButtonSearch:flat {
-    border-top: 1px solid #FFFFFF;
-    border-left: 1px solid #FFFFFF;
-    border-right: 0px;
-    border-bottom: 1px solid #FFFFFF;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 0px;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 0px;
-}
-
-
-// ****************************************************************************************************
-// ****************************************************************************************************
-
-
-// ----------------------------------------------------------------- PanelTree
-QWidget#PanelTree {
-
-}
-
-// ----------------------------------------------------------------- PanelCombo
-QWidget#PanelCombo {
+// ----------------------------------------------------------------- QComboBox
+QComboBox {
     background: #222222;
     color: #FFFFFF;
     font-family: "Open Sans";
@@ -440,26 +175,26 @@ QWidget#PanelCombo {
     min-width: 6em;
 }
 
-QWidget#PanelCombo:!editable:disabled {
+QComboBox:!editable:disabled {
     background: #999999;
     color: #777777;
 }
 
-QWidget#PanelCombo:!editable {
+QComboBox:!editable {
     background: #222222;
 }
 
-QWidget#PanelCombo:!editable:on {
+QQComboBox:!editable:on {
     background: #222222;
 }
 
-QWidget#PanelCombo:on {
+QComboBox:on {
     background: #222222;
     padding-top: 3px;
     padding-left: 4px;
 }
 
-QWidget#PanelCombo::drop-down {
+QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
     width: 15px;
@@ -488,221 +223,8 @@ QComboBox QAbstractItemView {
 }
 
 
-// ----------------------------------------------------------------- PanelRadioButton
-QWidget#PanelRadioButton {
-    background: transparent;
-    color: #FFFFFF;
-    border: 1px solid transparent;
-    text-align: left;
-    font-size: 14px;
-    font-weight: normal;
-    padding: 2px 2px 2px 2px;
-}
-
-QWidget#PanelRadioButton::indicator {
-    width: 0px;
-    height: 0px;
-}
-
-QWidget#PanelRadioButton:hover {
-    background: transparent;
-    border: 1px solid #FFFFFF;
-}
-
-QWidget#PanelRadioButton:pushed {
-    background: #FFFFFF;
-}
-
-QWidget#PanelRadioButton:checked {
-    background: #E2E2E2;
-    color: #000000;
-}
-
-
-// ----------------------------------------------------------------- PanelPushButton
-QWidget#PanelPushButton {
-    background: #191919;
-    color: #FFFFFF;
-    text-align: center;
-    font-family: "Open Sans";
-    font-size: 12px;
-    font-weight: normal;
-    border-radius: 2px;
-    border: 1px solid #696969;
-    margin: 0px;
-    padding: 2px;
-}
-
-QWidget#PanelPushButton:hover {
-    background: #292929;
-    border: 1px solid #696969;
-}
-
-QWidget#PanelPushButton:pressed {
-    background: #AAAAAA;
-    color: #000000;
-}
-
-QWidget#PanelPushButton:disabled {
-    border: 1px solid #696969;
-    background: #999999;
-    color: #565656;
-}
-
-// ----------------------------------------------------------------- PanelCheck
-QWidget#PanelCheck {
-    background: transparent;
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 12px;
-    font-weight: normal;
-    border-top: 0px;
-    border-left: 0px;
-    border-right: 0px;
-    border-bottom: 0px;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-    spacing: 6px;
-}
-
-QWidget#PanelCheck:disabled {
-    color: #777777;
-}
-
-
-
-// ----------------------------------------------------------------- PanelEdit
-QWidget#PanelEdit {
-    background: #222222;
-    color: #FFFFFF;
-    selection-background-color: #898989;
-    text-align: left;
-    font-size: 13px;
-    font-weight: normal;
-    border: 1px solid #777777;
-    border-radius: 1px;
-    margin: 0px 0px 0px 0px;
-    padding: 1px;    
-}
-
-
-QWidget#PanelEdit:disabled {
-    background: #999999;
-    color: #777777;
-}
-
-
-// ----------------------------------------------------------------- PanelEditHidden
-QWidget#PanelEditHidden {
-    background: transparent;
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 16px;
-    font-weight: bold;
-    font-family: "Open Sans";
-    border: 1px solid transparent;
-    border-radius: 1px;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-}
-
-QWidget#PanelEditHidden:hover {
-    border: 1px solid #FFFFFF;
-}
-
-QWidget#PanelEditHidden:focus {
-    background: #FFFFFF;
-    color: #000000;
-    border: 1px solid #777777;
-}
-
-
-// ----------------------------------------------------------------- PanelTag
-QWidget#PanelTag {
-    background: transparent;
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 12px;
-    font-weight: bold;
-    border: 1px solid transparent;
-    margin: 0px;
-    padding: 0px;
-}
-
-QWidget#PanelTag:disabled {
-    color: #777777;
-}
-
-// ----------------------------------------------------------------- PanelValue
-QWidget#PanelValue {
-    color: #FFFFFF;
-    text-align: left;
-    font-size: 12px;
-    font-weight: regular;
-    border: 1px solid transparent;
-    margin: 0px;
-    padding: 0px;
-}
-
-QWidget#PanelValue:disabled {
-    color: #777777;
-}
-
-
-
-// trbl
-
-// #555555 - dark gray
-// #878787 - light gray
-
-// #C51F5D - pink
-// #243447 - navy
-// #141D26 - dark blue
-
-
-
-// ----------------------------------------------------------------- SectionFrame
-QWidget#SectionFrame {
-    background: #404040;
-    border: 1px solid #FFFFFF;
-    border-radius: 3px;
-}
-
-
-// ----------------------------------------------------------------- PanelTitle
-QWidget#PanelTitle {
-    background: transparent;
-    color: #FFFFFF;
-    text-align: left;
-    font-family: "Open Sans";
-    font-size: 32px;
-    font-weight: bold;
-    margin: 0px;
-    padding: 0px;
-}
-
-// ----------------------------------------------------------------- SectionHeader
-QWidget#SectionHeader {
-    background: transparent;
-    color: #FFFFFF;
-    text-align: left;
-    font-family: "Open Sans";
-    font-size: 16px;
-    font-weight: bold;
-    margin: 12px 0px -2px 0px;
-    padding: 0px 0px 0px 0px;
-}
-
-
-// ----------------------------------------------------------------- PanelDisplay
-QWidget#PanelDisplay {
-    background: #222222;
-    border-left: 1px solid #696969;
-    margin: 0px;
-}
-
-// ----------------------------------------------------------------- PanelScrollArea
-QWidget#PanelScrollArea {
+// ----------------------------------------------------------------- QScrollArea
+QScrollArea {
     background: transparent;
     border: 0px;
     margin: 0px;
@@ -710,127 +232,9 @@ QWidget#PanelScrollArea {
 
 
 
-// ----------------------------------------------------------------- PanelControl
-QWidget#PanelControl {
-    background: #191919;
-    border: 0px;
-    margin: 0px;
-}
-
-// ----------------------------------------------------------------- StorageWidget
-QWidget#StorageWidget {
-    background: #FFFFFF;
-    border: 1px solid #000000;
-    border-radius: 3px;
-    padding: 4px;
-    margin: 6px;
-}
-
-
 // ****************************************************************************************************
 // ****************************************************************************************************
 
-
-// ----------------------------------------------------------------- TreeviewContainers
-QWidget#TreeviewContainers {
-    background: transparent;
-    color: #FFFFFF;
-    font-size: 14px;
-    font-weight: normal;
-    selection-color: #FFFFFF;
-    selection-background-color: #777777;
-    show-decoration-selected: 1;
-    border: 0px;
-}
-
-QTreeView::item {
-    padding: 1px 0px 1px 0px;
-    border: 1px solid transparent;
-}
-
-QTreeView::item:focus {
-
-}
-
-QWidget#TreeviewContainers::item:hover {
-    background: transparent;
-    border: 1px solid #FFFFFF;
-}
-
-QWidget#TreeviewContainers::item:selected  {
-    border-image: none;
-    background: #E2E2E2;
-    color: #000000;
-}
-
-QWidget#TreeviewContainers::branch:selected {
-    border-image: none;
-    background: #EDEDED;
-}
-
-QWidget#TreeviewContainers::branch:has-siblings:!adjoins-item {
-    border-image: url(:/icons/treeview/branch-vline.png) 0;
-}
-
-QWidget#TreeviewContainers::branch:has-siblings:adjoins-item {
-    border-image: url(:/icons/treeview/branch-more.png) 0;
-}
-
-QWidget#TreeviewContainers::branch:!has-children:!has-siblings:adjoins-item {
-    border-image: url(:/icons/treeview/branch-end.png) 0;
-}
-
-QWidget#TreeviewContainers::branch:has-children:!has-siblings:closed {
-    image: url(:/icons/treeview/arrow-right-light.png);
-    border-image: none;
-}
-
-QWidget#TreeviewContainers::branch:closed:has-children:has-siblings {
-    image: url(:/icons/treeview/arrow-right-light.png);
-    border-image: none;
-}
-
-QWidget#TreeviewContainers::branch:open:has-children:!has-siblings{
-    image: url(:/icons/treeview/arrow-down-light.png);
-    border-image: none;
-}
-
-QWidget#TreeviewContainers::branch:open:has-children:has-siblings  {
-    image: url(:/icons/treeview/arrow-down-light.png);
-    border-image: none;
-}
-
-QWidget#TreeviewContainers::branch:selected:has-children:!has-siblings:closed {
-    image: url(:/icons/treeview/arrow-right-dark.png);
-    border-image: none;
-}
-
-QWidget#TreeviewContainers::branch:selected:closed:has-children:has-siblings {
-    image: url(:/icons/treeview/arrow-right-dark.png);
-    border-image: none;
-}
-
-QWidget#TreeviewContainers::branch:selected:open:has-children:!has-siblings{
-    image: url(:/icons/treeview/arrow-down-dark.png);
-    border-image: none;
-}
-
-QWidget#TreeviewContainers::branch:selected:open:has-children:has-siblings  {
-    image: url(:/icons/treeview/arrow-down-dark.png);
-    border-image: none;
-}
-
-
-// ****************************************************************************************************
-// ****************************************************************************************************
-
-
-// ----------------------------------------------------------------- QLineEdit
-QLineEdit {
-    background: #ADADAD;
-    color: #FFFFFF;
-    border: 1px solid #000000;
-}
 
 // ----------------------------------------------------------------- QTreeView
 QTreeView {
@@ -851,6 +255,11 @@ QTreeView {
 
 QTreeView::item {
     padding: 1px 0px 1px 0px;
+    border: 1px solid transparent;
+}
+
+QTreeView::item:focus {
+
 }
 
 QTreeView::item:hover {
@@ -904,22 +313,22 @@ QHeaderView::up-arrow {
 }
 
 
-// ----------------------------------------------------------------- TreeviewScrollbar (vertical)
-QWidget#TreeviewScrollbar:vertical {
+// ----------------------------------------------------------------- QTreeView QScrollBar:vertical
+QTreeView QScrollBar:vertical {
     background: transparent;
     border: 0px;
     width: 8px;
     margin: 21px 0px 0px 0px;
 }
 
-QWidget#TreeviewScrollbar::handle:vertical {
+QTreeView QScrollBar::handle:vertical {
     background: #E2E2E2;
     border: 0px;
     border-radius: 4px;
     min-height: 18px;
 }
 
-QWidget#TreeviewScrollbar::add-line:vertical {
+QTreeView QScrollBar::add-line:vertical {
     background: transparent;
     border-top: 0px;
     height: 0px;
@@ -927,7 +336,7 @@ QWidget#TreeviewScrollbar::add-line:vertical {
     subcontrol-origin: margin;
 }
 
-QWidget#TreeviewScrollbar::sub-line:vertical {
+QTreeView QScrollBar::sub-line:vertical {
     background: qlineargradient(
         x1:0, y1:0, x2:0, y2:1,
         stop:0 #4A4A4A, stop: 0.5 #393939,
@@ -938,7 +347,7 @@ QWidget#TreeviewScrollbar::sub-line:vertical {
     subcontrol-origin: margin;
 }
 
-QWidget#TreeviewScrollbar:up-arrow:vertical {
+QTreeView QScrollBar:up-arrow:vertical {
     background: transparent;
     width: 0px;
     height: 0px;
@@ -946,7 +355,7 @@ QWidget#TreeviewScrollbar:up-arrow:vertical {
     border-radius: 0px;
 }
 
-QWidget#TreeviewScrollbar::down-arrow:vertical {
+QTreeView QScrollBar::down-arrow:vertical {
     background: transparent;
     width: 0px;
     height: 0px;
@@ -954,21 +363,20 @@ QWidget#TreeviewScrollbar::down-arrow:vertical {
     border-radius: 0px;
 }
 
-QWidget#TreeviewScrollbar::sub-page:vertical {
+QTreeView QScrollBar::sub-page:vertical {
     background: none;
 }
 
-QWidget#TreeviewScrollbar::add-page:vertical {
+QTreeView QScrollBar::add-page:vertical {
     background: none;
 }
-
 
 
 // ****************************************************************************************************
 // ****************************************************************************************************
 
 
-// ----------------------------------------------------------------- QScrollBar (horizontal)
+// ----------------------------------------------------------------- QScrollBar:horizontal
 QScrollBar:horizontal {
     background: transparent;
     border: 0px;
@@ -1024,7 +432,7 @@ QScrollBar::add-page:horizontal {
 }
 
 
-// ----------------------------------------------------------------- QScrollBar (vertical)
+// ----------------------------------------------------------------- QScrollBar:vertical
 QScrollBar:vertical {
     background: transparent;
     border: 0px;
@@ -1080,6 +488,650 @@ QScrollBar::add-page:vertical {
 }
 
 
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
+// ----------------------------------------------------------------- MRootDesktop
+MRootDesktop {
+    background: #777777;
+}
+
+
+// ----------------------------------------------------------------- MMenuBar
+MMenuBar {
+    background: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #212121, stop:1 #191919);
+    border-bottom: 1px solid #696969;
+}
+
+
+// ----------------------------------------------------------------- MMenuBar QPushButton
+MMenuBar QPushButton {
+    background: transparent;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+    border-radius: 0px;
+    qproperty-flat: true;
+}
+
+MMenuBar QPushButton:pressed {
+    background: #888888;
+}
+
+MMenuBar QPushButton:hover {
+    background: #A3A3A3;
+}
+
+MMenuBar QPushButton:flat {
+    border-radius: 2px;
+}
+
+QPushButton#MinimizeWindow {
+    qproperty-icon: url(":/icons/window/minimize.png");
+}
+QPushButton#MaximizeWindow {
+    qproperty-icon: url(":/icons/window/maximize.png");
+}
+QPushButton#CloseWindow {
+    qproperty-icon: url(":/icons/window/close.png");
+}
+QPushButton#DeMaximizeWindow {
+    qproperty-icon: url(":/icons/window/demaximize.png");
+}
+
+
+// ----------------------------------------------------------------- QMenuBar
+QMenuBar {
+    background: transparent;
+    color: #FFFFFF;
+    border-bottom: 1px solid #696969;
+}
+
+QMenuBar::item {
+    background: transparent;
+    border-radius: 0px;
+    padding: 4px 6px 4px 6px;
+}
+QMenuBar::item:selected {
+    background: #E2E2E2;
+    color: #000000;
+}
+
+QMenuBar::item:pressed {
+    background: #ADADAD;
+}
+
+
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
+// ----------------------------------------------------------------- QLabel#Tag
+QLabel#Tag {
+    background: transparent;
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 12px;
+    font-weight: bold;
+    border: 1px solid transparent;
+    margin: 0px;
+    padding: 0px;
+}
+
+QLabel#Tag:disabled {
+    color: #777777;
+}
+
+
+// ----------------------------------------------------------------- QLabel#Value
+QLabel#Value {
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 12px;
+    font-weight: regular;
+    border: 1px solid transparent;
+    margin: 0px;
+    padding: 0px;
+}
+
+QLabel#Value:disabled {
+    color: #777777;
+}
+
+
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
+// ----------------------------------------------------------------- QLineEdit#Normal
+QLineEdit#Normal {
+    background: #222222;
+    color: #FFFFFF;
+    selection-background-color: #898989;
+    text-align: left;
+    font-size: 13px;
+    font-weight: normal;
+    border: 1px solid #777777;
+    border-radius: 1px;
+    margin: 0px 0px 0px 0px;
+    padding: 1px;
+}
+
+
+QLineEdit#Normal:disabled {
+    background: #999999;
+    color: #777777;
+}
+
+
+// ----------------------------------------------------------------- QLineEdit#Hidden
+QLineEdit#Hidden {
+    background: transparent;
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: "Open Sans";
+    border: 1px solid transparent;
+    border-radius: 1px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+QLineEdit#Hidden:hover {
+    border: 1px solid #FFFFFF;
+}
+
+QLineEdit#Hidden:focus {
+    background: #FFFFFF;
+    color: #000000;
+    border: 1px solid #777777;
+}
+
+
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
+// ----------------------------------------------------------------- MFrameContextBar
+MFrameContextBar {
+    background: #191919;
+    border-top: 1px solid #696969;
+    border-bottom: 1px solid #696969;
+}
+
+
+// ----------------------------------------------------------------- MFrameContextBar QRadioButton
+MFrameContextBar QRadioButton {
+    background: #191919;
+    color: #FFFFFF;
+    text-align: center;
+    font-family: "Open Sans";
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    padding: 0px 0px 0px 18px;
+    margin: 0px 2px 0px 2px;
+}
+
+MFrameContextBar QRadioButton::indicator {
+    width: 0px;
+    height: 0px;
+}
+
+MFrameContextBar QRadioButton:hover {
+    background: #1D1D1D;
+    border: 1px solid #696969;
+}
+
+MFrameContextBar QRadioButton:pressed {
+
+}
+
+MFrameContextBar QRadioButton:checked {
+    background: qradialgradient(
+        cx:0.4, cy:0.4, radius: 1, fx:0.4, fy:0.4,
+        stop:0 #1D1D1D, stop:1 #1D1D1D);
+    color: #FFFFFF;
+    border: 1px solid #ADADAD;
+}
+
+
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
+// ----------------------------------------------------------------- MFramePlayback
+MFramePlayback {
+    background: #333333;
+    qproperty-iconPlay: ":/icons/playback/play-light.png";
+    qproperty-iconPause: ":/icons/playback/paus-light.png";
+}
+
+
+// ----------------------------------------------------------------- PlaybackControl
+QWidget#PlaybackControl {
+    background: #555555;
+}
+
+
+// ----------------------------------------------------------------- QLabel#SongTitle
+QLabel#SongTitle {
+    background: transparent;
+    color: #FFFFFF;
+    font-family: "Open Sans";
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 0px 0px 0px;
+}
+
+
+// ----------------------------------------------------------------- QLabel#SongArtist
+QLabel#SongArtist {
+    background: transparent;
+    color: #FFFFFF;
+    font-family: "Open Sans";
+    font-size: 11px;
+    padding: 0px 0px 6px 0px;
+}
+
+
+// ----------------------------------------------------------------- QLabel#SongPosition
+QLabel#SongPosition {
+    background: transparent;
+    color: #FFFFFF;
+    font-family: "Open Sans";
+    font-size: 11px;
+    padding: 0px 3px 3px 3px;
+}
+
+
+// ----------------------------------------------------------------- QPushButton#PreviousSong
+QPushButton#PreviousSong {
+    background: qlineargradient(
+        x1: 1, y1: 0, x2: 0, y2: 0,
+        stop: 0 #555555, stop: 1 #333333);
+    qproperty-flat: true;
+    qproperty-icon: url(":/icons/playback/prev-light.png");
+}
+
+QPushButton#PreviousSong:hover {
+    background: #191919;
+}
+
+QPushButton#PreviousSong:pressed {
+    background: qlineargradient(
+        x1: 1, y1: 0, x2: 0, y2: 0,
+        stop: 0 #696969, stop: 1 #444444);
+}
+
+QPushButton#PreviousSong:flat {
+    border: none;
+}
+
+
+// ----------------------------------------------------------------- QPushButton#NextSong
+QPushButton#NextSong {
+    background: qlineargradient(
+        x1: 1, y1: 0, x2: 0, y2: 0,
+        stop: 0 #333333, stop: 1 #555555);
+    qproperty-flat: true;
+    qproperty-icon: url(":/icons/playback/next-light.png");
+}
+
+QPushButton#NextSong:hover {
+    background: #191919;
+}
+
+QPushButton#NextSong:pressed {
+    background: qlineargradient(
+        x1: 1, y1: 0, x2: 0, y2: 0,
+        stop: 0 #CCCCCC, stop: 1 #E2E2E2);
+}
+
+QPushButton#NextSong:flat {
+    border: none;
+}
+
+
+// ----------------------------------------------------------------- QPushButton#PlaySong
+QPushButton#PlaySong {
+    background: transparent;
+    qproperty-flat: true;
+    qproperty-icon: url(":/icons/playback/play-light.png");
+}
+
+QPushButton#PlaySong:hover {
+    background: #191919;
+}
+
+QPushButton#PlaySong:pressed {
+    background: #FFFFFF;
+}
+
+QPushButton#PlaySong:flat {
+    border: 3px solid #ADADAD;
+    border-radius: 6px;
+}
+
+
+// ----------------------------------------------------------------- QPushButton#Fade
+QPushButton#Fade {
+    background: #555555;
+    qproperty-flat: true;
+    qproperty-icon: url(":/icons/playback/play-light.png");
+}
+
+QPushButton#Fade:pressed {
+
+}
+
+QPushButton#Fade:flat {
+    border: none;
+}
+
+
+// ----------------------------------------------------------------- QSlider#Volume
+QSlider#Volume {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    height: 20px;
+}
+
+QSlider#Volume::handle:horizontal {
+    background: #FFFFFF;
+    width: 16px;
+    margin: -2px 0;
+}
+
+QSlider#Volume::groove:horizontal {
+    background: #000000;
+    position: absolute;
+    height: 4px;
+    left: 4px;
+    right: 4px;
+}
+
+QSlider#Volume::add-page:horizontal {
+    background: #ADADAD;
+}
+
+QSlider#Volume::sub-page:horizontal {
+    background: #EDEDED;
+}
+
+
+// ----------------------------------------------------------------- QSlider#Position
+QSlider#Position {
+    border: 0px solid transparent;
+    height: 8;
+}
+
+QSlider#Position::handle:horizontal {
+    background: #FFFFFF;
+    width: 16px;
+    margin: -1px 0;
+}
+
+QSlider#Position::groove:horizontal {
+    background: #AAAAAA;
+    position: absolute;
+    height: 4px;
+    left: 8px;
+    right: 8px;
+}
+
+QSlider#Position::add-page:horizontal {
+    background: #ADADAD;
+}
+
+QSlider#Position::sub-page:horizontal {
+    background: #EDEDED;
+}
+
+
+// ----------------------------------------------------------------- QLineEdit#Search
+QLineEdit#Search {
+    background: #696969;
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    border-top: 1px solid #FFFFFF;
+    border-left: 1px solid #ADADAD;
+    border-right: 1px solid #FFFFFF;
+    border-bottom: 1px solid #FFFFFF;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 4px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+QLineEdit#Search:hover {
+    background: #ADADAD;
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    border: 1px solid #FFFFFF;
+}
+
+QLineEdit#Search:focus {
+    background: #DDDDDD;
+    color: #000000;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    border: 1px solid #FFFFFF;
+}
+
+
+// ----------------------------------------------------------------- QPushButton#Search
+QPushButton#Search {
+    background: transparent;
+    qproperty-flat: true;
+    qproperty-icon: url(":/icons/playback/search-light.png");
+}
+
+QPushButton#Search:hover {
+    background: #191919;
+}
+
+QPushButton#Search:pressed {
+    background: #FFFFFF;
+}
+
+QPushButton#Search:flat {
+    border-top: 1px solid #FFFFFF;
+    border-left: 1px solid #FFFFFF;
+    border-right: 0px;
+    border-bottom: 1px solid #FFFFFF;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 0px;
+}
+
+
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
+// trbl
+
+// #555555 - dark gray
+// #878787 - light gray
+
+// #C51F5D - pink
+// #243447 - navy
+// #141D26 - dark blue
+
+
+// ----------------------------------------------------------------- QLabel#Title
+QLabel#Title {
+    background: transparent;
+    color: #FFFFFF;
+    text-align: left;
+    font-family: "Open Sans";
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0px;
+    padding: 0px;
+}
+
+// ----------------------------------------------------------------- QLabel#Header
+QLabel#Header {
+    background: transparent;
+    color: #FFFFFF;
+    text-align: left;
+    font-family: "Open Sans";
+    font-size: 16px;
+    font-weight: bold;
+    margin: 12px 0px -2px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+
+// ----------------------------------------------------------------- PanelSection
+QWidget#PanelSection {
+    background: #404040;
+    border: 1px solid #FFFFFF;
+    border-radius: 3px;
+}
+
+
+// ----------------------------------------------------------------- PanelDisplay
+QWidget#PanelDisplay {
+    background: #222222;
+    border-left: 1px solid #696969;
+    margin: 0px;
+}
+
+
+// ----------------------------------------------------------------- PanelControl
+QWidget#PanelControl {
+    background: #191919;
+    border: 0px;
+    margin: 0px;
+}
+
+
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
+// ----------------------------------------------------------------- StorageWidget
+QWidget#StorageWidget {
+    background: #FFFFFF;
+    border: 1px solid #000000;
+    border-radius: 3px;
+    padding: 4px;
+    margin: 6px;
+}
+
+
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+
+// ----------------------------------------------------------------- MFrameContainers
+MFrameContainers {
+    qproperty-iconFolder: ":/icons/treeview/folder-light.png";
+    qproperty-iconPlaylist: ":/icons/treeview/playlist-light.png";
+}
+
+
+// ----------------------------------------------------------------- MTreeContainers
+MTreeContainers {
+    background: transparent;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: normal;
+    selection-color: #FFFFFF;
+    selection-background-color: #777777;
+    show-decoration-selected: 1;
+    border: 0px;
+}
+
+MTreeContainers::item:hover {
+    background: transparent;
+    border: 1px solid #FFFFFF;
+}
+
+MTreeContainers::item:selected  {
+    border-image: none;
+    background: #E2E2E2;
+    color: #000000;
+}
+
+MTreeContainers::branch:selected {
+    border-image: none;
+    background: #EDEDED;
+}
+
+MTreeContainers::branch:has-siblings:!adjoins-item {
+    border-image: url(:/icons/treeview/branch-vline.png) 0;
+}
+
+MTreeContainers::branch:has-siblings:adjoins-item {
+    border-image: url(:/icons/treeview/branch-more.png) 0;
+}
+
+MTreeContainers::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: url(:/icons/treeview/branch-end.png) 0;
+}
+
+MTreeContainers::branch:has-children:!has-siblings:closed {
+    image: url(:/icons/treeview/arrow-right-light.png);
+    border-image: none;
+}
+
+MTreeContainers::branch:closed:has-children:has-siblings {
+    image: url(:/icons/treeview/arrow-right-light.png);
+    border-image: none;
+}
+
+MTreeContainers::branch:open:has-children:!has-siblings{
+    image: url(:/icons/treeview/arrow-down-light.png);
+    border-image: none;
+}
+
+MTreeContainers::branch:open:has-children:has-siblings  {
+    image: url(:/icons/treeview/arrow-down-light.png);
+    border-image: none;
+}
+
+MTreeContainers::branch:selected:has-children:!has-siblings:closed {
+    image: url(:/icons/treeview/arrow-right-dark.png);
+    border-image: none;
+}
+
+MTreeContainers::branch:selected:closed:has-children:has-siblings {
+    image: url(:/icons/treeview/arrow-right-dark.png);
+    border-image: none;
+}
+
+MTreeContainers::branch:selected:open:has-children:!has-siblings{
+    image: url(:/icons/treeview/arrow-down-dark.png);
+    border-image: none;
+}
+
+MTreeContainers::branch:selected:open:has-children:has-siblings  {
+    image: url(:/icons/treeview/arrow-down-dark.png);
+    border-image: none;
+}
+
+
+// ****************************************************************************************************
+// ****************************************************************************************************
+
 
 // ----------------------------------------------------------------- QCheckBox
 //QWidget#PanelCheck::indicator:unchecked {
@@ -1113,5 +1165,6 @@ QScrollBar::add-page:vertical {
 //QWidget#PanelCheck::indicator:indeterminate:pressed {
 //    image: url(:/images/checkbox-indeterminate-pressed.png);
 //}
+
 
 !THEME=END

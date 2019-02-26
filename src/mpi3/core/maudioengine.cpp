@@ -219,13 +219,13 @@ MAudioEngine::~MAudioEngine()
     delete m_codecCtx;
 }
 
-void MAudioEngine::environ_init()
+void MAudioEngine::initialize()
 {
     av_log_set_level(AV_LOG_VERBOSE); // AV_LOG_QUIET
     av_register_all();
     ao_initialize();
 }
-void MAudioEngine::environ_deinit()
+void MAudioEngine::deinitialize()
 {
     ao_shutdown();
 }

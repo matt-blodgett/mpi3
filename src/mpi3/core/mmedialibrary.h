@@ -4,13 +4,14 @@
 #define MMEDIALIBRARY_H
 
 
+#include "mglobal.h"
+
+
 #include <QObject>
 #include <QVector>
 
 
-#include "mglobal.h"
 #include "mcore.h"
-
 #ifdef MPI3_BUILD_SHARED
 class MPI3_EXPORT_CORE MMediaElement;
 class MPI3_EXPORT_CORE MMediaContainer;
@@ -229,24 +230,36 @@ public:
     void insert(MPlaylist *inPlaylist, MFolder *toFolder = nullptr, int atPosition = -1);
     void insert(MFolder *inFolder, MFolder *toFolder = nullptr, int atPosition = -1);
 
-    void remove(MSong *remSong, MPlaylist *fromPlaylist);
-    void remove(MPlaylist *remPlaylist, MFolder *fromFolder);
-    void remove(MFolder *remFolder, MFolder *fromFolder);
+//    void remove(MSong *remSong, MPlaylist *fromPlaylist);
+//    void remove(MPlaylist *remPlaylist, MFolder *fromFolder);
+//    void remove(MFolder *remFolder, MFolder *fromFolder);
 
     void move(MSong *moveSong, MPlaylist *parentPlaylist, int toPosition = -1);
     void move(MPlaylist *movePlaylist, MFolder *toFolder, int toPosition = -1);
     void move(MFolder *moveFolder, MFolder *toFolder, int toPosition = -1);
 
-    void discard(MSong *remSong);
-    void discard(MPlaylist *remPlaylist);
-    void discard(MFolder *remFolder);
+    void remove(MSong *remSong);
+    void remove(MPlaylist *remPlaylist);
+    void remove(MFolder *remFolder);
+    void remove(MMediaContainer *remContainer);
 
 signals:
     void elementModified(MMediaElement *elemModified);
     void elementInserted(MMediaElement *elemInserted, MMediaContainer *elemParent);
-    void elementRemoved(MMediaElement *elemRemoved, MMediaContainer *elemParent);
+//    void elementRemoved(MMediaElement *elemRemoved, MMediaContainer *elemParent);
     void elementMoved(MMediaElement *elemMoved, MMediaContainer *elemParent);
     void elementDeleted(MMediaElement *elemDeleted);
+
+    void aboutToLoad();
+    void aboutToSave();
+    void aboutToReset();
+    void completedLoading();
+    void completedSaving();
+    void completedResetting();
+
+    void mediaPathChanged(const QString &oldPath, const QString &newPath);
+    void backupPathChanged(const QString &oldPath, const QString &newPath);
+    void downloadPathChanged(const QString &oldPath, const QString &newPath);
 };
 
 

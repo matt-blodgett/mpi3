@@ -1,0 +1,42 @@
+#pragma once
+
+#ifndef MSTYLESHEET_H
+#define MSTYLESHEET_H
+
+
+#include <QString>
+
+
+#include "mutils.h"
+#ifdef MPI3_BUILD_SHARED
+class MPI3_EXPORT_UTILS MStyleSheet;
+#endif
+
+
+class MStyleSheet
+{
+
+public:
+    explicit MStyleSheet();
+
+public:
+    void load(const QString &path = QString());
+    void save(const QString &path = QString());
+
+public:
+    QString qssName() const;
+    QString qssStyle() const;
+    QString qssPath() const;
+
+private:
+    void setProperty(const QString &line);
+    QString removeComments(const QString &text);
+
+private:
+    QString m_name;
+    QString m_style;
+    QString m_filepath;
+};
+
+
+#endif

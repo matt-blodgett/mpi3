@@ -4,6 +4,13 @@
 #define MAUDIOENGINE_H
 
 
+#include "mglobal.h"
+
+struct AVFormatContext;
+struct AVCodecContext;
+struct ao_device;
+
+
 #include <QObject>
 
 QT_BEGIN_NAMESPACE
@@ -12,18 +19,12 @@ class QMutex;
 QT_END_NAMESPACE
 
 
-#include "mglobal.h"
-#include "mcore.h"
 
+#include "mcore.h"
 #ifdef MPI3_BUILD_SHARED
 struct MPI3_EXPORT_CORE MSongInfo;
 class MPI3_EXPORT_CORE MAudioEngine;
 #endif
-
-
-struct AVFormatContext;
-struct AVCodecContext;
-struct ao_device;
 
 
 struct MSongInfo
@@ -59,8 +60,8 @@ public:
     ~MAudioEngine();
 
 public:
-    static void environ_init();
-    static void environ_deinit();
+    static void initialize();
+    static void deinitialize();
 
 private:
     void media_alloc();

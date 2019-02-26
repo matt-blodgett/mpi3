@@ -4,14 +4,7 @@
 #define MGLOBAL_H
 
 
-#include <QMetaType>
-
-
-// Canadian (Sorry)
-typedef QColor QColour;
-
-
-#include "mcore.h"
+#define MPI3_LIBRARY_FILE_EXT ".mpi3lib"
 
 
 class MMediaElement;
@@ -20,6 +13,13 @@ class MMediaLibrary;
 class MPlaylist;
 class MFolder;
 class MSong;
+
+
+#include <QMetaType>
+typedef QColor QColour; // Canadian (Sorry)
+
+
+#include "mcore.h"
 
 
 namespace Mpi3
@@ -63,14 +63,13 @@ namespace Mpi3
         FileInvalidError
     }; Q_ENUM_NS(ErrorState)
 
+    void initialize();
 
-#ifdef MPI3_BUILD_SHARED
-   MPI3_EXPORT_CORE void register_global_metatypes();
-#else
-    void register_global_metatypes();
-#endif
-
-
+//#ifdef MPI3_BUILD_SHARED
+//   MPI3_EXPORT_CORE void register_global_metatypes();
+//#else
+//    void register_global_metatypes();
+//#endif
 };
 
 

@@ -12,7 +12,6 @@ QT_END_NAMESPACE
 
 
 #include "mutils.h"
-
 #ifdef MPI3_BUILD_SHARED
 class MPI3_EXPORT_UTILS MSettingsXml;
 class MPI3_EXPORT_UTILS MSettingsXmlNode;

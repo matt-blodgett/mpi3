@@ -1,17 +1,14 @@
-include(mvc/mvc.pri)
+include(widgets/widgets.pri)
+include(models/models.pri)
+include(frames/frames.pri)
+include(panels/panels.pri)
 
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/mpanel.h
-HEADERS += $$PWD/mcontextbar.h
-HEADERS += $$PWD/mpanelplayback.h
-HEADERS += $$PWD/mpanellibrary.h
-HEADERS += $$PWD/mpaneldevice.h
-HEADERS += $$PWD/mpanelmedia.h
+HEADERS += $$PWD/mstyle.h
+HEADERS += $$PWD/mactions.h
+HEADERS += $$PWD/mplaybackqueue.h
 
-SOURCES += $$PWD/mpanel.cpp
-SOURCES += $$PWD/mcontextbar.cpp
-SOURCES += $$PWD/mpanelplayback.cpp
-SOURCES += $$PWD/mpanellibrary.cpp
-SOURCES += $$PWD/mpaneldevice.cpp
-SOURCES += $$PWD/mpanelmedia.cpp
+SOURCES += $$PWD/mstyle.cpp
+SOURCES += $$PWD/mactions.cpp
+SOURCES += $$PWD/mplaybackqueue.cpp

@@ -12,6 +12,9 @@
 #include <QDebug>
 
 
+
+
+
 #define PID_MAX_LENGTH 18
 
 static const QString PrefixBase         = "E:";
@@ -335,6 +338,8 @@ Mpi3::ElementType MMediaLibrary::type() const
 
 void MMediaLibrary::reset()
 {
+    emit aboutToReset();
+
     m_libSongs.clear();
     m_libPlaylists.clear();
     m_libFolders.clear();
@@ -342,10 +347,14 @@ void MMediaLibrary::reset()
     m_mediaPath = QString();
     m_backupPath = QString();
     m_downloadPath = QString();
+
+    emit completedResetting();
 }
 
 void MMediaLibrary::load(const QString &path)
 {
+    emit aboutToLoad();
+
     QFile loadFile(path);
 
     if (loadFile.open(QIODevice::ReadOnly)) {
@@ -441,9 +450,13 @@ void MMediaLibrary::load(const QString &path)
         m_savePath = path;
         save();
     }
+
+    emit completedLoading();
 }
 void MMediaLibrary::save(const QString &path)
 {
+    emit aboutToSave();
+
     m_savePath = path.isNull() ? m_savePath : path;
     m_savePath = QDir::toNativeSeparators(m_savePath);
 
@@ -541,6 +554,8 @@ void MMediaLibrary::save(const QString &path)
         QTextStream xmlStream(&saveFile);
         xmlStream << xml.toString();
     }
+
+    emit completedSaving();
 }
 
 MMediaLibrary *MMediaLibrary::createRaspiVolume(const QString &rootPath)
@@ -581,15 +596,27 @@ bool MMediaLibrary::detectRaspiVolume(const QString &rootPath)
 
 void MMediaLibrary::setMediaPath(const QString &path)
 {
-    m_mediaPath = QDir::toNativeSeparators(path);
+    QString oldPath = m_mediaPath;
+    QString newPath = QDir::toNativeSeparators(path);
+
+    m_mediaPath = newPath;
+    emit mediaPathChanged(oldPath, newPath);
 }
 void MMediaLibrary::setBackupPath(const QString &path)
 {
-    m_backupPath = QDir::toNativeSeparators(path);
+    QString oldPath = m_backupPath;
+    QString newPath = QDir::toNativeSeparators(path);
+
+    m_backupPath = newPath;
+    emit mediaPathChanged(oldPath, newPath);
 }
 void MMediaLibrary::setDownloadPath(const QString &path)
 {
-    m_downloadPath = QDir::toNativeSeparators(path);
+    QString oldPath = m_backupPath;
+    QString newPath = QDir::toNativeSeparators(path);
+
+    m_downloadPath = newPath;
+    emit downloadPathChanged(oldPath, newPath);
 }
 
 QString MMediaLibrary::savePath() const
@@ -1003,21 +1030,21 @@ void MMediaLibrary::insert(MFolder *inFolder, MFolder *toFolder, int atPosition)
     }
 }
 
-void MMediaLibrary::remove(MSong *remSong, MPlaylist *fromPlaylist)
-{
-    fromPlaylist->m_songs.removeAll(remSong);
-    emit elementRemoved(remSong, fromPlaylist);
-}
-void MMediaLibrary::remove(MPlaylist *remPlaylist, MFolder *fromFolder)
-{
-    fromFolder->m_playlists.removeAll(remPlaylist);
-    emit elementRemoved(remPlaylist, fromFolder);
-}
-void MMediaLibrary::remove(MFolder *remFolder, MFolder *fromFolder)
-{
-    fromFolder->m_folders.removeAll(remFolder);
-    emit elementRemoved(remFolder, fromFolder);
-}
+//void MMediaLibrary::remove(MSong *remSong, MPlaylist *fromPlaylist)
+//{
+//    fromPlaylist->m_songs.removeAll(remSong);
+//    emit elementRemoved(remSong, fromPlaylist);
+//}
+//void MMediaLibrary::remove(MPlaylist *remPlaylist, MFolder *fromFolder)
+//{
+//    fromFolder->m_playlists.removeAll(remPlaylist);
+//    emit elementRemoved(remPlaylist, fromFolder);
+//}
+//void MMediaLibrary::remove(MFolder *remFolder, MFolder *fromFolder)
+//{
+//    fromFolder->m_folders.removeAll(remFolder);
+//    emit elementRemoved(remFolder, fromFolder);
+//}
 
 void MMediaLibrary::move(MSong* moveSong, MPlaylist *parentPlaylist, int toPosition)
 {
@@ -1057,7 +1084,7 @@ void MMediaLibrary::move(MFolder *moveFolder, MFolder *toFolder, int toPosition)
     emit elementMoved(moveFolder, toFolder ? toFolder : static_cast<MMediaContainer*>(this));
 }
 
-void MMediaLibrary::discard(MSong *remSong)
+void MMediaLibrary::remove(MSong *remSong)
 {
     foreach(MPlaylist *playlist, m_libPlaylists) {
         if(playlist->m_songs.contains(remSong)) {
@@ -1068,8 +1095,9 @@ void MMediaLibrary::discard(MSong *remSong)
     m_libSongs.removeAll(remSong);
     emit elementDeleted(remSong);
 }
-void MMediaLibrary::discard(MPlaylist *remPlaylist)
+void MMediaLibrary::remove(MPlaylist *remPlaylist)
 {
+    qDebug() << "removing playlist";
     if(remPlaylist->m_parent) {
         remPlaylist->m_parent->m_playlists.removeAll(remPlaylist);
     }
@@ -1077,8 +1105,10 @@ void MMediaLibrary::discard(MPlaylist *remPlaylist)
     m_libPlaylists.removeAll(remPlaylist);
     emit elementDeleted(remPlaylist);
 }
-void MMediaLibrary::discard(MFolder *remFolder)
+void MMediaLibrary::remove(MFolder *remFolder)
 {
+    qDebug() << "removing folder";
+
     if(remFolder->m_parent) {
         remFolder->m_parent->m_folders.removeAll(remFolder);
     }
@@ -1095,4 +1125,14 @@ void MMediaLibrary::discard(MFolder *remFolder)
 
     m_libFolders.removeAll(remFolder);
     emit elementDeleted(remFolder);
+}
+void MMediaLibrary::remove(MMediaContainer *remContainer)
+{
+    qDebug() << "removing container";
+    if(remContainer->type() == Mpi3::FolderElement){
+        remove(static_cast<MFolder*>(remContainer));
+    }
+    else if(remContainer->type() == Mpi3::PlaylistElement) {
+        remove(static_cast<MPlaylist*>(remContainer));
+    }
 }
