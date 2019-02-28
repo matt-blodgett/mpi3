@@ -1,17 +1,11 @@
 ﻿#include "mactions.h"
 
-#include <QFileDialog>
-
-
 #include <QStandardPaths>
+#include <QFileDialog>
 #include <QProcess>
 
 
 #include <QDebug>
-
-
-#include "mglobal.h"
-
 
 
 QString MActions::pathAppData()

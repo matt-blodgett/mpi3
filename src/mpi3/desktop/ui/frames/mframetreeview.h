@@ -4,9 +4,10 @@
 #define MFRAMETREEVIEW_H
 
 
-#include "mglobal.h"
 #include "mframe.h"
 
+
+#include "mglobal.h"
 class MTreeContainers;
 class MModelContainers;
 class MTreeSonglist;
@@ -77,11 +78,11 @@ private:
     MModelContainers *m_modelContainers = nullptr;
 
 private:
-    void contextMenuTreeview(const QPoint &point);
     void selectContainer();
+    void contextMenuTreeview(const QPoint &point);
 
 signals:
-    void containerSelected(MMediaContainer *container);
+    void containerSelected(MContainer *container);
 };
 
 
@@ -112,12 +113,10 @@ public:
     MTreeSonglist *tree();
     MModelSonglist *model();
     MMediaLibrary *library();
-    MMediaContainer *container();
     MModelSonglistProxy *modelProxy();
 
     void saveTreeSettings();
     void setTreeSettings(MTreeSettings *treeSettings);
-    void setContainer(MMediaContainer *container);
 
 private:
     MTreeSettings *m_treeSettings = nullptr;

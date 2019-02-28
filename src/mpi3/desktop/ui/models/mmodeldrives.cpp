@@ -95,7 +95,7 @@ void MModelStorageDrives::refresh()
     m_storageInfo.refresh();
 
     QStringList rootPathList;
-    foreach(QStorageInfo sInfo, m_storageInfo.mountedVolumes()) {
+    for(QStorageInfo sInfo : m_storageInfo.mountedVolumes()) {
         QString rootPath = sInfo.rootPath();
         rootPathList.append(rootPath);
 

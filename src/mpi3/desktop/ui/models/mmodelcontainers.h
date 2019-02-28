@@ -4,18 +4,16 @@
 #define MMODELCONTAINERS_H
 
 
-#include "mglobal.h"
-
-class MModelItem;
-
-
 #include <QAbstractItemModel>
 #include <QIcon>
 #include <QMap>
-
 QT_BEGIN_NAMESPACE
 class QMimeData;
 QT_END_NAMESPACE
+
+
+#include "mglobal.h"
+class MModelItem;
 
 
 class MModelContainers : public QAbstractItemModel
@@ -27,6 +25,8 @@ public:
     ~MModelContainers() override;
 
 public:
+    // TODO: set these directly instead of
+    // TODO: from mframetreeview.cpp
     QIcon iconFolder;
     QIcon iconPlaylist;
 
@@ -59,11 +59,6 @@ public:
     bool removeRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
     bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
 
-private:
-    QMap<QString, MModelItem*> m_libItems;
-    MMediaLibrary *m_mediaLibrary = nullptr;
-    MModelItem *m_rootItem = nullptr;
-
 public:
     QModelIndex getIndex(const QString &pid) const;
     MModelItem *getItem(const QModelIndex &index) const;
@@ -71,25 +66,28 @@ public:
     QString getPID(const QModelIndex &index) const;
     QString getPID(MModelItem *item) const;
 
+    MContainer *getContainer(const QModelIndex &index) const;
+    MPlaylist *getPlaylist(const QModelIndex &index) const;
+    MFolder *getFolder(const QModelIndex &index) const;
+    MFolder *getParentFolder(const QModelIndex &index) const;
+
     MMediaLibrary *library() const;
     void setLibrary(MMediaLibrary *library);
 
-    MFolder *getParentFolder(const QModelIndex &index) const;
-    MMediaContainer *getContainer(const QModelIndex &index) const;
-    MPlaylist *getPlaylist(const QModelIndex &index) const;
-    MFolder *getFolder(const QModelIndex &index) const;
-
 private:
     void populate(MFolder *parentFolder = nullptr, MModelItem *parentItem = nullptr);
-    void playlistInserted(MPlaylist *childPlaylist, MMediaElement *parentElement);
-    void folderInserted(MFolder *childFolder, MMediaElement *parentElement);
+
+    // TODO: reimplement these
+//    void playlistInserted(MPlaylist *childPlaylist, MMediaElement *parentElement);
+//    void folderInserted(MFolder *childFolder, MMediaElement *parentElement);
+
+private:
+    QMap<QString, MModelItem*> m_libItems;
+    MMediaLibrary *m_mediaLibrary = nullptr;
+    MModelItem *m_rootItem = nullptr;
 
 private slots:
-    void elementModified(MMediaElement *elemModified);
-    void elementInserted(MMediaElement *elemInserted, MMediaElement *elemParent);
-//    void elementRemoved(MMediaElement *elemRemoved, MMediaElement *elemParent);
-    void elementMoved(MMediaElement *elemMoved, MMediaElement *elemParent);
-    void elementDeleted(MMediaElement *elemDeleted);
+    // TODO: connect slots to m_mediaLibrary
 };
 
 

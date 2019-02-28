@@ -78,7 +78,8 @@ bool MSettingsXml::writeSettingsXml(QIODevice &device, const QMap<QString, QVari
             }
             else {
                 XmlNode *foundItem = nullptr;
-                foreach(QObject *object, cur->children()) {
+                // may cause problems with no foreach
+                for(QObject *object : cur->children()) {
                     XmlNode *child = static_cast<XmlNode*>(object);
                     if(0 == QString::compare(child->tagName, segs[i], Qt::CaseInsensitive)) {
                         foundItem = child;

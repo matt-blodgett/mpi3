@@ -4,62 +4,75 @@
 #define MMEDIALIBRARY_H
 
 
-#include "mglobal.h"
-
-
 #include <QObject>
 #include <QVector>
 
 
-#include "mcore.h"
+#include "mglobal.h"
 #ifdef MPI3_BUILD_SHARED
+class MPI3_EXPORT_CORE MMediaLibrary;
 class MPI3_EXPORT_CORE MMediaElement;
-class MPI3_EXPORT_CORE MMediaContainer;
-class MPI3_EXPORT_CORE MSong;
+class MPI3_EXPORT_CORE MContainer;
 class MPI3_EXPORT_CORE MPlaylist;
 class MPI3_EXPORT_CORE MFolder;
-class MPI3_EXPORT_CORE MMediaLibrary;
+class MPI3_EXPORT_CORE MSong;
 #endif
 
 
 class MMediaElement : public QObject
 {
-    Q_OBJECT
+    Q_GADGET
+    Q_PROPERTY(Mpi3::ElementType type READ type)
+    Q_PROPERTY(QString pid READ pid)
+    Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(QString added READ added)
 
-friend class MMediaLibrary;
+protected:
+    explicit MMediaElement(QObject *parent = nullptr);
 
 public:
-    explicit MMediaElement(QObject *parent = nullptr);
     virtual Mpi3::ElementType type() const;
+    friend class MMediaLibrary;
 
 public:
     QString pid() const;
     QString name() const;
     QString added() const;
 
-protected:
+    void setName(const QString &value);
+
+private:
     QString m_pid;
     QString m_name;
     QString m_added;
+
+protected:
+    void notifyPropertyChanged(
+        const QString &propertyName,
+        const QVariant &oldPropertyValue);
 };
 
 
 class MSong : public MMediaElement
 {
     Q_OBJECT
+    Q_PROPERTY(QString artist READ artist WRITE setArtist)
+    Q_PROPERTY(QString album READ album WRITE setAlbum)
+    Q_PROPERTY(QString kind READ kind)
+    Q_PROPERTY(QString path READ path)
+    Q_PROPERTY(double time READ time)
+    Q_PROPERTY(double size READ size)
+    Q_PROPERTY(QString timeString READ timeString)
+    Q_PROPERTY(QString sizeString READ sizeString)
+    Q_PROPERTY(int bitRate READ bitRate)
+    Q_PROPERTY(int sampleRate READ sampleRate)
 
-friend class MMediaLibrary;
+private:
+    explicit MSong(MMediaLibrary *parent);
 
 public:
-    explicit MSong();
     Mpi3::ElementType type() const override;
-
-    enum MutableProperty
-    {
-        SongName,
-        SongArtist,
-        SongAlbum
-    };
+    friend class MMediaLibrary;
 
 public:
     QString artist() const;
@@ -70,11 +83,14 @@ public:
     double time() const;
     double size() const;
 
-    QString time_str() const;
-    QString size_str() const;
+    QString timeString() const;
+    QString sizeString() const;
 
     int bitRate() const;
     int sampleRate() const;
+
+    void setArtist(const QString &value);
+    void setAlbum(const QString &value);
 
 private:
     QString m_artist;
@@ -82,7 +98,6 @@ private:
     QString m_kind;
     QString m_path;
 
-    int m_wpadded;
     double m_time = 0.0;
     double m_size = 0.0;
 
@@ -91,126 +106,149 @@ private:
 };
 
 
-class MMediaContainer : public MMediaElement
+class MContainer : public MMediaElement
 {
-    Q_OBJECT
+    Q_GADGET
 
-friend class MMediaLibrary;
+protected:
+    explicit MContainer(MMediaLibrary *parent);
 
 public:
-    explicit MMediaContainer();
     Mpi3::ElementType type() const override;
+    friend class MMediaLibrary;
 
-    virtual QVector<MSong*> songs() const;
-    virtual QVector<MPlaylist*> playlists() const;
-    virtual QVector<MFolder*> folders() const;
-
+public:
     MFolder *parentFolder() const;
-
-    QVector<MMediaElement*> childElements(Mpi3::ElementType elemType = Mpi3::BaseElement) const;
-    MMediaElement *getElement(const QString &pid, Mpi3::ElementType elemType = Mpi3::BaseElement) const;
-
-    MMediaContainer *getContainer(const QString &pid) const;
-    MPlaylist *getPlaylist(const QString &pid) const;
-    MFolder *getFolder(const QString &pid) const;
-    MSong *getSong(const QString &pid) const;
+    void setParentFolder(MFolder *folder);
 
 private:
-    MFolder *m_parent = nullptr;
+    MFolder *m_parentFolder = nullptr;
 };
 
 
-class MPlaylist : public MMediaContainer
+class MPlaylist : public MContainer
 {
     Q_OBJECT
 
-friend class MMediaLibrary;
+private:
+    explicit MPlaylist(MMediaLibrary *parent);
 
 public:
-    explicit MPlaylist();
     Mpi3::ElementType type() const override;
-    QVector<MSong*> songs() const override;
-
-private:
-    QVector<MSong*> m_songs;
-
-};
-
-
-class MFolder : public MMediaContainer
-{
-    Q_OBJECT
-
-friend class MMediaLibrary;
+    friend class MMediaLibrary;
 
 public:
-    explicit MFolder();
-    Mpi3::ElementType type() const override;
+    MSongList songs() const;
 
-    QVector<MSong*> songs() const override;
-    QVector<MPlaylist*> playlists() const override;
-    QVector<MFolder*> folders() const override;
-    QVector<MMediaContainer*> childContainers() const;
+    void insert(int index, MSong *song);
+//    void insert(int index, const MSongList &songlist);
+
+    void append(MSong *song);
+//    void append(MSongList songlist);
+
+    void prepend(MSong *song);
+//    void prepend(MSongList songlist);
+
+    void move(int from, int to);
+//    void move(QList<int> indexes, int to);
+
+    void remove(int index);
+//    void remove(QList<int> indexes);
+
+    void clear();
 
 private:
-    QVector<MPlaylist*> m_playlists;
-    QVector<MFolder*> m_folders;
+    MSongList m_songs;
+    void notifyContentsChanged();
 };
 
 
-class MMediaLibrary : public MMediaContainer
+class MFolder : public MContainer
 {
     Q_OBJECT
+
+private:
+    explicit MFolder(MMediaLibrary *parent);
+
+public:
+    Mpi3::ElementType type() const override;
+    friend class MMediaLibrary;
+
+public:
+    MSongList childSongs() const;
+    MFolderList childFolders() const;
+    MPlaylistList childPlaylists() const;
+    MContainerList childContainers() const;
+};
+
+
+class MMediaLibrary : public MMediaElement
+{
+    Q_OBJECT
+    Q_PROPERTY(QString savePath READ savePath)
+    Q_PROPERTY(QString mediaPath READ mediaPath WRITE setMediaPath)
+    Q_PROPERTY(QString backupPath READ backupPath WRITE setBackupPath)
+    Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath)
+
+private:
     Q_DISABLE_COPY(MMediaLibrary)
 
 public:    
     explicit MMediaLibrary(QObject *parent = nullptr);
     Mpi3::ElementType type() const override;
 
-    void reset();
+public:
+    MSongList songs() const;
+    MFolderList folders() const;
+    MPlaylistList playlists() const;
+    MContainerList containers() const;
+    MElementList elements(Mpi3::ElementType filterType = Mpi3::BaseElement) const;
 
-    void load(const QString &path = QString());
-    void save(const QString &path = QString());
+    template<typename I, class E>
+    static I rootSearch(I iterable){
+        I ret;
+        for(E *e : iterable){
+            if(!e->parentFolder()){
+                ret.append(e);
+            }
+        }
+        return ret;
+    }
 
-    MMediaLibrary *createRaspiVolume(const QString &rootPath);
-    static MMediaLibrary *loadRaspiVolume(const QString &rootPath);
-    static bool detectRaspiVolume(const QString &rootPath);
+    MFolderList rootFolders() const;
+    MPlaylistList rootPlaylists() const;
+    MContainerList rootContainers() const;
 
-    void setMediaPath(const QString &path);
-    void setBackupPath(const QString &path);
-    void setDownloadPath(const QString &path);
+    template<typename I, class E>
+    static E *pidSearch(I iterable, const QString &pid){
+        for(E *element : iterable){
+            if(element->pid() == pid){
+                return element;
+            }
+        }
+        return nullptr;
+    }
 
+    MSong *getSong(const QString &pid) const;
+    MFolder *getFolder(const QString &pid) const;
+    MPlaylist *getPlaylist(const QString &pid) const;
+    MContainer *getContainer(const QString &pid) const;
+    MMediaElement *getElement(const QString &pid) const;
+
+private:
+    MSongList m_songs;
+    MFolderList m_folders;
+    MPlaylistList m_playlists;
+
+public:
     QString savePath() const;
     QString mediaPath() const;
     QString backupPath() const;
     QString downloadPath() const;
 
-public:
-    QVector<MSong*> songs() const override;
-    QVector<MPlaylist*> playlists() const override;
-    QVector<MFolder*> folders() const override;
-
-    QVector<MFolder*> rootFolders() const;
-    QVector<MPlaylist*> rootPlaylists() const;
-
-    MSong *newSong(const QString &path = QString()) const;
-    MPlaylist *newPlaylist(bool named = false) const;
-    MFolder *newFolder(bool named = false) const;
-    QString generatePID(Mpi3::ElementType elemType) const;
-
-public:
-    void importItunesPlist(const QString &path, MFolder *parentFolder = nullptr);
-
-    QVector<MSong*> songsFromBytes(QByteArray pidBytes) const;
-    static QByteArray songsToBytes(QVector<MSong*> songObjects);
-    static QList<QUrl> songsToPaths(QVector<MSong*> songObjects);
-
-    static bool validMediaFiles(QUrl mediaUrl);
-    static bool validMediaFiles(QList<QUrl> mediaUrls);
-
-    static QString timeToString(double time);
-    static QString sizeToString(double size, int prec = 2);
-    static QString percentToString(double percent, int prec = 2);
+    void setMediaPath(const QString &dirPath);
+    void setBackupPath(const QString &dirPath);
+    void setDownloadPath(const QString &dirPath);
 
 private:
     QString m_savePath;
@@ -218,48 +256,94 @@ private:
     QString m_backupPath;
     QString m_downloadPath;
 
-    QVector<MSong*> m_libSongs;
-    QVector<MPlaylist*> m_libPlaylists;
-    QVector<MFolder*> m_libFolders;
+public:
+    bool load(const QString &filePath);
+    bool save(const QString &filePath = QString());
+    void reset();
 
 public:
-    void modify(const QString &pid, const QString &value);
-    void modify(MSong *song, const QString &value, MSong::MutableProperty songProperty);
+    bool importItunesPlist(const QString &filePath, MFolder *parentFolder = nullptr);
 
-    void insert(MSong *inSong, MPlaylist *toPlaylist = nullptr, int atPosition = -1);
-    void insert(MPlaylist *inPlaylist, MFolder *toFolder = nullptr, int atPosition = -1);
-    void insert(MFolder *inFolder, MFolder *toFolder = nullptr, int atPosition = -1);
+    MSongList songsFromBytes(QByteArray pidBytes) const;
+    static QByteArray songsToBytes(MSongList songlist);
+    static QList<QUrl> songsToPaths(MSongList songlist);
 
-//    void remove(MSong *remSong, MPlaylist *fromPlaylist);
-//    void remove(MPlaylist *remPlaylist, MFolder *fromFolder);
-//    void remove(MFolder *remFolder, MFolder *fromFolder);
+    // move below functions to utility module
+    static bool validMediaFiles(QUrl mediaUrl);
+    static bool validMediaFiles(QList<QUrl> mediaUrls);
 
-    void move(MSong *moveSong, MPlaylist *parentPlaylist, int toPosition = -1);
-    void move(MPlaylist *movePlaylist, MFolder *toFolder, int toPosition = -1);
-    void move(MFolder *moveFolder, MFolder *toFolder, int toPosition = -1);
+    static QString timeToString(double time);
+    static QString sizeToString(double size, int prec = 2);
+    static QString percentToString(double percent, int prec = 2);
+    // -----------------------------------------
 
-    void remove(MSong *remSong);
-    void remove(MPlaylist *remPlaylist);
-    void remove(MFolder *remFolder);
-    void remove(MMediaContainer *remContainer);
+public:
+    MMediaLibrary *createRaspiVolume(const QString &rootPath);
+    static MMediaLibrary *loadRaspiVolume(const QString &rootPath);
+    static bool detectRaspiVolume(const QString &rootPath);
+
+private:
+    QString generatePID(Mpi3::ElementType elementType) const;
+
+public:
+    MSong *newSong(const QString &filePath);
+    MFolder *newFolder(MFolder *parentFolder = nullptr, const QString &name = QString());
+    MPlaylist *newPlaylist(MFolder *parentFolder = nullptr, const QString &name = QString());
+
+    void remove(MSong *s);
+    void remove(MFolder *f);
+    void remove(MPlaylist *p);
+    void remove(MContainer *c);
+    void remove(const QString &pid);
 
 signals:
-    void elementModified(MMediaElement *elemModified);
-    void elementInserted(MMediaElement *elemInserted, MMediaContainer *elemParent);
-//    void elementRemoved(MMediaElement *elemRemoved, MMediaContainer *elemParent);
-    void elementMoved(MMediaElement *elemMoved, MMediaContainer *elemParent);
-    void elementDeleted(MMediaElement *elemDeleted);
-
     void aboutToLoad();
     void aboutToSave();
     void aboutToReset();
-    void completedLoading();
-    void completedSaving();
-    void completedResetting();
 
-    void mediaPathChanged(const QString &oldPath, const QString &newPath);
-    void backupPathChanged(const QString &oldPath, const QString &newPath);
-    void downloadPathChanged(const QString &oldPath, const QString &newPath);
+    void libraryLoaded();
+    void librarySaved();
+    void libraryReset();
+
+    void songCreated(MSong *childSong);
+    void folderCreated(MFolder *childFolder);
+    void playlistCreated(MPlaylist *childPlaylist);
+
+    void songDeleted(MSong *childSong);
+    void folderDeleted(MFolder *childFolder);
+    void playlistDeleted(MPlaylist *childPlaylist);
+
+    void playlistContentsChanged(
+        MPlaylist *childPlaylist);
+
+    void parentFolderChanged(
+        MContainer *childContainer,
+        MFolder *oldParentFolder,
+        MFolder *newParentFolder);
+
+    void songPropertyChanged(
+        MSong *childSong,
+        const QString &propertyName,
+        const QVariant &oldPropertyValue,
+        const QVariant &newPropertyValue);
+
+    void playlistPropertyChanged(
+        MPlaylist *childPlaylist,
+        const QString &propertyName,
+        const QVariant &oldPropertyValue,
+        const QVariant &newPropertyValue);
+
+    void folderPropertyChanged(
+        MFolder *childFolder,
+        const QString &propertyName,
+        const QVariant &oldPropertyValue,
+        const QVariant &newPropertyValue);
+
+    void libraryPropertyChanged(
+        MMediaLibrary *library,
+        const QString &propertyName,
+        const QVariant &oldPropertyValue,
+        const QVariant &newPropertyValue);
 };
 
 

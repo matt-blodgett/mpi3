@@ -4,27 +4,23 @@
 #define MAUDIOENGINE_H
 
 
-#include "mglobal.h"
-
-struct AVFormatContext;
-struct AVCodecContext;
-struct ao_device;
-
-
 #include <QObject>
-
 QT_BEGIN_NAMESPACE
 class QWaitCondition;
 class QMutex;
 QT_END_NAMESPACE
 
 
-
-#include "mcore.h"
+#include "mglobal.h"
 #ifdef MPI3_BUILD_SHARED
 struct MPI3_EXPORT_CORE MSongInfo;
 class MPI3_EXPORT_CORE MAudioEngine;
 #endif
+
+
+struct AVFormatContext;
+struct AVCodecContext;
+struct ao_device;
 
 
 struct MSongInfo
@@ -49,6 +45,8 @@ struct MSongInfo
 };
 
 
+// TODO: remove Mpi3::EngineState and
+// TODO: use an enum on this class only
 class MAudioEngine : public QObject
 {
     Q_OBJECT

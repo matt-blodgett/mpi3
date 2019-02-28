@@ -5,8 +5,6 @@
 
 
 #include "mframe.h"
-
-
 QT_BEGIN_NAMESPACE
 class QRadioButton;
 QT_END_NAMESPACE
@@ -30,6 +28,7 @@ public:
     void changeView(MFrameContextBar::View view);
 
 private:
+    // change to just forwarding signals from buttons
     MFrameContextBar::View m_currentView;
 
     QRadioButton *m_btnMedia = nullptr;

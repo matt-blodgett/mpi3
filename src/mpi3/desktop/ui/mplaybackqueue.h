@@ -35,8 +35,6 @@ private:
 
 signals:
     void currentPlayingChanged(MSong *song);
-
-
 };
 
 

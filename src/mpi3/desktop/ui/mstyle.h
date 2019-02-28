@@ -5,7 +5,6 @@
 
 
 #include <QProxyStyle>
-
 QT_BEGIN_NAMESPACE
 class QLabel;
 class QLineEdit;

@@ -21,10 +21,10 @@ void x_importSongs(MMediaLibrary *library, MPlaylist *parentPlaylist = nullptr)
     QStringList paths = QFileDialog::getOpenFileNames(
         nullptr, title, MActions::pathDesktop(), files);
 
-    if(paths.size() > 1) {
-        for(int i = 0; i < paths.size(); i++) {
-            MSong *addedSong = library->newSong(paths.at(i));
-            library->insert(addedSong, parentPlaylist);
+    for(QString p : paths){
+        MSong *s = library->newSong(p);
+        if(parentPlaylist){
+            parentPlaylist->append(s);
         }
     }
 }
@@ -104,13 +104,13 @@ void MFrameTreeView::deleteItems()
 //        QModelIndexList currentIndexes = m_treeSonglist->selectionModel()->selectedIndexes();
 
 //        QVector<MSong*> delSongs;
-//        foreach(QModelIndex idx, currentIndexes) {
+//        (QModelIndex idx, currentIndexes) {
 //            if(idx.column() == 0) {
 //                delSongs.append(m_modelSonglist->songAt(idx));
 //            }
 //        }
 
-//        foreach(MSong *song, delSongs) {
+//        (MSong *song, delSongs) {
 //            m_mediaLibrary->discard(song);
 //        }
 //    }
@@ -137,11 +137,12 @@ MFrameContainers::MFrameContainers(QWidget *parent) : MFrameTreeView(parent)
     setLayout(gridMain);
 
     connect(m_treeContainers,
-            &QTreeView::customContextMenuRequested,
-            this, &MFrameContainers::contextMenuTreeview);
+        &QTreeView::customContextMenuRequested,
+        this, &MFrameContainers::contextMenuTreeview);
+
     connect(m_treeContainers->selectionModel(),
-            &QItemSelectionModel::selectionChanged,
-            this, [this](){selectContainer();});
+        &QItemSelectionModel::selectionChanged,
+        this, [this](){selectContainer();});
 }
 
 void MFrameContainers::iconFolderChanged()
@@ -161,42 +162,41 @@ void MFrameContainers::importSongs()
 }
 void MFrameContainers::downloadSongs()
 {
-    qDebug() << "MFrameContainers::downloadSongs()";
+    qDebug();
 }
 void MFrameContainers::itemDetails()
 {
-    qDebug() << "MFrameContainers::itemDetails()";
+    qDebug();
 }
 void MFrameContainers::editItem()
 {
-    qDebug() << "MFrameContainers::editItem()";
+    qDebug();
 }
 void MFrameContainers::cutItems()
 {
-    qDebug() << "MFrameContainers::cutItems()";
+    qDebug();
 }
 void MFrameContainers::copyItems()
 {
-    qDebug() << "MFrameContainers::copyItems()";
+    qDebug();
 }
 void MFrameContainers::pasteItems()
 {
-    qDebug() << "MFrameContainers::pasteItems()";
+    qDebug();
 }
 void MFrameContainers::deleteItems()
 {
     QModelIndex idx = tree()->currentIndex();
-    MMediaContainer *container = model()->getContainer(idx);
+    MContainer *container = model()->getContainer(idx);
 
     if(container){
         emit containerSelected(nullptr);
         library()->remove(container);
     }
-
 }
 void MFrameContainers::duplicateItems()
 {
-    qDebug() << "MFrameContainers::duplicateItems()";
+    qDebug();
 }
 
 void MFrameContainers::newFolder()
@@ -204,9 +204,9 @@ void MFrameContainers::newFolder()
     QModelIndex currentIndex = tree()->currentIndex();
 
     MFolder *parentFolder = model()->getParentFolder(currentIndex);
-    MFolder *insertFolder = library()->newFolder(true);
+    MFolder *insertFolder = library()->newFolder(parentFolder);
+    Q_UNUSED(insertFolder)
 
-    library()->insert(insertFolder, parentFolder);
     tree()->expand(currentIndex);
 }
 void MFrameContainers::newPlaylist()
@@ -214,9 +214,9 @@ void MFrameContainers::newPlaylist()
     QModelIndex currentIndex = tree()->currentIndex();
 
     MFolder *parentFolder = model()->getParentFolder(currentIndex);
-    MPlaylist *insertPlaylist = library()->newPlaylist(true);
+    MPlaylist *insertPlaylist = library()->newPlaylist(parentFolder);
+    Q_UNUSED(insertPlaylist)
 
-    library()->insert(insertPlaylist, parentFolder);
     tree()->expand(currentIndex);
 }
 void MFrameContainers::importPlaylists()
@@ -235,10 +235,12 @@ void MFrameContainers::importPlaylists()
     }
 }
 
-MTreeContainers *MFrameContainers::tree(){
+MTreeContainers *MFrameContainers::tree()
+{
     return m_treeContainers;
 }
-MModelContainers *MFrameContainers::model(){
+MModelContainers *MFrameContainers::model()
+{
     return m_modelContainers;
 }
 MMediaLibrary *MFrameContainers::library()
@@ -246,6 +248,12 @@ MMediaLibrary *MFrameContainers::library()
     return m_modelContainers->library();
 }
 
+void MFrameContainers::selectContainer()
+{
+    QModelIndex idx = tree()->selectionModel()->currentIndex();
+    MContainer *container = model()->getContainer(idx);
+    emit containerSelected(container);
+}
 void MFrameContainers::contextMenuTreeview(const QPoint &point)
 {
     QMenu *menu_context = new QMenu(this);
@@ -299,7 +307,7 @@ void MFrameContainers::contextMenuTreeview(const QPoint &point)
 
     QModelIndex idx_at = tree()->indexAt(point);
 //    QModelIndex idx_last = tree()->selectionModel()->currentIndex();
-    MMediaContainer *container = model()->getContainer(idx_at);
+    MContainer *container = model()->getContainer(idx_at);
     tree()->setCurrentIndex(idx_at);
 
     if(!container) {
@@ -345,12 +353,6 @@ void MFrameContainers::contextMenuTreeview(const QPoint &point)
 //        tree()->selectionModel()->setCurrentIndex(idx_last, QItemSelectionModel::ClearAndSelect);
 //    }
 }
-void MFrameContainers::selectContainer()
-{
-    QModelIndex idx = tree()->selectionModel()->currentIndex();
-    MMediaContainer *container = model()->getContainer(idx);
-    emit containerSelected(container);
-}
 
 
 MFrameSonglist::MFrameSonglist(QWidget *parent) : MFrameTreeView(parent)
@@ -372,68 +374,70 @@ MFrameSonglist::MFrameSonglist(QWidget *parent) : MFrameTreeView(parent)
     setLayout(gridMain);
 
     connect(m_treeSonglist,
-            &QTreeView::customContextMenuRequested,
-            this, &MFrameSonglist::contextMenuTreeview);
+        &QTreeView::customContextMenuRequested,
+        this, &MFrameSonglist::contextMenuTreeview);
+
     connect(m_treeSonglist->header(),
-            &QHeaderView::customContextMenuRequested,
-            this, &MFrameSonglist::contextMenuHeader);
+        &QHeaderView::customContextMenuRequested,
+        this, &MFrameSonglist::contextMenuHeader);
 //    connect(this, &QTreeView::doubleClicked, this, &MTreeSonglist::playItem);
 //    connect(header(), &QHeaderView::sortIndicatorChanged, this, &MTreeSonglist::sortChanged);
 }
 
 void MFrameSonglist::importSongs()
 {
-    MPlaylist *parentPlaylist = nullptr;
-    if(container()->type() == Mpi3::PlaylistElement) {
-        parentPlaylist = static_cast<MPlaylist*>(container());
-    }
+    qDebug();
+//    MPlaylist *parentPlaylist = nullptr;
+//    if(container()->type() == Mpi3::PlaylistElement) {
+//        parentPlaylist = static_cast<MPlaylist*>(container());
+//    }
 
-    x_importSongs(library(), parentPlaylist);
+//    x_importSongs(library(), parentPlaylist);
 }
 void MFrameSonglist::downloadSongs()
 {
-    qDebug() << "MFrameSonglist::downloadSongs()";
+    qDebug();
 }
 void MFrameSonglist::itemDetails()
 {
-    qDebug() << "MFrameSonglist::itemDetails()";
+    qDebug();
 }
 void MFrameSonglist::editItem()
 {
-    qDebug() << "MFrameSonglist::editItem()";
+    qDebug();
 }
 void MFrameSonglist::cutItems()
 {
-    qDebug() << "MFrameSonglist::cutItems()";
+    qDebug();
 }
 void MFrameSonglist::copyItems()
 {
-    qDebug() << "MFrameSonglist::copyItems()";
+    qDebug();
 }
 void MFrameSonglist::pasteItems()
 {
-    qDebug() << "MFrameSonglist::pasteItems()";
+    qDebug();
 }
 void MFrameSonglist::deleteItems()
 {
-    qDebug() << "MFrameSonglist::deleteItems()";
+    qDebug();
 }
 void MFrameSonglist::duplicateItems()
 {
-    qDebug() << "MFrameSonglist::duplicateItems()";
+    qDebug();
 }
 
 void MFrameSonglist::playItem()
 {
-    qDebug() << "MFrameSonglist::playItem()";
+    qDebug();
 }
 void MFrameSonglist::addItemsTo()
 {
-    qDebug() << "MFrameSonglist::addItemsTo()";
+    qDebug();
 }
 void MFrameSonglist::removeItemsFrom()
 {
-    qDebug() << "MFrameSonglist::removeItemsFrom()";
+    qDebug();
 }
 void MFrameSonglist::openItemFileLocation()
 {
@@ -454,10 +458,6 @@ MModelSonglist *MFrameSonglist::model(){
 MMediaLibrary *MFrameSonglist::library()
 {
     return m_modelSonglist->library();
-}
-MMediaContainer *MFrameSonglist::container()
-{
-    return m_modelSonglist->container();
 }
 MModelSonglistProxy *MFrameSonglist::modelProxy()
 {
@@ -480,10 +480,6 @@ void MFrameSonglist::setTreeSettings(MTreeSettings *settings)
     }
 
     m_treeSettings->applyValues(tree(), modelProxy());
-}
-void MFrameSonglist::setContainer(MMediaContainer *container)
-{
-    model()->setContainer(container);
 }
 
 void MFrameSonglist::contextMenuHeader(const QPoint &point)
@@ -592,18 +588,18 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
         act_openItem->setDisabled(true);
     }
 
-    if(container()->type() != Mpi3::PlaylistElement) {
-        act_removeItem->setDisabled(true);
-    }
-    if(!model()->flags(idx).testFlag(Qt::ItemIsEditable)) {
-        act_editItem->setDisabled(true);
-    }
-    if(container()->type() != Mpi3::PlaylistElement) {
-        act_removeItem->setDisabled(true);
-    }
-    if(!model()->flags(idx).testFlag(Qt::ItemIsEditable)) {
-        act_editItem->setDisabled(true);
-    }
+//    if(container()->type() != Mpi3::PlaylistElement) {
+//        act_removeItem->setDisabled(true);
+//    }
+//    if(!model()->flags(idx).testFlag(Qt::ItemIsEditable)) {
+//        act_editItem->setDisabled(true);
+//    }
+//    if(container()->type() != Mpi3::PlaylistElement) {
+//        act_removeItem->setDisabled(true);
+//    }
+//    if(!model()->flags(idx).testFlag(Qt::ItemIsEditable)) {
+//        act_editItem->setDisabled(true);
+//    }
 
     connect(act_playItem, &QAction::triggered, this, [=]() {playItem();});
     connect(act_editItem, &QAction::triggered, this, [=]() {editItem();});

@@ -32,6 +32,7 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     MStyle::setStyle(m_lblPlaylist, MStyle::LBL_Tag);
     MStyle::setStyle(m_lblView, MStyle::LBL_Title);
 
+    // ?????
     m_btnSongs->setParent(this);
     m_btnArtists->setParent(this);
     m_btnAlbums->setParent(this);
@@ -69,29 +70,21 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     m_lblPlaylist->setStyleSheet("QLabel {border-top: 1px solid #696969;"
                                  "font-size: 14px; padding: 4px 2px 4px 2px;}");
 
-    connect(m_frmContainers, &MFrameContainers::containerSelected, this, &MPanelMedia::changeContainer);
-    connect(m_btnSongs, &QRadioButton::released, this, [this]() {changeView(MPanelMedia::ViewAllSongs);});
-    connect(m_btnArtists, &QRadioButton::released, this, [this]() {changeView(MPanelMedia::ViewArtists);});
-    connect(m_btnAlbums, &QRadioButton::released, this, [this]() {changeView(MPanelMedia::ViewAlbums);});
+
+    connect(m_btnSongs, &QRadioButton::released, m_frmSonglist->model(), &MModelSonglist::viewAllSongs);
+    connect(m_btnArtists, &QRadioButton::released, m_frmSonglist->model(), &MModelSonglist::viewArtists);
+    connect(m_btnAlbums, &QRadioButton::released, m_frmSonglist->model(), &MModelSonglist::viewAlbums);
+    connect(m_frmContainers, &MFrameContainers::containerSelected, m_frmSonglist->model(), &MModelSonglist::viewContainer);
+    connect(m_frmSonglist->model(), &MModelSonglist::viewChanged, this, &MPanelMedia::viewChanged);
 
     m_treeSettingsCollection = new MTreeSettingsCollection(this);
-    connect(m_treeSettingsCollection, &MTreeSettingsCollection::aboutToSave,
-            m_frmSonglist, &MFrameSonglist::saveTreeSettings);
+    connect(m_treeSettingsCollection, &MTreeSettingsCollection::aboutToSave, m_frmSonglist, &MFrameSonglist::saveTreeSettings);
 }
 void MPanelMedia::setLibrary(MMediaLibrary *library)
 {
-    if(m_mediaLibrary){
-        disconnect(m_mediaLibrary, nullptr, this, nullptr);
-    }
-
     m_mediaLibrary = library;
-
     m_frmContainers->model()->setLibrary(m_mediaLibrary);
     m_frmSonglist->model()->setLibrary(m_mediaLibrary);
-
-    disconnect(m_mediaLibrary, nullptr, this, nullptr);
-    connect(m_mediaLibrary, &MMediaLibrary::aboutToReset, this, [this]() {changeView(MPanelMedia::ViewAllSongs);});
-    connect(m_mediaLibrary, &MMediaLibrary::completedLoading, this, [this]() {changeView(MPanelMedia::ViewAllSongs);});
 }
 void MPanelMedia::load(QSettings *settings)
 {
@@ -99,11 +92,8 @@ void MPanelMedia::load(QSettings *settings)
 
     QStringList pidlist;
     pidlist.append(m_mediaLibrary->pid());
-    foreach(MPlaylist *playlist, m_mediaLibrary->playlists()) {
-        pidlist.append(playlist->pid());
-    }
-    foreach(MFolder *folder, m_mediaLibrary->folders()) {
-        pidlist.append(folder->pid());
+    for(MContainer *c : m_mediaLibrary->containers()){
+        pidlist.append(c->pid());
     }
 
     settings->beginGroup("TreeViews");
@@ -111,74 +101,55 @@ void MPanelMedia::load(QSettings *settings)
     QString pidSonglist = settings->value("songlist").toString();
     settings->endGroup();
 
-    if(pidSonglist != m_mediaLibrary->pid() && pidlist.contains(pidSonglist)) {
-        MMediaContainer *container = m_mediaLibrary->getContainer(pidSonglist);
-        changeView(MPanelMedia::ViewContainer, container);
-    }
-    else {
-        changeView(MPanelMedia::ViewAllSongs); // TODO: save previous view
-    }
-
+//    if(pidSonglist != m_mediaLibrary->pid() && pidlist.contains(pidSonglist)) {
+////        MContainer *container = m_mediaLibrary->getContainer(pidSonglist);
+////        changeView(MPanelMedia::ViewContainer, container);
+//    }
+//    else {
+////        changeView(MPanelMedia::ViewAllSongs); // TODO: save previous view
+//    }
 }
 void MPanelMedia::save(QSettings *settings)
 {
     QStringList pidlist;
     pidlist.append(m_mediaLibrary->pid());
-    foreach(MPlaylist *playlist, m_mediaLibrary->playlists()) {
-        pidlist.append(playlist->pid());
-    }
-    foreach(MFolder *folder, m_mediaLibrary->folders()) {
-        pidlist.append(folder->pid());
+    for(MContainer *c : m_mediaLibrary->containers()){
+        pidlist.append(c->pid());
     }
 
     // TODO: implement save method per each panel
     // TODO: eg. m_panelMedia->save(settings);
     settings->beginGroup("TreeViews");
     m_treeSettingsCollection->save(settings, pidlist);
-    settings->setValue("songlist", m_frmSonglist->container()->pid());
+    settings->setValue("songlist", m_frmSonglist->model()->currentPID());
     settings->endGroup();
 }
 
-MPanelMedia::View MPanelMedia::currentView() const
-{
-    return m_currentView;
-}
-MPanelMedia::View MPanelMedia::previousView() const
-{
-    return m_previousView;
-}
-void MPanelMedia::changeView(MPanelMedia::View view, MMediaContainer *container)
+void MPanelMedia::viewChanged()
 {
     m_frmContainers->tree()->selectionModel()->blockSignals(true);
 
-    m_previousView = m_currentView;
-    m_currentView = view;
+    switch(m_frmSonglist->model()->currentView()) {
 
-    if(m_currentView == MPanelMedia::ViewContainer && !container){
-        m_currentView = MPanelMedia::ViewAllSongs;
-    }
-
-    switch(m_currentView) {
-
-        case MPanelMedia::ViewAllSongs: {
+        case MModelSonglist::ViewAllSongs: {
             m_btnSongs->toggle();
+            m_lblView->setText("Library");
             m_frmContainers->tree()->clearSelection();
-            setContainer(m_mediaLibrary, "Library");
             break;
         }
-        case MPanelMedia::ViewArtists: {
+        case MModelSonglist::ViewArtists: {
             m_btnArtists->toggle();
+            m_lblView->setText("Artists");
             m_frmContainers->tree()->clearSelection();
-            setContainer(m_mediaLibrary, "Artists");
             break;
         }
-        case MPanelMedia::ViewAlbums: {
+        case MModelSonglist::ViewAlbums: {
             m_btnAlbums->toggle();
+            m_lblView->setText("Albums");
             m_frmContainers->tree()->clearSelection();
-            setContainer(m_mediaLibrary, "Albums");
             break;
         }
-        case MPanelMedia::ViewContainer: {
+        case MModelSonglist::ViewContainer: {
             m_btnSongs->setAutoExclusive(false);
             m_btnArtists->setAutoExclusive(false);
             m_btnAlbums->setAutoExclusive(false);
@@ -191,10 +162,15 @@ void MPanelMedia::changeView(MPanelMedia::View view, MMediaContainer *container)
             m_btnArtists->setAutoExclusive(true);
             m_btnAlbums->setAutoExclusive(true);
 
-            QModelIndex idx = m_frmContainers->model()->getIndex(container->pid());
-            m_frmContainers->tree()->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::ClearAndSelect);
+            MContainer *container = m_mediaLibrary->getContainer(m_frmSonglist->model()->currentPID());
+            MTreeSettings *treeSettings = m_treeSettingsCollection->getContainer(container->pid());
+            if(!treeSettings){
+                treeSettings = m_treeSettingsCollection->addContainer(container->pid());
+            }
 
-            setContainer(container);
+            m_frmSonglist->setTreeSettings(treeSettings);
+            m_lblView->setText(container->name());
+
             break;
         }
     }
@@ -214,31 +190,4 @@ MFrameContainers *MPanelMedia::frameContainers()
 MTreeSettingsCollection *MPanelMedia::treeSettingsCollection()
 {
     return m_treeSettingsCollection;
-}
-
-void MPanelMedia::changeContainer(MMediaContainer *container)
-{
-    if(container){
-        changeView(MPanelMedia::ViewContainer, container);
-    }
-    else {
-        changeView(MPanelMedia::ViewAllSongs);
-    }
-}
-void MPanelMedia::setContainer(MMediaContainer *container, const QString &title)
-{
-    if(title.isEmpty()){
-        m_lblView->setText(container->name());
-    }
-    else {
-        m_lblView->setText(title);
-    }
-
-    MTreeSettings *treeSettings = m_treeSettingsCollection->getContainer(container->pid());
-    if(!treeSettings){
-        treeSettings = m_treeSettingsCollection->addContainer(container->pid());
-    }
-
-    m_frmSonglist->setTreeSettings(treeSettings);
-    m_frmSonglist->setContainer(container);
 }

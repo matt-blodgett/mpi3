@@ -4,16 +4,15 @@
 #define MMODELSONGLIST_H
 
 
-#include "mglobal.h"
-
-
 #include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
 #include <QIcon>
-
 QT_BEGIN_NAMESPACE
 class QMimeData;
 QT_END_NAMESPACE
+
+
+#include "mglobal.h"
 
 
 class MModelSonglist : public QAbstractItemModel
@@ -54,26 +53,42 @@ public:
     bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
 
 public:
-    void setLibrary(MMediaLibrary *library);
-    void setContainer(MMediaContainer *container);
+    enum View {
+        ViewAllSongs,
+        ViewArtists,
+        ViewAlbums,
+        ViewContainer
+    };
+
+    void viewAllSongs();
+    void viewArtists();
+    void viewAlbums();
+    void viewContainer(MContainer *container);
+
+    MModelSonglist::View currentView() const;
+    Mpi3::ElementType currentType() const;
+    QString currentPID() const;
 
     MMediaLibrary *library() const;
-    MMediaContainer *container() const;
+    void setLibrary(MMediaLibrary *library);
+
     QVector<MSong*> songlist() const;
     MSong *getSong(const QModelIndex &index) const;
 
 private:
+    MContainer *m_currentContainer = nullptr;
+
+    QString m_currentPID;
     QStringList m_headers;
-    MMediaLibrary *m_mediaLibrary = nullptr;
-    MMediaContainer *m_mediaContainer = nullptr;
     QVector<MSong*> m_songlist;
+    MMediaLibrary *m_mediaLibrary = nullptr;
+    MModelSonglist::View m_currentView = MModelSonglist::ViewAllSongs;
+
+signals:
+    void viewChanged();
 
 private slots:
-    void elementModified(MMediaElement *elemModified);
-    void elementInserted(MMediaElement *elemInserted, MMediaContainer *elemParent);
-//    void elementRemoved(MMediaElement *elemRemoved, MMediaContainer *elemParent);
-    void elementMoved(MMediaElement *elemMoved, MMediaContainer *elemParent);
-    void elementDeleted(MMediaElement *elemDeleted);
+
 };
 
 

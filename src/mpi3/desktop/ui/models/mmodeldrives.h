@@ -4,12 +4,12 @@
 #define MMODELDRIVES_H
 
 
-#include "mglobal.h"
-
-
 #include <QAbstractItemModel>
 #include <QStorageInfo>
 #include <QIcon>
+
+
+#include "mglobal.h"
 
 
 class MModelStorageDrives : public QAbstractItemModel

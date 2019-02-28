@@ -4,27 +4,25 @@
 #define MROOT_H
 
 
+#include <QMainWindow>
+
+
 #include "mglobal.h"
+#include "mdesktop.h"
+#ifdef MPI3_BUILD_SHARED
+class MPI3_EXPORT_UI MRootDesktop;
+#endif
+
 
 class MStyleSheet;
 class MMediaLibrary;
 class MAudioEngine;
-
 class MFrameContextBar;
 class MFramePlayback;
 class MPanelLibrary;
 class MPanelDevice;
 class MPanelMedia;
 class MMenuBar;
-
-
-#include <QMainWindow>
-
-
-#include "mdesktop.h"
-#ifdef MPI3_BUILD_SHARED
-class MPI3_EXPORT_UI MRootDesktop;
-#endif
 
 
 class MRootDesktop : public QMainWindow

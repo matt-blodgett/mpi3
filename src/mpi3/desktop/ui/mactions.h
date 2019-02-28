@@ -4,9 +4,6 @@
 #define MACTIONS_H
 
 
-#include <QObject>
-
-
 #include "mglobal.h"
 
 
@@ -22,9 +19,6 @@ namespace MActions
     QString pathLibraryBackups();
 
     void openFileLocation(const QString &path);
-
-
-
 };
 
 

@@ -185,13 +185,13 @@ void MPanelLibrary::setLibrary(MMediaLibrary *library)
 
     m_mediaLibrary = library;
 
-    connect(m_mediaLibrary, &MMediaLibrary::completedSaving, this, &MPanelLibrary::setLibraryInfo);
-    connect(m_mediaLibrary, &MMediaLibrary::completedLoading, this, &MPanelLibrary::setLibraryInfo);
-    connect(m_mediaLibrary, &MMediaLibrary::completedResetting, this, &MPanelLibrary::setLibraryInfo);
+    connect(m_mediaLibrary, &MMediaLibrary::librarySaved, this, &MPanelLibrary::setLibraryInfo);
+    connect(m_mediaLibrary, &MMediaLibrary::libraryLoaded, this, &MPanelLibrary::setLibraryInfo);
+    connect(m_mediaLibrary, &MMediaLibrary::libraryReset, this, &MPanelLibrary::setLibraryInfo);
 
-    connect(m_mediaLibrary, &MMediaLibrary::mediaPathChanged, this, [this](){setLibraryInfo();});
-    connect(m_mediaLibrary, &MMediaLibrary::backupPathChanged, this, [this](){setLibraryInfo();});
-    connect(m_mediaLibrary, &MMediaLibrary::downloadPathChanged, this, [this](){setLibraryInfo();});
+//    connect(m_mediaLibrary, &MMediaLibrary::mediaPathChanged, this, [this](){setLibraryInfo();});
+//    connect(m_mediaLibrary, &MMediaLibrary::backupPathChanged, this, [this](){setLibraryInfo();});
+//    connect(m_mediaLibrary, &MMediaLibrary::downloadPathChanged, this, [this](){setLibraryInfo();});
 
     setLibraryInfo();
 }

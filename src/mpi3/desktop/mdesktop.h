@@ -11,9 +11,4 @@
 #endif
 
 
-#include <QStandardPaths>
-static const QString PathDesktop2 = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
-static const QString PathAppData2 = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/mpi3desktop";
-
-
 #endif

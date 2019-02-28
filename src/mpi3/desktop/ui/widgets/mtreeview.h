@@ -4,16 +4,15 @@
 #define MTREEVIEW_H
 
 
-class MProxyStyle;
-
-
 #include <QTreeView>
 #include <QMap>
-
 QT_BEGIN_NAMESPACE
 class QSortFilterProxyModel;
 class QSettings;
 QT_END_NAMESPACE
+
+
+class MProxyStyle;
 
 
 class MTreeView : public QTreeView
@@ -95,8 +94,8 @@ public:
     MTreeSettings *getContainer(const QString &pid);
     MTreeSettings *addContainer(const QString &pid);
 
-    void save(QSettings *settings, const QStringList &pids);
-    void load(QSettings *settings, const QStringList &pids);
+    void save(QSettings *settings, const QStringList &pidlist);
+    void load(QSettings *settings, const QStringList &pidlist);
 
 private:
     QMap<QString, MTreeSettings*> m_settingsMap;

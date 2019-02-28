@@ -4,10 +4,7 @@
 #define MPANEL_H
 
 
-#include "mglobal.h"
 #include "mframe.h"
-
-
 QT_BEGIN_NAMESPACE
 class QSettings;
 class QGridLayout;
@@ -15,6 +12,9 @@ class QSplitter;
 class QScrollArea;
 class QLabel;
 QT_END_NAMESPACE
+
+
+#include "mglobal.h"
 
 
 class MPanelSection : public MFrame
@@ -88,7 +88,6 @@ private:
 protected:
     void showEvent(QShowEvent *event);
 };
-
 
 
 #endif

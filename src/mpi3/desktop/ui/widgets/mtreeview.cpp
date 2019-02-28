@@ -52,8 +52,6 @@ MTreeContainers::MTreeContainers(QWidget *parent) : MTreeView(parent)
     setRootIsDecorated(true);
     setHeaderHidden(true);
     setSortingEnabled(false);
-
-    setObjectName("TreeViewContainers");
 }
 
 void MTreeContainers::dropEvent(QDropEvent *event)
@@ -241,7 +239,7 @@ MTreeSettings *MTreeSettingsCollection::addContainer(const QString &pid)
     return treeSettings;
 }
 
-void MTreeSettingsCollection::save(QSettings *settings, const QStringList &pids)
+void MTreeSettingsCollection::save(QSettings *settings, const QStringList &pidlist)
 {
     emit aboutToSave();
 
@@ -251,7 +249,7 @@ void MTreeSettingsCollection::save(QSettings *settings, const QStringList &pids)
         QString pidKey = iter.key();
         pidKey.remove(0, 2);
 
-        if(pids.contains(iter.key())){
+        if(pidlist.contains(iter.key())){
 
             settings->beginGroup(pidKey);
 
@@ -278,11 +276,11 @@ void MTreeSettingsCollection::save(QSettings *settings, const QStringList &pids)
 
     emit completedSaving();
 }
-void MTreeSettingsCollection::load(QSettings *settings, const QStringList &pids)
+void MTreeSettingsCollection::load(QSettings *settings, const QStringList &pidlist)
 {
     m_settingsMap.clear();
 
-    foreach(QString pid, pids) {
+    for(QString pid : pidlist) {
 
         QString pidKey = pid;
         pidKey.remove(0, 2);

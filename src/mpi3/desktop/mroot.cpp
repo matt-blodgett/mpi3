@@ -28,22 +28,6 @@
 #include <QDebug>
 
 
-void loopChildren(QObjectList objects){
-    foreach(QObject *child, objects){
-
-        if(child->inherits("QPushButton")){
-            qDebug() << "";
-            qDebug() << "inherits";
-        }
-
-        qDebug() << child->objectName();
-
-        loopChildren(child->children());
-
-    }
-}
-
-
 MRootDesktop::MRootDesktop()
 {
     Q_INIT_RESOURCE(desktop);
@@ -69,12 +53,26 @@ void MRootDesktop::initialize()
     initializeLayout();
     initializeState();
     centralWidget()->show();
+
+    MFolder *f1 = m_mediaLibrary->newFolder();
+    f1->setName("Test Folder");
+
+
+    MFolder *f_test = m_mediaLibrary->getFolder(f1->pid());
+
+    qInfo();
+    qInfo() << (f1==f_test);
+    qInfo();
+
+    for(MFolder *f : m_mediaLibrary->rootFolders()){
+        qDebug() << (f==f1) << (f==f_test);
+    }
 }
 
 void MRootDesktop::initializeObjects()
 {
     m_styleSheet = new MStyleSheet();
-    m_mediaLibrary = new MMediaLibrary();
+    m_mediaLibrary = new MMediaLibrary(this);
     m_audioEngine = new MAudioEngine(this);
 
 //    connect(m_audioEngine, &MAudioEngine::notifyMediaStatus, this, &MRootDesktop::processAudioMediaStatus);
@@ -92,7 +90,7 @@ void MRootDesktop::initializeObjects()
     connect(m_audioEngine, &MAudioEngine::notifyVolume, m_panelPlayback, &MFramePlayback::setVolume);
     connect(m_audioEngine, &MAudioEngine::notifyPosition, m_panelPlayback, &MFramePlayback::setPosition);
     connect(m_audioEngine, &MAudioEngine::notifyEngineStatus, m_panelPlayback, &MFramePlayback::setState);
-    connect(m_mediaLibrary, &MMediaLibrary::elementModified, m_panelPlayback, &MFramePlayback::elementModified);
+//    connect(m_mediaLibrary, &MMediaLibrary::elementModified, m_panelPlayback, &MFramePlayback::elementModified);
 
     m_panelMedia = new MPanelMedia(this);
 //    connect(m_panelPlayback, &MPanelPlayback::nextRequested, m_treeSonglist, &MTreeSonglist::playNextItem);
@@ -330,7 +328,7 @@ void MRootDesktop::initializeState()
 
     settings.beginGroup("RootWindow");
     QString stylePath = settings.value("style", ":/styles/default.qss").toString();
-    QString libraryPath = settings.value("library", MActions::pathLibraryDefault()).toString();
+    QString libraryPath = settings.value("library").toString();
     int context = settings.value("context").toInt();
     int volume = settings.value("volume", 50).toInt();
     m_menuBar->load(&settings);
@@ -342,6 +340,11 @@ void MRootDesktop::initializeState()
     m_panelPlayback->setVolume(volume);
     m_audioEngine->gain(m_panelPlayback->volume());
     m_contextBar->changeView(static_cast<MFrameContextBar::View>(context));
+
+    if(!QFile::exists(libraryPath)){
+        libraryPath = MActions::pathLibraryDefault();
+        m_mediaLibrary->save(libraryPath);
+    }
 
     m_mediaLibrary->load(libraryPath);
     m_panelMedia->setLibrary(m_mediaLibrary);
@@ -435,6 +438,7 @@ void MRootDesktop::paintEvent(QPaintEvent *event)
 }
 void MRootDesktop::closeEvent(QCloseEvent *event)
 {
-    saveSettings();
+    // TODO: fix program crash on saving settings
+//    saveSettings();
     QMainWindow::closeEvent(event);
 }

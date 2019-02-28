@@ -193,7 +193,7 @@ void MPanel::showEvent(QShowEvent *event)
 
     m_frmSplitter->setSizes({180, width()-180});
 
-    foreach(MPanelSection *panel, findChildren<MPanelSection*>()) {
+    for(MPanelSection *panel : findChildren<MPanelSection*>()) {
         panel->setFixedHeight(panel->height());
     }
 

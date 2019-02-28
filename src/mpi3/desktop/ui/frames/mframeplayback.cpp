@@ -298,7 +298,7 @@ void MFramePlayback::setDisplay(MSong *song)
     m_sldPosition->setMaximum(static_cast<int>(song->time()));
     m_lblTitle->setText(song->name());
     m_lblArtist->setText(song->artist());
-    m_lblPositionMax->setText(song->time_str());
+    m_lblPositionMax->setText(song->timeString());
     m_lblPositionMin->setText("0:00");
     m_pidCurrentSong = song->pid();
 }

@@ -4,16 +4,16 @@
 #define MFRAMEPLAYBACK_H
 
 
-#include "mglobal.h"
 #include "mframe.h"
-
-
 QT_BEGIN_NAMESPACE
 class QPushButton;
 class QLineEdit;
 class QSlider;
 class QLabel;
 QT_END_NAMESPACE
+
+
+#include "mglobal.h"
 
 
 class MFramePlayback : public MFrame

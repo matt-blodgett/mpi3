@@ -5,8 +5,6 @@
 
 
 #include "mframe.h"
-
-
 QT_BEGIN_NAMESPACE
 class QSettings;
 class QMainWindow;
