@@ -53,20 +53,6 @@ void MRootDesktop::initialize()
     initializeLayout();
     initializeState();
     centralWidget()->show();
-
-    MFolder *f1 = m_mediaLibrary->newFolder();
-    f1->setName("Test Folder");
-
-
-    MFolder *f_test = m_mediaLibrary->getFolder(f1->pid());
-
-    qInfo();
-    qInfo() << (f1==f_test);
-    qInfo();
-
-    for(MFolder *f : m_mediaLibrary->rootFolders()){
-        qDebug() << (f==f1) << (f==f_test);
-    }
 }
 
 void MRootDesktop::initializeObjects()

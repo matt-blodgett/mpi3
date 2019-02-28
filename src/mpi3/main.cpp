@@ -7,9 +7,6 @@ typedef MRootDevice MRootWindow;
 #endif
 
 
-//Q_ASSERT
-//Q_ASSERT_X
-//Q_CHECK_PTR
 #ifndef MPI3_MESSAGE_PATTERN
 //#   define MPI3_MESSAGE_PATTERN "[%{time yyyyMMdd h:mm:ss.zzz}] %{if-debug}DBUG:%{endif}%{if-info}INFO:%{endif}%{if-warning}WARN:%{endif}%{if-critical}CRIT:%{endif}%{if-fatal}FATAL_ERROR:%{endif} <%{function}> %{message}"
 #   define MPI3_MESSAGE_PATTERN "%{if-debug}DBUG:%{endif}%{if-info}INFO:%{endif}%{if-warning}WARN:%{endif}%{if-critical}CRIT:%{endif}%{if-fatal}FATAL_ERROR:%{endif} <%{function}> %{message}"

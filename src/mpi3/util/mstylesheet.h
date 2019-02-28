@@ -7,9 +7,9 @@
 #include <QString>
 
 
-#include "mutils.h"
+#include "mutil.h"
 #ifdef MPI3_BUILD_SHARED
-class MPI3_EXPORT_UTILS MStyleSheet;
+class MPI3_EXPORT_UTIL MStyleSheet;
 #endif
 
 

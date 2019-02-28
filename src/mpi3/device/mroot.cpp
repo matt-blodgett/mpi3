@@ -3,7 +3,7 @@
 //#include "core/maudioengine.h"
 #include "mmedialibrary.h"
 
-#include "msettings.h"
+#include "util/msettings.h"
 #include "mstyle.h"
 
 #include <QGridLayout>

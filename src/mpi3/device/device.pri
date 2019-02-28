@@ -3,7 +3,7 @@ QT += gui
 QT += widgets
 
 INCLUDEPATH += ../core
-INCLUDEPATH += ../utils
+INCLUDEPATH += ../util
 
 include(ui/ui.pri)
 

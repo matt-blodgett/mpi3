@@ -4,7 +4,7 @@ QT += xml
 QT += widgets
 
 INCLUDEPATH += $$PWD/core
-INCLUDEPATH += $$PWD/utils
-
+INCLUDEPATH += $$PWD/util
 INCLUDEPATH += $$PWD
+
 SOURCES += main.cpp
