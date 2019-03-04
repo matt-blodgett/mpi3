@@ -91,7 +91,7 @@ done
 
 
 if [[ ! "$BUILD_TARGET" ]]; then show_error "missing required build target [--desktop|--device]"; fi
-if [[ ! "$BUILD_LIBS" ]]; then show_error "missing required build target [--static|--shared]"; fi
+if [[ ! "$BUILD_LIBS" ]]; then show_error "missing required library linkage [--static|--shared]"; fi
 if [[ ! "$BUILD_MODE" ]]; then show_error "missing required build mode [--release|--debug]"; fi
 if [[ ! "$BUILD_QMAKE" ]]; then show_error "missing required qmake path [--qmake-path]"; fi
 if [[ ! "$QMAKE_SPEC" ]]; then show_error "missing required qmakespec [--qmake-spec]"; fi
