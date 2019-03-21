@@ -14,16 +14,18 @@
 #include <QDebug>
 
 
-#define TREESTYLE_OUTLINE "QTreeView {border: 1px solid #FFFFFF;} "\
-                            "QTreeView::item:hover "\
-                            "{border-top: 1px solid transparent; "\
-                            "border-bottom: 1px solid transparent;}"
+#define MPI3_TREESTYLE_OUTLINE \
+    "QTreeView {border: 1px solid #FFFFFF;} "\
+    "QTreeView::item:hover "\
+    "{border-top: 1px solid transparent; "\
+    "border-bottom: 1px solid transparent;}"
 
-#define TREESTYLE_REGULAR "QTreeView {border-top: 1px solid #696969; "\
-                            "border-bottom: 1px solid #696969;}"\
-                            "QTreeView::item:hover "\
-                            "{border-top: 1px solid #FFFFFF; "\
-                            "border-bottom: 1px solid #FFFFFF;}"
+#define MPI3_TREESTYLE_REGULAR \
+    "QTreeView {border-top: 1px solid #696969; "\
+    "border-bottom: 1px solid #696969;}"\
+    "QTreeView::item:hover "\
+    "{border-top: 1px solid #FFFFFF; "\
+    "border-bottom: 1px solid #FFFFFF;}"
 
 
 MTreeView::MTreeView(QWidget *parent) : QTreeView(parent)

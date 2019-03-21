@@ -66,8 +66,9 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     m_btnAlbums->setText("Albums");
     m_lblPlaylist->setText("Playlists");
 
-    m_lblPlaylist->setStyleSheet("QLabel {border-top: 1px solid #696969;"
-                                 "font-size: 14px; padding: 4px 2px 4px 2px;}");
+    m_lblPlaylist->setStyleSheet(
+        "QLabel {border-top: 1px solid #696969;"
+        "font-size: 14px; padding: 4px 2px 4px 2px;}");
 
     connect(m_btnSongs, &QRadioButton::released, m_frmSonglist->model(), &MModelSonglist::viewAllSongs);
     connect(m_btnArtists, &QRadioButton::released, m_frmSonglist->model(), &MModelSonglist::viewArtists);
