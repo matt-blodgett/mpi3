@@ -424,7 +424,6 @@ void MRootDesktop::paintEvent(QPaintEvent *event)
 }
 void MRootDesktop::closeEvent(QCloseEvent *event)
 {
-    // TODO: fix program crash on saving settings
-//    saveSettings();
+    saveSettings();
     QMainWindow::closeEvent(event);
 }

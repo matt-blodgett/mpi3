@@ -61,7 +61,6 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     gridDisplay()->setMargin(0);
 
 
-
     m_btnSongs->setText("Songs");
     m_btnArtists->setText("Artists");
     m_btnAlbums->setText("Albums");
@@ -69,7 +68,6 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
 
     m_lblPlaylist->setStyleSheet("QLabel {border-top: 1px solid #696969;"
                                  "font-size: 14px; padding: 4px 2px 4px 2px;}");
-
 
     connect(m_btnSongs, &QRadioButton::released, m_frmSonglist->model(), &MModelSonglist::viewAllSongs);
     connect(m_btnArtists, &QRadioButton::released, m_frmSonglist->model(), &MModelSonglist::viewArtists);
@@ -129,6 +127,14 @@ void MPanelMedia::viewChanged()
 {
     m_frmContainers->tree()->selectionModel()->blockSignals(true);
 
+    QString pid = m_frmSonglist->model()->currentPID();
+    MTreeSettings *treeSettings = m_treeSettingsCollection->getContainer(pid);
+    if(!treeSettings) {
+        treeSettings = m_treeSettingsCollection->addContainer(pid);
+    }
+
+    m_frmSonglist->setTreeSettings(treeSettings);
+
     switch(m_frmSonglist->model()->currentView()) {
 
         case MModelSonglist::ViewAllSongs: {
@@ -162,13 +168,7 @@ void MPanelMedia::viewChanged()
             m_btnArtists->setAutoExclusive(true);
             m_btnAlbums->setAutoExclusive(true);
 
-            MContainer *container = m_mediaLibrary->getContainer(m_frmSonglist->model()->currentPID());
-            MTreeSettings *treeSettings = m_treeSettingsCollection->getContainer(container->pid());
-            if(!treeSettings){
-                treeSettings = m_treeSettingsCollection->addContainer(container->pid());
-            }
-
-            m_frmSonglist->setTreeSettings(treeSettings);
+            MContainer *container = m_mediaLibrary->getContainer(pid);
             m_lblView->setText(container->name());
 
             break;
