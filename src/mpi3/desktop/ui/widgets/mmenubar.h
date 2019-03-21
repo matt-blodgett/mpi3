@@ -12,6 +12,7 @@ class QPushButton;
 QT_END_NAMESPACE
 
 
+// TODO: Move window to directly under mouse cursor position to prevent flickering and jumping
 class MMenuBar : public MFrame
 {
     Q_OBJECT
