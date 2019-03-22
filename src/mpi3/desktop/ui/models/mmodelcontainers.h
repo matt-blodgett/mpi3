@@ -59,6 +59,8 @@ public:
     bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
 
 public:
+    QModelIndexList childIndexes(const QModelIndex &parent = QModelIndex()) const;
+
     QModelIndex getIndex(const QString &pid) const;
     QModelIndex getIndex(MModelItem *pid) const;
     MModelItem *getItem(const QModelIndex &index) const;

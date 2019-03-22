@@ -35,7 +35,7 @@ public:
     explicit MTreeContainers(QWidget *parent = nullptr);
 
 protected:
-    void dropEvent(QDropEvent *event);
+    void dropEvent(QDropEvent *event) override;
 };
 
 

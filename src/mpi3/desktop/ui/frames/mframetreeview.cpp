@@ -143,6 +143,14 @@ MFrameContainers::MFrameContainers(QWidget *parent) : MFrameTreeView(parent)
     connect(m_treeContainers->selectionModel(),
         &QItemSelectionModel::selectionChanged,
         this, [this](){selectContainer();});
+
+    connect(m_modelContainers,
+        &QAbstractItemModel::modelAboutToBeReset,
+        this, &MFrameContainers::modelAboutToBeReset);
+
+    connect(m_modelContainers,
+        &QAbstractItemModel::modelReset,
+        this, &MFrameContainers::modelReset);
 }
 
 void MFrameContainers::iconFolderChanged()
@@ -351,6 +359,31 @@ void MFrameContainers::contextMenuTreeview(const QPoint &point)
 //    if(idx_last.isValid()) {
 //        tree()->selectionModel()->setCurrentIndex(idx_last, QItemSelectionModel::ClearAndSelect);
 //    }
+}
+
+void MFrameContainers::modelAboutToBeReset()
+{
+    qDebug();
+    m_expandedContainers.clear();
+    for(QModelIndex idx : model()->childIndexes()){
+        if(tree()->isExpanded(idx)){
+            m_expandedContainers.append(model()->getPID(idx));
+        }
+    }
+    qDebug();
+}
+void MFrameContainers::modelReset()
+{
+    qDebug();
+    if(model()->rowCount() > 0){
+        for(QString pid : m_expandedContainers){
+            QModelIndex idx = model()->getIndex(pid);
+            tree()->expand(idx);
+        }
+    }
+
+    m_expandedContainers.clear();
+    qDebug();
 }
 
 

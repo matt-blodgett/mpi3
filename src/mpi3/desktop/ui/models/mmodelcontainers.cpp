@@ -330,6 +330,27 @@ bool MModelContainers::removeColumns(int position, int count, const QModelIndex 
     return false;
 }
 
+QModelIndexList MModelContainers::childIndexes(const QModelIndex &parent) const
+{
+    QModelIndexList indexes;
+
+    int rows = rowCount(parent);
+    int cols = columnCount(parent);
+
+    for(int i = 0; i < rows; i++){
+        for(int j = 0; j < cols; j++){
+            QModelIndex child = index(i, j, parent);
+            indexes.append(child);
+
+            for(QModelIndex idx : childIndexes(child)){
+                indexes.append(idx);
+            }
+        }
+    }
+
+    return indexes;
+}
+
 QModelIndex MModelContainers::getIndex(const QString &pid) const
 {
     for(QModelIndex idx : persistentIndexList()) {
@@ -443,7 +464,6 @@ void MModelContainers::populate(MFolder *parentFolder, MModelItem *parentItem)
     for(int i = 0; i < folders.size(); i++) {
         MFolder *childFolder = folders.at(i);
         MModelItem *childItem = parentItem->child(i);
-
         childItem->setData(0, childFolder->name());
         childItem->setIcon(iconFolder);
 
@@ -455,7 +475,6 @@ void MModelContainers::populate(MFolder *parentFolder, MModelItem *parentItem)
     for(int i = 0; i < playlists.size(); i++) {
         MPlaylist *childPlaylist = playlists.at(i);
         MModelItem *childItem = parentItem->child(i + folders.size());
-
         childItem->setData(0, childPlaylist->name());
         childItem->setIcon(iconPlaylist);
 
@@ -576,8 +595,6 @@ void MModelContainers::parentFolderChanged(
     containerDeleted(c);
 
     if(c->type() == Mpi3::FolderElement){
-        containerCreated(c);
-
         MFolder *f = static_cast<MFolder*>(c);
 
         for(MContainer *child : f->childContainers(true)){
@@ -589,7 +606,16 @@ void MModelContainers::parentFolderChanged(
             item = getItem(f->parentFolder()->pid());
         }
 
-        populate(f, item);
+        qDebug() << "beginResetModel";
+        beginResetModel();
+        qDebug() << "removeRows";
+        removeRows(0, rowCount());
+        qDebug() << "m_libItems";
+        m_libItems.clear();
+        qDebug() << "populate";
+        populate();
+        qDebug() << "endResetModel";
+        endResetModel();
     }
     else if(c->type() == Mpi3::PlaylistElement){
         containerCreated(c);

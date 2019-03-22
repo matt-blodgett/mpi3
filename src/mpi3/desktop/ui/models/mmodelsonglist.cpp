@@ -423,6 +423,7 @@ void MModelSonglist::playlistContentsChanged(MPlaylist *childPlaylist)
     }
 }
 
+
 MModelSonglistProxy::MModelSonglistProxy(QObject *parent) : QSortFilterProxyModel(parent)
 {
 

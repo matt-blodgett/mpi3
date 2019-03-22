@@ -80,9 +80,14 @@ private:
     MTreeContainers *m_treeContainers = nullptr;
     MModelContainers *m_modelContainers = nullptr;
 
-private:
     void selectContainer();
     void contextMenuTreeview(const QPoint &point);
+
+    QStringList m_expandedContainers;
+
+private slots:
+    void modelAboutToBeReset();
+    void modelReset();
 
 signals:
     void containerSelected(MContainer *container);
