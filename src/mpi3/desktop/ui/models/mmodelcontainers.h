@@ -25,8 +25,7 @@ public:
     ~MModelContainers() override;
 
 public:
-    // TODO: set these directly instead of
-    // TODO: from mframetreeview.cpp
+    // TODO: set these directly instead of from mframetreeview.cpp
     QIcon iconFolder;
     QIcon iconPlaylist;
 
@@ -61,6 +60,7 @@ public:
 
 public:
     QModelIndex getIndex(const QString &pid) const;
+    QModelIndex getIndex(MModelItem *pid) const;
     MModelItem *getItem(const QModelIndex &index) const;
     MModelItem *getItem(const QString &pid) const;
     QString getPID(const QModelIndex &index) const;
@@ -69,25 +69,44 @@ public:
     MContainer *getContainer(const QModelIndex &index) const;
     MPlaylist *getPlaylist(const QModelIndex &index) const;
     MFolder *getFolder(const QModelIndex &index) const;
-    MFolder *getParentFolder(const QModelIndex &index) const;
 
     MMediaLibrary *library() const;
     void setLibrary(MMediaLibrary *library);
-
-private:
-    void populate(MFolder *parentFolder = nullptr, MModelItem *parentItem = nullptr);
-
-    // TODO: reimplement these
-//    void playlistInserted(MPlaylist *childPlaylist, MMediaElement *parentElement);
-//    void folderInserted(MFolder *childFolder, MMediaElement *parentElement);
 
 private:
     QMap<QString, MModelItem*> m_libItems;
     MMediaLibrary *m_mediaLibrary = nullptr;
     MModelItem *m_rootItem = nullptr;
 
+private:
+    void populate(MFolder *parentFolder = nullptr, MModelItem *parentItem = nullptr);
+
+    void containerCreated(MContainer *c);
+    void containerDeleted(MContainer *c);
+
 private slots:
-    // TODO: connect slots to m_mediaLibrary
+    void folderCreated(MFolder *f);
+    void playlistCreated(MPlaylist *p);
+
+    void folderDeleted(MFolder *f);
+    void playlistDeleted(MPlaylist *p);
+
+    void folderPropertyChanged(
+        MFolder *childFolder,
+        const QString &propertyName,
+        const QVariant &oldPropertyValue,
+        const QVariant &newPropertyValue);
+
+    void playlistPropertyChanged(
+        MPlaylist *childPlaylist,
+        const QString &propertyName,
+        const QVariant &oldPropertyValue,
+        const QVariant &newPropertyValue);
+
+    void parentFolderChanged(
+        MContainer *childContainer,
+        MFolder *oldParentFolder,
+        MFolder *newParentFolder);
 };
 
 

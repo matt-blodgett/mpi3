@@ -26,6 +26,15 @@ public:
     void save(QSettings *settings) override;
 
 public:
+    void viewAllSongs();
+    void viewArtists();
+    void viewAlbums();
+    void viewContainer(MContainer *container);
+
+private:
+    void viewChanged();
+
+public:
     MFrameSonglist *frameSonglist();
     MFrameContainers *frameContainers();
     MTreeSettingsCollection *treeSettingsCollection();
@@ -42,9 +51,6 @@ private:
     QRadioButton *m_btnAlbums = nullptr;
     QLabel *m_lblPlaylist = nullptr;
     QLabel *m_lblView = nullptr;
-
-private slots:
-    void viewChanged();
 };
 
 

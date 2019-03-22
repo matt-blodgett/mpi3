@@ -201,23 +201,13 @@ void MFrameContainers::duplicateItems()
 
 void MFrameContainers::newFolder()
 {
-    QModelIndex currentIndex = tree()->currentIndex();
-
-    MFolder *parentFolder = model()->getParentFolder(currentIndex);
-    MFolder *insertFolder = library()->newFolder(parentFolder);
-    Q_UNUSED(insertFolder)
-
-    tree()->expand(currentIndex);
+    library()->newFolder(getInsertFolder());
+    tree()->expand(tree()->currentIndex());
 }
 void MFrameContainers::newPlaylist()
 {
-    QModelIndex currentIndex = tree()->currentIndex();
-
-    MFolder *parentFolder = model()->getParentFolder(currentIndex);
-    MPlaylist *insertPlaylist = library()->newPlaylist(parentFolder);
-    Q_UNUSED(insertPlaylist)
-
-    tree()->expand(currentIndex);
+    library()->newPlaylist(getInsertFolder());
+    tree()->expand(tree()->currentIndex());
 }
 void MFrameContainers::importPlaylists()
 {
@@ -227,12 +217,19 @@ void MFrameContainers::importPlaylists()
         this, title, MActions::pathDesktop(), files);
 
     if(path != "") {
-        QModelIndex currentIndex = tree()->currentIndex();
-        MFolder *parentFolder = model()->getParentFolder(currentIndex);
-
-        library()->importItunesPlist(path, parentFolder);
-        tree()->expand(currentIndex);
+        library()->importItunesPlist(path, getInsertFolder());
+        tree()->expand(tree()->currentIndex());
     }
+}
+
+MFolder *MFrameContainers::getInsertFolder() {
+    QModelIndex currentIndex = tree()->currentIndex();
+    if(currentIndex.isValid()) {
+        MContainer *c = model()->getContainer(currentIndex);
+        return c->type() == Mpi3::FolderElement ? static_cast<MFolder*>(c) : c->parentFolder();
+    }
+
+    return nullptr;
 }
 
 MTreeContainers *MFrameContainers::tree()
@@ -252,7 +249,9 @@ void MFrameContainers::selectContainer()
 {
     QModelIndex idx = tree()->selectionModel()->currentIndex();
     MContainer *container = model()->getContainer(idx);
-    emit containerSelected(container);
+    if(container) {
+        emit containerSelected(container);
+    }
 }
 void MFrameContainers::contextMenuTreeview(const QPoint &point)
 {
@@ -380,19 +379,18 @@ MFrameSonglist::MFrameSonglist(QWidget *parent) : MFrameTreeView(parent)
     connect(m_treeSonglist->header(),
         &QHeaderView::customContextMenuRequested,
         this, &MFrameSonglist::contextMenuHeader);
-//    connect(this, &QTreeView::doubleClicked, this, &MTreeSonglist::playItem);
-//    connect(header(), &QHeaderView::sortIndicatorChanged, this, &MTreeSonglist::sortChanged);
 }
 
 void MFrameSonglist::importSongs()
 {
-    qDebug();
-//    MPlaylist *parentPlaylist = nullptr;
-//    if(container()->type() == Mpi3::PlaylistElement) {
-//        parentPlaylist = static_cast<MPlaylist*>(container());
-//    }
+    MContainer *container = model()->container();
 
-//    x_importSongs(library(), parentPlaylist);
+    MPlaylist *parentPlaylist = nullptr;
+    if(container && container->type() == Mpi3::PlaylistElement) {
+        parentPlaylist = static_cast<MPlaylist*>(container);
+    }
+
+    x_importSongs(library(), parentPlaylist);
 }
 void MFrameSonglist::downloadSongs()
 {
@@ -466,7 +464,9 @@ MModelSonglistProxy *MFrameSonglist::modelProxy()
 
 void MFrameSonglist::saveTreeSettings()
 {
-    m_treeSettings->setValues(tree(), modelProxy());
+    if(m_treeSettings){
+        m_treeSettings->setValues(tree(), modelProxy());
+    }
 }
 void MFrameSonglist::setTreeSettings(MTreeSettings *settings)
 {
@@ -622,85 +622,3 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
     menu_context->exec(tree()->mapToGlobal(point));
     delete menu_context;
 }
-
-
-
-
-
-
-
-
-//void MTreeSonglist::populateQueue()
-//{
-//    m_playbackQueue.clear();
-
-//    for(int i = 0; i < m_modelSortFilter->rowCount(); i++) {
-//        QModelIndex idx_sort = m_modelSortFilter->index(i, 0);
-//        QModelIndex idx_source = m_modelSortFilter->mapToSource(idx_sort);
-//        m_playbackQueue.append(m_modelSonglist->songAt(idx_source));
-//    }
-//}
-//void MTreeSonglist::sortChanged(int logicalIndex, Qt::SortOrder order)
-//{
-//    Q_UNUSED(logicalIndex)
-//    Q_UNUSED(order)
-
-//    if(m_modelSonglist->container() == m_playbackContainer) {
-//        populateQueue();
-//    }
-//}
-
-//void MTreeSonglist::playItem(const QModelIndex &idx)
-//{
-//    MSong *song = m_modelSonglist->songAt(idx);
-
-//    m_playbackContainer = m_modelSonglist->container();
-//    m_playbackSong = song;
-
-//    populateQueue();
-
-//    QItemSelectionModel::SelectionFlags flag;
-//    flag = QItemSelectionModel::ClearAndSelect;
-//    flag |= QItemSelectionModel::Rows;
-//    selectionModel()->select(idx, flag);
-
-//    emit playbackChanged(song);
-//}
-//void MTreeSonglist::shiftItem(int offset)
-//{
-//    if(m_playbackQueue.size() == 0) {
-//        return;
-//    }
-
-//    int idx_song = m_playbackQueue.indexOf(m_playbackSong);
-//    idx_song += offset;
-
-//    if(idx_song < m_playbackQueue.size() && idx_song >= 0) {
-
-//        MSong *song = m_playbackQueue[idx_song];
-//        m_playbackSong = song;
-
-//        emit playbackChanged(song);
-
-//        if(m_modelSonglist->container() == m_playbackContainer) {
-
-//            QItemSelectionModel::SelectionFlags flag;
-
-//            flag = QItemSelectionModel::Rows;
-//            flag |= QItemSelectionModel::ClearAndSelect;
-
-//            QModelIndex idx_select = m_modelSortFilter->index(idx_song, 0);
-//            selectionModel()->select(idx_select, flag);
-//        }
-//    }
-//}
-
-//void MTreeSonglist::playNextItem()
-//{
-//    shiftItem(1);
-//}
-//void MTreeSonglist::playPrevItem()
-//{
-//    shiftItem(-1);
-//}
-

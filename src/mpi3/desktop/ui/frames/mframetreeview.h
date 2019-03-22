@@ -68,6 +68,9 @@ public:
     void newPlaylist();
     void importPlaylists();
 
+private:
+    MFolder *getInsertFolder();
+
 public:
     MTreeContainers *tree();
     MModelContainers *model();

@@ -187,7 +187,7 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
 
     m_fadeTimer = new QTimer(this);
     m_fadeTimer->setSingleShot(true);
-    connect(m_fadeTimer, &QTimer::timeout, this, [this]() {animateFadeButton();});
+    connect(m_fadeTimer, &QTimer::timeout, this, [this](){animateFadeButton();});
 
     connect(m_btnPlay, &QPushButton::released, this, &MFramePlayback::playClicked);
     connect(m_btnNext, &QPushButton::released, this, &MFramePlayback::nextClicked);

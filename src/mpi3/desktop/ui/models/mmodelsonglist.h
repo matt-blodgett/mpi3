@@ -53,42 +53,32 @@ public:
     bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
 
 public:
-    enum View {
-        ViewAllSongs,
-        ViewArtists,
-        ViewAlbums,
-        ViewContainer
-    };
+    MSong *getSong(const QModelIndex &index) const;
 
-    void viewAllSongs();
-    void viewArtists();
-    void viewAlbums();
-    void viewContainer(MContainer *container);
-
-    MModelSonglist::View currentView() const;
-    Mpi3::ElementType currentType() const;
-    QString currentPID() const;
+    MContainer *container() const;
+    void setContainer(MContainer *container);
 
     MMediaLibrary *library() const;
     void setLibrary(MMediaLibrary *library);
 
-    QVector<MSong*> songlist() const;
-    MSong *getSong(const QModelIndex &index) const;
-
 private:
-    MContainer *m_currentContainer = nullptr;
-
-    QString m_currentPID;
-    QStringList m_headers;
-    QVector<MSong*> m_songlist;
     MMediaLibrary *m_mediaLibrary = nullptr;
-    MModelSonglist::View m_currentView = MModelSonglist::ViewAllSongs;
-
-signals:
-    void viewChanged();
+    MContainer *m_container = nullptr;
+    QVector<MSong*> m_songlist;
+    QStringList m_headers;
 
 private slots:
+    void songCreated(MSong *s);
+    void songDeleted(MSong *s);
 
+    void songPropertyChanged(
+        MSong *childSong,
+        const QString &propertyName,
+        const QVariant &oldPropertyValue,
+        const QVariant &newPropertyValue);
+
+    void playlistContentsChanged(
+        MPlaylist *childPlaylist);
 };
 
 

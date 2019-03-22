@@ -141,19 +141,19 @@ public:
     MSongList songs() const;
 
     void insert(int index, MSong *song);
-//    void insert(int index, const MSongList &songlist);
+    void insert(int index, const MSongList &songlist);
 
     void append(MSong *song);
-//    void append(MSongList songlist);
+    void append(const MSongList &songlist);
 
     void prepend(MSong *song);
-//    void prepend(MSongList songlist);
+    void prepend(const MSongList &songlist);
 
     void move(int from, int to);
-//    void move(QList<int> indexes, int to);
+    void move(QList<int> indexes, int to);
 
     void remove(int index);
-//    void remove(QList<int> indexes);
+    void remove(QList<int> indexes);
 
     void clear();
 
@@ -175,10 +175,10 @@ public:
     friend class MMediaLibrary;
 
 public:
-    MSongList childSongs() const;
-    MFolderList childFolders() const;
-    MPlaylistList childPlaylists() const;
-    MContainerList childContainers() const;
+    MSongList childSongs(bool recursive = false) const;
+    MFolderList childFolders(bool recursive = false) const;
+    MPlaylistList childPlaylists(bool recursive = false) const;
+    MContainerList childContainers(bool recursive = false) const;
 };
 
 
@@ -327,14 +327,14 @@ signals:
         const QVariant &oldPropertyValue,
         const QVariant &newPropertyValue);
 
-    void playlistPropertyChanged(
-        MPlaylist *childPlaylist,
+    void folderPropertyChanged(
+        MFolder *childFolder,
         const QString &propertyName,
         const QVariant &oldPropertyValue,
         const QVariant &newPropertyValue);
 
-    void folderPropertyChanged(
-        MFolder *childFolder,
+    void playlistPropertyChanged(
+        MPlaylist *childPlaylist,
         const QString &propertyName,
         const QVariant &oldPropertyValue,
         const QVariant &newPropertyValue);

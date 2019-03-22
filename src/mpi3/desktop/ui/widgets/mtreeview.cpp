@@ -6,7 +6,6 @@
 #include <QMimeData>
 #include <QDropEvent>
 
-
 #include <QSettings>
 #include <QScrollBar>
 
@@ -17,10 +16,12 @@
 #define MPI3_TREESTYLE_OUTLINE \
     "QTreeView {border: 1px solid #FFFFFF;} "\
     "QTreeView::item:hover "\
-    "{border-top: 1px solid transparent; "\
-    "border-bottom: 1px solid transparent;}"
+    "{border-top: 1px solid #FFFFFF; "\
+    "border-bottom: 1px solid #FFFFFF;}"
+//    "{border-top: 1px solid transparent; "
+//    "border-bottom: 1px solid transparent;}"
 
-#define MPI3_TREESTYLE_REGULAR \
+#define MPI3_TREESTYLE_NORMAL \
     "QTreeView {border-top: 1px solid #696969; "\
     "border-bottom: 1px solid #696969;}"\
     "QTreeView::item:hover "\
@@ -68,29 +69,18 @@ void MTreeContainers::dropEvent(QDropEvent *event)
 
     if(model()->canDropMimeData(event->mimeData(), action, row, col, parentIndex)) {
 
-        QVector<QVariant> currentData;
-        for(int i = 0; i < model()->rowCount(dropIndex); i++) {
-            currentData.append(model()->data(model()->index(i, 0, dropIndex)));
-        }
-
         if(model()->dropMimeData(event->mimeData(), action, row, col, parentIndex)) {
             expand(dropIndex);
 
             if(action == Qt::MoveAction) {
 
                 for(int i = 0; i < model()->rowCount(dropIndex); i++) {
-
                     QModelIndex childIndex = model()->index(i, 0, dropIndex);
                     QVariant indexData = model()->data(childIndex);
-
-                    if(!currentData.contains(indexData)) {
-                        selectionModel()->select(childIndex, QItemSelectionModel::ClearAndSelect);
-                        expand(childIndex);
-                    }
+                    selectionModel()->select(childIndex, QItemSelectionModel::ClearAndSelect);
+                    expand(childIndex);
                 }
             }
-
-            return;
         }
     }
 }
@@ -112,63 +102,67 @@ void MTreeSonglist::autoFitColumns()
     }
 }
 
-//bool MTreeSonglist::allowDragMove()
-//{
-//    bool rootColumn = m_modelSortFilter->sortColumn() == 0;
-//    bool ascending =  m_modelSortFilter->sortOrder() == Qt::AscendingOrder;
-//    bool playlist = m_modelSonglist->container()->type() == Mpi3::PlaylistElement;
-//    return rootColumn && ascending && playlist;
-//}
 void MTreeSonglist::dragEnterEvent(QDragEnterEvent *event)
 {
+    Qt::DropAction action = event->proposedAction();
+
+    QModelIndex dropIndex = indexAt(event->pos());
+    QModelIndex parentIndex = dropIndex.parent();
+
+    int row = dropIndex.row();
+    int col = dropIndex.column();
+
+    if(model()->canDropMimeData(event->mimeData(), action, row, col, parentIndex)){
+        setStyleSheet(MPI3_TREESTYLE_OUTLINE);
+    }
+
     QTreeView::dragEnterEvent(event);
-}
-void MTreeSonglist::dragMoveEvent(QDragMoveEvent *event)
-{
-//    setStyleSheet(allowDragMove() ? TREESTYLE_REGULAR : TREESTYLE_OUTLINE);
-    QTreeView::dragMoveEvent(event);
 }
 void MTreeSonglist::dragLeaveEvent(QDragLeaveEvent *event)
 {
-//    setStyleSheet(TREESTYLE_REGULAR);
+    setStyleSheet(MPI3_TREESTYLE_NORMAL);
     QTreeView::dragLeaveEvent(event);
 }
 void MTreeSonglist::dropEvent(QDropEvent *event)
 {
-//    setStyleSheet(TREESTYLE_REGULAR);
+    Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
 
-//    Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
+    QModelIndex dropIndex = indexAt(event->pos());
+    QModelIndex parentIndex = dropIndex.parent();
 
-//    if(action == Qt::MoveAction && !allowDragMove()) {
-//        return;
-//    }
+    int row = dropIndex.row();
+    int col = dropIndex.column();
 
-//    QModelIndex dropIndex = indexAt(event->pos());
-//    QModelIndex parentIndex = dropIndex.parent();
+    int rowCount = model()->rowCount();
+    int colCount = model()->columnCount();
 
-//    int row = dropIndex.row();
-//    int col = dropIndex.column();
+    if(row < 0){
+        row = rowCount;
+    }
 
-//    int row_count = model()->rowCount();
-//    int sel_rows = selectionModel()->selectedRows().size();
+    if(rowCount == 0){
+        rowCount -= 1;
+    }
 
-//    if(model()->canDropMimeData(event->mimeData(), action, row, col, parentIndex)) {
+    if(model()->canDropMimeData(event->mimeData(), action, row, col, parentIndex)) {
 
-//        if(model()->dropMimeData(event->mimeData(), action, row, col, parentIndex)) {
-//            selectionModel()->clear();
+        if(model()->dropMimeData(event->mimeData(), action, row, col, parentIndex)) {
+            QItemSelectionModel::SelectionFlag flags = QItemSelectionModel::Select;
 
-//            int select_rows = row + action == Qt::MoveAction ? sel_rows : model()->rowCount() - row_count;
-//            for(int r = row; r < select_rows; r++) {
-//                for(int c = 0; c < model()->columnCount(); c++) {
-//                    selectionModel()->select(model()->index(r, c), QItemSelectionModel::Select);
-//                }
-//            }
-//        }
-//    }
+            selectionModel()->clear();
+            int rowDiff = model()->rowCount() - rowCount;
+            for(int r = row; r < row + rowDiff; r++){
+                for(int c = 0; c < colCount; c++){
+                    selectionModel()->select(model()->index(r, c), flags);
+                }
+            }
+        }
+    }
 
-//    event->acceptProposedAction();
-//    event->accept();
+    event->acceptProposedAction();
+    event->accept();
 
+    setStyleSheet(MPI3_TREESTYLE_NORMAL);
     QTreeView::dropEvent(event);
 }
 
@@ -249,10 +243,9 @@ void MTreeSettingsCollection::save(QSettings *settings, const QStringList &pidli
     for(iter = m_settingsMap.begin(); iter != m_settingsMap.end(); iter++){
 
         QString pidKey = iter.key();
-        pidKey.remove(0, 2);
+        pidKey.remove(1, 1);
 
         if(pidlist.contains(iter.key())){
-
             settings->beginGroup(pidKey);
 
             QString strWidths;
@@ -285,10 +278,9 @@ void MTreeSettingsCollection::load(QSettings *settings, const QStringList &pidli
     for(QString pid : pidlist) {
 
         QString pidKey = pid;
-        pidKey.remove(0, 2);
+        pidKey.remove(1, 1);
 
         if(settings->childGroups().contains(pidKey)){
-
             settings->beginGroup(pidKey);
 
             QStringList strWidths = settings->value("widths", QString()).toString().split(";");
