@@ -25,10 +25,6 @@
 #include <QMenuBar>
 
 
-#include <QEvent>
-#include <QMouseEvent>
-
-
 #include <QDebug>
 
 
