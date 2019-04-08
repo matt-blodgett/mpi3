@@ -9,5 +9,5 @@ include(../common.pri)
 
 contains(DEFINES, MPI3_BUILD_SHARED) {
     DEFINES += MPI3_SHARED_LIBRARY_UI
-    LIBS += -lmpi3util -lmpi3core
+    LIBS += -lmpi3core -lmpi3util -lmpi3assets
 }

@@ -39,11 +39,11 @@ namespace Mpi3
 
 #ifdef MPI3_BUILD_SHARED
     MPI3_EXPORT_CORE Q_NAMESPACE
+    MPI3_EXPORT_CORE void initialize();
 #else
     Q_NAMESPACE
-#endif
-
     void initialize();
+#endif
 
     enum ElementType {
         BaseElement,
