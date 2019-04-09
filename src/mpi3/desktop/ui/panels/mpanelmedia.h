@@ -37,13 +37,13 @@ private:
 public:
     MFrameSonglist *frameSonglist();
     MFrameContainers *frameContainers();
-    MTreeSettingsCollection *treeSettingsCollection();
+//    MTreeSettingsCollection *treeSettingsCollection();
 
 private:
     MMediaLibrary *m_mediaLibrary = nullptr;
     MFrameSonglist *m_frmSonglist = nullptr;
     MFrameContainers *m_frmContainers = nullptr;
-    MTreeSettingsCollection *m_treeSettingsCollection = nullptr;
+//    MTreeSettingsCollection *m_treeSettingsCollection = nullptr;
 
 private:
     QRadioButton *m_btnSongs = nullptr;

@@ -290,10 +290,10 @@ public:
     MFolder *newFolder(MFolder *parentFolder = nullptr, const QString &name = QString());
     MPlaylist *newPlaylist(MFolder *parentFolder = nullptr, const QString &name = QString());
 
-    void remove(MSong *s);
-    void remove(MFolder *f);
-    void remove(MPlaylist *p);
-    void remove(MContainer *c);
+    void remove(MSong *childSong);
+    void remove(MFolder *childFolder);
+    void remove(MPlaylist *childPlaylist);
+    void remove(MContainer *childContainer);
     void remove(const QString &pid);
 
 signals:
@@ -313,37 +313,14 @@ signals:
     void folderDeleted(MFolder *childFolder);
     void playlistDeleted(MPlaylist *childPlaylist);
 
-    void playlistContentsChanged(
-        MPlaylist *childPlaylist);
+    void songChanged(MSong *childSong);
+    void folderChanged(MFolder *childFolder);
+    void playlistChanged(MPlaylist *childPlaylist);
+    void libraryChanged(MMediaLibrary *library);
 
-    void parentFolderChanged(
-        MContainer *childContainer,
-        MFolder *oldParentFolder,
-        MFolder *newParentFolder);
+    void playlistContentsChanged(MPlaylist *childPlaylist);
+    void parentFolderChanged(MContainer *childContainer);
 
-    void songPropertyChanged(
-        MSong *childSong,
-        const QString &propertyName,
-        const QVariant &oldPropertyValue,
-        const QVariant &newPropertyValue);
-
-    void folderPropertyChanged(
-        MFolder *childFolder,
-        const QString &propertyName,
-        const QVariant &oldPropertyValue,
-        const QVariant &newPropertyValue);
-
-    void playlistPropertyChanged(
-        MPlaylist *childPlaylist,
-        const QString &propertyName,
-        const QVariant &oldPropertyValue,
-        const QVariant &newPropertyValue);
-
-    void libraryPropertyChanged(
-        MMediaLibrary *library,
-        const QString &propertyName,
-        const QVariant &oldPropertyValue,
-        const QVariant &newPropertyValue);
 };
 
 

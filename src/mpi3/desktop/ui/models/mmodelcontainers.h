@@ -13,7 +13,7 @@ QT_END_NAMESPACE
 
 
 #include "mglobal.h"
-class MModelItem;
+class MModelContainersItem;
 
 
 class MModelContainers : public QAbstractItemModel
@@ -40,51 +40,41 @@ public:
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-
     QModelIndex index(int row, int column, const QModelIndex &index = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &index) const override;
 
+    bool insertRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
+    bool removeRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
+
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::DisplayRole) override;
+
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::DisplayRole) override;
-    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
+private:
+//    QModelIndexList childIndexes(const QModelIndex &parent = QModelIndex()) const;
 
-    bool insertRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool insertColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
+    QList<MModelContainersItem*> allItems(MModelContainersItem *parentItem = nullptr) const;
 
-    bool removeRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool removeColumns(int position, int count, const QModelIndex &parent = QModelIndex()) override;
+    MModelContainersItem *getItem(const QModelIndex &index) const;
+    MModelContainersItem *getItem(const QString &pid) const;
 
 public:
-    QModelIndexList childIndexes(const QModelIndex &parent = QModelIndex()) const;
-
     QModelIndex getIndex(const QString &pid) const;
-    QModelIndex getIndex(MModelItem *pid) const;
-    MModelItem *getItem(const QModelIndex &index) const;
-    MModelItem *getItem(const QString &pid) const;
     QString getPID(const QModelIndex &index) const;
-    QString getPID(MModelItem *item) const;
 
-    MContainer *getContainer(const QModelIndex &index) const;
-    MPlaylist *getPlaylist(const QModelIndex &index) const;
-    MFolder *getFolder(const QModelIndex &index) const;
+    bool itemIsPlaylist(const QModelIndex &index) const;
+    bool itemIsFolder(const QModelIndex &index) const;
 
     MMediaLibrary *library() const;
     void setLibrary(MMediaLibrary *library);
 
 private:
-    QMap<QString, MModelItem*> m_libItems;
+    MModelContainersItem *m_rootItem = nullptr;
     MMediaLibrary *m_mediaLibrary = nullptr;
-    MModelItem *m_rootItem = nullptr;
-
-private:
-    void populate(MFolder *parentFolder = nullptr, MModelItem *parentItem = nullptr);
-
-    void containerCreated(MContainer *c);
-    void containerDeleted(MContainer *c);
 
 private slots:
     void folderCreated(MFolder *f);
@@ -93,22 +83,10 @@ private slots:
     void folderDeleted(MFolder *f);
     void playlistDeleted(MPlaylist *p);
 
-    void folderPropertyChanged(
-        MFolder *childFolder,
-        const QString &propertyName,
-        const QVariant &oldPropertyValue,
-        const QVariant &newPropertyValue);
+    void folderChanged(MFolder *f);
+    void playlistChanged(MPlaylist *p);
 
-    void playlistPropertyChanged(
-        MPlaylist *childPlaylist,
-        const QString &propertyName,
-        const QVariant &oldPropertyValue,
-        const QVariant &newPropertyValue);
-
-    void parentFolderChanged(
-        MContainer *childContainer,
-        MFolder *oldParentFolder,
-        MFolder *newParentFolder);
+    void parentFolderChanged(MContainer *c);
 };
 
 

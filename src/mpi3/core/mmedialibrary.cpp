@@ -102,24 +102,16 @@ void MMediaElement::notifyPropertyChanged(const QString &propertyName, const QVa
                "invalid new property value");
 
     if(this->type() == Mpi3::SongElement){
-        emit parentLibrary->songPropertyChanged(
-            static_cast<MSong*>(this), propertyName,
-                oldPropertyValue, newPropertyValue);
+        emit parentLibrary->songChanged(static_cast<MSong*>(this));
     }
     else if(this->type() == Mpi3::PlaylistElement){
-        emit parentLibrary->playlistPropertyChanged(
-            static_cast<MPlaylist*>(this), propertyName,
-                    oldPropertyValue, newPropertyValue);
+        emit parentLibrary->playlistChanged(static_cast<MPlaylist*>(this));
     }
     else if(this->type() == Mpi3::FolderElement){
-        emit parentLibrary->folderPropertyChanged(
-            static_cast<MFolder*>(this), propertyName,
-                    oldPropertyValue, newPropertyValue);
+        emit parentLibrary->folderChanged(static_cast<MFolder*>(this));
     }
     else if(this->type() == Mpi3::LibraryElement){
-        MMediaLibrary *library = static_cast<MMediaLibrary*>(this);
-            emit library->libraryPropertyChanged(
-                library, propertyName, oldPropertyValue, newPropertyValue);
+        emit parentLibrary->libraryChanged(static_cast<MMediaLibrary*>(this));
     }
 }
 
@@ -228,10 +220,9 @@ void MContainer::setParentFolder(MFolder *folder)
         << oldPID << oldName << "to"
         << newPID << newName;
 
-    MFolder *oldParentFolder = m_parentFolder;
     m_parentFolder = folder;
 
-    emit parentLibrary->parentFolderChanged(this, oldParentFolder, m_parentFolder);
+    emit parentLibrary->parentFolderChanged(this);
 }
 
 
@@ -1214,44 +1205,44 @@ MPlaylist *MMediaLibrary::newPlaylist(MFolder *parentFolder, const QString &name
     return playlist;
 }
 
-void MMediaLibrary::remove(MSong *s)
+void MMediaLibrary::remove(MSong *childSong)
 {
     // TODO: remove song from playlists
-    m_songs.remove(m_songs.indexOf(s));
-    emit songDeleted(s);
+    m_songs.remove(m_songs.indexOf(childSong));
+    emit songDeleted(childSong);
 
     qDebug()
         << "deleted song"
-        << s->m_pid << "-"
-        << s->m_name;
+        << childSong->m_pid << "-"
+        << childSong->m_name;
 }
-void MMediaLibrary::remove(MFolder *f)
+void MMediaLibrary::remove(MFolder *childFolder)
 {
-    m_folders.remove(m_folders.indexOf(f));
-    emit folderDeleted(f);
+    m_folders.remove(m_folders.indexOf(childFolder));
+    emit folderDeleted(childFolder);
 
     qDebug()
         << "deleted folder"
-        << f->m_pid << "-"
-        << f->m_name;
+        << childFolder->m_pid << "-"
+        << childFolder->m_name;
 
-    for(MContainer *c : f->childContainers()){
+    for(MContainer *c : childFolder->childContainers()){
         remove(c);
     }
 }
-void MMediaLibrary::remove(MPlaylist *p)
+void MMediaLibrary::remove(MPlaylist *childPlaylist)
 {
-    m_playlists.remove(m_playlists.indexOf(p));
-    emit playlistDeleted(p);
+    m_playlists.remove(m_playlists.indexOf(childPlaylist));
+    emit playlistDeleted(childPlaylist);
 
     qDebug()
         << "deleted playlist"
-        << p->m_pid << "-"
-        << p->m_name;
+        << childPlaylist->m_pid << "-"
+        << childPlaylist->m_name;
 }
-void MMediaLibrary::remove(MContainer *c)
+void MMediaLibrary::remove(MContainer *childContainer)
 {
-    remove(c->pid());
+    remove(childContainer->pid());
 }
 void MMediaLibrary::remove(const QString &pid)
 {

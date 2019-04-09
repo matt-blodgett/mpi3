@@ -68,13 +68,16 @@ public:
     void newPlaylist();
     void importPlaylists();
 
-private:
-    MFolder *getInsertFolder();
 
 public:
-    MTreeContainers *tree();
-    MModelContainers *model();
-    MMediaLibrary *library();
+    void setLibrary(MMediaLibrary *library = nullptr);
+
+private:
+    MMediaLibrary *m_mediaLibrary = nullptr;
+
+
+private:
+    MFolder *getInsertFolder();
 
 private:
     MTreeContainers *m_treeContainers = nullptr;
@@ -118,10 +121,18 @@ public:
     void openItemFileLocation();
 
 public:
-    MTreeSonglist *tree();
-    MModelSonglist *model();
-    MMediaLibrary *library();
-    MModelSonglistProxy *modelProxy();
+    void setPlaylist(MPlaylist *playlist);
+    void setLibrary(MMediaLibrary *library);
+
+private:
+    MContainer *m_container = nullptr;
+    MMediaLibrary *m_mediaLibrary = nullptr;
+
+public:
+//    MTreeSonglist *tree();
+//    MModelSonglist *model();
+//    MMediaLibrary *library();
+//    MModelSonglistProxy *modelProxy();
 
     void saveTreeSettings();
     void setTreeSettings(MTreeSettings *treeSettings);
@@ -132,7 +143,7 @@ private:
     MModelSonglist *m_modelSonglist = nullptr;
     MModelSonglistProxy *m_modelSonglistProxy = nullptr;
 
-private:
+private slots:
     void contextMenuHeader(const QPoint &point);
     void contextMenuTreeview(const QPoint &point);
 };

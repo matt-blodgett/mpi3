@@ -69,52 +69,54 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     connect(m_btnAlbums, &QRadioButton::released, this, &MPanelMedia::viewAlbums);
     connect(m_frmContainers, &MFrameContainers::containerSelected, this, &MPanelMedia::viewContainer);
 
-    m_treeSettingsCollection = new MTreeSettingsCollection(this);
-    connect(m_treeSettingsCollection, &MTreeSettingsCollection::aboutToSave, m_frmSonglist, &MFrameSonglist::saveTreeSettings);
+//    m_treeSettingsCollection = new MTreeSettingsCollection(this);
+//    connect(m_treeSettingsCollection, &MTreeSettingsCollection::aboutToSave, m_frmSonglist, &MFrameSonglist::saveTreeSettings);
 }
 void MPanelMedia::setLibrary(MMediaLibrary *library)
 {
     m_mediaLibrary = library;
-    m_frmContainers->model()->setLibrary(m_mediaLibrary);
-    m_frmSonglist->model()->setLibrary(m_mediaLibrary);
+    m_frmContainers->setLibrary(m_mediaLibrary);
+    m_frmSonglist->setLibrary(m_mediaLibrary);
 }
 void MPanelMedia::load(QSettings *settings)
 {
+    Q_UNUSED(settings);
     // TODO: save expanded folders
-    m_frmContainers->tree()->expandAll();
+//    m_frmContainers->tree()->expandAll();
 
-    QStringList pidlist;
-    pidlist.append(m_mediaLibrary->pid());
-    for(MContainer *c : m_mediaLibrary->containers()){
-        pidlist.append(c->pid());
-    }
+//    QStringList pidlist;
+//    pidlist.append(m_mediaLibrary->pid());
+//    for(MContainer *c : m_mediaLibrary->containers()){
+//        pidlist.append(c->pid());
+//    }
 
-    settings->beginGroup("TreeViews");
-    m_treeSettingsCollection->load(settings, pidlist);
-    QString pidSonglist = settings->value("songlist").toString();
-    settings->endGroup();
+//    settings->beginGroup("TreeViews");
+//    m_treeSettingsCollection->load(settings, pidlist);
+//    QString pidSonglist = settings->value("songlist").toString();
+//    settings->endGroup();
 
-    if(pidSonglist != "" && pidlist.contains(pidSonglist)){
-        viewContainer(m_mediaLibrary->getContainer(pidSonglist));
-    }
-    else {
+//    if(pidSonglist != "" && pidlist.contains(pidSonglist)){
+//        viewContainer(m_mediaLibrary->getContainer(pidSonglist));
+//    }
+//    else {
         // TODO: save previous view
         viewAllSongs();
-    }
+//    }
 }
 void MPanelMedia::save(QSettings *settings)
 {
-    QStringList pidlist;
-    pidlist.append(m_mediaLibrary->pid());
-    for(MContainer *c : m_mediaLibrary->containers()){
-        pidlist.append(c->pid());
-    }
+    Q_UNUSED(settings);
+//    QStringList pidlist;
+//    pidlist.append(m_mediaLibrary->pid());
+//    for(MContainer *c : m_mediaLibrary->containers()){
+//        pidlist.append(c->pid());
+//    }
 
-    settings->beginGroup("TreeViews");
-    m_treeSettingsCollection->save(settings, pidlist);
-    MContainer *container = m_frmSonglist->model()->container();
-    settings->setValue("songlist", container ? container->pid() : "");
-    settings->endGroup();
+//    settings->beginGroup("TreeViews");
+//    m_treeSettingsCollection->save(settings, pidlist);
+//    MContainer *container = m_frmSonglist->model()->container();
+//    settings->setValue("songlist", container ? container->pid() : "");
+//    settings->endGroup();
 }
 
 void MPanelMedia::viewAllSongs()
@@ -122,7 +124,7 @@ void MPanelMedia::viewAllSongs()
     m_lblView->setText("Library");
     m_btnSongs->toggle();
 
-    m_frmSonglist->model()->setContainer(nullptr);
+    m_frmSonglist->setPlaylist(nullptr);
     viewChanged();
 }
 void MPanelMedia::viewArtists()
@@ -130,7 +132,7 @@ void MPanelMedia::viewArtists()
     m_lblView->setText("Artists");
     m_btnArtists->toggle();
 
-    m_frmSonglist->model()->setContainer(nullptr);
+    m_frmSonglist->setPlaylist(nullptr);
     viewChanged();
 }
 void MPanelMedia::viewAlbums()
@@ -138,7 +140,7 @@ void MPanelMedia::viewAlbums()
     m_lblView->setText("Albums");
     m_btnAlbums->toggle();
 
-    m_frmSonglist->model()->setContainer(nullptr);
+    m_frmSonglist->setPlaylist(nullptr);
     viewChanged();
 }
 void MPanelMedia::viewContainer(MContainer *container)
@@ -148,45 +150,51 @@ void MPanelMedia::viewContainer(MContainer *container)
         return;
     }
 
-    m_btnSongs->setAutoExclusive(false);
-    m_btnArtists->setAutoExclusive(false);
-    m_btnAlbums->setAutoExclusive(false);
+    MPlaylist *playlist = static_cast<MPlaylist*>(container);
 
-    m_btnSongs->setChecked(false);
-    m_btnArtists->setChecked(false);
-    m_btnAlbums->setChecked(false);
+    if(playlist){
+        m_btnSongs->setAutoExclusive(false);
+        m_btnArtists->setAutoExclusive(false);
+        m_btnAlbums->setAutoExclusive(false);
 
-    m_btnSongs->setAutoExclusive(true);
-    m_btnArtists->setAutoExclusive(true);
-    m_btnAlbums->setAutoExclusive(true);
+        m_btnSongs->setChecked(false);
+        m_btnArtists->setChecked(false);
+        m_btnAlbums->setChecked(false);
 
-    m_lblView->setText(container->name());
-    m_frmSonglist->model()->setContainer(container);
-    viewChanged();
+        m_btnSongs->setAutoExclusive(true);
+        m_btnArtists->setAutoExclusive(true);
+        m_btnAlbums->setAutoExclusive(true);
+
+        m_lblView->setText(container->name());
+
+        m_frmSonglist->setPlaylist(playlist);
+
+        viewChanged();
+    }
 }
 
 void MPanelMedia::viewChanged()
 {
-    MContainer *container = m_frmSonglist->model()->container();
-    QString pid = container ? container->pid() : m_mediaLibrary->pid();
-    MTreeSettings *treeSettings = m_treeSettingsCollection->getContainer(pid);
-    if(!treeSettings) {
-        // TODO: Default getContainer() to add if it doesn't exist
-        treeSettings = m_treeSettingsCollection->addContainer(pid);
-    }
-    m_frmSonglist->setTreeSettings(treeSettings);
+//    MContainer *container = m_frmSonglist->model()->container();
+//    QString pid = container ? container->pid() : m_mediaLibrary->pid();
+//    MTreeSettings *treeSettings = m_treeSettingsCollection->getContainer(pid);
+//    if(!treeSettings) {
+//        // TODO: Default getContainer() to add if it doesn't exist
+//        treeSettings = m_treeSettingsCollection->addContainer(pid);
+//    }
+//    m_frmSonglist->setTreeSettings(treeSettings);
 
-    m_frmContainers->tree()->selectionModel()->blockSignals(true);
-    if(container){
-        QModelIndex idx = m_frmContainers->model()->getIndex(container->pid());
-        QItemSelectionModel::SelectionFlag flag = QItemSelectionModel::ClearAndSelect;
-        m_frmContainers->tree()->selectionModel()->select(idx, flag);
-    }
-    else {
-        m_frmContainers->tree()->clearSelection();
-    }
-    m_frmContainers->tree()->selectionModel()->blockSignals(false);
-    m_frmContainers->tree()->update();
+//    m_frmContainers->tree()->selectionModel()->blockSignals(true);
+//    if(container){
+//        QModelIndex idx = m_frmContainers->model()->getIndex(container->pid());
+//        QItemSelectionModel::SelectionFlag flag = QItemSelectionModel::ClearAndSelect;
+//        m_frmContainers->tree()->selectionModel()->select(idx, flag);
+//    }
+//    else {
+//        m_frmContainers->tree()->clearSelection();
+//    }
+//    m_frmContainers->tree()->selectionModel()->blockSignals(false);
+//    m_frmContainers->tree()->update();
 }
 
 MFrameSonglist *MPanelMedia::frameSonglist()
@@ -197,7 +205,7 @@ MFrameContainers *MPanelMedia::frameContainers()
 {
     return m_frmContainers;
 }
-MTreeSettingsCollection *MPanelMedia::treeSettingsCollection()
-{
-    return m_treeSettingsCollection;
-}
+//MTreeSettingsCollection *MPanelMedia::treeSettingsCollection()
+//{
+//    return m_treeSettingsCollection;
+//}

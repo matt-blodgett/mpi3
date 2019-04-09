@@ -53,6 +53,25 @@ void MRootDesktop::initialize()
     initializeLayout();
     initializeState();
     centralWidget()->show();
+
+
+//    m_mediaLibrary->newPlaylist(m_mediaLibrary->folders().at(1));
+
+//    m_mediaLibrary->reset();
+
+//    MFolder *folder1 = m_mediaLibrary->newFolder();
+//    MFolder *folder2 = m_mediaLibrary->newFolder();
+
+//    folder2->setParentFolder(folder1);
+
+//    m_mediaLibrary->newPlaylist();
+//    m_mediaLibrary->newPlaylist(folder1);
+
+
+//    MFolder *f = m_mediaLibrary->newFolder();
+//    m_mediaLibrary->newPlaylist(f);
+
+
 }
 
 void MRootDesktop::initializeObjects()
@@ -247,10 +266,10 @@ void MRootDesktop::initializeMainMenu()
     connect(act_editCopy, &QAction::triggered, m_panelMedia->frameSonglist(), &MFrameSonglist::copyItems);
     connect(act_editPaste, &QAction::triggered, m_panelMedia->frameSonglist(), &MFrameSonglist::pasteItems);
 
-    MTreeSonglist *treeSonglist = m_panelMedia->frameSonglist()->tree();
-    QItemSelectionModel *treeSonglistItems = m_panelMedia->frameSonglist()->tree()->selectionModel();
-    connect(act_treeSelectAll, &QAction::triggered, this, [=](){treeSonglist->selectAll();});
-    connect(act_treeSelectNone, &QAction::triggered, this, [=](){treeSonglistItems->clear();});
+//    MTreeSonglist *treeSonglist = m_panelMedia->frameSonglist()->tree();
+//    QItemSelectionModel *treeSonglistItems = m_panelMedia->frameSonglist()->tree()->selectionModel();
+//    connect(act_treeSelectAll, &QAction::triggered, this, [=](){treeSonglist->selectAll();});
+//    connect(act_treeSelectNone, &QAction::triggered, this, [=](){treeSonglistItems->clear();});
 
 //    connect(act_raspiConnect
 
@@ -258,12 +277,12 @@ void MRootDesktop::initializeMainMenu()
 
 //    connect(act_helpAbout
 
-    connect(treeSonglistItems, &QItemSelectionModel::selectionChanged, act_editCut,
-            [=](){act_editCut->setDisabled(!treeSonglistItems->selectedRows().size());});
-    connect(treeSonglistItems, &QItemSelectionModel::selectionChanged, act_editCopy,
-            [=](){act_editCopy->setDisabled(!treeSonglistItems->selectedRows().size());});
-    connect(treeSonglistItems, &QItemSelectionModel::selectionChanged, act_editDelete,
-            [=](){act_editDelete->setDisabled(!treeSonglistItems->selectedRows().size());});
+//    connect(treeSonglistItems, &QItemSelectionModel::selectionChanged, act_editCut,
+//            [=](){act_editCut->setDisabled(!treeSonglistItems->selectedRows().size());});
+//    connect(treeSonglistItems, &QItemSelectionModel::selectionChanged, act_editCopy,
+//            [=](){act_editCopy->setDisabled(!treeSonglistItems->selectedRows().size());});
+//    connect(treeSonglistItems, &QItemSelectionModel::selectionChanged, act_editDelete,
+//            [=](){act_editDelete->setDisabled(!treeSonglistItems->selectedRows().size());});
 
     act_editCut->setDisabled(true);
     act_editCopy->setDisabled(true);
@@ -327,6 +346,7 @@ void MRootDesktop::initializeState()
     m_audioEngine->gain(m_panelPlayback->volume());
     m_contextBar->changeView(static_cast<MFrameContextBar::View>(context));
 
+    // Need to create the temp file if it doesn't exist
     if(!QFile::exists(libraryPath)){
         libraryPath = MActions::pathLibraryDefault();
         m_mediaLibrary->save(libraryPath);
