@@ -1,5 +1,8 @@
 #include "mframeplayback.h"
 #include "mmedialibrary.h"
+
+#include "mformat.h"
+
 #include "mstyle.h"
 
 #include <QGridLayout>
@@ -262,7 +265,8 @@ void MFramePlayback::setPosition(double position)
 {
     m_sldPosition->blockSignals(true);
     m_sldPosition->setValue(static_cast<int>(position));
-    m_lblPositionMin->setText(MMediaLibrary::timeToString(position));
+    m_lblPositionMin->setText(Mpi3::Util::timeToString(position));
+//    m_lblPositionMin->setText(MMediaLibrary::timeToString(position));
     m_sldPosition->blockSignals(false);
 }
 void MFramePlayback::setState(Mpi3::EngineState state)
@@ -298,7 +302,7 @@ void MFramePlayback::setDisplay(MSong *song)
     m_sldPosition->setMaximum(static_cast<int>(song->time()));
     m_lblTitle->setText(song->name());
     m_lblArtist->setText(song->artist());
-    m_lblPositionMax->setText(song->timeString());
+    m_lblPositionMax->setText(Mpi3::Util::timeToString(song->time()));
     m_lblPositionMin->setText("0:00");
     m_pidCurrentSong = song->pid();
 }

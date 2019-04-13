@@ -121,6 +121,10 @@ void MPanelMedia::save(QSettings *settings)
 
 void MPanelMedia::viewAllSongs()
 {
+    m_frmContainers->blockSignals(true);
+    m_frmContainers->tree()->clearSelection();
+    m_frmContainers->blockSignals(false);
+
     m_lblView->setText("Library");
     m_btnSongs->toggle();
 
@@ -129,6 +133,10 @@ void MPanelMedia::viewAllSongs()
 }
 void MPanelMedia::viewArtists()
 {
+    m_frmContainers->blockSignals(true);
+    m_frmContainers->tree()->clearSelection();
+    m_frmContainers->blockSignals(false);
+
     m_lblView->setText("Artists");
     m_btnArtists->toggle();
 
@@ -137,6 +145,10 @@ void MPanelMedia::viewArtists()
 }
 void MPanelMedia::viewAlbums()
 {
+    m_frmContainers->blockSignals(true);
+    m_frmContainers->tree()->clearSelection();
+    m_frmContainers->blockSignals(false);
+
     m_lblView->setText("Albums");
     m_btnAlbums->toggle();
 
@@ -150,9 +162,9 @@ void MPanelMedia::viewContainer(MContainer *container)
         return;
     }
 
-    MPlaylist *playlist = static_cast<MPlaylist*>(container);
+    if(container->type() == Mpi3::PlaylistElement){
+        MPlaylist *playlist = static_cast<MPlaylist*>(container);
 
-    if(playlist){
         m_btnSongs->setAutoExclusive(false);
         m_btnArtists->setAutoExclusive(false);
         m_btnAlbums->setAutoExclusive(false);
@@ -165,7 +177,7 @@ void MPanelMedia::viewContainer(MContainer *container)
         m_btnArtists->setAutoExclusive(true);
         m_btnAlbums->setAutoExclusive(true);
 
-        m_lblView->setText(container->name());
+        m_lblView->setText(playlist->name());
 
         m_frmSonglist->setPlaylist(playlist);
 

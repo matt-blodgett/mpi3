@@ -19,35 +19,6 @@ static void xmlWriteElement(QDomDocument &xml, QDomElement &elem, const QString 
     e.appendChild(t);
     elem.appendChild(e);
 }
-static QMap<QString, QVariant> plistDict(const QDomNode &parentNode)
-{
-    QMap<QString, QVariant> dict;
-    for(int i = 0; i < parentNode.childNodes().size(); i++) {
-        QDomNode childNode = parentNode.childNodes().at(i);
-
-        if(childNode.toElement().tagName() == "key") {
-
-            QDomElement keyNode = childNode.toElement();
-            QDomElement valueNode = parentNode.childNodes().at(i + 1).toElement();
-
-            if(valueNode.tagName() == "dict") {
-                dict[keyNode.text()] = plistDict(valueNode);
-            }
-            else if(valueNode.tagName() == "array") {
-                QList<QVariant> arrayItems;
-                for(int cnode = 0; cnode < valueNode.childNodes().size(); cnode++) {
-                    arrayItems.append(plistDict(valueNode.childNodes().at(cnode)));
-                }
-                dict[keyNode.text()] = arrayItems;
-            }
-            else {
-                dict[keyNode.text()] = parentNode.childNodes().at(i + 1).toElement().text();
-            }
-        }
-    }
-
-    return dict;
-}
 
 
 MMediaElement::MMediaElement(QObject *parent) : QObject(parent)
@@ -149,15 +120,6 @@ double MSong::time() const
 double MSong::size() const
 {
     return m_size;
-}
-
-QString MSong::timeString() const
-{
-    return MMediaLibrary::timeToString(m_time);
-}
-QString MSong::sizeString() const
-{
-    return MMediaLibrary::sizeToString(m_size);
 }
 
 int MSong::bitRate() const
@@ -816,221 +778,6 @@ void MMediaLibrary::reset()
     emit libraryReset();
 }
 
-bool MMediaLibrary::importItunesPlist(const QString &filePath, MFolder *parentFolder)
-{
-    qInfo() << "loading itunes playlists from file" << filePath;
-
-    QFile loadFile(filePath);
-    if(!loadFile.open(QIODevice::ReadOnly)) {
-        qWarning() << "error opening file for read" << filePath;
-        return false;
-    }
-
-    QDomDocument xml;
-    if(!xml.setContent(loadFile.readAll())){
-        qWarning() << "xml parsing error in itunes playlist file" << filePath;
-        return false;
-    }
-
-    QDomNode root = xml.documentElement().childNodes().at(0);
-    QMap<QString, QVariant> rootDict = plistDict(root);
-
-    QMap<QString, MSong*> songs;
-    QMap<QString, QVariant> plistTracks = rootDict["Tracks"].toMap();
-    for(int i = 0; i < plistTracks.keys().size(); i++) {
-        QString key = plistTracks.keys().at(i);
-        QMap<QString, QVariant> track = plistTracks[key].toMap();
-
-        MSong *song = new MSong(this);
-        song->m_name = track["Name"].toString();
-        song->m_added = track["Date Added"].toString();
-        song->m_artist = track["Artist"].toString();
-        song->m_album = track["Album"].toString();
-        song->m_path = track["Location"].toString();
-        song->m_kind = track["Kind"].toString();
-
-        song->m_time = track["Total Time"].toInt();
-        song->m_size = track["Size"].toInt();
-        song->m_bitRate = track["Bit Rate"].toInt();
-        song->m_sampleRate = track["Sample Rate"].toInt();
-
-        song->m_path = QDir::toNativeSeparators(song->m_path);
-        song->m_path = QUrl(song->m_path).toLocalFile();
-        QString localHost = "\\\\localhost\\";
-        if(song->m_path.startsWith(localHost)) {
-            song->m_path = song->m_path.right(song->m_path.size() - localHost.size());
-        }
-
-        songs[key] = song;
-
-        m_songs.append(song);
-        emit songCreated(song);
-    }
-
-    QList<QVariant> plistPlaylists = rootDict["Playlists"].toList();
-    for(int i = 0; i < plistPlaylists.size(); i++) {
-        QMap<QString, QVariant> itunesPlaylist = plistPlaylists.at(i).toMap();
-
-        MPlaylist *playlist = new MPlaylist(this);
-        playlist->m_name = itunesPlaylist["Name"].toString();
-        playlist->m_added = "";
-        playlist->m_parentFolder = parentFolder;
-
-        QList<QVariant> playlistTrackIDs = itunesPlaylist["Playlist Items"].toList();
-        for(int j = 0; j < playlistTrackIDs.size(); j++) {
-            QMap<QString, QVariant> trackID = playlistTrackIDs.at(j).toMap();
-            playlist->m_songs.append(songs[trackID["Track ID"].toString()]);
-        }
-
-        m_playlists.append(playlist);
-        emit playlistCreated(playlist);
-    }
-
-    qInfo()
-        << "loaded itunes playlist file" << filePath
-        << "with" << plistPlaylists.size() << "playlists"
-        << "and" << plistTracks.size() << "songs";
-
-    return true;
-}
-
-bool MMediaLibrary::validMediaFiles(QUrl mediaUrl)
-{
-    if(mediaUrl.toString().endsWith(".mp3")
-        || mediaUrl.toString().endsWith(".wav")) {
-        return true;
-    }
-
-    return false;
-}
-bool MMediaLibrary::validMediaFiles(QList<QUrl> mediaUrls)
-{
-    if(mediaUrls.size() == 0) {
-        return false;
-    }
-
-    for(int i = 0; i < mediaUrls.size(); i++) {
-        if(!validMediaFiles(mediaUrls.at(i))) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-MSongList MMediaLibrary::songsFromBytes(QByteArray pidBytes) const
-{
-    QStringList pidStrings;
-
-    int i = 0;
-    int length = MPI3_PID_STRING_LENGTH;
-    while(i + length <= pidBytes.size()) {
-        pidStrings.append(pidBytes.mid(i, length));
-        i += length;
-    }
-
-    MSongList extractedSongs;
-    for(QString p : pidStrings) {
-        MSong *s = getSong(p);
-        if(s && !extractedSongs.contains(s)) {
-            extractedSongs.append(s);
-        }
-    }
-
-    return extractedSongs;
-}
-QByteArray MMediaLibrary::songsToBytes(MSongList songlist)
-{
-    QByteArray pidBytes;
-    for(MSong *s : songlist) {
-        pidBytes.append(s->pid());
-    }
-
-    return pidBytes;
-}
-QList<QUrl> MMediaLibrary::songsToPaths(MSongList songlist)
-{
-    QList<QUrl> songUrls;
-    for(MSong *s : songlist) {
-        songUrls.append(s->path());
-    }
-
-    return songUrls;
-}
-
-QString MMediaLibrary::timeToString(double time)
-{
-    int sctime = static_cast<int>(time);
-    int seconds = sctime % 60;
-    int minutes = (sctime - seconds) / 60;
-
-    QString secs = QString::number(seconds);
-    QString mins = QString::number(minutes);
-
-    if(secs.size() == 1) {
-        secs.prepend("0");
-    }
-
-    return QString(mins + ":" + secs);
-}
-QString MMediaLibrary::sizeToString(double size, int prec)
-{
-    const QList<QString> fileSizeSuffixes = {"KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
-
-    QString unit("B");
-    QStringListIterator i(fileSizeSuffixes);
-    while(size >= 1024.0 && i.hasNext()) {
-        unit = i.next();
-        size /= 1024.0;
-    }
-
-    return QString().setNum(size,'f', prec) + " " + unit;
-}
-QString MMediaLibrary::percentToString(double percent, int prec)
-{
-    return QString().setNum(percent * 100.0,'f', prec) + " %";
-}
-
-MMediaLibrary *MMediaLibrary::createRaspiVolume(const QString &rootPath)
-{
-    qInfo() << "creating raspberrypi library file" << rootPath;
-
-    MMediaLibrary *raspiLib = new MMediaLibrary();
-    raspiLib->m_pid = generatePID(Mpi3::LibraryElement);
-    raspiLib->m_name = "New Raspi Library";
-    raspiLib->m_added = "14/03/1994";
-
-    QString rootDir = rootPath + ".mpi3";
-    QString libPath = rootDir + "/lib.mpi3lib";
-
-    QDir().mkdir(rootDir);
-    raspiLib->save(libPath);
-
-    return raspiLib;
-}
-MMediaLibrary *MMediaLibrary::loadRaspiVolume(const QString &rootPath)
-{
-    qInfo() << "loading raspberrypi library file" << rootPath;
-
-    MMediaLibrary *raspiLib = nullptr;
-
-    QString rootDir = rootPath + ".mpi3";
-    QString libPath = rootDir + "/lib.mpi3lib";
-
-    if(QDir().exists(libPath)) {
-        raspiLib = new MMediaLibrary();
-        raspiLib->load(libPath);
-    }
-
-    return raspiLib;
-}
-bool MMediaLibrary::detectRaspiVolume(const QString &rootPath)
-{
-    QString rootDir = rootPath + ".mpi3";
-    QString libPath = rootDir + "/lib.mpi3lib";
-    return QDir().exists(libPath);
-}
-
 QString MMediaLibrary::generatePID(Mpi3::ElementType elementType) const
 {
     QString pid;
@@ -1219,6 +966,14 @@ void MMediaLibrary::remove(MSong *childSong)
 void MMediaLibrary::remove(MFolder *childFolder)
 {
     m_folders.remove(m_folders.indexOf(childFolder));
+
+    for(MPlaylist *p : childFolder->childPlaylists(true)){
+        m_playlists.remove(m_playlists.indexOf(p));
+    }
+    for(MFolder *f : childFolder->childFolders(true)){
+        m_folders.remove(m_folders.indexOf(f));
+    }
+
     emit folderDeleted(childFolder);
 
     qDebug()
@@ -1226,9 +981,7 @@ void MMediaLibrary::remove(MFolder *childFolder)
         << childFolder->m_pid << "-"
         << childFolder->m_name;
 
-    for(MContainer *c : childFolder->childContainers()){
-        remove(c);
-    }
+
 }
 void MMediaLibrary::remove(MPlaylist *childPlaylist)
 {

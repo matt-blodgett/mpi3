@@ -17,35 +17,12 @@
 #include <QDebug>
 
 
-void x_importSongs(MMediaLibrary *library, MPlaylist *parentPlaylist = nullptr)
-{
-    QString title = "Add Media Files";
-    QString files = "All Files (*.*)";
-    QStringList paths = QFileDialog::getOpenFileNames(
-        nullptr, title, MActions::pathDesktop(), files);
-
-    for(QString p : paths){
-        MSong *s = library->newSong(p);
-        if(parentPlaylist){
-            parentPlaylist->append(s);
-        }
-    }
-}
-
 
 MFrameTreeView::MFrameTreeView(QWidget *parent) : MFrame(parent)
 {
 
 }
 
-void MFrameTreeView::importSongs()
-{
-
-}
-void MFrameTreeView::downloadSongs()
-{
-
-}
 void MFrameTreeView::itemDetails()
 {
 
@@ -165,14 +142,6 @@ void MFrameContainers::iconPlaylistChanged()
     m_modelContainers->iconPlaylist = QIcon(QPixmap(m_icnPlaylist));
 }
 
-void MFrameContainers::importSongs()
-{
-    qDebug();
-}
-void MFrameContainers::downloadSongs()
-{
-    qDebug();
-}
 void MFrameContainers::itemDetails()
 {
     qDebug();
@@ -195,7 +164,7 @@ void MFrameContainers::pasteItems()
 }
 void MFrameContainers::deleteItems()
 {
-    qDebug();
+    m_mediaLibrary->remove(m_modelContainers->getPID(m_treeContainers->currentIndex()));
 }
 void MFrameContainers::duplicateItems()
 {
@@ -204,8 +173,7 @@ void MFrameContainers::duplicateItems()
 
 void MFrameContainers::newFolder()
 {
-//    m_mediaLibrary->newFolder(getInsertFolder());
-//    m_mediaLibrary->newFolder(m_mediaLibrary->folders().at(0));
+    m_mediaLibrary->newFolder(getInsertFolder());
 }
 void MFrameContainers::newPlaylist()
 {
@@ -225,13 +193,17 @@ void MFrameContainers::importPlaylists()
 //    }
 }
 
+MTreeContainers *MFrameContainers::tree() const
+{
+    return m_treeContainers;
+}
+
 void MFrameContainers::setLibrary(MMediaLibrary *library)
 {
     m_mediaLibrary = library;
     m_modelContainers->setLibrary(m_mediaLibrary);
     m_treeContainers->expandAll();
 }
-
 
 MFolder *MFrameContainers::getInsertFolder()
 {
@@ -255,7 +227,6 @@ MFolder *MFrameContainers::getInsertFolder()
     return insertFolder;
 }
 
-
 void MFrameContainers::selectContainer()
 {
     QModelIndex idx = m_treeContainers->selectionModel()->currentIndex();
@@ -277,8 +248,6 @@ void MFrameContainers::contextMenuTreeview(const QPoint &point)
     QAction *act_newFolder = new QAction(menu_context);
     QAction *act_newPlaylist = new QAction(menu_context);
     QAction *act_importPlaylists = new QAction(menu_context);
-    QAction *act_importSongs = new QAction(menu_context);
-    QAction *act_downloadSongs = new QAction(menu_context);
     QAction *act_editItem = new QAction(menu_context);
     QAction *act_itemDetails = new QAction(menu_context);
     QAction *act_duplicateItems = new QAction(menu_context);
@@ -291,8 +260,6 @@ void MFrameContainers::contextMenuTreeview(const QPoint &point)
     act_newFolder->setText("New Folder");
     act_newPlaylist->setText("New Playlist");
     act_importPlaylists->setText("Import Playlists");
-    act_importSongs->setText("Import Songs");
-    act_downloadSongs->setText("Download Songs");
     act_editItem->setText("Edit");
     act_itemDetails->setText("Details...");
     act_duplicateItems->setText("Duplicate");
@@ -308,8 +275,6 @@ void MFrameContainers::contextMenuTreeview(const QPoint &point)
     menu_context->addAction(act_newPlaylist);
     menu_context->addSeparator();
     menu_context->addAction(act_importPlaylists);
-    menu_context->addAction(act_importSongs);
-    menu_context->addAction(act_downloadSongs);
     menu_context->addSeparator();
     menu_context->addAction(act_duplicateItems);
     menu_context->addAction(act_editItem);
@@ -329,8 +294,6 @@ void MFrameContainers::contextMenuTreeview(const QPoint &point)
         act_collapseItem->setDisabled(true);
     }
     else if(m_modelContainers->itemIsFolder(idx_at)){
-        act_importSongs->setDisabled(true);
-        act_downloadSongs->setDisabled(true);
         act_duplicateItems->setDisabled(true);
     }
     else {
@@ -351,8 +314,6 @@ void MFrameContainers::contextMenuTreeview(const QPoint &point)
     connect(act_newFolder, &QAction::triggered, this, [this](){newFolder();});
 
     connect(act_importPlaylists, &QAction::triggered, this, [this](){importPlaylists();});
-    connect(act_importSongs, &QAction::triggered, this, [this](){importSongs();});
-    connect(act_downloadSongs, &QAction::triggered, this, [this](){downloadSongs();});
 
     connect(act_duplicateItems, &QAction::triggered, this, &MFrameContainers::duplicateItems);
     connect(act_editItem, &QAction::triggered, this, &MFrameContainers::editItem);
@@ -409,14 +370,15 @@ void MFrameContainers::modelReset()
 void MFrameSonglist::setLibrary(MMediaLibrary *library)
 {
     m_mediaLibrary = library;
+    m_modelSonglist->setLibrary(m_mediaLibrary);
 }
 void MFrameSonglist::setPlaylist(MPlaylist *playlist)
 {
     if(!playlist){
-        m_modelSonglist->setSonglist(m_mediaLibrary->songs());
+        m_modelSonglist->setSonglist(m_mediaLibrary->songs(), m_mediaLibrary->pid());
     }
     else {
-        m_modelSonglist->setSonglist(playlist->songs());
+        m_modelSonglist->setSonglist(playlist->songs(), playlist->pid());
     }
 }
 
@@ -450,23 +412,7 @@ MFrameSonglist::MFrameSonglist(QWidget *parent) : MFrameTreeView(parent)
         this, &MFrameSonglist::contextMenuHeader);
 }
 
-void MFrameSonglist::importSongs()
-{
-    qDebug();
 
-//    MContainer *container = model()->container();
-
-//    MPlaylist *parentPlaylist = nullptr;
-//    if(container && container->type() == Mpi3::PlaylistElement) {
-//        parentPlaylist = static_cast<MPlaylist*>(container);
-//    }
-
-//    x_importSongs(library(), parentPlaylist);
-}
-void MFrameSonglist::downloadSongs()
-{
-    qDebug();
-}
 void MFrameSonglist::itemDetails()
 {
     qDebug();
@@ -492,6 +438,29 @@ void MFrameSonglist::deleteItems()
     qDebug();
 }
 void MFrameSonglist::duplicateItems()
+{
+    qDebug();
+}
+
+void MFrameSonglist::importSongs()
+{
+    qDebug();
+
+    MPlaylist *parentPlaylist = m_mediaLibrary->getPlaylist(m_modelSonglist->currentPID());
+
+    QString title = "Add Media Files";
+    QString files = "All Files (*.*)";
+    QStringList paths = QFileDialog::getOpenFileNames(
+        nullptr, title, MActions::pathDesktop(), files);
+
+    for(QString p : paths){
+        MSong *s = m_mediaLibrary->newSong(p);
+        if(parentPlaylist){
+            parentPlaylist->append(s);
+        }
+    }
+}
+void MFrameSonglist::downloadSongs()
 {
     qDebug();
 }
@@ -640,6 +609,7 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
     menu_context->addAction(act_deleteItem);
 
     QModelIndex idx = m_treeSonglist->indexAt(point);
+
     if(!idx.isValid()) {
         act_playItem->setDisabled(true);
         act_editItem->setDisabled(true);
@@ -672,23 +642,23 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
 //        act_editItem->setDisabled(true);
 //    }
 
-    connect(act_playItem, &QAction::triggered, this, [=]() {playItem();});
-    connect(act_editItem, &QAction::triggered, this, [=]() {editItem();});
-    connect(act_itemDetails, &QAction::triggered, this, [=]() {itemDetails();});
+    connect(act_playItem, &QAction::triggered, this, [=](){playItem();});
+    connect(act_editItem, &QAction::triggered, this, [=](){editItem();});
+    connect(act_itemDetails, &QAction::triggered, this, [=](){itemDetails();});
 
-    connect(act_cutItems, &QAction::triggered, this, [this]() {cutItems();});
-    connect(act_copyItems, &QAction::triggered, this, [this]() {copyItems();});
-    connect(act_pasteItems, &QAction::triggered, this, [this]() {pasteItems();});
-    connect(act_openItem, &QAction::triggered, this, [this]() {openItemFileLocation();});
+    connect(act_cutItems, &QAction::triggered, this, [this](){cutItems();});
+    connect(act_copyItems, &QAction::triggered, this, [this](){copyItems();});
+    connect(act_pasteItems, &QAction::triggered, this, [this](){pasteItems();});
+    connect(act_openItem, &QAction::triggered, this, [this](){openItemFileLocation();});
 
-    connect(act_selectAll, &QAction::triggered, this, [this]() {m_treeSonglist->selectAll();});
-    connect(act_selectNone, &QAction::triggered, this, [this]() {m_treeSonglist->selectionModel()->clear();});
+    connect(act_selectAll, &QAction::triggered, this, [this](){m_treeSonglist->selectAll();});
+    connect(act_selectNone, &QAction::triggered, this, [this](){m_treeSonglist->selectionModel()->clear();});
 
-    connect(act_importSongs, &QAction::triggered, this, [this]() {importSongs();});
-    connect(act_downloadSongs, &QAction::triggered, this, [this]() {downloadSongs();});
+    connect(act_importSongs, &QAction::triggered, this, [this](){importSongs();});
+    connect(act_downloadSongs, &QAction::triggered, this, [this](){downloadSongs();});
 
-    connect(act_removeItem, &QAction::triggered, this, [this]() {removeItemsFrom();});
-    connect(act_deleteItem, &QAction::triggered, this, [this]() {deleteItems();});
+    connect(act_removeItem, &QAction::triggered, this, [this](){removeItemsFrom();});
+    connect(act_deleteItem, &QAction::triggered, this, [this](){deleteItems();});
 
     menu_context->exec(m_treeSonglist->mapToGlobal(point));
     delete menu_context;

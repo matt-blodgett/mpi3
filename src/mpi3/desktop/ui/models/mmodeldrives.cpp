@@ -1,6 +1,9 @@
 #include "mmodeldrives.h"
 #include "mmedialibrary.h"
 
+#include "mformat.h"
+
+
 #include <QFileIconProvider>
 #include <QFileInfo>
 
@@ -108,10 +111,11 @@ void MModelStorageDrives::refresh()
         }
 
         MMediaLibrary *raspiLib = m_raspiLibraries[rootPath];
-        bool raspiLibExists = MMediaLibrary::detectRaspiVolume(rootPath);
+//        bool raspiLibExists = MMediaLibrary::detectRaspiVolume(rootPath);
+        bool raspiLibExists = false;
 
         if(!raspiLib && raspiLibExists) {
-            raspiLib = MMediaLibrary::loadRaspiVolume(rootPath);
+//            raspiLib = MMediaLibrary::loadRaspiVolume(rootPath);
             m_raspiLibraries[rootPath] = raspiLib;
         }
         else if(raspiLib && !raspiLibExists) {
@@ -126,9 +130,12 @@ void MModelStorageDrives::refresh()
         QList<QString> deviceData;
         deviceData << label;
         deviceData << (raspiLib ? raspiLib->name() : "");
-        deviceData << MMediaLibrary::sizeToString(bfree, 1);
-        deviceData << MMediaLibrary::sizeToString(btotal, 1);
-        deviceData << MMediaLibrary::percentToString(bfree / btotal, 1);
+        deviceData << Mpi3::Util::sizeToString(bfree, 1);
+        deviceData << Mpi3::Util::sizeToString(btotal, 1);
+        deviceData << Mpi3::Util::percentToString(bfree / btotal, 1);
+//        deviceData << MMediaLibrary::sizeToString(bfree, 1);
+//        deviceData << MMediaLibrary::sizeToString(btotal, 1);
+//        deviceData << MMediaLibrary::percentToString(bfree / btotal, 1);
         deviceData << sInfo.fileSystemType();
 
         m_deviceData << QVariant(deviceData);

@@ -12,3 +12,4 @@ contains(DEFINES, MPI3_BUILD_SHARED) {
     LIBS += -lavcodec -lavformat -lavutil
     LIBS += -lao
 }
+

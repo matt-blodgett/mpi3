@@ -24,8 +24,6 @@ public:
     explicit MFrameTreeView(QWidget *parent = nullptr);
 
 public:
-    virtual void importSongs();
-    virtual void downloadSongs();
     virtual void itemDetails();
     virtual void editItem();
     virtual void cutItems();
@@ -54,8 +52,6 @@ public:
     explicit MFrameContainers(QWidget *parent = nullptr);
 
 public:
-    void importSongs() override;
-    void downloadSongs() override;
     void itemDetails() override;
     void editItem() override;
     void cutItems() override;
@@ -70,6 +66,8 @@ public:
 
 
 public:
+    MTreeContainers *tree() const;
+
     void setLibrary(MMediaLibrary *library = nullptr);
 
 private:
@@ -105,8 +103,6 @@ public:
     explicit MFrameSonglist(QWidget *parent = nullptr);
 
 public:
-    void importSongs() override;
-    void downloadSongs() override;
     void itemDetails() override;
     void editItem() override;
     void cutItems() override;
@@ -115,12 +111,16 @@ public:
     void deleteItems() override;
     void duplicateItems() override;
 
+    void importSongs();
+    void downloadSongs();
+
     void playItem();
     void addItemsTo();
     void removeItemsFrom();
     void openItemFileLocation();
 
 public:
+
     void setPlaylist(MPlaylist *playlist);
     void setLibrary(MMediaLibrary *library);
 

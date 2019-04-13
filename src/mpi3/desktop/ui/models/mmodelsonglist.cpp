@@ -1,12 +1,18 @@
 #include "mmodelsonglist.h"
 #include "mmodelsonglistitem.h"
 
+#include "mformat.h"
+
+#include "mmediautil.h"
+
 #include <QMimeData>
 #include <QUrl>
 
 
 #include <QDebug>
 
+
+typedef MModelSonglistItem MModelItem;
 
 
 MModelSonglist::MModelSonglist(QObject *parent) : QAbstractTableModel(parent)
@@ -68,44 +74,111 @@ QStringList MModelSonglist::mimeTypes() const
 }
 QMimeData *MModelSonglist::mimeData(const QModelIndexList &indexes) const
 {
-    Q_UNUSED(indexes);
-
     QMimeData *mData = new QMimeData();
 
-//    QVector<MSong*> selectedSongs;
-//    for(QModelIndex idx : indexes) {
-//        MSong *song = getSong(idx);
-//        if(song && !selectedSongs.contains(song)) {
-//            selectedSongs.prepend(song);
-//        }
-//    }
+    QVector<MSong*> selectedSongs;
+    for(QModelIndex idx : indexes) {
+        MSong *song = m_mediaLibrary->getSong(m_songlist.at(idx.row()).pid());
+        if(song && !selectedSongs.contains(song)) {
+            selectedSongs.prepend(song);
+        }
+    }
 
 //    QByteArray pidBytes = MMediaLibrary::songsToBytes(selectedSongs);
 //    QList<QUrl> songUrls = MMediaLibrary::songsToPaths(selectedSongs);
+    QByteArray pidBytes = Mpi3::Core::songsToBytes(selectedSongs);
+    QList<QUrl> songUrls = Mpi3::Core::songsToPaths(selectedSongs);
 
-//    mData->setData(QMetaType::typeName(qMetaTypeId<QStringList>()), pidBytes);
-//    mData->setUrls(songUrls);
+    mData->setData(QMetaType::typeName(qMetaTypeId<QStringList>()), pidBytes);
+    mData->setUrls(songUrls);
 
     return mData;
 }
 
 bool MModelSonglist::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
 {
-    Q_UNUSED(data);
-    Q_UNUSED(action);
+//    Q_UNUSED(data)
+//    Q_UNUSED(action)
     Q_UNUSED(row);
     Q_UNUSED(column);
     Q_UNUSED(parent);
+
+    MPlaylist *playlist = m_mediaLibrary->getPlaylist(m_pid);
+    if(playlist || m_pid == m_mediaLibrary->pid()) {
+        bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
+//        bool dataIsValidMediaFiles = data->hasUrls() ? MMediaLibrary::validMediaFiles(data->urls()) : false;
+        bool dataIsValidMediaFiles = data->hasUrls() ? Mpi3::Core::validMediaFiles(data->urls()) : false;
+        bool actionIsCopyAction = action == Qt::CopyAction;
+
+        return (dataIsSonglist && playlist) || (dataIsValidMediaFiles && actionIsCopyAction);
+    }
 
     return false;
 }
 bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-    Q_UNUSED(data);
-    Q_UNUSED(action);
-    Q_UNUSED(row);
+//    Q_UNUSED(data)
+//    Q_UNUSED(action)
+//    Q_UNUSED(row);
     Q_UNUSED(column);
     Q_UNUSED(parent);
+
+    MPlaylist *playlist = m_mediaLibrary->getPlaylist(m_pid);
+
+    if(playlist || m_pid == m_mediaLibrary->pid()) {
+        bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
+//        bool dataIsValidMediaFiles = data->hasUrls() ? MMediaLibrary::validMediaFiles(data->urls()) : false;
+        bool dataIsValidMediaFiles = data->hasUrls() ? Mpi3::Core::validMediaFiles(data->urls()) : false;
+        bool actionIsCopyAction = action == Qt::CopyAction;
+        bool actionIsMoveAction = action == Qt::MoveAction;
+
+        row = row < 0 ? rowCount() : row;
+
+        if(dataIsSonglist && playlist) {
+            QByteArray pidBytes = data->data(QMetaType::typeName(qMetaTypeId<QStringList>()));
+            QStringList pidStrings = Mpi3::Core::bytesToSongs(pidBytes);
+
+
+            QVector<MSong*> droppedSongs;
+            for(QString pid : pidStrings){
+                MSong *song = m_mediaLibrary->getSong(pid);
+                droppedSongs.append(song);
+            }
+
+            if(actionIsCopyAction) {
+                playlist->insert(row, droppedSongs);
+            }
+            else if(actionIsMoveAction) {
+                QStringList pids;
+                for(MModelItem item : m_songlist){
+                    pids.append(item.pid());
+                }
+
+                QList<int> indexes;
+                for(MSong *s : droppedSongs){
+                    indexes.append(pids.indexOf(s->pid()));
+                }
+
+                playlist->move(indexes, row);
+            }
+
+            return true;
+        }
+        else if(dataIsValidMediaFiles && actionIsCopyAction) {
+            MSongList copySongs;
+
+            for(QUrl url : data->urls()) {
+                MSong *s = m_mediaLibrary->newSong(url.toLocalFile());
+                copySongs.append(s);
+            }
+
+            if(playlist){
+                playlist->insert(row, copySongs);
+            }
+
+            return true;
+        }
+    }
 
     return false;
 }
@@ -127,47 +200,13 @@ int MModelSonglist::columnCount(const QModelIndex &parent) const
     return m_headers.size();
 }
 
-bool MModelSonglist::insertRows(int position, int count, const QModelIndex &parent)
-{
-    if(count > 0) {
-        int last = position + count - 1;
-
-        beginInsertRows(parent, position, last);
-
-        for(int i = position; i < last; i++){
-            m_songlist.insert(i, MModelSonglistItem());
-        }
-
-        endInsertRows();
-        return true;
-    }
-
-    return false;
-}
-bool MModelSonglist::removeRows(int position, int count, const QModelIndex &parent)
-{
-    if(count > 0) {
-        int last = position + count - 1;
-
-        beginRemoveRows(parent, position, last);
-
-        for(int i = position; i < last; i++){
-            m_songlist.removeAt(position);
-        }
-
-        endRemoveRows();
-        return true;
-    }
-
-    return false;
-}
-
 QVariant MModelSonglist::data(const QModelIndex &index, int role) const
 {
     if(index.isValid()) {
         int row = index.row();
         int col = index.column();
 
+        // move value to after if stmt - dont need before that (role)
         const QVariant value = m_songlist.at(row).data(col);
 
         if(role == Qt::DisplayRole){
@@ -184,7 +223,6 @@ QVariant MModelSonglist::data(const QModelIndex &index, int role) const
 
     return QVariant();
 }
-
 bool MModelSonglist::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if(index.isValid()){
@@ -214,22 +252,41 @@ QVariant MModelSonglist::headerData(int section, Qt::Orientation orientation, in
     return QVariant();
 }
 
-void MModelSonglist::setSonglist(MSongList songs)
+MMediaLibrary *MModelSonglist::library() const
+{
+    return m_mediaLibrary;
+}
+void MModelSonglist::setLibrary(MMediaLibrary *library)
+{
+    if(m_mediaLibrary) {
+        disconnect(m_mediaLibrary, nullptr, this, nullptr);
+    }
+
+    m_mediaLibrary = library;
+    connect(m_mediaLibrary, &MMediaLibrary::playlistContentsChanged, this, &MModelSonglist::playlistContentsChanged);
+}
+
+void MModelSonglist::setSonglist(MSongList songs, const QString &pid)
 {
     beginResetModel();
-    removeRows(0, rowCount());
-    insertRows(0, songs.size());
+
+    m_songlist.clear();
+    m_pid = pid;
 
     for(int i = 0; i < songs.size(); i++){
-        MModelSonglistItem item = m_songlist[i];
+       MModelItem item = MModelItem();
+
         MSong *s = songs.at(i);
+        item.setPID(s->pid());
 
         int index = 1;
         item.setData(index++, s->name());
         item.setData(index++, s->artist());
         item.setData(index++, s->album());
-        item.setData(index++, s->timeString());
-        item.setData(index++, s->sizeString());
+        item.setData(index++, Mpi3::Util::timeToString(s->time()));
+        item.setData(index++, Mpi3::Util::sizeToString(s->size()));
+//        item.setData(index++, s->timeString());
+//        item.setData(index++, s->sizeString());
         item.setData(index++, s->kind());
         item.setData(index++, s->path());
         item.setData(index++, s->bitRate());
@@ -239,5 +296,20 @@ void MModelSonglist::setSonglist(MSongList songs)
         item.setData(index++, 0);
         item.setData(index++, "");
         item.setData(index++, "");
+
+        m_songlist.append(item);
+    }
+
+    endResetModel();
+}
+QString MModelSonglist::currentPID() const
+{
+    return m_pid;
+}
+
+void MModelSonglist::playlistContentsChanged(MPlaylist *p)
+{
+    if(m_pid == p->pid()){
+        setSonglist(p->songs(), p->pid());
     }
 }

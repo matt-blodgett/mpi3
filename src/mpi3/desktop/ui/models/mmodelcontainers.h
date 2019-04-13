@@ -43,9 +43,6 @@ public:
     QModelIndex index(int row, int column, const QModelIndex &index = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &index) const override;
 
-    bool insertRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool removeRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
-
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
@@ -55,10 +52,7 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 private:
-//    QModelIndexList childIndexes(const QModelIndex &parent = QModelIndex()) const;
-
     QList<MModelContainersItem*> allItems(MModelContainersItem *parentItem = nullptr) const;
-
     MModelContainersItem *getItem(const QModelIndex &index) const;
     MModelContainersItem *getItem(const QString &pid) const;
 

@@ -125,8 +125,6 @@ void MRootDesktop::initializeMainMenu()
     QAction *act_libNewFolder = new QAction(menu_main);
     QAction *act_libNewPlaylist = new QAction(menu_main);
     QAction *act_libImportPlaylists = new QAction(menu_main);
-    QAction *act_libImportSongs = new QAction(menu_main);
-    QAction *act_libDownloadSongs = new QAction(menu_main);
 
     QAction *act_themeSet = new QAction(menu_main);
     QAction *act_themeRefresh = new QAction(menu_main);
@@ -158,8 +156,6 @@ void MRootDesktop::initializeMainMenu()
     act_libNewFolder->setText("New Folder");
     act_libNewPlaylist->setText("New Playlist");
     act_libImportPlaylists->setText("Import Playlists");
-    act_libImportSongs->setText("Import Songs");
-    act_libDownloadSongs->setText("Download Songs");
 
     act_themeSet->setText("Set Theme");
     act_themeRefresh->setText("Refresh");
@@ -208,8 +204,6 @@ void MRootDesktop::initializeMainMenu()
     menu_library->addAction(act_libNewPlaylist);
     menu_library->addSeparator();
     menu_library->addAction(act_libImportPlaylists);
-    menu_library->addAction(act_libImportSongs);
-    menu_library->addAction(act_libDownloadSongs);
 
     menu_theme->addAction(act_themeSet);
     menu_theme->addAction(act_themeRefresh);
@@ -253,8 +247,6 @@ void MRootDesktop::initializeMainMenu()
     connect(act_libNewPlaylist, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::newPlaylist);
     connect(act_libNewFolder, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::newFolder);
     connect(act_libImportPlaylists, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::importPlaylists);
-    connect(act_libImportSongs, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::importSongs);
-    connect(act_libDownloadSongs, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::downloadSongs);
 
     connect(act_themeSet, &QAction::triggered, this, [this]() {setTheme();});
     connect(act_themeRefresh, &QAction::triggered, this, [this]() {refreshTheme();});

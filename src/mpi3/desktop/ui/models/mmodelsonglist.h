@@ -40,20 +40,27 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
-    bool insertRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool removeRows(int position, int count, const QModelIndex &parent = QModelIndex()) override;
-
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::DisplayRole) override;
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 public:
-    void setSonglist(MSongList songs);
+    MMediaLibrary *library() const;
+    void setLibrary(MMediaLibrary *library);
+
+    void setSonglist(MSongList songs, const QString &pid);
+    QString currentPID() const;
 
 private:
     QStringList m_headers;
     QList<MModelSonglistItem> m_songlist;
+
+    MMediaLibrary *m_mediaLibrary = nullptr;
+    QString m_pid;
+
+private slots:
+    void playlistContentsChanged(MPlaylist *p);
 };
 
 

@@ -62,8 +62,6 @@ class MSong : public MMediaElement
     Q_PROPERTY(QString path READ path)
     Q_PROPERTY(double time READ time)
     Q_PROPERTY(double size READ size)
-    Q_PROPERTY(QString timeString READ timeString)
-    Q_PROPERTY(QString sizeString READ sizeString)
     Q_PROPERTY(int bitRate READ bitRate)
     Q_PROPERTY(int sampleRate READ sampleRate)
 
@@ -82,9 +80,6 @@ public:
 
     double time() const;
     double size() const;
-
-    QString timeString() const;
-    QString sizeString() const;
 
     int bitRate() const;
     int sampleRate() const;
@@ -260,27 +255,6 @@ public:
     bool load(const QString &filePath);
     bool save(const QString &filePath = QString());
     void reset();
-
-public:
-    bool importItunesPlist(const QString &filePath, MFolder *parentFolder = nullptr);
-
-    MSongList songsFromBytes(QByteArray pidBytes) const;
-    static QByteArray songsToBytes(MSongList songlist);
-    static QList<QUrl> songsToPaths(MSongList songlist);
-
-    // move below functions to utility module
-    static bool validMediaFiles(QUrl mediaUrl);
-    static bool validMediaFiles(QList<QUrl> mediaUrls);
-
-    static QString timeToString(double time);
-    static QString sizeToString(double size, int prec = 2);
-    static QString percentToString(double percent, int prec = 2);
-    // -----------------------------------------
-
-public:
-    MMediaLibrary *createRaspiVolume(const QString &rootPath);
-    static MMediaLibrary *loadRaspiVolume(const QString &rootPath);
-    static bool detectRaspiVolume(const QString &rootPath);
 
 private:
     QString generatePID(Mpi3::ElementType elementType) const;
