@@ -5,6 +5,7 @@
 
 
 #include "mframe.h"
+
 QT_BEGIN_NAMESPACE
 class QPushButton;
 class QLineEdit;

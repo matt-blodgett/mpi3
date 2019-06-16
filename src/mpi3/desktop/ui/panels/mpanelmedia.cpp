@@ -69,8 +69,7 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     connect(m_btnAlbums, &QRadioButton::released, this, &MPanelMedia::viewAlbums);
     connect(m_frmContainers, &MFrameContainers::containerSelected, this, &MPanelMedia::viewContainer);
 
-//    m_treeSettingsCollection = new MTreeSettingsCollection(this);
-//    connect(m_treeSettingsCollection, &MTreeSettingsCollection::aboutToSave, m_frmSonglist, &MFrameSonglist::saveTreeSettings);
+    m_layoutSettingsManager = new MTreeViewLayoutSettingsManager(this);
 }
 void MPanelMedia::setLibrary(MMediaLibrary *library)
 {
@@ -80,43 +79,99 @@ void MPanelMedia::setLibrary(MMediaLibrary *library)
 }
 void MPanelMedia::load(QSettings *settings)
 {
-    Q_UNUSED(settings);
-    // TODO: save expanded folders
-//    m_frmContainers->tree()->expandAll();
+    QStringList pidList;
+    pidList.append(m_mediaLibrary->pid());
+    for(MContainer *c : m_mediaLibrary->containers()){
+        pidList.append(c->pid());
+    }
 
-//    QStringList pidlist;
-//    pidlist.append(m_mediaLibrary->pid());
-//    for(MContainer *c : m_mediaLibrary->containers()){
-//        pidlist.append(c->pid());
-//    }
+    settings->beginGroup("TreeViews");
 
-//    settings->beginGroup("TreeViews");
-//    m_treeSettingsCollection->load(settings, pidlist);
-//    QString pidSonglist = settings->value("songlist").toString();
-//    settings->endGroup();
+    settings->beginGroup("TreeViewSonglists");
+    m_layoutSettingsManager->load(settings, pidList);
+    settings->endGroup();
 
-//    if(pidSonglist != "" && pidlist.contains(pidSonglist)){
-//        viewContainer(m_mediaLibrary->getContainer(pidSonglist));
-//    }
-//    else {
-        // TODO: save previous view
+    settings->beginGroup("TreeViewContainers");
+
+    QString pidSelectedContainer = settings->value("SelectedContainer").toString();
+
+    settings->beginGroup("ExpandedContainers");
+
+    QModelIndexList indexes = m_frmContainers->model()->match(
+        m_frmContainers->model()->index(0, 0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard|Qt::MatchRecursive);
+
+    for(QString pid : settings->childKeys()){
+        QString pidKey = pid;
+        pidKey.insert(1, ":");
+
+        for(QModelIndex idx : indexes){
+            if(m_frmContainers->model()->pidAt(idx) == pidKey){
+                m_frmContainers->tree()->expand(idx);
+            }
+        }
+    }
+
+    settings->endGroup();
+    settings->endGroup();
+
+    settings->endGroup();
+
+    if(pidSelectedContainer != ""){
+        QModelIndexList indexes = m_frmContainers->model()->match(
+            m_frmContainers->model()->index(0,0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard|Qt::MatchRecursive);
+
+        for(QModelIndex idx : indexes){
+            if(m_frmContainers->model()->pidAt(idx) == pidSelectedContainer){
+                m_frmContainers->tree()->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::ClearAndSelect);
+                break;
+            }
+        }
+    }
+    else {
         viewAllSongs();
-//    }
+    }
 }
 void MPanelMedia::save(QSettings *settings)
 {
-    Q_UNUSED(settings);
-//    QStringList pidlist;
-//    pidlist.append(m_mediaLibrary->pid());
-//    for(MContainer *c : m_mediaLibrary->containers()){
-//        pidlist.append(c->pid());
-//    }
+    QStringList pidList;
+    pidList.append(m_mediaLibrary->pid());
+    for(MContainer *c : m_mediaLibrary->containers()){
+        pidList.append(c->pid());
+    }
 
-//    settings->beginGroup("TreeViews");
-//    m_treeSettingsCollection->save(settings, pidlist);
-//    MContainer *container = m_frmSonglist->model()->container();
-//    settings->setValue("songlist", container ? container->pid() : "");
-//    settings->endGroup();
+    settings->beginGroup("TreeViews");
+
+    settings->beginGroup("TreeViewSonglists");
+    m_frmSonglist->saveLayoutSettings();
+    m_layoutSettingsManager->save(settings, pidList);
+    settings->endGroup();
+
+    settings->beginGroup("TreeViewContainers");
+    if(m_frmContainers->tree()->selectionModel()->selectedRows(0).size() == 1){
+        settings->setValue("SelectedContainer", m_frmContainers->model()->pidAt(m_frmContainers->tree()->selectionModel()->currentIndex()));
+    }
+    else {
+        settings->setValue("SelectedContainer", "");
+    }
+    settings->beginGroup("ExpandedContainers");
+
+    QModelIndexList indexes = m_frmContainers->model()->match(
+        m_frmContainers->model()->index(0,0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard|Qt::MatchRecursive);
+
+    for(QModelIndex idx : indexes){
+        if(m_frmContainers->model()->itemIsFolder(idx)){
+            if(m_frmContainers->tree()->isExpanded(idx)){
+                QString pidKey = m_frmContainers->model()->pidAt(idx);
+                pidKey.remove(1, 1);
+                settings->setValue(pidKey, true);
+            }
+        }
+    }
+
+    settings->endGroup();
+    settings->endGroup();
+
+    settings->endGroup();
 }
 
 void MPanelMedia::viewAllSongs()
@@ -187,26 +242,7 @@ void MPanelMedia::viewContainer(MContainer *container)
 
 void MPanelMedia::viewChanged()
 {
-//    MContainer *container = m_frmSonglist->model()->container();
-//    QString pid = container ? container->pid() : m_mediaLibrary->pid();
-//    MTreeSettings *treeSettings = m_treeSettingsCollection->getContainer(pid);
-//    if(!treeSettings) {
-//        // TODO: Default getContainer() to add if it doesn't exist
-//        treeSettings = m_treeSettingsCollection->addContainer(pid);
-//    }
-//    m_frmSonglist->setTreeSettings(treeSettings);
-
-//    m_frmContainers->tree()->selectionModel()->blockSignals(true);
-//    if(container){
-//        QModelIndex idx = m_frmContainers->model()->getIndex(container->pid());
-//        QItemSelectionModel::SelectionFlag flag = QItemSelectionModel::ClearAndSelect;
-//        m_frmContainers->tree()->selectionModel()->select(idx, flag);
-//    }
-//    else {
-//        m_frmContainers->tree()->clearSelection();
-//    }
-//    m_frmContainers->tree()->selectionModel()->blockSignals(false);
-//    m_frmContainers->tree()->update();
+    m_frmSonglist->setLayoutSettings(m_layoutSettingsManager->getLayoutSettings(m_frmSonglist->model()->pidCurrentSonglist()));
 }
 
 MFrameSonglist *MPanelMedia::frameSonglist()
@@ -217,7 +253,3 @@ MFrameContainers *MPanelMedia::frameContainers()
 {
     return m_frmContainers;
 }
-//MTreeSettingsCollection *MPanelMedia::treeSettingsCollection()
-//{
-//    return m_treeSettingsCollection;
-//}

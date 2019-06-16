@@ -1,8 +1,6 @@
 #include "mframeplayback.h"
 #include "mmedialibrary.h"
-
 #include "mformat.h"
-
 #include "mstyle.h"
 
 #include <QGridLayout>

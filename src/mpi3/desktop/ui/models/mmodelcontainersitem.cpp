@@ -51,15 +51,6 @@ void MModelContainersItem::setLabel(const QString &value)
     m_itemLabel = value;
 }
 
-QIcon MModelContainersItem::icon() const
-{
-    return m_itemIcon;
-}
-void MModelContainersItem::setIcon(const QIcon &value)
-{
-    m_itemIcon = value;
-}
-
 int MModelContainersItem::childCount() const
 {
     return m_childItems.count();
@@ -118,4 +109,3 @@ bool MModelContainersItem::move(MModelContainersItem *parent, int position)
 
     return true;
 }
-

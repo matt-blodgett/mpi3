@@ -1,14 +1,13 @@
 #include "maudioengine.h"
 
-#include <QFileInfo>
 #include <QWaitCondition>
 #include <QThread>
 #include <QMutex>
+#include <QFileInfo>
 
 #include <iostream>
 
 #include <ao/ao.h>
-
 
 extern "C"
 {

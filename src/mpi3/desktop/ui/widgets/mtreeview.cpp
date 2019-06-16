@@ -70,17 +70,19 @@ void MTreeContainers::dropEvent(QDropEvent *event)
     if(model()->canDropMimeData(event->mimeData(), action, row, col, parentIndex)) {
 
         if(model()->dropMimeData(event->mimeData(), action, row, col, parentIndex)) {
-            expand(dropIndex);
 
-            if(action == Qt::MoveAction) {
+            selectionModel()->setCurrentIndex(model()->index(row, col, parentIndex), QItemSelectionModel::ClearAndSelect);
+//            expand(dropIndex);
 
-                for(int i = 0; i < model()->rowCount(dropIndex); i++) {
-                    QModelIndex childIndex = model()->index(i, 0, dropIndex);
-                    QVariant indexData = model()->data(childIndex);
-                    selectionModel()->select(childIndex, QItemSelectionModel::ClearAndSelect);
-                    expand(childIndex);
-                }
-            }
+//            if(action == Qt::MoveAction) {
+
+//                for(int i = 0; i < model()->rowCount(dropIndex); i++) {
+//                    QModelIndex childIndex = model()->index(i, 0, dropIndex);
+//                    QVariant indexData = model()->data(childIndex);
+//                    selectionModel()->select(childIndex, QItemSelectionModel::ClearAndSelect);
+//                    expand(childIndex);
+//                }
+//            }
         }
     }
 }
@@ -146,7 +148,10 @@ void MTreeSonglist::dropEvent(QDropEvent *event)
 
     if(model()->canDropMimeData(event->mimeData(), action, row, col, parentIndex)) {
 
-        if(model()->dropMimeData(event->mimeData(), action, row, col, parentIndex)) {
+        if(action == Qt::MoveAction){
+            emit moveSelected(row);
+        }
+        else if(model()->dropMimeData(event->mimeData(), action, row, col, parentIndex)) {
             QItemSelectionModel::SelectionFlag flags = QItemSelectionModel::Select;
 
             selectionModel()->clear();
@@ -167,17 +172,17 @@ void MTreeSonglist::dropEvent(QDropEvent *event)
 }
 
 
-MTreeSettings::MTreeSettings(QObject *parent) : QObject (parent)
+MTreeViewLayoutSettings::MTreeViewLayoutSettings(QObject *parent) : QObject (parent)
 {
 
 }
 
-int MTreeSettings::columnCount() const
+int MTreeViewLayoutSettings::columnCount() const
 {
     return m_columnWidth.size();
 }
 
-void MTreeSettings::setDefaults(QTreeView *tree)
+void MTreeViewLayoutSettings::setDefaults(QTreeView *tree)
 {
     m_columnWidth.clear();
     m_columnIsHidden.clear();
@@ -190,7 +195,7 @@ void MTreeSettings::setDefaults(QTreeView *tree)
     m_sortColumn = 0;
     m_sortOrder = Qt::SortOrder::AscendingOrder;
 }
-void MTreeSettings::setValues(QTreeView *tree, QSortFilterProxyModel *sfpModel)
+void MTreeViewLayoutSettings::setValues(QTreeView *tree, QSortFilterProxyModel *sfpModel)
 {
     m_columnWidth.clear();
     m_columnIsHidden.clear();
@@ -203,7 +208,7 @@ void MTreeSettings::setValues(QTreeView *tree, QSortFilterProxyModel *sfpModel)
     m_sortColumn = sfpModel->sortColumn();
     m_sortOrder = sfpModel->sortOrder();
 }
-void MTreeSettings::applyValues(QTreeView *tree, QSortFilterProxyModel *sfpModel)
+void MTreeViewLayoutSettings::applyValues(QTreeView *tree, QSortFilterProxyModel *sfpModel)
 {
     for(int i = 0; i < tree->model()->columnCount(); i++){
         tree->setColumnWidth(i, m_columnWidth[i]);
@@ -214,52 +219,46 @@ void MTreeSettings::applyValues(QTreeView *tree, QSortFilterProxyModel *sfpModel
 }
 
 
-MTreeSettingsCollection::MTreeSettingsCollection(QObject *parent) : QObject(parent)
+MTreeViewLayoutSettingsManager::MTreeViewLayoutSettingsManager(QObject *parent) : QObject(parent)
 {
 
 }
 
-MTreeSettings *MTreeSettingsCollection::getContainer(const QString &pid)
+MTreeViewLayoutSettings *MTreeViewLayoutSettingsManager::getLayoutSettings(const QString &pid)
 {
-    return m_settingsMap.value(pid, nullptr);
-}
-MTreeSettings *MTreeSettingsCollection::addContainer(const QString &pid)
-{
-    MTreeSettings *treeSettings = getContainer(pid);
+    MTreeViewLayoutSettings *layoutSettings = m_settingsMap.value(pid, nullptr);
 
-    if(!treeSettings){
-        treeSettings = new MTreeSettings(this);
-        m_settingsMap[pid] = treeSettings;
+    if(!layoutSettings){
+        layoutSettings = new MTreeViewLayoutSettings(this);
+        m_settingsMap[pid] = layoutSettings;
     }
 
-    return treeSettings;
+    return layoutSettings;
 }
 
-void MTreeSettingsCollection::save(QSettings *settings, const QStringList &pidlist)
+void MTreeViewLayoutSettingsManager::save(QSettings *settings, const QStringList &pidList)
 {
-    emit aboutToSave();
-
-    QMap<QString, MTreeSettings*>::iterator iter;
+    QMap<QString, MTreeViewLayoutSettings*>::iterator iter;
     for(iter = m_settingsMap.begin(); iter != m_settingsMap.end(); iter++){
 
         QString pidKey = iter.key();
         pidKey.remove(1, 1);
 
-        if(pidlist.contains(iter.key())){
+        if(pidList.contains(iter.key())){
             settings->beginGroup(pidKey);
 
             QString strWidths;
             QString strHidden;
             QString strSort;
 
-            MTreeSettings *treeSettings = iter.value();
-            for(int i = 0; i < treeSettings->columnCount(); i++) {
-                strWidths += QString::number(treeSettings->m_columnWidth[i]) + ";";
-                strHidden += QString(treeSettings->m_columnIsHidden[i] ? "1" : "0") + ";";
+            MTreeViewLayoutSettings *layoutSettings = iter.value();
+            for(int i = 0; i < layoutSettings->columnCount(); i++) {
+                strWidths += QString::number(layoutSettings->m_columnWidth[i]) + ";";
+                strHidden += QString(layoutSettings->m_columnIsHidden[i] ? "1" : "0") + ";";
             }
 
-            strSort = QString::number(treeSettings->m_sortColumn) + ";";
-            strSort += QString::number(treeSettings->m_sortOrder);
+            strSort = QString::number(layoutSettings->m_sortColumn) + ";";
+            strSort += QString::number(layoutSettings->m_sortOrder);
 
             settings->setValue("widths", strWidths);
             settings->setValue("hidden", strHidden);
@@ -268,14 +267,12 @@ void MTreeSettingsCollection::save(QSettings *settings, const QStringList &pidli
             settings->endGroup();
         }
     }
-
-    emit completedSaving();
 }
-void MTreeSettingsCollection::load(QSettings *settings, const QStringList &pidlist)
+void MTreeViewLayoutSettingsManager::load(QSettings *settings, const QStringList &pidList)
 {
     m_settingsMap.clear();
 
-    for(QString pid : pidlist) {
+    for(QString pid : pidList) {
 
         QString pidKey = pid;
         pidKey.remove(1, 1);
@@ -287,16 +284,16 @@ void MTreeSettingsCollection::load(QSettings *settings, const QStringList &pidli
             QStringList strHidden = settings->value("hidden", QString()).toString().split(";");
             QStringList strSort = settings->value("sort", QString()).toString().split(";");
 
-            MTreeSettings *treeSettings = new MTreeSettings(this);
+            MTreeViewLayoutSettings *layoutSettings = new MTreeViewLayoutSettings(this);
             for(int i = 0; i < strHidden.size(); i++) {
-                treeSettings->m_columnWidth.append(strWidths.at(i).toInt());
-                treeSettings->m_columnIsHidden.append(strHidden[i] == "1");
+                layoutSettings->m_columnWidth.append(strWidths.at(i).toInt());
+                layoutSettings->m_columnIsHidden.append(strHidden[i] == "1");
             }
 
-            treeSettings->m_sortColumn = strSort[0].toInt();
-            treeSettings->m_sortOrder = static_cast<Qt::SortOrder>(strSort[1].toInt());
+            layoutSettings->m_sortColumn = strSort[0].toInt();
+            layoutSettings->m_sortOrder = static_cast<Qt::SortOrder>(strSort[1].toInt());
 
-            m_settingsMap[pid] = treeSettings;
+            m_settingsMap[pid] = layoutSettings;
 
             settings->endGroup();
         }

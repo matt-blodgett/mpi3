@@ -7,13 +7,17 @@
 #include <QVariant>
 #include <QList>
 
+QT_BEGIN_NAMESPACE
+class QAbstractTableModel;
+QT_END_NAMESPACE
 
-class MModelSonglistItem
+
+class MModelSonglistItem : public QObject
 {
+    Q_OBJECT
 
 public:
-    explicit MModelSonglistItem();
-    ~MModelSonglistItem();
+    explicit MModelSonglistItem(QAbstractTableModel *parent);
 
 public:
     QString pid() const;
@@ -25,7 +29,6 @@ public:
 private:
     QList<QVariant> m_itemData;
     QString m_itemPID;
-
 };
 
 

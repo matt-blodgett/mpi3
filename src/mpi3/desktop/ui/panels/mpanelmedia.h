@@ -4,7 +4,11 @@
 #define MPANELMEDIA_H
 
 
+#include <QMap>
+
+
 #include "mpanel.h"
+
 QT_BEGIN_NAMESPACE
 class QRadioButton;
 QT_END_NAMESPACE
@@ -12,7 +16,7 @@ QT_END_NAMESPACE
 
 class MFrameSonglist;
 class MFrameContainers;
-class MTreeSettingsCollection;
+class MTreeViewLayoutSettingsManager;
 
 
 class MPanelMedia : public MPanel
@@ -37,20 +41,19 @@ private:
 public:
     MFrameSonglist *frameSonglist();
     MFrameContainers *frameContainers();
-//    MTreeSettingsCollection *treeSettingsCollection();
 
 private:
-    MMediaLibrary *m_mediaLibrary = nullptr;
     MFrameSonglist *m_frmSonglist = nullptr;
     MFrameContainers *m_frmContainers = nullptr;
-//    MTreeSettingsCollection *m_treeSettingsCollection = nullptr;
 
-private:
     QRadioButton *m_btnSongs = nullptr;
     QRadioButton *m_btnArtists = nullptr;
     QRadioButton *m_btnAlbums = nullptr;
     QLabel *m_lblPlaylist = nullptr;
     QLabel *m_lblView = nullptr;
+
+    MMediaLibrary *m_mediaLibrary = nullptr;
+    MTreeViewLayoutSettingsManager *m_layoutSettingsManager = nullptr;
 };
 
 

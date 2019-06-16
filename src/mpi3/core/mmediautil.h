@@ -7,9 +7,11 @@
 #include "mglobal.h"
 
 
-namespace Mpi3 {
+namespace Mpi3
+{
 
-    namespace Core {
+    namespace Core
+    {
 
     #ifdef MPI3_BUILD_SHARED
         MPI3_EXPORT_CORE Q_NAMESPACE

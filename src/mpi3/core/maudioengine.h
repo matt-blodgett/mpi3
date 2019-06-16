@@ -5,6 +5,7 @@
 
 
 #include <QObject>
+
 QT_BEGIN_NAMESPACE
 class QWaitCondition;
 class QMutex;

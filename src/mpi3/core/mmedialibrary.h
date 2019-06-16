@@ -53,7 +53,17 @@ protected:
 };
 
 
-class MSong : public MMediaElement
+class MChildElement : public MMediaElement
+{
+    Q_OBJECT
+
+protected:
+    explicit MChildElement(MMediaLibrary *parentLibrary);
+    MMediaLibrary *m_parentLibrary = nullptr;
+};
+
+
+class MSong : public MChildElement
 {
     Q_OBJECT
     Q_PROPERTY(QString artist READ artist WRITE setArtist)
@@ -66,7 +76,7 @@ class MSong : public MMediaElement
     Q_PROPERTY(int sampleRate READ sampleRate)
 
 private:
-    explicit MSong(MMediaLibrary *parent);
+    explicit MSong(MMediaLibrary *parentLibrary);
 
 public:
     Mpi3::ElementType type() const override;
@@ -101,12 +111,12 @@ private:
 };
 
 
-class MContainer : public MMediaElement
+class MContainer : public MChildElement
 {
     Q_GADGET
 
 protected:
-    explicit MContainer(MMediaLibrary *parent);
+    explicit MContainer(MMediaLibrary *parentLibrary);
 
 public:
     Mpi3::ElementType type() const override;
@@ -126,7 +136,7 @@ class MPlaylist : public MContainer
     Q_OBJECT
 
 private:
-    explicit MPlaylist(MMediaLibrary *parent);
+    explicit MPlaylist(MMediaLibrary *parentLibrary);
 
 public:
     Mpi3::ElementType type() const override;
@@ -134,26 +144,27 @@ public:
 
 public:
     MSongList songs() const;
+    void setSongs(const QStringList &pids);
 
-    void insert(int index, MSong *song);
-    void insert(int index, const MSongList &songlist);
+    QStringList pidSongList() const;
 
-    void append(MSong *song);
-    void append(const MSongList &songlist);
+    void insert(int index, const QString &pid);
+    void insert(int index, const QStringList &pids);
 
-    void prepend(MSong *song);
-    void prepend(const MSongList &songlist);
+    void append(const QString &pid);
+    void append(const QStringList &pids);
+
+    void prepend(const QString &pid);
+    void prepend(const QStringList &pids);
 
     void move(int from, int to);
-    void move(QList<int> indexes, int to);
-
     void remove(int index);
-    void remove(QList<int> indexes);
+    void removeAll(const QString &pid);
 
     void clear();
 
 private:
-    MSongList m_songs;
+    QStringList m_pidSongList;
     void notifyContentsChanged();
 };
 
@@ -163,41 +174,58 @@ class MFolder : public MContainer
     Q_OBJECT
 
 private:
-    explicit MFolder(MMediaLibrary *parent);
+    explicit MFolder(MMediaLibrary *parentLibrary);
 
 public:
     Mpi3::ElementType type() const override;
     friend class MMediaLibrary;
 
 public:
-    MSongList childSongs(bool recursive = false) const;
-    MFolderList childFolders(bool recursive = false) const;
-    MPlaylistList childPlaylists(bool recursive = false) const;
-    MContainerList childContainers(bool recursive = false) const;
+    MFolderList childFolders() const;
+    MPlaylistList childPlaylists() const;
+    MContainerList childContainers() const;
 };
 
 
 class MMediaLibrary : public MMediaElement
 {
     Q_OBJECT
+    Q_DISABLE_COPY(MMediaLibrary)
     Q_PROPERTY(QString savePath READ savePath)
     Q_PROPERTY(QString mediaPath READ mediaPath WRITE setMediaPath)
     Q_PROPERTY(QString backupPath READ backupPath WRITE setBackupPath)
     Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath)
-
-private:
-    Q_DISABLE_COPY(MMediaLibrary)
 
 public:    
     explicit MMediaLibrary(QObject *parent = nullptr);
     Mpi3::ElementType type() const override;
 
 public:
+    bool load(const QString &filePath);
+    bool save(const QString &filePath = QString());
+    void reset();
+
+public:
+    QString savePath() const;
+    QString mediaPath() const;
+    QString backupPath() const;
+    QString downloadPath() const;
+
+    void setMediaPath(const QString &dirPath);
+    void setBackupPath(const QString &dirPath);
+    void setDownloadPath(const QString &dirPath);
+
+private:
+    QString m_savePath;
+    QString m_mediaPath;
+    QString m_backupPath;
+    QString m_downloadPath;
+
+public:
     MSongList songs() const;
     MFolderList folders() const;
     MPlaylistList playlists() const;
     MContainerList containers() const;
-    MElementList elements(Mpi3::ElementType filterType = Mpi3::BaseElement) const;
 
     template<typename I, class E>
     static I rootSearch(I iterable){
@@ -228,36 +256,24 @@ public:
     MFolder *getFolder(const QString &pid) const;
     MPlaylist *getPlaylist(const QString &pid) const;
     MContainer *getContainer(const QString &pid) const;
-    MMediaElement *getElement(const QString &pid) const;
+
+    template<typename I, class E>
+    static I pidSearchList(I iterable, const QStringList &pids){
+        I ret;
+        for(QString pid : pids){
+            E *element = MMediaLibrary::pidSearch<I, E>(iterable, pid);
+            ret.append(element);
+        }
+        return ret;
+    }
+
+    MSongList getSongList(const QStringList &pidList) const;
+    MFolderList getFolderList(const QStringList &pidList) const;
+    MPlaylistList getPlaylistList(const QStringList &pidList) const;
+    MContainerList getContainerList(const QStringList &pidList) const;
 
 private:
-    MSongList m_songs;
-    MFolderList m_folders;
-    MPlaylistList m_playlists;
-
-public:
-    QString savePath() const;
-    QString mediaPath() const;
-    QString backupPath() const;
-    QString downloadPath() const;
-
-    void setMediaPath(const QString &dirPath);
-    void setBackupPath(const QString &dirPath);
-    void setDownloadPath(const QString &dirPath);
-
-private:
-    QString m_savePath;
-    QString m_mediaPath;
-    QString m_backupPath;
-    QString m_downloadPath;
-
-public:
-    bool load(const QString &filePath);
-    bool save(const QString &filePath = QString());
-    void reset();
-
-private:
-    QString generatePID(Mpi3::ElementType elementType) const;
+    static QString generatePID(Mpi3::ElementType elementType);
 
 public:
     MSong *newSong(const QString &filePath);
@@ -269,6 +285,11 @@ public:
     void remove(MPlaylist *childPlaylist);
     void remove(MContainer *childContainer);
     void remove(const QString &pid);
+
+private:
+    MSongList m_songs;
+    MFolderList m_folders;
+    MPlaylistList m_playlists;
 
 signals:
     void aboutToLoad();
@@ -294,7 +315,6 @@ signals:
 
     void playlistContentsChanged(MPlaylist *childPlaylist);
     void parentFolderChanged(MContainer *childContainer);
-
 };
 
 

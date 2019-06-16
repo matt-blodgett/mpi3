@@ -8,7 +8,10 @@
 
 
 #include "mutil.h"
-namespace Mpi3 {
+
+
+namespace Mpi3
+{
 
 #ifdef MPI3_BUILD_SHARED
     MPI3_EXPORT_UTIL Q_NAMESPACE
@@ -16,7 +19,8 @@ namespace Mpi3 {
     Q_NAMESPACE
 #endif
 
-    namespace Util {
+    namespace Util
+    {
 
     #ifdef MPI3_BUILD_SHARED
         MPI3_EXPORT_UTIL Q_NAMESPACE

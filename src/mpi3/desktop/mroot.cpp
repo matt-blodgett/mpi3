@@ -112,151 +112,151 @@ void MRootDesktop::initializeObjects()
 }
 void MRootDesktop::initializeMainMenu()
 {
-    QMenuBar *menu_main = menuBar();
+    QMenuBar *menuMain = menuBar();
 
-    QAction *act_audioSettings = new QAction(menu_main);
-    QAction *act_wndExit = new QAction(menu_main);
+    QAction *actAudioSettings = new QAction(menuMain);
+    QAction *actWndExit = new QAction(menuMain);
 
-    QAction *act_libImport = new QAction(menu_main);
-    QAction *act_libExport = new QAction(menu_main);
-    QAction *act_libBackup = new QAction(menu_main);
-    QAction *act_libReset = new QAction(menu_main);
-    QAction *act_libOpen = new QAction(menu_main);
-    QAction *act_libNewFolder = new QAction(menu_main);
-    QAction *act_libNewPlaylist = new QAction(menu_main);
-    QAction *act_libImportPlaylists = new QAction(menu_main);
+    QAction *actLibImport = new QAction(menuMain);
+    QAction *actLibExport = new QAction(menuMain);
+    QAction *actLibBackup = new QAction(menuMain);
+    QAction *actLibReset = new QAction(menuMain);
+    QAction *actLibOpen = new QAction(menuMain);
+    QAction *actLibNewFolder = new QAction(menuMain);
+    QAction *actLibNewPlaylist = new QAction(menuMain);
+    QAction *actLibImportPlaylists = new QAction(menuMain);
 
-    QAction *act_themeSet = new QAction(menu_main);
-    QAction *act_themeRefresh = new QAction(menu_main);
+    QAction *actThemeSet = new QAction(menuMain);
+    QAction *actThemeRefresh = new QAction(menuMain);
 
-    QAction *act_editUndo = new QAction(menu_main);
-    QAction *act_editRedo = new QAction(menu_main);
+    QAction *actEditUndo = new QAction(menuMain);
+    QAction *actEditRedo = new QAction(menuMain);
 
-    QAction *act_editCut = new QAction(this);
-    QAction *act_editCopy = new QAction(this);
-    QAction *act_editPaste = new QAction(this);
-    QAction *act_editDelete = new QAction(this);
-    QAction *act_treeSelectAll = new QAction(this);
-    QAction *act_treeSelectNone = new QAction(this);
+    QAction *actEditCut = new QAction(this);
+    QAction *actEditCopy = new QAction(this);
+    QAction *actEditPaste = new QAction(this);
+    QAction *actEditDelete = new QAction(this);
+    QAction *actTreeSelectAll = new QAction(this);
+    QAction *actTreeSelectNone = new QAction(this);
 
-    QAction *act_raspiConnect = new QAction(menu_main);
+    QAction *actRaspiConnect = new QAction(menuMain);
 
-    QAction *act_toolsOptions = new QAction(menu_main);
+    QAction *actToolsOptions = new QAction(menuMain);
 
-    QAction *act_helpAbout = new QAction(menu_main);
+    QAction *actHelpAbout = new QAction(menuMain);
 
-    act_audioSettings->setText("Audio Settings");
-    act_wndExit->setText("Exit");
+    actAudioSettings->setText("Audio Settings");
+    actWndExit->setText("Exit");
 
-    act_libImport->setText("Import Library");
-    act_libExport->setText("Export Library");
-    act_libBackup->setText("Backup Library");
-    act_libReset->setText("Reset Library");
-    act_libOpen->setText("Open File Location");
-    act_libNewFolder->setText("New Folder");
-    act_libNewPlaylist->setText("New Playlist");
-    act_libImportPlaylists->setText("Import Playlists");
+    actLibImport->setText("Import Library");
+    actLibExport->setText("Export Library");
+    actLibBackup->setText("Backup Library");
+    actLibReset->setText("Reset Library");
+    actLibOpen->setText("Open File Location");
+    actLibNewFolder->setText("New Folder");
+    actLibNewPlaylist->setText("New Playlist");
+    actLibImportPlaylists->setText("Import Playlists");
 
-    act_themeSet->setText("Set Theme");
-    act_themeRefresh->setText("Refresh");
+    actThemeSet->setText("Set Theme");
+    actThemeRefresh->setText("Refresh");
 
-    act_editUndo->setText("Undo");
-    act_editRedo->setText("Redo");
-    act_editCut->setText("Cut");
-    act_editCopy->setText("Copy");
-    act_editPaste->setText("Paste");
-    act_editDelete->setText("Delete");
-    act_treeSelectAll->setText("Select All");
-    act_treeSelectNone->setText("Select None");
+    actEditUndo->setText("Undo");
+    actEditRedo->setText("Redo");
+    actEditCut->setText("Cut");
+    actEditCopy->setText("Copy");
+    actEditPaste->setText("Paste");
+    actEditDelete->setText("Delete");
+    actTreeSelectAll->setText("Select All");
+    actTreeSelectNone->setText("Select None");
 
-    act_raspiConnect->setText("Connect");
+    actRaspiConnect->setText("Connect");
 
-    act_toolsOptions->setText("Options");
+    actToolsOptions->setText("Options");
 
-    act_helpAbout->setText("About");
+    actHelpAbout->setText("About");
 
-    QMenu *menu_file = new QMenu(menu_main);
-    QMenu *menu_library = new QMenu(menu_main);
-    QMenu *menu_theme = new QMenu(menu_main);
+    QMenu *menuFile = new QMenu(menuMain);
+    QMenu *menuLibrary = new QMenu(menuMain);
+    QMenu *menuTheme = new QMenu(menuMain);
 
-    QMenu *menu_edit = new QMenu(menu_main);
-    QMenu *menu_device = new QMenu(menu_main);
-    QMenu *menu_tools = new QMenu(menu_main);
-    QMenu *menu_help = new QMenu(menu_main);
+    QMenu *menuEdit = new QMenu(menuMain);
+    QMenu *menuDevice = new QMenu(menuMain);
+    QMenu *menuTools = new QMenu(menuMain);
+    QMenu *menuHelp = new QMenu(menuMain);
 
-    menu_file->setTitle("File");
-    menu_library->setTitle("Library");
-    menu_theme->setTitle("Themes");
-    menu_edit->setTitle("Edit");
-    menu_device->setTitle("Device");
-    menu_tools->setTitle("Tools");
-    menu_help->setTitle("Help");
+    menuFile->setTitle("File");
+    menuLibrary->setTitle("Library");
+    menuTheme->setTitle("Themes");
+    menuEdit->setTitle("Edit");
+    menuDevice->setTitle("Device");
+    menuTools->setTitle("Tools");
+    menuHelp->setTitle("Help");
 
-    menu_main->addMenu(menu_file);
-    menu_library->addAction(act_libImport);
-    menu_library->addAction(act_libExport);
-    menu_library->addAction(act_libBackup);
-    menu_library->addSeparator();
-    menu_library->addAction(act_libReset);
-    menu_library->addAction(act_libOpen);
-    menu_library->addSeparator();
-    menu_library->addAction(act_libNewFolder);
-    menu_library->addAction(act_libNewPlaylist);
-    menu_library->addSeparator();
-    menu_library->addAction(act_libImportPlaylists);
+    menuMain->addMenu(menuFile);
+    menuLibrary->addAction(actLibImport);
+    menuLibrary->addAction(actLibExport);
+    menuLibrary->addAction(actLibBackup);
+    menuLibrary->addSeparator();
+    menuLibrary->addAction(actLibReset);
+    menuLibrary->addAction(actLibOpen);
+    menuLibrary->addSeparator();
+    menuLibrary->addAction(actLibNewFolder);
+    menuLibrary->addAction(actLibNewPlaylist);
+    menuLibrary->addSeparator();
+    menuLibrary->addAction(actLibImportPlaylists);
 
-    menu_theme->addAction(act_themeSet);
-    menu_theme->addAction(act_themeRefresh);
+    menuTheme->addAction(actThemeSet);
+    menuTheme->addAction(actThemeRefresh);
 
-    menu_file->addAction(act_audioSettings);
-    menu_file->addMenu(menu_library);
-    menu_file->addMenu(menu_theme);
-    menu_file->addSeparator();
-    menu_file->addAction(act_wndExit);
+    menuFile->addAction(actAudioSettings);
+    menuFile->addMenu(menuLibrary);
+    menuFile->addMenu(menuTheme);
+    menuFile->addSeparator();
+    menuFile->addAction(actWndExit);
 
-    menu_main->addMenu(menu_edit);
-    menu_edit->addAction(act_editUndo);
-    menu_edit->addAction(act_editRedo);
-    menu_edit->addSeparator();
-    menu_edit->addAction(act_editCut);
-    menu_edit->addAction(act_editCopy);
-    menu_edit->addAction(act_editPaste);
-    menu_edit->addAction(act_editDelete);
-    menu_edit->addSeparator();
-    menu_edit->addAction(act_treeSelectAll);
-    menu_edit->addAction(act_treeSelectNone);
+    menuMain->addMenu(menuEdit);
+    menuEdit->addAction(actEditUndo);
+    menuEdit->addAction(actEditRedo);
+    menuEdit->addSeparator();
+    menuEdit->addAction(actEditCut);
+    menuEdit->addAction(actEditCopy);
+    menuEdit->addAction(actEditPaste);
+    menuEdit->addAction(actEditDelete);
+    menuEdit->addSeparator();
+    menuEdit->addAction(actTreeSelectAll);
+    menuEdit->addAction(actTreeSelectNone);
 
-    menu_main->addMenu(menu_device);
-    menu_device->addAction(act_raspiConnect);
+    menuMain->addMenu(menuDevice);
+    menuDevice->addAction(actRaspiConnect);
 
-    menu_main->addMenu(menu_tools);
-    menu_tools->addAction(act_toolsOptions);
+    menuMain->addMenu(menuTools);
+    menuTools->addAction(actToolsOptions);
 
-    menu_main->addMenu(menu_help);
-    menu_help->addAction(act_helpAbout);
+    menuMain->addMenu(menuHelp);
+    menuHelp->addAction(actHelpAbout);
 
 //    connect(act_audioSettings
-    connect(act_wndExit, &QAction::triggered, this, [this]() {window()->close();});
+    connect(actWndExit, &QAction::triggered, this, [this]() {window()->close();});
 
-    connect(act_libImport, &QAction::triggered, m_panelLibrary, &MPanelLibrary::askLibraryImport);
-    connect(act_libExport, &QAction::triggered, m_panelLibrary, &MPanelLibrary::askLibraryExport);
-    connect(act_libBackup, &QAction::triggered, m_panelLibrary, &MPanelLibrary::backupLibrary);
-    connect(act_libReset, &QAction::triggered, m_panelLibrary, &MPanelLibrary::resetLibrary);
+    connect(actLibImport, &QAction::triggered, m_panelLibrary, &MPanelLibrary::askLibraryImport);
+    connect(actLibExport, &QAction::triggered, m_panelLibrary, &MPanelLibrary::askLibraryExport);
+    connect(actLibBackup, &QAction::triggered, m_panelLibrary, &MPanelLibrary::backupLibrary);
+    connect(actLibReset, &QAction::triggered, m_panelLibrary, &MPanelLibrary::resetLibrary);
 
-    connect(act_libOpen, &QAction::triggered, [=]() {MActions::openFileLocation(m_mediaLibrary->savePath());});
-    connect(act_libNewPlaylist, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::newPlaylist);
-    connect(act_libNewFolder, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::newFolder);
-    connect(act_libImportPlaylists, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::importPlaylists);
+    connect(actLibOpen, &QAction::triggered, [=]() {MActions::openFileLocation(m_mediaLibrary->savePath());});
+    connect(actLibNewPlaylist, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::newPlaylist);
+    connect(actLibNewFolder, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::newFolder);
+    connect(actLibImportPlaylists, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::importPlaylists);
 
-    connect(act_themeSet, &QAction::triggered, this, [this]() {setTheme();});
-    connect(act_themeRefresh, &QAction::triggered, this, [this]() {refreshTheme();});
+    connect(actThemeSet, &QAction::triggered, this, [this]() {setTheme();});
+    connect(actThemeRefresh, &QAction::triggered, this, [this]() {refreshTheme();});
 
 //    connect(act_editUndo, &QAction::triggered, this, [this]() {editUndo();});
 //    connect(act_editRedo, &QAction::triggered, this, [this]() {editRedo();});
 
-    connect(act_editCut, &QAction::triggered, m_panelMedia->frameSonglist(), &MFrameSonglist::cutItems);
-    connect(act_editCopy, &QAction::triggered, m_panelMedia->frameSonglist(), &MFrameSonglist::copyItems);
-    connect(act_editPaste, &QAction::triggered, m_panelMedia->frameSonglist(), &MFrameSonglist::pasteItems);
+    connect(actEditCut, &QAction::triggered, m_panelMedia->frameSonglist(), &MFrameSonglist::cutItems);
+    connect(actEditCopy, &QAction::triggered, m_panelMedia->frameSonglist(), &MFrameSonglist::copyItems);
+    connect(actEditPaste, &QAction::triggered, m_panelMedia->frameSonglist(), &MFrameSonglist::pasteItems);
 
 //    MTreeSonglist *treeSonglist = m_panelMedia->frameSonglist()->tree();
 //    QItemSelectionModel *treeSonglistItems = m_panelMedia->frameSonglist()->tree()->selectionModel();
@@ -276,14 +276,14 @@ void MRootDesktop::initializeMainMenu()
 //    connect(treeSonglistItems, &QItemSelectionModel::selectionChanged, act_editDelete,
 //            [=](){act_editDelete->setDisabled(!treeSonglistItems->selectedRows().size());});
 
-    act_editCut->setDisabled(true);
-    act_editCopy->setDisabled(true);
-    act_editDelete->setDisabled(true);
+    actEditCut->setDisabled(true);
+    actEditCopy->setDisabled(true);
+    actEditDelete->setDisabled(true);
 
     QAction *act_RefreshThemeDirect = new QAction(this);
     act_RefreshThemeDirect->setText("Refresh Theme");
     connect(act_RefreshThemeDirect, &QAction::triggered, this, &MRootDesktop::refreshTheme);
-    menu_main->addAction(act_RefreshThemeDirect);
+    menuMain->addAction(act_RefreshThemeDirect);
 }
 void MRootDesktop::initializeLayout()
 {

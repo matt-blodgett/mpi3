@@ -12,17 +12,16 @@ class QMimeData;
 QT_END_NAMESPACE
 
 
-#include "mmedialibrary.h"
-
-
+#include "mglobal.h"
 class MModelSonglistItem;
+
+
 class MModelSonglist : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
     explicit MModelSonglist(QObject *parent = nullptr);
-    ~MModelSonglist() override;
 
 public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
@@ -35,7 +34,7 @@ public:
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
 
-    QModelIndex index(int row, int column, const QModelIndex &index = QModelIndex()) const override;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -45,21 +44,27 @@ public:
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-public:
-    MMediaLibrary *library() const;
-    void setLibrary(MMediaLibrary *library);
+private:
+    MModelSonglistItem *getItem(const QModelIndex &index) const;
 
-    void setSonglist(MSongList songs, const QString &pid);
-    QString currentPID() const;
+public:
+    QString pidAt(const QModelIndex &index) const;
+
+    QString pidCurrentSonglist() const;
+    void setSongList(MSongList songs, const QString &pid);
+
+    void setLibrary(MMediaLibrary *library);
 
 private:
     QStringList m_headers;
-    QList<MModelSonglistItem> m_songlist;
-
     MMediaLibrary *m_mediaLibrary = nullptr;
+    QList<MModelSonglistItem*> m_songList;
     QString m_pid;
 
 private slots:
+    void songCreated(MSong *s);
+    void songDeleted(MSong *s);
+    void songChanged(MSong *s);
     void playlistContentsChanged(MPlaylist *p);
 };
 

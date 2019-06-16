@@ -1,14 +1,15 @@
 #include "mstyle.h"
 
 #include <QFontDatabase>
-
 #include <QStyleOption>
 #include <QPainter>
-
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSlider>
+
+
+// TODO: Use namespace Mpi3::Style {...}
 
 
 void MStyle::initialize()

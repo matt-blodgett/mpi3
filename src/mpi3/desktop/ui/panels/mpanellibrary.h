@@ -5,6 +5,7 @@
 
 
 #include "mpanel.h"
+
 QT_BEGIN_NAMESPACE
 class QPushButton;
 class QCheckBox;

@@ -6,6 +6,7 @@
 
 #include <QTreeView>
 #include <QMap>
+
 QT_BEGIN_NAMESPACE
 class QSortFilterProxyModel;
 class QSettings;
@@ -53,17 +54,19 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
+
+signals:
+    void moveSelected(int row);
 };
 
 
-class MTreeSettings : public QObject
+class MTreeViewLayoutSettings : public QObject
 {
     Q_OBJECT
 
-friend class MTreeSettingsCollection;
-
-public:
-    explicit MTreeSettings(QObject *parent = nullptr);
+private:
+    explicit MTreeViewLayoutSettings(QObject *parent = nullptr);
+    friend class MTreeViewLayoutSettingsManager;
 
 private:
     QList<int> m_columnWidth;
@@ -81,26 +84,21 @@ public:
 };
 
 
-class MTreeSettingsCollection : public QObject
+class MTreeViewLayoutSettingsManager : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit MTreeSettingsCollection(QObject *parent = nullptr);
+    explicit MTreeViewLayoutSettingsManager(QObject *parent = nullptr);
 
 public:
-    MTreeSettings *getContainer(const QString &pid);
-    MTreeSettings *addContainer(const QString &pid);
+    MTreeViewLayoutSettings *getLayoutSettings(const QString &pid);
 
-    void save(QSettings *settings, const QStringList &pidlist);
-    void load(QSettings *settings, const QStringList &pidlist);
+    void save(QSettings *settings, const QStringList &pidList);
+    void load(QSettings *settings, const QStringList &pidList);
 
 private:
-    QMap<QString, MTreeSettings*> m_settingsMap;
-
-signals:
-    void aboutToSave();
-    void completedSaving();
+    QMap<QString, MTreeViewLayoutSettings*> m_settingsMap;
 };
 
 

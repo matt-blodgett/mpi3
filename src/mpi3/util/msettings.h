@@ -12,6 +12,7 @@ QT_END_NAMESPACE
 
 
 #include "mutil.h"
+
 #ifdef MPI3_BUILD_SHARED
 class MPI3_EXPORT_UTIL MSettingsXml;
 class MPI3_EXPORT_UTIL MSettingsXmlNode;
@@ -39,8 +40,8 @@ class MSettingsXmlNode : public QObject
 
 public:
     explicit MSettingsXmlNode(
-            const QString &name, const QString
-            &text = QString(), QObject *parent = nullptr);
+        const QString &name, const QString
+        &text = QString(), QObject *parent = nullptr);
 
 public:
     QString fullPath() const;

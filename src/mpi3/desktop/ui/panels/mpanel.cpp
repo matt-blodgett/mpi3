@@ -1,11 +1,10 @@
 #include "mpanel.h"
+#include "mstyle.h"
 
 #include <QGridLayout>
 #include <QSplitter>
 #include <QScrollArea>
 #include <QLabel>
-
-#include "mstyle.h"
 
 
 #include <QDebug>

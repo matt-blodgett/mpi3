@@ -13,7 +13,7 @@ class MModelContainers;
 class MTreeSonglist;
 class MModelSonglist;
 class MModelSonglistProxy;
-class MTreeSettings;
+class MTreeViewLayoutSettings;
 
 
 class MFrameTreeView : public MFrame
@@ -30,7 +30,6 @@ public:
     virtual void copyItems();
     virtual void pasteItems();
     virtual void deleteItems();
-    virtual void duplicateItems();
 };
 
 
@@ -52,43 +51,40 @@ public:
     explicit MFrameContainers(QWidget *parent = nullptr);
 
 public:
-    void itemDetails() override;
-    void editItem() override;
-    void cutItems() override;
-    void copyItems() override;
-    void pasteItems() override;
+//    void itemDetails() override;
+//    void editItem() override;
+//    void cutItems() override;
+//    void copyItems() override;
+//    void pasteItems() override;
     void deleteItems() override;
-    void duplicateItems() override;
 
     void newFolder();
     void newPlaylist();
     void importPlaylists();
-
+    void duplicatePlaylist();
 
 public:
     MTreeContainers *tree() const;
+    MModelContainers *model() const;
 
     void setLibrary(MMediaLibrary *library = nullptr);
 
 private:
     MMediaLibrary *m_mediaLibrary = nullptr;
-
-
-private:
-    MFolder *getInsertFolder();
-
-private:
     MTreeContainers *m_treeContainers = nullptr;
     MModelContainers *m_modelContainers = nullptr;
 
+private:
+    MFolder *getInsertFolder() const;
     void selectContainer();
-    void contextMenuTreeview(const QPoint &point);
-
-    QStringList m_expandedContainers;
 
 private slots:
-    void modelAboutToBeReset();
-    void modelReset();
+    void containerMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destinationIndex, int row);
+    void containerInserted(const QModelIndex &parent, int first, int last);
+    void containerCollapsed(const QModelIndex &index);
+
+private slots:
+    void contextMenuTreeview(const QPoint &point);
 
 signals:
     void containerSelected(MContainer *container);
@@ -103,13 +99,12 @@ public:
     explicit MFrameSonglist(QWidget *parent = nullptr);
 
 public:
-    void itemDetails() override;
-    void editItem() override;
-    void cutItems() override;
-    void copyItems() override;
-    void pasteItems() override;
+//    void itemDetails() override;
+//    void editItem() override;
+//    void cutItems() override;
+//    void copyItems() override;
+//    void pasteItems() override;
     void deleteItems() override;
-    void duplicateItems() override;
 
     void importSongs();
     void downloadSongs();
@@ -120,28 +115,25 @@ public:
     void openItemFileLocation();
 
 public:
+    MTreeSonglist *tree();
+    MModelSonglist *model();
+    MModelSonglistProxy *modelProxy();
 
-    void setPlaylist(MPlaylist *playlist);
     void setLibrary(MMediaLibrary *library);
+    void setPlaylist(MPlaylist *playlist);
+
+    void setLayoutSettings(MTreeViewLayoutSettings *layoutSettings);
+    void saveLayoutSettings();
 
 private:
-    MContainer *m_container = nullptr;
     MMediaLibrary *m_mediaLibrary = nullptr;
-
-public:
-//    MTreeSonglist *tree();
-//    MModelSonglist *model();
-//    MMediaLibrary *library();
-//    MModelSonglistProxy *modelProxy();
-
-    void saveTreeSettings();
-    void setTreeSettings(MTreeSettings *treeSettings);
-
-private:
-    MTreeSettings *m_treeSettings = nullptr;
     MTreeSonglist *m_treeSonglist = nullptr;
     MModelSonglist *m_modelSonglist = nullptr;
     MModelSonglistProxy *m_modelSonglistProxy = nullptr;
+    MTreeViewLayoutSettings *m_layoutSettings = nullptr;
+
+private slots:
+    void moveSelected(int row);
 
 private slots:
     void contextMenuHeader(const QPoint &point);

@@ -1,23 +1,21 @@
 ﻿#include "mpanellibrary.h"
 #include "mmedialibrary.h"
+#include "mactions.h"
+#include "mstyle.h"
 
 #include <QGridLayout>
 #include <QPushButton>
 #include <QCheckBox>
 #include <QComboBox>
-
 #include <QLineEdit>
 #include <QLabel>
-
-#include <QDebug>
-
-#include "mstyle.h"
-#include "mactions.h"
-
 #include <QSettings>
 #include <QFileDialog>
 #include <QDir>
 #include <QDate>
+
+
+#include <QDebug>
 
 
 static const QStringList AutoBackupOptions = {"Continuous", "Daily", "Weekly", "Monthly"};

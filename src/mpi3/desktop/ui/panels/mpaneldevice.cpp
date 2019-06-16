@@ -13,7 +13,6 @@
 #include <QDebug>
 
 
-
 MPanelDevice::MPanelDevice(QWidget *parent) : MPanel(parent)
 {
     m_lblDevices = new QLabel(this);

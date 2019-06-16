@@ -34,6 +34,8 @@ typedef QVector<MSong*> MSongList;
 
 
 #include "mcore.h"
+
+
 namespace Mpi3
 {
 

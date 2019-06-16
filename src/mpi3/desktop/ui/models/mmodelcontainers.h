@@ -6,7 +6,7 @@
 
 #include <QAbstractItemModel>
 #include <QIcon>
-#include <QMap>
+
 QT_BEGIN_NAMESPACE
 class QMimeData;
 QT_END_NAMESPACE
@@ -58,17 +58,21 @@ private:
 
 public:
     QModelIndex getIndex(const QString &pid) const;
-    QString getPID(const QModelIndex &index) const;
+    QString pidAt(const QModelIndex &index) const;
 
     bool itemIsPlaylist(const QModelIndex &index) const;
     bool itemIsFolder(const QModelIndex &index) const;
 
-    MMediaLibrary *library() const;
     void setLibrary(MMediaLibrary *library);
 
 private:
     MModelContainersItem *m_rootItem = nullptr;
     MMediaLibrary *m_mediaLibrary = nullptr;
+
+private:
+    void containerCreated(MContainer *c);
+    void containerDeleted(MContainer *c);
+    void containerChanged(MContainer *c);
 
 private slots:
     void folderCreated(MFolder *f);

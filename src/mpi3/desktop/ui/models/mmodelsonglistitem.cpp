@@ -1,17 +1,13 @@
 #include "mmodelsonglistitem.h"
 
+#include <QAbstractTableModel>
 
-#define MPI3_NUMBER_OF_FIELDS 16
 
-MModelSonglistItem::MModelSonglistItem()
+MModelSonglistItem::MModelSonglistItem(QAbstractTableModel *parent) : QObject(parent)
 {
-    for(int i = 0; i < MPI3_NUMBER_OF_FIELDS; i++){
-        m_itemData.append("");
+    for(int i = 0; i < parent->columnCount() - 1; i++){
+        m_itemData.append(QVariant());
     }
-}
-MModelSonglistItem::~MModelSonglistItem()
-{
-
 }
 
 QString MModelSonglistItem::pid() const
@@ -25,7 +21,11 @@ void MModelSonglistItem::setPID(const QString &value)
 
 QVariant MModelSonglistItem::data(int column) const
 {
-    return m_itemData.at(column);
+    if(column >= 0 && column < m_itemData.size()){
+        return m_itemData.at(column);
+    }
+
+    return QVariant();
 }
 bool MModelSonglistItem::setData(int column, const QVariant &value)
 {

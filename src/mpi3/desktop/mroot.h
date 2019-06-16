@@ -7,13 +7,13 @@
 #include <QMainWindow>
 
 
-#include "mglobal.h"
 #include "mdesktop.h"
 #ifdef MPI3_BUILD_SHARED
 class MPI3_EXPORT_UI MRootDesktop;
 #endif
 
 
+#include "mglobal.h"
 class MStyleSheet;
 class MMediaLibrary;
 class MAudioEngine;

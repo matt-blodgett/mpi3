@@ -5,7 +5,6 @@
 
 
 #include <QList>
-#include <QIcon>
 
 
 class MModelContainersItem
@@ -36,9 +35,6 @@ public:
     QString label() const;
     void setLabel(const QString &value);
 
-    QIcon icon() const;
-    void setIcon(const QIcon &value);
-
     int childCount() const;
     int childNumber() const;
 
@@ -54,7 +50,6 @@ private:
     MModelContainersItem::ItemType m_itemType = MModelContainersItem::ItemType::EmptyItem;
     QString m_itemPID;
     QString m_itemLabel;
-    QIcon m_itemIcon;
 };
 
 

@@ -5,6 +5,7 @@
 
 
 #include <QProxyStyle>
+
 QT_BEGIN_NAMESPACE
 class QLabel;
 class QLineEdit;
@@ -13,6 +14,7 @@ class QSlider;
 QT_END_NAMESPACE
 
 
+// TODO: Use Mpi3::Style
 namespace MStyle
 {
     Q_NAMESPACE

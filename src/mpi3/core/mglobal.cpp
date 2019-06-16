@@ -1,10 +1,14 @@
 #include "mglobal.h"
 
 
-void Mpi3::initialize()
+namespace Mpi3
 {
-    qRegisterMetaType<ElementType>();
-    qRegisterMetaType<MediaState>();
-    qRegisterMetaType<EngineState>();
-    qRegisterMetaType<ErrorState>();
-}
+    void initialize()
+    {
+        qRegisterMetaType<ElementType>();
+        qRegisterMetaType<MediaState>();
+        qRegisterMetaType<EngineState>();
+        qRegisterMetaType<ErrorState>();
+    }
+};
+
