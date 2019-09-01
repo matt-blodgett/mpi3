@@ -45,7 +45,6 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     gridControl()->setRowStretch(5, 1);
     gridControl()->setVerticalSpacing(0);
     gridControl()->setHorizontalSpacing(0);
-    gridControl()->setMargin(0);
 
     gridDisplay()->addWidget(m_lblView, 0, 1, 1, 1);
     gridDisplay()->addWidget(m_frmSonglist, 1, 0 , 1, 2);
@@ -53,7 +52,6 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     gridDisplay()->setRowMinimumHeight(0, 60);
     gridDisplay()->setColumnStretch(1, 1);
     gridDisplay()->setRowStretch(1, 1);
-    gridDisplay()->setMargin(0);
 
     m_btnSongs->setText("Songs");
     m_btnArtists->setText("Artists");

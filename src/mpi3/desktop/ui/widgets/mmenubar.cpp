@@ -36,7 +36,6 @@ MMenuBar::MMenuBar(QWidget *parent) : MFrame(parent)
     gridMenu->setColumnMinimumWidth(5, 4);
     gridMenu->setColumnStretch(0, 0);
     gridMenu->setColumnStretch(1, 1);
-    gridMenu->setMargin(0);
     setLayout(gridMenu);
     m_btnDeMaximize->hide();
 

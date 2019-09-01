@@ -34,7 +34,6 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     gridVolume->setRowMinimumHeight(1, 20);
     gridVolume->setHorizontalSpacing(0);
     gridVolume->setVerticalSpacing(0);
-    gridVolume->setMargin(0);
     frmVolume->setLayout(gridVolume);
 
     m_sldVolume->setOrientation(Qt::Horizontal);
@@ -87,7 +86,6 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     gridControl->setColumnStretch(4, 0);
     gridControl->setHorizontalSpacing(0);
     gridControl->setVerticalSpacing(0);
-    gridControl->setMargin(0);
     frmPlayback->setLayout(gridControl);
 
     frmPlayback->setFixedHeight(uHeight-1);
@@ -133,7 +131,6 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     gridSearchbar->setRowMinimumHeight(1, 20);
     gridSearchbar->setHorizontalSpacing(0);
     gridSearchbar->setVerticalSpacing(0);
-    gridSearchbar->setMargin(0);
     frmSearchbar->setLayout(gridSearchbar);
 
     m_btnSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -174,7 +171,6 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     gridMain->setColumnStretch(10, 0);
     gridMain->setHorizontalSpacing(0);
     gridMain->setVerticalSpacing(0);
-    gridMain->setMargin(0);
     setLayout(gridMain);
 
 

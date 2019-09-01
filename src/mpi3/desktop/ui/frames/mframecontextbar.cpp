@@ -27,7 +27,6 @@ MFrameContextBar::MFrameContextBar(QWidget *parent) : MFrame(parent)
     gridMain->setRowMinimumHeight(2, 1);
     gridMain->setHorizontalSpacing(0);
     gridMain->setVerticalSpacing(0);
-    gridMain->setMargin(0);
     setLayout(gridMain);
 
     m_btnMedia->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));

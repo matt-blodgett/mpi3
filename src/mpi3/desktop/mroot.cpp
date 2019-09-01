@@ -300,7 +300,6 @@ void MRootDesktop::initializeLayout()
     gridMain->setRowStretch(2, 1);
     gridMain->setHorizontalSpacing(0);
     gridMain->setVerticalSpacing(0);
-    gridMain->setMargin(0);
     windowMain->setLayout(gridMain);
 
     setMinimumHeight(300);

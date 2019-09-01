@@ -34,8 +34,6 @@ MPanelDevice::MPanelDevice(QWidget *parent) : MPanel(parent)
     gridControl()->setRowStretch(1, 1);
     gridControl()->setVerticalSpacing(0);
     gridControl()->setHorizontalSpacing(0);
-    gridControl()->setMargin(0);
-
     m_sectionLibrary = addSection();
 
     m_boxLibName = new QLineEdit(this);

@@ -59,7 +59,6 @@ MFrameContainers::MFrameContainers(QWidget *parent) : MFrameTreeView(parent)
     gridMain->setRowStretch(0, 1);
     gridMain->setVerticalSpacing(0);
     gridMain->setHorizontalSpacing(0);
-    gridMain->setMargin(0);
     setLayout(gridMain);
 
     connect(m_treeContainers, &QTreeView::customContextMenuRequested, this, &MFrameContainers::contextMenuTreeview);
@@ -281,7 +280,6 @@ MFrameSonglist::MFrameSonglist(QWidget *parent) : MFrameTreeView(parent)
     gridMain->setRowStretch(0, 1);
     gridMain->setVerticalSpacing(0);
     gridMain->setHorizontalSpacing(0);
-    gridMain->setMargin(0);
     setLayout(gridMain);
 
     connect(m_treeSonglist, &QTreeView::customContextMenuRequested, this, &MFrameSonglist::contextMenuTreeview);
