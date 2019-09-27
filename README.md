@@ -5,8 +5,6 @@ mpi3 is an open source, cross platform C++ project that aims to create a desktop
 The project currently uses open source [Qt5](https://github.com/qt/qt5) (LGPL) for its graphical interface, [FFmpeg](https://github.com/FFmpeg/FFmpeg) for processing audio and [libao](https://github.com/xiph/libao) for audio output.
 There are plans to switch to another audio output library such as [PortAudio](https://app.assembla.com/spaces/portaudio/git/source) in the future.
 
-Currently the project is in its infancy and is focused on the desktop application and building an API foundation for further development of the device feature.
-
 ## Getting Started
 
 If you wish to try out the software, there are two convenience scripts provided for building the source.
@@ -39,9 +37,11 @@ Note that these scripts are intended for linux based systems only.
 
 ## Screens
 
-A showcase of the mpi3desktop application in its current state:
+A showcase of the `mpi3desktop` application in its current state:
 
 ![asdf](./docs/homescreen-example.png)
+
+Yes, it is a nearly identical rip-off of the iTunes UI but in the future the hope is it will take on a more unique and user friendly interface, both on the desktop and especially on Raspberry Pi devices.
 
 ## Author
 
