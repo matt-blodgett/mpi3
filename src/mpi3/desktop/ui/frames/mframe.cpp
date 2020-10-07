@@ -1,4 +1,4 @@
-#include "mframe.h"
+#include "mpi3/desktop/ui/frames/mframe.h"
 
 #include <QPainter>
 #include <QStyleOption>

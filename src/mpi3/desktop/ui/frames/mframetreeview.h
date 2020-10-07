@@ -4,10 +4,10 @@
 #define MFRAMETREEVIEW_H
 
 
-#include "mframe.h"
+#include "mpi3/desktop/ui/frames/mframe.h"
 
 
-#include "mglobal.h"
+#include "mpi3/core/mglobal.h"
 class MTreeContainers;
 class MModelContainers;
 class MTreeSonglist;
@@ -107,9 +107,12 @@ public:
     void deleteItems() override;
 
     void importSongs();
-    void downloadSongs();
 
-    void playItem();
+    void playItemSelected();
+    void playItemShift(const int &shift);
+    void playItemNext();
+    void playItemPrev();
+
     void addItemsTo();
     void removeItemsFrom();
     void openItemFileLocation();
@@ -131,6 +134,7 @@ private:
     MModelSonglist *m_modelSonglist = nullptr;
     MModelSonglistProxy *m_modelSonglistProxy = nullptr;
     MTreeViewLayoutSettings *m_layoutSettings = nullptr;
+    QString m_pidCurrentPlayingSong;
 
 private slots:
     void moveSelected(int row);
@@ -138,6 +142,9 @@ private slots:
 private slots:
     void contextMenuHeader(const QPoint &point);
     void contextMenuTreeview(const QPoint &point);
+
+signals:
+    void currentPlayingSongChanged(const QString &pid);
 };
 
 

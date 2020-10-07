@@ -1,4 +1,4 @@
-#include "mmodelcontainersitem.h"
+#include "mpi3/desktop/ui/models/mmodelcontainersitem.h"
 
 
 MModelContainersItem::MModelContainersItem(MModelContainersItem *parent)

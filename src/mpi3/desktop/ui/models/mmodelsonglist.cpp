@@ -1,10 +1,11 @@
-#include "mmodelsonglist.h"
-#include "mmodelsonglistitem.h"
-#include "mmedialibrary.h"
-#include "mmediautil.h"
-#include "mformat.h"
+#include "mpi3/desktop/ui/models/mmodelsonglist.h"
+#include "mpi3/desktop/ui/models/mmodelsonglistitem.h"
+#include "mpi3/core/mmedialibrary.h"
+#include "mpi3/core/mmediautil.h"
+#include "mpi3/util/mformat.h"
 
 #include <QMimeData>
+#include <QUrl>
 
 
 #include <QDebug>
@@ -26,7 +27,8 @@ static void populateItem(MModelItem *item, MSong *s)
     item->setData(index++, s->kind());
     item->setData(index++, s->path());
     item->setData(index++, s->bitRate());
-    item->setData(index++, s->added());
+    item->setData(index++, s->sampleRate());
+    item->setData(index++, "");
     item->setData(index++, "");
     item->setData(index++, 0);
     item->setData(index++, 0);
@@ -111,9 +113,9 @@ QMimeData *MModelSonglist::mimeData(const QModelIndexList &indexes) const
 
 bool MModelSonglist::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
 {
-    Q_UNUSED(row);
-    Q_UNUSED(column);
-    Q_UNUSED(parent);
+    Q_UNUSED(row)
+    Q_UNUSED(column)
+    Q_UNUSED(parent)
 
     MPlaylist *playlist = m_mediaLibrary->getPlaylist(m_pid);
     if(playlist || m_pid == m_mediaLibrary->pid()) {
@@ -128,8 +130,8 @@ bool MModelSonglist::canDropMimeData(const QMimeData *data, Qt::DropAction actio
 }
 bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-    Q_UNUSED(column);
-    Q_UNUSED(parent);
+    Q_UNUSED(column)
+    Q_UNUSED(parent)
 
     MPlaylist *playlist = m_mediaLibrary->getPlaylist(m_pid);
 
@@ -146,7 +148,12 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
             QStringList pidStrings = Mpi3::Core::bytesToSongs(pidBytes);
 
             if(actionIsCopyAction) {
-                playlist->insert(row, pidStrings);
+                QStringList pidStringsCombined = playlist->songsPidList();
+                for (QString pidString : pidStrings) {
+                    pidStringsCombined.insert(row++, pidString);
+                }
+                m_mediaLibrary->edit(playlist, "songs", pidStringsCombined);
+                return true;
             }
             else if(actionIsMoveAction) {
                 return false;
@@ -174,7 +181,12 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
             }
 
             if(playlist){
-                playlist->insert(row, pidStrings);
+                QStringList pidStringsCombined = playlist->songsPidList();
+                for (QString pidString : pidStrings) {
+                    pidStringsCombined.insert(row++, pidString);
+                }
+                m_mediaLibrary->edit(playlist, "songs", pidStringsCombined);
+                return true;
             }
 
             return true;
@@ -186,7 +198,7 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
 
 QModelIndex MModelSonglist::index(int row, int column, const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
 
     MModelItem *item = m_songList.at(row);
     if(item){
@@ -198,12 +210,12 @@ QModelIndex MModelSonglist::index(int row, int column, const QModelIndex &parent
 
 int MModelSonglist::rowCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     return m_songList.size();
 }
 int MModelSonglist::columnCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     return m_headers.size();
 }
 
@@ -221,7 +233,7 @@ QVariant MModelSonglist::data(const QModelIndex &index, int role) const
             return m_songList.at(row)->data(col);
         }
         else if(role == Qt::EditRole && flags(index).testFlag(Qt::ItemIsEditable)){
-            return m_songList.at(row)->data(col);;
+            return m_songList.at(row)->data(col);
         }
     }
 
@@ -238,15 +250,15 @@ bool MModelSonglist::setData(const QModelIndex &index, const QVariant &value, in
 
             switch(col){
                 case 1: {
-                    s->setName(value.toString());
+                    m_mediaLibrary->edit(s, "name", value);
                     break;
                 }
                 case 2: {
-                    s->setArtist(value.toString());
+                    m_mediaLibrary->edit(s, "artist", value);
                     break;
                 }
                 case 3: {
-                    s->setAlbum(value.toString());
+                    m_mediaLibrary->edit(s, "album", value);
                     break;
                 }
             }
@@ -279,7 +291,17 @@ MModelItem *MModelSonglist::getItem(const QModelIndex &index) const
     return nullptr;
 }
 
-QString MModelSonglist::pidAt(const QModelIndex &index) const
+QModelIndex MModelSonglist::pidToIndex(const QString &pid) const
+{
+    for (int i = 0; i < m_songList.length(); i++) {
+        if (m_songList.at(i)->pid() == pid) {
+            return index(i, 0);
+        }
+    }
+
+    return QModelIndex();
+}
+QString MModelSonglist::pidFromIndex(const QModelIndex &index) const
 {
     return m_songList.at(index.row())->pid();
 }
@@ -315,7 +337,7 @@ void MModelSonglist::setLibrary(MMediaLibrary *library)
     connect(m_mediaLibrary, &MMediaLibrary::songCreated, this, &MModelSonglist::songCreated);
     connect(m_mediaLibrary, &MMediaLibrary::songDeleted, this, &MModelSonglist::songDeleted);
     connect(m_mediaLibrary, &MMediaLibrary::songChanged, this, &MModelSonglist::songChanged);
-    connect(m_mediaLibrary, &MMediaLibrary::playlistContentsChanged, this, &MModelSonglist::playlistContentsChanged);
+    connect(m_mediaLibrary, &MMediaLibrary::playlistSongsChanged, this, &MModelSonglist::playlistSongsChanged);
     connect(m_mediaLibrary, &MMediaLibrary::libraryReset, this, [this](){setSongList(m_mediaLibrary->songs(), m_mediaLibrary->pid());});
 }
 
@@ -356,7 +378,7 @@ void MModelSonglist::songChanged(MSong *s)
         }
     }
 }
-void MModelSonglist::playlistContentsChanged(MPlaylist *p)
+void MModelSonglist::playlistSongsChanged(MPlaylist *p)
 {
     if(m_pid == p->pid()){
         setSongList(p->songs(), p->pid());

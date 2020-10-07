@@ -1,5 +1,5 @@
-#include "mmediautil.h"
-#include "mmedialibrary.h"
+#include "mpi3/core/mmediautil.h"
+#include "mpi3/core/mmedialibrary.h"
 
 
 #include <QUrl>
@@ -37,7 +37,7 @@ namespace Mpi3
         {
             QByteArray pidBytes;
             for(MSong *s : songlist) {
-                pidBytes.append(s->pid());
+                pidBytes.append(s->pid().toStdString().c_str());
             }
 
             return pidBytes;

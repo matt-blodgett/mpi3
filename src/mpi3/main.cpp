@@ -1,8 +1,8 @@
 #if defined(MPI3_BUILD_DESKTOP)
-#include "desktop/mroot.h"
+#include "mpi3/desktop/mroot.h"
 typedef MRootDesktop MRootWindow;
 #elif defined(MPI3_BUILD_DEVICE)
-#include "device/mroot.h"
+#include "mpi3/device/mroot.h"
 typedef MRootDevice MRootWindow;
 #endif
 

@@ -1,10 +1,10 @@
-#include "mmodelcontainers.h"
-#include "mmodelcontainersitem.h"
-#include "mmedialibrary.h"
-#include "mmediautil.h"
+#include "mpi3/desktop/ui/models/mmodelcontainers.h"
+#include "mpi3/desktop/ui/models/mmodelcontainersitem.h"
+#include "mpi3/core/mmedialibrary.h"
+#include "mpi3/core/mmediautil.h"
 
 #include <QMimeData>
-
+#include <QUrl>
 
 #include <QDebug>
 
@@ -81,7 +81,7 @@ QMimeData *MModelContainers::mimeData(const QModelIndexList &indexes) const
 
     if(indexes.size() == 1) {
         QByteArray pidBytes;
-        pidBytes.append(pidAt(indexes.at(0)));
+        pidBytes.append(pidAt(indexes.at(0)).toStdString().c_str());
         mData->setData(QMetaType::typeName(qMetaTypeId<QString>()), pidBytes);
     }
 
@@ -144,13 +144,12 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
     MContainer *targetContainer = m_mediaLibrary->getContainer(pidAt(targetIndex));
 
     if(!targetContainer) {
-
         if(actionIsMoveAction && dataIsContainer) {
             QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
             MContainer *dropContainer = m_mediaLibrary->getContainer(pid);
 
             if(dropContainer){
-                dropContainer->setParentFolder(nullptr);
+                m_mediaLibrary->edit(dropContainer, "parentFolder", QVariant());
                 return true;
             }
         }
@@ -158,7 +157,6 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
             for(QUrl url : data->urls()) {
                 m_mediaLibrary->newSong(url.toString());
             }
-
             return true;
         }
     }
@@ -168,17 +166,20 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
         if(actionIsCopyAction && dataIsSonglist) {
             QByteArray pidBytes = data->data(QMetaType::typeName(qMetaTypeId<QStringList>()));
             QStringList pidStrings = Mpi3::Core::bytesToSongs(pidBytes);
-            targetPlaylist->append(pidStrings);
+            QStringList pidStringsCombined = targetPlaylist->songsPidList();
+            pidStringsCombined.append(pidStrings);
+            m_mediaLibrary->edit(targetPlaylist, "songs", pidStringsCombined);
             return true;
         }
         else if(actionIsCopyAction && dataIsValidMediaFiles) {
             QStringList pidStrings;
             for(QUrl url : data->urls()) {
                 MSong *song = m_mediaLibrary->newSong(url.toString());
-                pidStrings.append(song->pid());
+                pidStrings << song->pid();
             }
-
-            targetPlaylist->append(pidStrings);
+            QStringList pidStringsCombined = targetPlaylist->songsPidList();
+            pidStringsCombined.append(pidStrings);
+            m_mediaLibrary->edit(targetPlaylist, "songs", pidStringsCombined);
             return true;
         }
     }
@@ -190,7 +191,7 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
             MContainer *dropContainer = m_mediaLibrary->getContainer(pid);
 
             if(dropContainer){
-                dropContainer->setParentFolder(targetFolder);
+                m_mediaLibrary->edit(dropContainer, "parentFolder", targetFolder->pid());
                 return true;
             }
         }
@@ -259,7 +260,7 @@ bool MModelContainers::setData(const QModelIndex &index, const QVariant &value, 
     if(role == Qt::EditRole) {
         MModelItem *item = getItem(index);
         MContainer *c = m_mediaLibrary->getContainer(item->pid());
-        c->setName(value.toString());
+        m_mediaLibrary->edit(c, "name", value);
         return true;
     }
 
@@ -348,6 +349,7 @@ void MModelContainers::setLibrary(MMediaLibrary *library)
     }
 
     m_mediaLibrary = library;
+    connect(m_mediaLibrary, &MMediaLibrary::libraryReset, this, [this](){beginResetModel(); m_rootItem->removeChildren(0, rowCount()); endResetModel();});
     connect(m_mediaLibrary, &MMediaLibrary::folderCreated, this, &MModelContainers::folderCreated);
     connect(m_mediaLibrary, &MMediaLibrary::playlistCreated, this, &MModelContainers::playlistCreated);
     connect(m_mediaLibrary, &MMediaLibrary::folderDeleted, this, &MModelContainers::folderDeleted);
@@ -355,7 +357,6 @@ void MModelContainers::setLibrary(MMediaLibrary *library)
     connect(m_mediaLibrary, &MMediaLibrary::folderChanged, this, &MModelContainers::folderChanged);
     connect(m_mediaLibrary, &MMediaLibrary::playlistChanged, this, &MModelContainers::playlistChanged);
     connect(m_mediaLibrary, &MMediaLibrary::parentFolderChanged, this, &MModelContainers::parentFolderChanged);
-    connect(m_mediaLibrary, &MMediaLibrary::libraryReset, this, [this](){beginResetModel(); m_rootItem->removeChildren(0, rowCount()); endResetModel();});
 
     MFolderList parentFolders;
     MFolderList childFolders;
@@ -460,7 +461,6 @@ void MModelContainers::playlistCreated(MPlaylist *p)
 {
     containerCreated(p);
 }
-
 void MModelContainers::folderDeleted(MFolder *f)
 {
     containerDeleted(f);
@@ -469,7 +469,6 @@ void MModelContainers::playlistDeleted(MPlaylist *p)
 {
     containerDeleted(p);
 }
-
 void MModelContainers::folderChanged(MFolder *f)
 {
     containerChanged(f);
@@ -478,7 +477,6 @@ void MModelContainers::playlistChanged(MPlaylist *p)
 {
     containerChanged(p);
 }
-
 void MModelContainers::parentFolderChanged(MContainer *c)
 {
     QModelIndex sourceIdx = getIndex(c->pid());

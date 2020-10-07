@@ -1,21 +1,20 @@
-﻿#include "mroot.h"
-#include "mstyle.h"
-#include "mactions.h"
-#include "msettings.h"
+﻿#include "mpi3/desktop/mroot.h"
 
-#include "mstylesheet.h"
-#include "mmedialibrary.h"
-#include "maudioengine.h"
+#include "mpi3/desktop/ui/frames/mframecontextbar.h"
+#include "mpi3/desktop/ui/frames/mframeplayback.h"
+#include "mpi3/desktop/ui/frames/mframetreeview.h"
+#include "mpi3/desktop/ui/panels/mpanellibrary.h"
+#include "mpi3/desktop/ui/panels/mpaneldevice.h"
+#include "mpi3/desktop/ui/panels/mpanelmedia.h"
+#include "mpi3/desktop/ui/widgets/mtreeview.h"
+#include "mpi3/desktop/ui/models/mmodelsonglist.h"
+#include "mpi3/desktop/ui/mstyle.h"
+#include "mpi3/desktop/ui/mactions.h"
 
-#include "mframecontextbar.h"
-#include "mframeplayback.h"
-#include "mframetreeview.h"
-#include "mtreeview.h"
+#include "mpi3/core/mmedialibrary.h"
 
-#include "mpanellibrary.h"
-#include "mpaneldevice.h"
-#include "mpanelmedia.h"
-#include "mmenubar.h"
+#include "mpi3/util/msettings.h"
+#include "mpi3/util/mstylesheet.h"
 
 #include <QStyleOption>
 #include <QPainter>
@@ -23,9 +22,18 @@
 #include <QGridLayout>
 #include <QFileDialog>
 #include <QMenuBar>
-
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include <QDebug>
+
+
+#include <QMediaPlayer>
+
+
+static QString mp3FilePath2 = "C:\\Users\\Matt\\Desktop\\songs\\Lone Digger.mp3";
+static QString mp3FilePath = "C:/Users/Matt/Desktop/songs/Lone Digger.mp3";
+static QString wavFilePath = "C:/Users/Matt/Desktop/LoneDigger.wav";
 
 
 MRootDesktop::MRootDesktop()
@@ -35,80 +43,56 @@ MRootDesktop::MRootDesktop()
 }
 MRootDesktop::~MRootDesktop()
 {
-    m_audioEngine->stop();
-    delete m_audioEngine;
+    m_mediaPlayer->stop();
+    delete m_mediaPlayer;
     delete m_mediaLibrary;
     delete m_styleSheet;
-    MAudioEngine::deinitialize();
 }
 
 void MRootDesktop::initialize()
 {
     Mpi3::initialize();
     MStyle::initialize();
-    MAudioEngine::initialize();
 
     initializeObjects();
     initializeMainMenu();
     initializeLayout();
     initializeState();
     centralWidget()->show();
-
-
-//    m_mediaLibrary->newPlaylist(m_mediaLibrary->folders().at(1));
-
-//    m_mediaLibrary->reset();
-
-//    MFolder *folder1 = m_mediaLibrary->newFolder();
-//    MFolder *folder2 = m_mediaLibrary->newFolder();
-
-//    folder2->setParentFolder(folder1);
-
-//    m_mediaLibrary->newPlaylist();
-//    m_mediaLibrary->newPlaylist(folder1);
-
-
-//    MFolder *f = m_mediaLibrary->newFolder();
-//    m_mediaLibrary->newPlaylist(f);
-
-
 }
 
 void MRootDesktop::initializeObjects()
 {
     m_styleSheet = new MStyleSheet();
     m_mediaLibrary = new MMediaLibrary(this);
-    m_audioEngine = new MAudioEngine(this);
+    m_mediaPlayer = new QMediaPlayer(this);
 
-//    connect(m_audioEngine, &MAudioEngine::notifyMediaStatus, this, &MRootDesktop::processAudioMediaStatus);
-//    connect(m_audioEngine, &MAudioEngine::notifyEngineStatus, this, &MRootDesktop::processAudioEngineStatus);
-//    connect(m_audioEngine, &MAudioEngine::notifyErrorStatus, this, &MRootDesktop::processAudioErrorStatus);
-//    connect(m_audioEngine, &MAudioEngine::notifyRequestStatus, this, &MRootDesktop::processAudioRequestStatus);
-
-    m_panelPlayback = new MFramePlayback(this);
-
-    connect(m_panelPlayback, &MFramePlayback::playRequested, m_audioEngine, &MAudioEngine::play);
-    connect(m_panelPlayback, &MFramePlayback::pausRequested, m_audioEngine, &MAudioEngine::pause);
-    connect(m_panelPlayback, &MFramePlayback::volumeRequested, m_audioEngine, &MAudioEngine::gain);
-    connect(m_panelPlayback, &MFramePlayback::seekRequested, m_audioEngine, &MAudioEngine::seek);
-
-    connect(m_audioEngine, &MAudioEngine::notifyVolume, m_panelPlayback, &MFramePlayback::setVolume);
-    connect(m_audioEngine, &MAudioEngine::notifyPosition, m_panelPlayback, &MFramePlayback::setPosition);
-    connect(m_audioEngine, &MAudioEngine::notifyEngineStatus, m_panelPlayback, &MFramePlayback::setState);
-//    connect(m_mediaLibrary, &MMediaLibrary::elementModified, m_panelPlayback, &MFramePlayback::elementModified);
+    m_framePlayback = new MFramePlayback(this);
+    m_frameContextBar = new MFrameContextBar(this);
 
     m_panelMedia = new MPanelMedia(this);
-//    connect(m_panelPlayback, &MPanelPlayback::nextRequested, m_treeSonglist, &MTreeSonglist::playNextItem);
-//    connect(m_panelPlayback, &MPanelPlayback::prevRequested, m_treeSonglist, &MTreeSonglist::playPrevItem);
-
-//    connect(m_treeSonglist, &MTreeSonglist::playbackChanged, m_panelPlayback, &MPanelPlayback::setDisplay);
-//    connect(m_treeSonglist, &MTreeSonglist::playbackChanged, this, &MRootDesktop::setPlaybackSong);
-
     m_panelLibrary = new MPanelLibrary(this);
     m_panelDevice = new MPanelDevice(this);
-    m_contextBar = new MFrameContextBar(this);
 
-    connect(m_contextBar, &MFrameContextBar::viewChanged, this, &MRootDesktop::setContextPanel);
+    connect(m_framePlayback, &MFramePlayback::playRequested, m_mediaPlayer, &QMediaPlayer::play);
+    connect(m_framePlayback, &MFramePlayback::pauseRequested, m_mediaPlayer, &QMediaPlayer::pause);
+    connect(m_framePlayback, &MFramePlayback::volumeRequested, m_mediaPlayer, &QMediaPlayer::setVolume);
+    connect(m_framePlayback, &MFramePlayback::seekRequested, m_mediaPlayer, &QMediaPlayer::setPosition);
+
+    connect(m_mediaPlayer, &QMediaPlayer::volumeChanged, m_framePlayback, &MFramePlayback::setVolume);
+    connect(m_mediaPlayer, &QMediaPlayer::positionChanged, m_framePlayback, &MFramePlayback::setPosition);
+    connect(m_mediaPlayer, &QMediaPlayer::stateChanged, m_framePlayback, &MFramePlayback::setState);
+    connect(m_mediaLibrary, &MMediaLibrary::songChanged, m_framePlayback, &MFramePlayback::songChanged);
+
+    connect(m_panelMedia->frameSonglist(), &MFrameSonglist::currentPlayingSongChanged, this, &MRootDesktop::setPlaybackSong);
+
+    // This causes an issue where if it hasn't been pushed yet it will select the first row and play it.
+    // Should only do this when app opens and no songs have playedy yet.
+    connect(m_framePlayback, &MFramePlayback::playRequestedInitial, this, &MRootDesktop::setPlaybackSongInitial);
+    connect(m_framePlayback, &MFramePlayback::nextRequested, m_panelMedia->frameSonglist(), &MFrameSonglist::playItemNext);
+    connect(m_framePlayback, &MFramePlayback::prevRequested, m_panelMedia->frameSonglist(), &MFrameSonglist::playItemPrev);
+
+    connect(m_frameContextBar, &MFrameContextBar::contextPanelChanged, this, &MRootDesktop::setContextPanel);
 }
 void MRootDesktop::initializeMainMenu()
 {
@@ -287,27 +271,23 @@ void MRootDesktop::initializeMainMenu()
 }
 void MRootDesktop::initializeLayout()
 {
-    m_menuBar = new MMenuBar(this);
-
     QWidget *windowMain = new QWidget(this);
     QGridLayout *gridMain = new QGridLayout(windowMain);
-    gridMain->addWidget(m_panelPlayback, 0, 0, 1, 1);
-    gridMain->addWidget(m_contextBar, 1, 0, 1, 1);
+    gridMain->addWidget(m_framePlayback, 0, 0, 1, 1);
+    gridMain->addWidget(m_frameContextBar, 1, 0, 1, 1);
     gridMain->addWidget(m_panelMedia, 2, 0, 1, 1);
     gridMain->addWidget(m_panelLibrary, 2, 0, 1, 1);
     gridMain->addWidget(m_panelDevice, 2, 0, 1, 1);
     gridMain->setColumnStretch(0, 1);
     gridMain->setRowStretch(2, 1);
+    gridMain->setContentsMargins(0, 0, 0, 0);
     gridMain->setHorizontalSpacing(0);
     gridMain->setVerticalSpacing(0);
     windowMain->setLayout(gridMain);
 
     setMinimumHeight(300);
     setMinimumWidth(700);
-    setContentsMargins(1, 1, 1, 1);
     setCentralWidget(windowMain);
-    setMenuWidget(m_menuBar);
-    setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
     setWindowIcon(QIcon(":/icons/window/mpi3.ico"));
 
     m_panelLibrary->hide();
@@ -327,15 +307,34 @@ void MRootDesktop::initializeState()
     QString libraryPath = settings.value("library").toString();
     int context = settings.value("context").toInt();
     int volume = settings.value("volume", 50).toInt();
-    m_menuBar->load(&settings);
+
+    settings.beginGroup("WindowGeometry");
+    QRect screenSize = QApplication::desktop()->availableGeometry(this);
+    int d_rootx = (screenSize.width() / 2) - 400;
+    int d_rooty = (screenSize.height() / 2) - 300;
+    int wnd_rootx = settings.value("rootx", d_rootx).toInt();
+    int wnd_rooty = settings.value("rooty", d_rooty).toInt();
+    int wnd_width = settings.value("width", 800).toInt();
+    int wnd_height = settings.value("height", 600).toInt();
+    bool wnd_maximized = settings.value("maximized", false).toBool();
+    settings.endGroup();
+
+    if(wnd_maximized) {
+        showMaximized();
+    }
+    else {
+        move(wnd_rootx, wnd_rooty);
+        resize(wnd_width, wnd_height);
+    }
+
     settings.endGroup();
 
     m_styleSheet->load(stylePath);
     setStyleSheet(m_styleSheet->qssStyle());
 
-    m_panelPlayback->setVolume(volume);
-    m_audioEngine->gain(m_panelPlayback->volume());
-    m_contextBar->changeView(static_cast<MFrameContextBar::View>(context));
+    m_framePlayback->setVolume(volume);
+    m_mediaPlayer->setVolume(volume);
+    m_frameContextBar->changeView(static_cast<MFrameContextBar::View>(context));
 
     // Need to create the temp file if it doesn't exist
     if(!QFile::exists(libraryPath)){
@@ -360,9 +359,17 @@ void MRootDesktop::saveSettings()
     settings->beginGroup("RootWindow");
     settings->setValue("style", m_styleSheet->qssPath());
     settings->setValue("library", m_mediaLibrary->savePath());
-    settings->setValue("context", m_contextBar->currentView());
-    settings->setValue("volume", m_panelPlayback->volume());
-    m_menuBar->save(settings);
+    settings->setValue("context", m_frameContextBar->currentView());
+    settings->setValue("volume", m_framePlayback->volume());
+
+    settings->beginGroup("WindowGeometry");
+    settings->setValue("rootx", x());
+    settings->setValue("rooty", y());
+    settings->setValue("width", width());
+    settings->setValue("height", height());
+    settings->setValue("maximized", isMaximized());
+    settings->endGroup();
+
     settings->endGroup();
 
     m_panelMedia->save(settings);
@@ -374,7 +381,7 @@ void MRootDesktop::saveSettings()
 
 void MRootDesktop::setContextPanel()
 {
-    switch(m_contextBar->currentView()) {
+    switch(m_frameContextBar->currentView()) {
 
         case MFrameContextBar::ViewMedia: {
             m_panelMedia->show();
@@ -396,12 +403,23 @@ void MRootDesktop::setContextPanel()
         }
     }
 }
-void MRootDesktop::setPlaybackSong(MSong *song)
+
+void MRootDesktop::setPlaybackSongInitial()
 {
+    if (m_panelMedia->frameSonglist()->model()->rowCount() > 0) {
+        QModelIndex idxRowZero = m_panelMedia->frameSonglist()->model()->index(0, 0);
+        m_panelMedia->frameSonglist()->tree()->selectionModel()->setCurrentIndex(idxRowZero, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        m_panelMedia->frameSonglist()->playItemSelected();
+    }
+}
+void MRootDesktop::setPlaybackSong(const QString &pid)
+{
+    MSong *song = m_mediaLibrary->getSong(pid);
     if(song) {
-        m_audioEngine->stop();
-        m_audioEngine->open(song->path());
-        m_audioEngine->start();
+        m_framePlayback->setSong(song);
+        m_mediaPlayer->stop();
+        m_mediaPlayer->setMedia(QUrl::fromLocalFile(song->path()));
+        m_mediaPlayer->play();
     }
 }
 
@@ -409,8 +427,7 @@ void MRootDesktop::setTheme()
 {
     QString title = "Open QSS Theme File";
     QString files = "QSS Files (*.qss)";
-    QString path = QFileDialog::getOpenFileName(
-        this, title, MActions::pathDesktop(), files);
+    QString path = QFileDialog::getOpenFileName(this, title, MActions::pathDesktop(), files);
 
     if(path != "") {
         m_styleSheet->load(path);

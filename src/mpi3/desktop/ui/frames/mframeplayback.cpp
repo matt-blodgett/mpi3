@@ -1,7 +1,7 @@
-#include "mframeplayback.h"
-#include "mmedialibrary.h"
-#include "mformat.h"
-#include "mstyle.h"
+#include "mpi3/desktop/ui/frames/mframeplayback.h"
+#include "mpi3/desktop/ui/mstyle.h"
+#include "mpi3/core/mmedialibrary.h"
+#include "mpi3/util/mformat.h"
 
 #include <QGridLayout>
 #include <QPainter>
@@ -21,7 +21,6 @@
 
 MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
 {
-
     // -------------------------------------------------- VOLUME
 
     QWidget *frmVolume = new QWidget(this);
@@ -32,8 +31,7 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     gridVolume->addWidget(m_sldVolume, 1, 0, 1, 1);
     gridVolume->setColumnStretch(0, 1);
     gridVolume->setRowMinimumHeight(1, 20);
-    gridVolume->setHorizontalSpacing(0);
-    gridVolume->setVerticalSpacing(0);
+    gridVolume->setContentsMargins(0, 0, 0, 0);
     frmVolume->setLayout(gridVolume);
 
     m_sldVolume->setOrientation(Qt::Horizontal);
@@ -84,8 +82,7 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     gridControl->setColumnStretch(2, 1);
     gridControl->setColumnStretch(3, 0);
     gridControl->setColumnStretch(4, 0);
-    gridControl->setHorizontalSpacing(0);
-    gridControl->setVerticalSpacing(0);
+    gridControl->setContentsMargins(0, 0, 0, 0);
     frmPlayback->setLayout(gridControl);
 
     frmPlayback->setFixedHeight(uHeight-1);
@@ -93,7 +90,6 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     m_btnPrev->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_btnNext->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_btnFade->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-
 
     m_sldPosition->setOrientation(Qt::Horizontal);
 
@@ -110,7 +106,6 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     m_btnPlay->setFixedWidth(32);
     m_btnPlay->setFixedHeight(32);
     m_btnPlay->setIconSize(QSize(22, 22));
-
 
     // -------------------------------------------------- SEARCHBAR
 
@@ -130,13 +125,12 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     gridSearchbar->setRowStretch(2, 1);
     gridSearchbar->setRowMinimumHeight(1, 20);
     gridSearchbar->setHorizontalSpacing(0);
-    gridSearchbar->setVerticalSpacing(0);
+    gridSearchbar->setContentsMargins(0, 0, 0, 0);
     frmSearchbar->setLayout(gridSearchbar);
 
     m_btnSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_boxSearch->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_boxSearch->setTextMargins(0, 0, 0, 0);
-
     m_btnSearch->setIconSize(QSize(20, 20));
 
     // -------------------------------------------------- PLAYBACK PANEl
@@ -147,6 +141,7 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     gridMain->addWidget(frmPlayback, 0, 5, 1, 1);
     gridMain->addWidget(frmSearchbar, 0, 9, 1, 1);
     gridMain->setRowMinimumHeight(0, uHeight);
+    gridMain->setRowStretch(0, 1);
     gridMain->setColumnMinimumWidth(0, 20);
     gridMain->setColumnMinimumWidth(1, 150);
     gridMain->setColumnMinimumWidth(2, 10);
@@ -169,31 +164,26 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     gridMain->setColumnStretch(8, 1);
     gridMain->setColumnStretch(9, 0);
     gridMain->setColumnStretch(10, 0);
-    gridMain->setHorizontalSpacing(0);
-    gridMain->setVerticalSpacing(0);
+    gridMain->setContentsMargins(0, 0, 0, 0);
     setLayout(gridMain);
-
-
 
     frmPlayback->setObjectName("PlaybackControl");
 
-
-    m_currentState = Mpi3::EngineStopped;
-
+    m_currentState = QMediaPlayer::StoppedState;
     m_sldVolume->setRange(0, 100);
-
     m_fadeTimer = new QTimer(this);
     m_fadeTimer->setSingleShot(true);
+
     connect(m_fadeTimer, &QTimer::timeout, this, [this](){animateFadeButton();});
 
     connect(m_btnPlay, &QPushButton::released, this, &MFramePlayback::playClicked);
     connect(m_btnNext, &QPushButton::released, this, &MFramePlayback::nextClicked);
     connect(m_btnPrev, &QPushButton::released, this, &MFramePlayback::prevClicked);
+    connect(m_btnFade, &QPushButton::released, this, [this](){emit playRequestedInitial(); disconnect(m_btnFade, nullptr, this, nullptr);});
 
     connect(m_sldPosition, &QSlider::sliderPressed, this, &MFramePlayback::seekBegin);
     connect(m_sldPosition, &QSlider::sliderReleased, this, &MFramePlayback::seekEnd);
     connect(m_sldPosition, &QSlider::valueChanged, this, &MFramePlayback::positionChanged);
-
     connect(m_sldVolume, &QSlider::valueChanged, this, &MFramePlayback::volumeChanged);
 }
 
@@ -205,7 +195,7 @@ void MFramePlayback::setButtonOpacity(double opacity)
 {
     m_btnOpacity = opacity;
 
-    bool playing = m_currentState == Mpi3::EngineActive;
+    bool playing = m_currentState == QMediaPlayer::PlayingState;
     QPixmap pixCurrent = playing ? QPixmap(m_icnPlay) : QPixmap(m_icnPause);
 
     if(m_btnOpacity > 0.00) {
@@ -229,7 +219,7 @@ void MFramePlayback::setButtonOpacity(double opacity)
 }
 void MFramePlayback::animateFadeButton()
 {
-    if(m_currentState != Mpi3::EngineStopped) {
+    if(m_currentState != QMediaPlayer::StoppedState) {
         QPropertyAnimation *animation = new QPropertyAnimation(this);
         animation->setPropertyName("buttonOpacity");
         animation->setTargetObject(this);
@@ -244,53 +234,12 @@ int MFramePlayback::volume() const
 {
     return m_sldVolume->value();
 }
-double MFramePlayback::position() const
+qint64 MFramePlayback::position() const
 {
-    return m_sldPosition->value();
+    return static_cast<qint64>(m_sldPosition->value() * 1000);
 }
 
-void MFramePlayback::setVolume(int volume)
-{
-    m_sldVolume->blockSignals(true);
-    m_sldVolume->setValue(volume);
-    m_sldVolume->blockSignals(false);
-}
-void MFramePlayback::setPosition(double position)
-{
-    m_sldPosition->blockSignals(true);
-    m_sldPosition->setValue(static_cast<int>(position));
-    m_lblPositionMin->setText(Mpi3::Util::timeToString(position));
-//    m_lblPositionMin->setText(MMediaLibrary::timeToString(position));
-    m_sldPosition->blockSignals(false);
-}
-void MFramePlayback::setState(Mpi3::EngineState state)
-{
-    if(m_seeking) {
-        m_seeking = state == Mpi3::EngineIdle;
-    }
-    else {
-        if(state == Mpi3::EngineActive) {
-            m_btnPlay->setIcon(QIcon(QPixmap(m_icnPause)));
-            m_btnFade->setIcon(QIcon(QPixmap(m_icnPlay)));
-        }
-        else if(state == Mpi3::EngineIdle) {
-            m_btnPlay->setIcon(QIcon(QPixmap(m_icnPlay)));
-            m_btnFade->setIcon(QIcon(QPixmap(m_icnPause)));
-        }
-
-        if(!m_navigating && state != m_currentState) {
-            m_btnFade->setVisible(true);
-            m_fadeTimer->start(300);
-        }
-
-        if(state != Mpi3::EngineStopped) {
-            m_navigating = false;
-        }
-    }
-
-    m_currentState = state;
-}
-void MFramePlayback::setDisplay(MSong *song)
+void MFramePlayback::setSong(MSong *song)
 {
     m_sldPosition->setMinimum(0);
     m_sldPosition->setMaximum(static_cast<int>(song->time()));
@@ -303,9 +252,9 @@ void MFramePlayback::setDisplay(MSong *song)
 
 void MFramePlayback::playClicked()
 {
-    bool paused = m_currentState == Mpi3::EngineIdle;
-    bool stopped = m_currentState == Mpi3::EngineStopped;
-    emit paused || stopped ? playRequested() : pausRequested();
+    bool paused = m_currentState == QMediaPlayer::PausedState;
+    bool stopped = m_currentState == QMediaPlayer::StoppedState;
+    emit paused || stopped ? playRequested() : pauseRequested();
 }
 void MFramePlayback::nextClicked()
 {
@@ -325,20 +274,62 @@ void MFramePlayback::volumeChanged()
 void MFramePlayback::seekBegin()
 {
     m_seeking = true;
-    emit pausRequested();
+    emit pauseRequested();
 }
 void MFramePlayback::seekEnd()
 {
-    emit seekRequested(m_sldPosition->value());
+    emit seekRequested(static_cast<qint64>(m_sldPosition->value() * 1000));
+    emit playRequested();
+    m_seeking = false;
 }
 void MFramePlayback::positionChanged(int position)
 {
-    setPosition(static_cast<double>(position));
+    setPosition(static_cast<qint64>(position * 1000));
 }
 
-void MFramePlayback::elementModified(MMediaElement *elemModified)
+void MFramePlayback::setVolume(int volume)
 {
-    if(elemModified->pid() == m_pidCurrentSong) {
-        setDisplay(static_cast<MSong*>(elemModified));
+    m_sldVolume->blockSignals(true);
+    m_sldVolume->setValue(volume);
+    m_sldVolume->blockSignals(false);
+}
+void MFramePlayback::setPosition(qint64 position)
+{
+    m_sldPosition->blockSignals(true);
+    m_sldPosition->setValue(static_cast<int>(position / 1000));
+    m_lblPositionMin->setText(Mpi3::Util::timeToString(static_cast<double>(position / 1000)));
+    m_sldPosition->blockSignals(false);
+}
+void MFramePlayback::setState(QMediaPlayer::State state)
+{
+    if(m_seeking) {
+        m_seeking = state == QMediaPlayer::PausedState;
+    }
+    else {
+        if(state == QMediaPlayer::PlayingState) {
+            m_btnPlay->setIcon(QIcon(QPixmap(m_icnPause)));
+            m_btnFade->setIcon(QIcon(QPixmap(m_icnPlay)));
+        }
+        else if(state == QMediaPlayer::PausedState) {
+            m_btnPlay->setIcon(QIcon(QPixmap(m_icnPlay)));
+            m_btnFade->setIcon(QIcon(QPixmap(m_icnPause)));
+        }
+
+        if(!m_navigating && state != m_currentState) {
+            m_btnFade->setVisible(true);
+            m_fadeTimer->start(300);
+        }
+
+        if(state != QMediaPlayer::StoppedState) {
+            m_navigating = false;
+        }
+    }
+
+    m_currentState = state;
+}
+void MFramePlayback::songChanged(MSong *song)
+{
+    if(song->pid() == m_pidCurrentSong) {
+        setSong(song);
     }
 }

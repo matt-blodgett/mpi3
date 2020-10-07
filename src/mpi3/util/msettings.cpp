@@ -1,4 +1,4 @@
-#include "msettings.h"
+#include "mpi3/util/msettings.h"
 
 #include <QXmlStreamReader>
 
@@ -67,7 +67,7 @@ bool MSettingsXml::writeSettingsXml(QIODevice &device, const QMap<QString, QVari
 
     QMap<QString, QVariant>::const_iterator unsplitKey;
     for(unsplitKey = map.begin(); unsplitKey != map.end(); unsplitKey++) {
-        QStringList segs = unsplitKey.key().split("/", QString::SkipEmptyParts);
+        QStringList segs = unsplitKey.key().split("/", Qt::SkipEmptyParts);
         QString val = unsplitKey.value().toString();
 
         XmlNode *cur = root;

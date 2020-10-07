@@ -1,10 +1,10 @@
-﻿#include "mpanelmedia.h"
-#include "mframetreeview.h"
-#include "mmodelsonglist.h"
-#include "mmodelcontainers.h"
-#include "mmedialibrary.h"
-#include "mtreeview.h"
-#include "mstyle.h"
+﻿#include "mpi3/desktop/ui/models/mmodelsonglist.h"
+#include "mpi3/desktop/ui/models/mmodelcontainers.h"
+#include "mpi3/desktop/ui/panels/mpanelmedia.h"
+#include "mpi3/desktop/ui/frames/mframetreeview.h"
+#include "mpi3/desktop/ui/widgets/mtreeview.h"
+#include "mpi3/desktop/ui/mstyle.h"
+#include "mpi3/core/mmedialibrary.h"
 
 #include <QGridLayout>
 #include <QRadioButton>
@@ -43,8 +43,7 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     gridControl()->addWidget(m_lblPlaylist, 4, 0, 1, 1);
     gridControl()->addWidget(m_frmContainers, 5, 0, 1, 1);
     gridControl()->setRowStretch(5, 1);
-    gridControl()->setVerticalSpacing(0);
-    gridControl()->setHorizontalSpacing(0);
+    gridControl()->setContentsMargins(0, 0, 0, 0);
 
     gridDisplay()->addWidget(m_lblView, 0, 1, 1, 1);
     gridDisplay()->addWidget(m_frmSonglist, 1, 0 , 1, 2);
@@ -52,6 +51,7 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     gridDisplay()->setRowMinimumHeight(0, 60);
     gridDisplay()->setColumnStretch(1, 1);
     gridDisplay()->setRowStretch(1, 1);
+    gridDisplay()->setContentsMargins(0, 0, 0, 0);
 
     m_btnSongs->setText("Songs");
     m_btnArtists->setText("Artists");
@@ -96,7 +96,7 @@ void MPanelMedia::load(QSettings *settings)
     settings->beginGroup("ExpandedContainers");
 
     QModelIndexList indexes = m_frmContainers->model()->match(
-        m_frmContainers->model()->index(0, 0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard|Qt::MatchRecursive);
+        m_frmContainers->model()->index(0, 0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard | Qt::MatchRecursive);
 
     for(QString pid : settings->childKeys()){
         QString pidKey = pid;
@@ -116,7 +116,7 @@ void MPanelMedia::load(QSettings *settings)
 
     if(pidSelectedContainer != ""){
         QModelIndexList indexes = m_frmContainers->model()->match(
-            m_frmContainers->model()->index(0,0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard|Qt::MatchRecursive);
+            m_frmContainers->model()->index(0,0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard | Qt::MatchRecursive);
 
         for(QModelIndex idx : indexes){
             if(m_frmContainers->model()->pidAt(idx) == pidSelectedContainer){

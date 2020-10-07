@@ -1,4 +1,4 @@
-#include "mstyle.h"
+#include "mpi3/desktop/ui/mstyle.h"
 
 #include <QFontDatabase>
 #include <QStyleOption>

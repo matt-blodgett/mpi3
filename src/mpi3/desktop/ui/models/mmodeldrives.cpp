@@ -1,7 +1,6 @@
-#include "mmodeldrives.h"
-#include "mmedialibrary.h"
-
-#include "mformat.h"
+#include "mpi3/desktop/ui/models/mmodeldrives.h"
+#include "mpi3/core/mmedialibrary.h"
+#include "mpi3/util/mformat.h"
 
 
 #include <QFileIconProvider>
@@ -124,8 +123,8 @@ void MModelStorageDrives::refresh()
             raspiLib = nullptr;
         }
 
-        double bfree = sInfo.bytesFree();
-        double btotal = sInfo.bytesTotal();
+        double bfree = static_cast<double>(sInfo.bytesFree());
+        double btotal = static_cast<double>(sInfo.bytesTotal());
 
         QList<QString> deviceData;
         deviceData << label;

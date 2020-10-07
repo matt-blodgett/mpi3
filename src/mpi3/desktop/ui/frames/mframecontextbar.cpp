@@ -1,5 +1,5 @@
-#include "mframecontextbar.h"
-#include "mstyle.h"
+#include "mpi3/desktop/ui/frames/mframecontextbar.h"
+#include "mpi3/desktop/ui/mstyle.h"
 
 #include <QGridLayout>
 #include <QRadioButton>
@@ -25,8 +25,7 @@ MFrameContextBar::MFrameContextBar(QWidget *parent) : MFrame(parent)
     gridMain->setRowMinimumHeight(0, 1);
     gridMain->setRowMinimumHeight(1, 28);
     gridMain->setRowMinimumHeight(2, 1);
-    gridMain->setHorizontalSpacing(0);
-    gridMain->setVerticalSpacing(0);
+    gridMain->setContentsMargins(0, 0, 0, 0);
     setLayout(gridMain);
 
     m_btnMedia->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -81,7 +80,7 @@ void MFrameContextBar::changeView(MFrameContextBar::View view)
         }
     }
 
-    emit viewChanged();
+    emit contextPanelChanged();
 }
 
 

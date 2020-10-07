@@ -4,7 +4,11 @@
 #define MFRAMEPLAYBACK_H
 
 
-#include "mframe.h"
+#include "mpi3/desktop/ui/frames/mframe.h"
+
+
+#include <QMediaPlayer>
+
 
 QT_BEGIN_NAMESPACE
 class QPushButton;
@@ -14,7 +18,7 @@ class QLabel;
 QT_END_NAMESPACE
 
 
-#include "mglobal.h"
+#include "mpi3/core/mglobal.h"
 
 
 class MFramePlayback : public MFrame
@@ -38,18 +42,14 @@ private:
 
 public:
     int volume() const;
-    double position() const;
+    qint64 position() const;
 
-    void setVolume(int volume);
-    void setPosition(double position);
-
-    void setState(Mpi3::EngineState state);
-    void setDisplay(MSong *song);
+    void setSong(MSong *song);
 
 private:
-    Mpi3::EngineState m_currentState;
-    bool m_navigating;
-    bool m_seeking;
+    QMediaPlayer::State m_currentState = QMediaPlayer::StoppedState;
+    bool m_navigating = false;
+    bool m_seeking = false;
     QString m_pidCurrentSong;
 
 private:
@@ -78,17 +78,20 @@ private slots:
     void seekEnd();
     void positionChanged(int position);
 
+public slots:
+    void setVolume(int volume);
+    void setPosition(qint64 position);
+    void setState(QMediaPlayer::State state);
+    void songChanged(MSong *song);
+
 signals:
+    void playRequestedInitial();
     void playRequested();
-    void pausRequested();
-    void seekRequested(int position);
+    void pauseRequested();
     void volumeRequested(int volume);
+    void seekRequested(qint64 position);
     void nextRequested();
     void prevRequested();
-
-public slots:
-    void elementModified(MMediaElement *elemModified);
-
 };
 
 

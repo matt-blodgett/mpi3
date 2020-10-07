@@ -12,7 +12,7 @@ class QMimeData;
 QT_END_NAMESPACE
 
 
-#include "mglobal.h"
+#include "mpi3/core/mglobal.h"
 class MModelContainersItem;
 
 
@@ -77,13 +77,10 @@ private:
 private slots:
     void folderCreated(MFolder *f);
     void playlistCreated(MPlaylist *p);
-
     void folderDeleted(MFolder *f);
     void playlistDeleted(MPlaylist *p);
-
     void folderChanged(MFolder *f);
     void playlistChanged(MPlaylist *p);
-
     void parentFolderChanged(MContainer *c);
 };
 

@@ -8,7 +8,7 @@
 #include <QVector>
 
 
-#include "mglobal.h"
+#include "mpi3/core/mglobal.h"
 #ifdef MPI3_BUILD_SHARED
 class MPI3_EXPORT_CORE MMediaLibrary;
 class MPI3_EXPORT_CORE MMediaElement;
@@ -24,7 +24,7 @@ class MMediaElement : public QObject
     Q_GADGET
     Q_PROPERTY(Mpi3::ElementType type READ type)
     Q_PROPERTY(QString pid READ pid)
-    Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QString added READ added)
 
 protected:
@@ -39,17 +39,10 @@ public:
     QString name() const;
     QString added() const;
 
-    void setName(const QString &value);
-
 private:
     QString m_pid;
     QString m_name;
     QString m_added;
-
-protected:
-    void notifyPropertyChanged(
-        const QString &propertyName,
-        const QVariant &oldPropertyValue);
 };
 
 
@@ -66,8 +59,8 @@ protected:
 class MSong : public MChildElement
 {
     Q_OBJECT
-    Q_PROPERTY(QString artist READ artist WRITE setArtist)
-    Q_PROPERTY(QString album READ album WRITE setAlbum)
+    Q_PROPERTY(QString artist READ artist)
+    Q_PROPERTY(QString album READ album)
     Q_PROPERTY(QString kind READ kind)
     Q_PROPERTY(QString path READ path)
     Q_PROPERTY(double time READ time)
@@ -93,9 +86,6 @@ public:
 
     int bitRate() const;
     int sampleRate() const;
-
-    void setArtist(const QString &value);
-    void setAlbum(const QString &value);
 
 private:
     QString m_artist;
@@ -124,7 +114,6 @@ public:
 
 public:
     MFolder *parentFolder() const;
-    void setParentFolder(MFolder *folder);
 
 private:
     MFolder *m_parentFolder = nullptr;
@@ -144,28 +133,10 @@ public:
 
 public:
     MSongList songs() const;
-    void setSongs(const QStringList &pids);
-
-    QStringList pidSongList() const;
-
-    void insert(int index, const QString &pid);
-    void insert(int index, const QStringList &pids);
-
-    void append(const QString &pid);
-    void append(const QStringList &pids);
-
-    void prepend(const QString &pid);
-    void prepend(const QStringList &pids);
-
-    void move(int from, int to);
-    void remove(int index);
-    void removeAll(const QString &pid);
-
-    void clear();
+    QStringList songsPidList() const;
 
 private:
-    QStringList m_pidSongList;
-    void notifyContentsChanged();
+    QStringList m_songsPidList;
 };
 
 
@@ -211,9 +182,9 @@ public:
     QString backupPath() const;
     QString downloadPath() const;
 
-    void setMediaPath(const QString &dirPath);
-    void setBackupPath(const QString &dirPath);
-    void setDownloadPath(const QString &dirPath);
+    bool setMediaPath(const QString &dirPath);
+    bool setBackupPath(const QString &dirPath);
+    bool setDownloadPath(const QString &dirPath);
 
 private:
     QString m_savePath;
@@ -280,11 +251,16 @@ public:
     MFolder *newFolder(MFolder *parentFolder = nullptr, const QString &name = QString());
     MPlaylist *newPlaylist(MFolder *parentFolder = nullptr, const QString &name = QString());
 
-    void remove(MSong *childSong);
-    void remove(MFolder *childFolder);
-    void remove(MPlaylist *childPlaylist);
-    void remove(MContainer *childContainer);
-    void remove(const QString &pid);
+    bool edit(MSong *childSong, const QString &property, const QVariant &value);
+    bool edit(MFolder *childFolder, const QString &property, const QVariant &value);
+    bool edit(MPlaylist *childPlaylist, const QString &property, const QVariant &value);
+    bool edit(MContainer *childContainer, const QString &property, const QVariant &value);
+
+    bool remove(MSong *childSong);
+    bool remove(MFolder *childFolder);
+    bool remove(MPlaylist *childPlaylist);
+    bool remove(MContainer *childContainer);
+    bool remove(const QString &pid);
 
 private:
     MSongList m_songs;
@@ -304,16 +280,16 @@ signals:
     void folderCreated(MFolder *childFolder);
     void playlistCreated(MPlaylist *childPlaylist);
 
-    void songDeleted(MSong *childSong);
-    void folderDeleted(MFolder *childFolder);
-    void playlistDeleted(MPlaylist *childPlaylist);
-
     void songChanged(MSong *childSong);
     void folderChanged(MFolder *childFolder);
     void playlistChanged(MPlaylist *childPlaylist);
     void libraryChanged(MMediaLibrary *library);
 
-    void playlistContentsChanged(MPlaylist *childPlaylist);
+    void songDeleted(MSong *childSong);
+    void folderDeleted(MFolder *childFolder);
+    void playlistDeleted(MPlaylist *childPlaylist);
+
+    void playlistSongsChanged(MPlaylist *childPlaylist);
     void parentFolderChanged(MContainer *childContainer);
 };
 

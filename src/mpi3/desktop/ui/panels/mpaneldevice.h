@@ -4,7 +4,7 @@
 #define MPANELDEVICE_H
 
 
-#include "mpanel.h"
+#include "mpi3/desktop/ui/panels/mpanel.h"
 
 QT_BEGIN_NAMESPACE
 class QPushButton;

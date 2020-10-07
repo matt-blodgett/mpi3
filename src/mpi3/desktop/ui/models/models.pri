@@ -1,5 +1,3 @@
-INCLUDEPATH += $$PWD
-
 HEADERS += $$PWD/mmodeldrives.h
 HEADERS += $$PWD/mmodelcontainers.h
 HEADERS += $$PWD/mmodelcontainersitem.h

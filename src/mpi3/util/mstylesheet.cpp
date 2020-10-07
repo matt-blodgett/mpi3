@@ -1,4 +1,4 @@
-#include "mstylesheet.h"
+#include "mpi3/util/mstylesheet.h"
 
 #include <QFile>
 

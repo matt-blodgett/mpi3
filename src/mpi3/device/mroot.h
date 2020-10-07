@@ -11,8 +11,8 @@ class QPushButton;
 QT_END_NAMESPACE
 
 
-#include "mglobal.h"
-#include "mdevice.h"
+#include "mpi3/core/mglobal.h"
+#include "mpi3/device/mdevice.h"
 
 #ifdef MPI3_BUILD_SHARED
 class MPI3_EXPORT_UI MRootDevice;

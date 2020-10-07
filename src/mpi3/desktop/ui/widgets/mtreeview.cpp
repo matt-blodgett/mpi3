@@ -1,5 +1,5 @@
-﻿#include "mtreeview.h"
-#include "mstyle.h"
+﻿#include "mpi3/desktop/ui/widgets/mtreeview.h"
+#include "mpi3/desktop/ui/mstyle.h"
 
 #include <QSortFilterProxyModel>
 #include <QHeaderView>

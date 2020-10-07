@@ -1,5 +1,3 @@
-INCLUDEPATH += $$PWD
-
 HEADERS += $$PWD/mpanel.h
 HEADERS += $$PWD/mpanelmedia.h
 HEADERS += $$PWD/mpaneldevice.h

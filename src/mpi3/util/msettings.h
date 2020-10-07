@@ -11,7 +11,7 @@ class QIODevice;
 QT_END_NAMESPACE
 
 
-#include "mutil.h"
+#include "mpi3/util/mutil.h"
 
 #ifdef MPI3_BUILD_SHARED
 class MPI3_EXPORT_UTIL MSettingsXml;

@@ -9,7 +9,7 @@
 #include <QIcon>
 
 
-#include "mglobal.h"
+#include "mpi3/core/mglobal.h"
 
 
 class MModelStorageDrives : public QAbstractItemModel

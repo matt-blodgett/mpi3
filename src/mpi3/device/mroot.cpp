@@ -1,10 +1,8 @@
 #include "mroot.h"
 
-//#include "core/maudioengine.h"
-#include "mmedialibrary.h"
 
-#include "util/msettings.h"
-#include "mstyle.h"
+#include "mpi3/util/msettings.h"
+#include "mpi3/desktop/ui/mstyle.h"
 
 #include <QGridLayout>
 #include <QStyleOption>

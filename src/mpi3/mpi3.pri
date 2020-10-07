@@ -3,8 +3,7 @@ QT += gui
 QT += xml
 QT += widgets
 
-INCLUDEPATH += $$PWD/core
-INCLUDEPATH += $$PWD/util
-INCLUDEPATH += $$PWD
+
+INCLUDEPATH += ../
 
 SOURCES += main.cpp

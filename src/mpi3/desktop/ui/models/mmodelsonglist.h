@@ -12,7 +12,7 @@ class QMimeData;
 QT_END_NAMESPACE
 
 
-#include "mglobal.h"
+#include "mpi3/core/mglobal.h"
 class MModelSonglistItem;
 
 
@@ -48,7 +48,8 @@ private:
     MModelSonglistItem *getItem(const QModelIndex &index) const;
 
 public:
-    QString pidAt(const QModelIndex &index) const;
+    QModelIndex pidToIndex(const QString &pid) const;
+    QString pidFromIndex(const QModelIndex &index) const;
 
     QString pidCurrentSonglist() const;
     void setSongList(MSongList songs, const QString &pid);
@@ -65,7 +66,7 @@ private slots:
     void songCreated(MSong *s);
     void songDeleted(MSong *s);
     void songChanged(MSong *s);
-    void playlistContentsChanged(MPlaylist *p);
+    void playlistSongsChanged(MPlaylist *p);
 };
 
 

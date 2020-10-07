@@ -1,4 +1,4 @@
-#include "mmodelsonglistitem.h"
+#include "mpi3/desktop/ui/models/mmodelsonglistitem.h"
 
 #include <QAbstractTableModel>
 

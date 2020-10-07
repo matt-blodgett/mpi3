@@ -31,10 +31,6 @@
         <file alias="ind-up-light.png">desktop/icons/indicators/ind-up-light.png</file>
     </qresource>
     <qresource prefix="/icons/window">
-        <file alias="close.png">desktop/icons/window/close.png</file>
-        <file alias="demaximize.png">desktop/icons/window/demaximize.png</file>
-        <file alias="maximize.png">desktop/icons/window/maximize.png</file>
-        <file alias="minimize.png">desktop/icons/window/minimize.png</file>
         <file alias="mpi3.ico">desktop/icons/window/mpi3.ico</file>
     </qresource>
     <qresource prefix="/styles">

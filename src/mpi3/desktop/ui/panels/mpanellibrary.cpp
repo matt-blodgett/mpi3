@@ -1,7 +1,7 @@
-﻿#include "mpanellibrary.h"
-#include "mmedialibrary.h"
-#include "mactions.h"
-#include "mstyle.h"
+﻿#include "mpi3/desktop/ui/panels/mpanellibrary.h"
+#include "mpi3/desktop/ui/mactions.h"
+#include "mpi3/desktop/ui/mstyle.h"
+#include "mpi3/core/mmedialibrary.h"
 
 #include <QGridLayout>
 #include <QPushButton>

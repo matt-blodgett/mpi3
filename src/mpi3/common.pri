@@ -3,6 +3,9 @@ DEFINES += QT_NO_NARROWING_CONVERSIONS_IN_CONNECT
 DEFINES += QT_DEPRECATED_WARNINGS
 
 
+!contains(QT, multimedia):QT += multimedia
+
+
 equals(TEMPLATE, lib){
     contains(DEFINES, MPI3_BUILD_STATIC):CONFIG += static
     contains(DEFINES, MPI3_BUILD_SHARED):CONFIG += shared

@@ -1,6 +1,6 @@
-#include "mpaneldevice.h"
-#include "mmedialibrary.h"
-#include "mstyle.h"
+#include "mpi3/desktop/ui/panels/mpaneldevice.h"
+#include "mpi3/desktop/ui/mstyle.h"
+#include "mpi3/core/mmedialibrary.h"
 
 #include <QGridLayout>
 #include <QTreeView>
@@ -32,8 +32,7 @@ MPanelDevice::MPanelDevice(QWidget *parent) : MPanel(parent)
 
     gridControl()->addLayout(gridHeader, 0, 0, 1, 1);
     gridControl()->setRowStretch(1, 1);
-    gridControl()->setVerticalSpacing(0);
-    gridControl()->setHorizontalSpacing(0);
+    gridControl()->setContentsMargins(0, 0, 0, 0);
     m_sectionLibrary = addSection();
 
     m_boxLibName = new QLineEdit(this);

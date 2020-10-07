@@ -4,7 +4,7 @@
 #define MMEDIAUTIL_H
 
 
-#include "mglobal.h"
+#include "mpi3/core/mglobal.h"
 
 
 namespace Mpi3

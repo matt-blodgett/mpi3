@@ -498,50 +498,6 @@ MRootDesktop {
 }
 
 
-// ----------------------------------------------------------------- MMenuBar
-MMenuBar {
-    background: qlineargradient(
-        x1:0, y1:0, x2:0, y2:1,
-        stop:0 #212121, stop:1 #191919);
-    border-bottom: 1px solid #696969;
-}
-
-
-// ----------------------------------------------------------------- MMenuBar QPushButton
-MMenuBar QPushButton {
-    background: transparent;
-    padding: 0px;
-    margin: 0px;
-    border: 0px;
-    border-radius: 0px;
-    qproperty-flat: true;
-}
-
-MMenuBar QPushButton:pressed {
-    background: #888888;
-}
-
-MMenuBar QPushButton:hover {
-    background: #A3A3A3;
-}
-
-MMenuBar QPushButton:flat {
-    border-radius: 2px;
-}
-
-QPushButton#MinimizeWindow {
-    qproperty-icon: url(":/icons/window/minimize.png");
-}
-QPushButton#MaximizeWindow {
-    qproperty-icon: url(":/icons/window/maximize.png");
-}
-QPushButton#CloseWindow {
-    qproperty-icon: url(":/icons/window/close.png");
-}
-QPushButton#DeMaximizeWindow {
-    qproperty-icon: url(":/icons/window/demaximize.png");
-}
-
 
 // ----------------------------------------------------------------- QMenuBar
 QMenuBar {

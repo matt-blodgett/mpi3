@@ -4,7 +4,7 @@
 #define MPANEL_H
 
 
-#include "mframe.h"
+#include "mpi3/desktop/ui/frames/mframe.h"
 
 QT_BEGIN_NAMESPACE
 class QSettings;
@@ -15,7 +15,7 @@ class QLabel;
 QT_END_NAMESPACE
 
 
-#include "mglobal.h"
+#include "mpi3/core/mglobal.h"
 
 
 class MPanelSection : public MFrame

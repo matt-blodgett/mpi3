@@ -33,7 +33,7 @@ typedef QVector<MFolder*> MFolderList;
 typedef QVector<MSong*> MSongList;
 
 
-#include "mcore.h"
+#include "mpi3/core/mcore.h"
 
 
 namespace Mpi3
@@ -56,25 +56,6 @@ namespace Mpi3
         LibraryElement
     }; Q_ENUM_NS(ElementType)
 
-    enum MediaState {
-        MediaEmpty,
-        MediaReady,
-        MediaBusy
-    }; Q_ENUM_NS(MediaState)
-
-    enum EngineState {
-        EngineStopped,
-        EngineActive,
-        EngineIdle
-    }; Q_ENUM_NS(EngineState)
-
-    enum ErrorState {
-        NoError,
-        ResourceError,
-        FileFormatError,
-        FileAccessError,
-        FileInvalidError
-    }; Q_ENUM_NS(ErrorState)
 };
 
 

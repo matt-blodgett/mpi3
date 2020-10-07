@@ -4,7 +4,7 @@
 #define MACTIONS_H
 
 
-#include "mglobal.h"
+#include "mpi3/core/mglobal.h"
 
 
 namespace MActions

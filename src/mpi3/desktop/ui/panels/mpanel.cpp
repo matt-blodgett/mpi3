@@ -1,5 +1,5 @@
-#include "mpanel.h"
-#include "mstyle.h"
+#include "mpi3/desktop/ui/panels/mpanel.h"
+#include "mpi3/desktop/ui/mstyle.h"
 
 #include <QGridLayout>
 #include <QSplitter>
@@ -33,12 +33,14 @@ MPanelSection::MPanelSection(QWidget *parent) : MFrame(parent)
     m_gridBody->setColumnMinimumWidth(0, WidthSplit);
     m_gridBody->setColumnMinimumWidth(1, WidthSeparator);
     m_gridBody->setColumnMinimumWidth(2, WidthSplit);
+    m_gridBody->setContentsMargins(0, 0, 0, 0);
     m_frmBody->setLayout(m_gridBody);
     m_frmBody->setFixedWidth(WidthSection);
 
     m_gridSection = new QGridLayout();
     m_gridSection->addWidget(m_lblHeader, 0, 0, 1, 1);
     m_gridSection->addWidget(m_frmBody, 1, 0, 1, 1);
+    m_gridSection->setContentsMargins(0, 0, 0, 0);
     setLayout(m_gridSection);
 
     MStyle::setStyle(m_lblHeader, MStyle::LBL_Header);
@@ -90,6 +92,7 @@ MPanel::MPanel(QWidget *parent, bool sectioned) : MFrame(parent)
 
     m_gridMain = new QGridLayout();
     m_gridMain->addWidget(m_frmSplitter);
+    m_gridMain->setContentsMargins(0, 0, 0, 0);
     setLayout(m_gridMain);
 
     m_frmControl->setMinimumWidth(120);
@@ -118,6 +121,7 @@ MPanel::MPanel(QWidget *parent, bool sectioned) : MFrame(parent)
         m_gridDisplay->setColumnMinimumWidth(0, WidthSection);
         m_gridDisplay->setColumnStretch(0, 1);
         m_gridDisplay->setRowStretch(0, 1);
+        m_gridDisplay->setContentsMargins(0, 0, 0, 0);
 
         m_lblPanelTitle->setFixedWidth(WidthSection);
         m_frmScrollArea->setWidgetResizable(true);

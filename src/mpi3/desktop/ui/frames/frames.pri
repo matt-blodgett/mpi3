@@ -1,5 +1,3 @@
-INCLUDEPATH += $$PWD
-
 HEADERS += $$PWD/mframe.h
 HEADERS += $$PWD/mframecontextbar.h
 HEADERS += $$PWD/mframeplayback.h

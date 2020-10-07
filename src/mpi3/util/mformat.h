@@ -7,7 +7,7 @@
 #include <QMetaType>
 
 
-#include "mutil.h"
+#include "mpi3/util/mutil.h"
 
 
 namespace Mpi3

@@ -2,7 +2,8 @@ QT += core
 QT += gui
 QT += widgets
 
-INCLUDEPATH += $$PWD
+INCLUDEPATH += ../../
+
 HEADERS += $$PWD/mutil.h
 
 HEADERS += $$PWD/mformat.h

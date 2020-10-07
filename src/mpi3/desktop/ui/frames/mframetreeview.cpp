@@ -1,11 +1,11 @@
-#include "mframetreeview.h"
-#include "mmedialibrary.h"
-#include "mmodelcontainers.h"
-#include "mmodelsonglist.h"
-#include "mmodelsonglistproxy.h"
-#include "mtreeview.h"
-#include "mactions.h"
-#include "mmediautil.h"
+#include "mpi3/desktop/ui/models/mmodelcontainers.h"
+#include "mpi3/desktop/ui/models/mmodelsonglist.h"
+#include "mpi3/desktop/ui/models/mmodelsonglistproxy.h"
+#include "mpi3/desktop/ui/frames/mframetreeview.h"
+#include "mpi3/desktop/ui/widgets/mtreeview.h"
+#include "mpi3/desktop/ui/mactions.h"
+#include "mpi3/core/mmedialibrary.h"
+#include "mpi3/core/mmediautil.h"
 
 #include <QFileDialog>
 #include <QGridLayout>
@@ -59,6 +59,7 @@ MFrameContainers::MFrameContainers(QWidget *parent) : MFrameTreeView(parent)
     gridMain->setRowStretch(0, 1);
     gridMain->setVerticalSpacing(0);
     gridMain->setHorizontalSpacing(0);
+    gridMain->setContentsMargins(0, 0, 0, 0);
     setLayout(gridMain);
 
     connect(m_treeContainers, &QTreeView::customContextMenuRequested, this, &MFrameContainers::contextMenuTreeview);
@@ -149,9 +150,9 @@ void MFrameContainers::selectContainer()
 
 void MFrameContainers::containerMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destinationIndex, int row)
 {
-    Q_UNUSED(parent);
-    Q_UNUSED(start);
-    Q_UNUSED(end);
+    Q_UNUSED(parent)
+    Q_UNUSED(start)
+    Q_UNUSED(end)
 
     QModelIndex idx = model()->index(row, 0, destinationIndex);
     tree()->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::ClearAndSelect);
@@ -278,14 +279,14 @@ MFrameSonglist::MFrameSonglist(QWidget *parent) : MFrameTreeView(parent)
     gridMain->addWidget(m_treeSonglist, 0, 0, 1, 1);
     gridMain->setColumnStretch(0, 1);
     gridMain->setRowStretch(0, 1);
-    gridMain->setVerticalSpacing(0);
-    gridMain->setHorizontalSpacing(0);
+    gridMain->setContentsMargins(0, 0, 0, 0);
     setLayout(gridMain);
 
     connect(m_treeSonglist, &QTreeView::customContextMenuRequested, this, &MFrameSonglist::contextMenuTreeview);
     connect(m_treeSonglist->header(), &QHeaderView::customContextMenuRequested, this, &MFrameSonglist::contextMenuHeader);
 
     connect(m_treeSonglist, &MTreeSonglist::moveSelected, this, &MFrameSonglist::moveSelected);
+    connect(m_treeSonglist, &MTreeView::doubleClicked, this, [this](){playItemSelected();});
 }
 
 //void MFrameSonglist::itemDetails()
@@ -313,8 +314,9 @@ void MFrameSonglist::deleteItems()
     QModelIndexList removeIndexes = tree()->selectionModel()->selectedRows(0);
 
     QStringList pidList;
-    for(QModelIndex idx : removeIndexes){
-        pidList.append(model()->pidAt(idx));
+    for(QModelIndex idxProxy : removeIndexes){
+        QModelIndex idxSource = modelProxy()->mapToSource(idxProxy);
+        pidList.append(model()->pidFromIndex(idxSource));
     }
 
     pidList.removeDuplicates();
@@ -345,19 +347,47 @@ void MFrameSonglist::importSongs()
         }
 
         if(parentPlaylist){
-            parentPlaylist->append(pidList);
+            QStringList pidListCombined = parentPlaylist->songsPidList();
+            pidListCombined.append(pidList);
+            m_mediaLibrary->edit(parentPlaylist, "songs", pidListCombined);
         }
     }
 }
-void MFrameSonglist::downloadSongs()
+
+void MFrameSonglist::playItemSelected()
 {
-    qDebug();
+    if(tree()->selectionModel()->selectedRows().size() == 1){
+        QModelIndex idxCurrent = tree()->currentIndex();
+        QModelIndex idxSource = modelProxy()->mapToSource(idxCurrent);
+        QString pid = model()->pidFromIndex(idxSource);
+        m_pidCurrentPlayingSong = pid;
+        emit currentPlayingSongChanged(pid);
+    }
+}
+void MFrameSonglist::playItemShift(const int &shift)
+{
+    QModelIndex idxCurrent = model()->pidToIndex(m_pidCurrentPlayingSong);
+    QModelIndex idxProxy = modelProxy()->mapFromSource(idxCurrent);
+
+    int rowCurrent = idxProxy.row();
+    int rowDestination = rowCurrent + shift;
+    if (rowDestination >= 0 && rowDestination < model()->rowCount()) {
+        QModelIndex nextIndex = modelProxy()->index(rowDestination, 0);
+        if (nextIndex.isValid()) {
+            tree()->selectionModel()->setCurrentIndex(nextIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+            playItemSelected();
+        }
+    }
+}
+void MFrameSonglist::playItemNext()
+{
+    playItemShift(1);
+}
+void MFrameSonglist::playItemPrev()
+{
+    playItemShift(-1);
 }
 
-void MFrameSonglist::playItem()
-{
-    qDebug();
-}
 void MFrameSonglist::addItemsTo()
 {
     qDebug();
@@ -369,8 +399,9 @@ void MFrameSonglist::removeItemsFrom()
 void MFrameSonglist::openItemFileLocation()
 {
     if(tree()->selectionModel()->selectedRows().size() == 1){
-        QModelIndex idx = tree()->currentIndex();
-        QString pid = model()->pidAt(idx);
+        QModelIndex idxCurrent = tree()->currentIndex();
+        QModelIndex idxSource = modelProxy()->mapToSource(idxCurrent);
+        QString pid = model()->pidFromIndex(idxSource);
         MSong *s = m_mediaLibrary->getSong(pid);
         MActions::openFileLocation(s->path());
     }
@@ -393,6 +424,7 @@ void MFrameSonglist::setLibrary(MMediaLibrary *library)
 {
     m_mediaLibrary = library;
     model()->setLibrary(m_mediaLibrary);
+    m_pidCurrentPlayingSong = QString();
 }
 void MFrameSonglist::setPlaylist(MPlaylist *playlist)
 {
@@ -402,6 +434,7 @@ void MFrameSonglist::setPlaylist(MPlaylist *playlist)
     else {
         model()->setSongList(playlist->songs(), playlist->pid());
     }
+    m_pidCurrentPlayingSong = QString();
 }
 
 void MFrameSonglist::setLayoutSettings(MTreeViewLayoutSettings *settings)
@@ -441,26 +474,26 @@ void MFrameSonglist::moveSelected(int row)
         }
 
         QStringList newList;
-        for(int i = 0; i < playlist->pidSongList().size(); i++){
+        for(int i = 0; i < playlist->songsPidList().size(); i++){
 
             if(i == row){
                 for(QModelIndex idx : moveIndexes){
-                    newList.append(model()->pidAt(idx));
+                    newList.append(model()->pidFromIndex(idx));
                 }
             }
 
             if(!indexList.contains(i)){
-                newList.append(playlist->pidSongList().at(i));
+                newList.append(playlist->songsPidList().at(i));
             }
         }
 
         if(row == model()->rowCount()){
             for(QModelIndex idx : moveIndexes){
-                newList.append(model()->pidAt(idx));
+                newList.append(model()->pidFromIndex(idx));
             }
         }
 
-        playlist->setSongs(newList);
+        m_mediaLibrary->edit(playlist, "songs", newList);
     }
 }
 
@@ -490,8 +523,7 @@ void MFrameSonglist::contextMenuHeader(const QPoint &point)
         act->setCheckable(true);
         act->setChecked(!isHidden);
 
-        connect(act, &QAction::triggered,
-            this, [=](){tree()->setColumnHidden(i, !isHidden);});
+        connect(act, &QAction::triggered, this, [=](){tree()->setColumnHidden(i, !isHidden);});
         menuContext->addAction(act);
     }
 
@@ -513,7 +545,6 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
     QAction *actSelectAll = new QAction(menuContext);
     QAction *actSelectNone = new QAction(menuContext);
     QAction *actImportSongs = new QAction(menuContext);
-    QAction *actDownloadSongs = new QAction(menuContext);
     QAction *actRemoveItem = new QAction(menuContext);
     QAction *actDeleteItem = new QAction(menuContext);
 
@@ -528,7 +559,6 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
     actSelectAll->setText("Select All");
     actSelectNone->setText("Select None");
     actImportSongs->setText("Import Songs");
-    actDownloadSongs->setText("Download Songs");
     actRemoveItem->setText("Remove from Playlist");
     actDeleteItem->setText("Delete from Library");
 
@@ -546,7 +576,6 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
     menuContext->addAction(actSelectNone);
     menuContext->addSeparator();
     menuContext->addAction(actImportSongs);
-    menuContext->addAction(actDownloadSongs);
     menuContext->addSeparator();
     menuContext->addAction(actRemoveItem);
     menuContext->addAction(actDeleteItem);
@@ -576,7 +605,7 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
         actRemoveItem->setDisabled(true);
     }
 
-    connect(actPlayItem, &QAction::triggered, this, [=](){playItem();});
+    connect(actPlayItem, &QAction::triggered, this, [=](){playItemSelected();});
     connect(actEditItem, &QAction::triggered, this, [=](){editItem();});
     connect(actItemDetails, &QAction::triggered, this, [=](){itemDetails();});
 
@@ -589,7 +618,6 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
     connect(actSelectNone, &QAction::triggered, this, [this](){tree()->selectionModel()->clear();});
 
     connect(actImportSongs, &QAction::triggered, this, [this](){importSongs();});
-    connect(actDownloadSongs, &QAction::triggered, this, [this](){downloadSongs();});
 
     connect(actRemoveItem, &QAction::triggered, this, [this](){removeItemsFrom();});
     connect(actDeleteItem, &QAction::triggered, this, [this](){deleteItems();});
