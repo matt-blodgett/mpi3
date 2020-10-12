@@ -1,3 +1,5 @@
+# Mpi3 Base Project
+
 defineTest(mutexRequiredDefines) {
     if(!contains(DEFINES, $$1):!contains(DEFINES, $$2)) {
         error("define either $$1 or $$2 when building")

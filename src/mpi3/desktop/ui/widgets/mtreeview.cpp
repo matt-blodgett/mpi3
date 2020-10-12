@@ -219,12 +219,12 @@ void MTreeViewLayoutSettings::applyValues(QTreeView *tree, QSortFilterProxyModel
 }
 
 
-MTreeViewLayoutSettingsManager::MTreeViewLayoutSettingsManager(QObject *parent) : QObject(parent)
+MTreeSonglistLayoutSettings::MTreeSonglistLayoutSettings(QObject *parent) : QObject(parent)
 {
 
 }
 
-MTreeViewLayoutSettings *MTreeViewLayoutSettingsManager::getLayoutSettings(const QString &pid)
+MTreeViewLayoutSettings *MTreeSonglistLayoutSettings::getLayoutSettings(const QString &pid)
 {
     MTreeViewLayoutSettings *layoutSettings = m_settingsMap.value(pid, nullptr);
 
@@ -236,7 +236,7 @@ MTreeViewLayoutSettings *MTreeViewLayoutSettingsManager::getLayoutSettings(const
     return layoutSettings;
 }
 
-void MTreeViewLayoutSettingsManager::save(QSettings *settings, const QStringList &pidList)
+void MTreeSonglistLayoutSettings::save(QSettings *settings, const QStringList &pidList)
 {
     QMap<QString, MTreeViewLayoutSettings*>::iterator iter;
     for(iter = m_settingsMap.begin(); iter != m_settingsMap.end(); iter++){
@@ -268,7 +268,7 @@ void MTreeViewLayoutSettingsManager::save(QSettings *settings, const QStringList
         }
     }
 }
-void MTreeViewLayoutSettingsManager::load(QSettings *settings, const QStringList &pidList)
+void MTreeSonglistLayoutSettings::load(QSettings *settings, const QStringList &pidList)
 {
     m_settingsMap.clear();
 
@@ -298,4 +298,23 @@ void MTreeViewLayoutSettingsManager::load(QSettings *settings, const QStringList
             settings->endGroup();
         }
     }
+}
+
+
+MTreeDrives::MTreeDrives(QWidget *parent) : QTreeView(parent)
+{
+    setAcceptDrops(false);
+    setDragEnabled(false);
+    viewport()->setAcceptDrops(false);
+    setDragDropMode(QAbstractItemView::NoDragDrop);
+
+    setExpandsOnDoubleClick(false);
+    setFocusPolicy(Qt::NoFocus);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+
+//    setEditTriggers(QTreeView::SelectedClicked);
+    setContextMenuPolicy(Qt::CustomContextMenu);
+
+    m_drawStyle = new MProxyStyle(style());
+    setStyle(m_drawStyle);
 }

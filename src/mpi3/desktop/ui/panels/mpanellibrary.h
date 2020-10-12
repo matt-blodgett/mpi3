@@ -25,32 +25,26 @@ public:
     void save(QSettings *settings) override;
 
 private:
-    void setLibraryInfo();
     MMediaLibrary *m_mediaLibrary = nullptr;
 
 public:
     void allowCopyMedia(bool allow);
-    void allowOrganizeMedia(bool allow);
-    void allowAutoBackups(bool allow);
-
-    bool valCopyMedia() const;
-    bool valOrganizeMedia() const;
-    bool valAutoBackups() const;
 
 public:
     void askLibraryImport();
     void askLibraryExport();
     void askLibrarySavePath();
     void askLibraryMediaPath();
-    void askLibraryBackupPath();
 
-    void backupLibrary();
     void resetLibrary();
+
+private slots:
+    void setLibraryInfo();
+    void setLocalMediaPath(bool allow);
 
 private:
     MPanelSection *m_sectionLibrary = nullptr;
     MPanelSection *m_sectionMedia = nullptr;
-    MPanelSection *m_sectionBackup = nullptr;
 
     QLineEdit *m_boxLibName = nullptr;
     QLabel *m_lblLibAddedTag = nullptr;
@@ -62,22 +56,12 @@ private:
     QPushButton *m_btnSetLibPath = nullptr;
 
     QCheckBox *m_optCopyMedia = nullptr;
-    QCheckBox *m_optOrganizeMedia = nullptr;
     QLabel *m_lblMediaSizeTag = nullptr;
     QLabel *m_lblMediaSize = nullptr;
     QLabel *m_lblMediaFileCount = nullptr;
     QLabel *m_lblMediaLocTag = nullptr;
     QLineEdit *m_boxMediaLoc = nullptr;
     QPushButton *m_btnSetMediaLoc = nullptr;
-
-    QCheckBox *m_optBackupLibrary = nullptr;
-    QLabel *m_lblBackupFreqTag = nullptr;
-    QComboBox *m_cbxBackupFreq = nullptr;
-    QPushButton *m_btnBackupManual = nullptr;
-    QPushButton *m_btnBackupRestore = nullptr;
-    QLabel *m_lblBackupLocTag = nullptr;
-    QLineEdit *m_boxBackupLoc = nullptr;
-    QPushButton *m_btnSetBackupLoc = nullptr;
 };
 
 

@@ -23,17 +23,19 @@
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QApplication>
-#include <QDesktopWidget>
-
-#include <QDebug>
 
 
 #include <QMediaPlayer>
 
 
-static QString mp3FilePath2 = "C:\\Users\\Matt\\Desktop\\songs\\Lone Digger.mp3";
-static QString mp3FilePath = "C:/Users/Matt/Desktop/songs/Lone Digger.mp3";
-static QString wavFilePath = "C:/Users/Matt/Desktop/LoneDigger.wav";
+#include <QScreen>
+#include <QGuiApplication>
+
+
+#include <QDebug>
+
+
+
 
 
 MRootDesktop::MRootDesktop()
@@ -45,8 +47,9 @@ MRootDesktop::~MRootDesktop()
 {
     m_mediaPlayer->stop();
     delete m_mediaPlayer;
-    delete m_mediaLibrary;
     delete m_styleSheet;
+    delete m_mediaLibrary;
+    delete m_settingsProfile;
 }
 
 void MRootDesktop::initialize()
@@ -224,7 +227,6 @@ void MRootDesktop::initializeMainMenu()
 
     connect(actLibImport, &QAction::triggered, m_panelLibrary, &MPanelLibrary::askLibraryImport);
     connect(actLibExport, &QAction::triggered, m_panelLibrary, &MPanelLibrary::askLibraryExport);
-    connect(actLibBackup, &QAction::triggered, m_panelLibrary, &MPanelLibrary::backupLibrary);
     connect(actLibReset, &QAction::triggered, m_panelLibrary, &MPanelLibrary::resetLibrary);
 
     connect(actLibOpen, &QAction::triggered, [=]() {MActions::openFileLocation(m_mediaLibrary->savePath());});
@@ -300,24 +302,25 @@ void MRootDesktop::initializeState()
         QFile(MActions::pathProfile()).setPermissions(QFile::WriteOwner);
     }
 
-    MSettingsXml settings(MActions::pathProfile());
+    m_settingsProfile = new MSettingsXml(MActions::pathProfile());
 
-    settings.beginGroup("RootWindow");
-    QString stylePath = settings.value("style", ":/styles/default.qss").toString();
-    QString libraryPath = settings.value("library").toString();
-    int context = settings.value("context").toInt();
-    int volume = settings.value("volume", 50).toInt();
 
-    settings.beginGroup("WindowGeometry");
-    QRect screenSize = QApplication::desktop()->availableGeometry(this);
-    int d_rootx = (screenSize.width() / 2) - 400;
-    int d_rooty = (screenSize.height() / 2) - 300;
-    int wnd_rootx = settings.value("rootx", d_rootx).toInt();
-    int wnd_rooty = settings.value("rooty", d_rooty).toInt();
-    int wnd_width = settings.value("width", 800).toInt();
-    int wnd_height = settings.value("height", 600).toInt();
-    bool wnd_maximized = settings.value("maximized", false).toBool();
-    settings.endGroup();
+    m_settingsProfile->beginGroup("RootWindow");
+    QString stylePath = m_settingsProfile->value("style", ":/styles/default.qss").toString();
+    QString libraryPath = m_settingsProfile->value("library").toString();
+    int context = m_settingsProfile->value("context").toInt();
+    int volume = m_settingsProfile->value("volume", 50).toInt();
+    m_settingsProfile->beginGroup("WindowGeometry");
+    QScreen *screen = QGuiApplication::screenAt(pos());
+    int d_rootx = (screen->availableGeometry().width() / 2) - 400;
+    int d_rooty = (screen->availableGeometry().height() / 2) - 300;
+    int wnd_rootx = m_settingsProfile->value("rootx", d_rootx).toInt();
+    int wnd_rooty = m_settingsProfile->value("rooty", d_rooty).toInt();
+    int wnd_width = m_settingsProfile->value("width", 800).toInt();
+    int wnd_height = m_settingsProfile->value("height", 600).toInt();
+    bool wnd_maximized = m_settingsProfile->value("maximized", false).toBool();
+    m_settingsProfile->endGroup();
+    m_settingsProfile->endGroup();
 
     if(wnd_maximized) {
         showMaximized();
@@ -326,8 +329,6 @@ void MRootDesktop::initializeState()
         move(wnd_rootx, wnd_rooty);
         resize(wnd_width, wnd_height);
     }
-
-    settings.endGroup();
 
     m_styleSheet->load(stylePath);
     setStyleSheet(m_styleSheet->qssStyle());
@@ -347,34 +348,29 @@ void MRootDesktop::initializeState()
     m_panelLibrary->setLibrary(m_mediaLibrary);
     m_panelDevice->setLibrary(m_mediaLibrary);
 
-    m_panelMedia->load(&settings);
-    m_panelLibrary->load(&settings);
-    m_panelDevice->load(&settings);
+    m_panelMedia->load(m_settingsProfile);
+    m_panelLibrary->load(m_settingsProfile);
+    m_panelDevice->load(m_settingsProfile);
 }
 void MRootDesktop::saveSettings()
 {
-    QDir().remove(MActions::pathProfile());
-    MSettingsXml *settings = new MSettingsXml(MActions::pathProfile());
+    m_settingsProfile->beginGroup("RootWindow");
+    m_settingsProfile->setValue("style", m_styleSheet->qssPath());
+    m_settingsProfile->setValue("library", m_mediaLibrary->savePath());
+    m_settingsProfile->setValue("context", m_frameContextBar->currentView());
+    m_settingsProfile->setValue("volume", m_framePlayback->volume());
+    m_settingsProfile->beginGroup("WindowGeometry");
+    m_settingsProfile->setValue("rootx", x());
+    m_settingsProfile->setValue("rooty", y());
+    m_settingsProfile->setValue("width", width());
+    m_settingsProfile->setValue("height", height());
+    m_settingsProfile->setValue("maximized", isMaximized());
+    m_settingsProfile->endGroup();
+    m_settingsProfile->endGroup();
 
-    settings->beginGroup("RootWindow");
-    settings->setValue("style", m_styleSheet->qssPath());
-    settings->setValue("library", m_mediaLibrary->savePath());
-    settings->setValue("context", m_frameContextBar->currentView());
-    settings->setValue("volume", m_framePlayback->volume());
-
-    settings->beginGroup("WindowGeometry");
-    settings->setValue("rootx", x());
-    settings->setValue("rooty", y());
-    settings->setValue("width", width());
-    settings->setValue("height", height());
-    settings->setValue("maximized", isMaximized());
-    settings->endGroup();
-
-    settings->endGroup();
-
-    m_panelMedia->save(settings);
-    m_panelLibrary->save(settings);
-    m_panelDevice->save(settings);
+    m_panelMedia->save(m_settingsProfile);
+    m_panelLibrary->save(m_settingsProfile);
+    m_panelDevice->save(m_settingsProfile);
 
     m_mediaLibrary->save();
 }
@@ -403,7 +399,6 @@ void MRootDesktop::setContextPanel()
         }
     }
 }
-
 void MRootDesktop::setPlaybackSongInitial()
 {
     if (m_panelMedia->frameSonglist()->model()->rowCount() > 0) {
@@ -422,7 +417,6 @@ void MRootDesktop::setPlaybackSong(const QString &pid)
         m_mediaPlayer->play();
     }
 }
-
 void MRootDesktop::setTheme()
 {
     QString title = "Open QSS Theme File";

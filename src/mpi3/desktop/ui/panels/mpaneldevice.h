@@ -10,7 +10,12 @@ QT_BEGIN_NAMESPACE
 class QPushButton;
 class QTreeView;
 class QLineEdit;
+class QStorageInfo;
 QT_END_NAMESPACE
+
+
+class MModelDrives;
+class MFrameDrives;
 
 
 class MPanelDevice : public MPanel
@@ -20,30 +25,24 @@ class MPanelDevice : public MPanel
 public:
     explicit MPanelDevice(QWidget *parent = nullptr);
     void setLibrary(MMediaLibrary *library) override;
+    void load(QSettings *settings) override;
+    void save(QSettings *settings) override;
 
-public:
-    void setRaspiLibrary(MMediaLibrary *library);
-    void loadVolume();
-    void createVolume();
 
 private:
     MMediaLibrary *m_mediaLibrary = nullptr;
     MMediaLibrary *m_deviceLibrary = nullptr;
 
+    void setCurrentDrive(QStorageInfo info);
+
 private:
-    QLabel *m_lblDevices = nullptr;
-    QPushButton *m_btnRefreshVolumes = nullptr;
-    QPushButton *m_btnCreateVolume = nullptr;
 
-    MPanelSection *m_sectionLibrary = nullptr;
+    MPanelSection *m_sectionDrives = nullptr;
+    MPanelSection *m_sectionCurrentDrive = nullptr;
+    MFrameDrives *m_frmDrives = nullptr;
 
-    QLineEdit *m_boxLibName = nullptr;
-    QLabel *m_lblLibAddedTag = nullptr;
-    QLabel *m_lblLibAdded = nullptr;
-    QLabel *m_lblSyncMediaTag = nullptr;
-    QTreeView *m_treeSyncMedia = nullptr;
-    QLabel *m_lblCurrentDevice = nullptr;
-    QWidget *m_frmStorageSpace = nullptr;
+    QLabel *m_lblDrives = nullptr;
+    QLabel *m_lblCurrentDrive = nullptr;
 
 };
 

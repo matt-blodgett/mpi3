@@ -212,15 +212,12 @@ bool MMediaLibrary::load(const QString &filePath)
     m_pid = root.namedItem("pid").toElement().text();
     m_name = root.namedItem("name").toElement().text();
     m_added = root.namedItem("added").toElement().text();
+    m_localMediaPath = root.namedItem("localMediaPath").toElement().text();
     qDebug() << "found library" << m_pid << "-" << m_name;
 
     QString oldPath = m_savePath;
     m_savePath = QDir::toNativeSeparators(filePath);
     emit libraryChanged(this);
-
-    setMediaPath(root.namedItem("mediaPath").toElement().text());
-    setBackupPath(root.namedItem("backupPath").toElement().text());
-    setDownloadPath(root.namedItem("downloadPath").toElement().text());
 
     QDomNodeList xmlSongs = root.namedItem("songs").toElement().childNodes();
     QDomNodeList xmlPlaylists = root.namedItem("playlists").toElement().childNodes();
@@ -329,9 +326,7 @@ bool MMediaLibrary::save(const QString &filePath)
     xmlWriteElement(xml, root, "pid", m_pid);
     xmlWriteElement(xml, root, "name", m_name);
     xmlWriteElement(xml, root, "added", m_added);
-    xmlWriteElement(xml, root, "mediaPath", m_mediaPath);
-    xmlWriteElement(xml, root, "backupPath", m_backupPath);
-    xmlWriteElement(xml, root, "downloadPath", m_downloadPath);
+    xmlWriteElement(xml, root, "localMediaPath", m_localMediaPath);
 
     QDomElement xmlSongs = xml.createElement("songs");
     QDomElement xmlPlaylists = xml.createElement("playlists");
@@ -402,11 +397,7 @@ bool MMediaLibrary::save(const QString &filePath)
 
     emit librarySaved();
 
-    qInfo()
-        << "saved library"
-        << m_pid << "-"
-        << m_name << "to"
-        << m_savePath;
+    qInfo() << "saved library" << m_pid << "-" << m_name << "to" << m_savePath;
 
     return true;
 }
@@ -421,10 +412,6 @@ void MMediaLibrary::reset()
     m_playlists.clear();
     m_folders.clear();
 
-    m_mediaPath = QString();
-    m_backupPath = QString();
-    m_downloadPath = QString();
-
     emit libraryReset();
 }
 
@@ -432,36 +419,15 @@ QString MMediaLibrary::savePath() const
 {
     return m_savePath;
 }
-QString MMediaLibrary::mediaPath() const
+QString MMediaLibrary::localMediaPath() const
 {
-    return m_mediaPath;
-}
-QString MMediaLibrary::backupPath() const
-{
-    return m_backupPath;
-}
-QString MMediaLibrary::downloadPath() const
-{
-    return m_downloadPath;
+    return m_localMediaPath;
 }
 
-bool MMediaLibrary::setMediaPath(const QString &dirPath)
+void MMediaLibrary::setLocalMediaPath(const QString &path)
 {
-    m_mediaPath = QDir::toNativeSeparators(dirPath);
+    m_localMediaPath = path;
     emit libraryChanged(this);
-    return true;
-}
-bool MMediaLibrary::setBackupPath(const QString &dirPath)
-{
-    m_backupPath = QDir::toNativeSeparators(dirPath);
-    emit libraryChanged(this);
-    return true;
-}
-bool MMediaLibrary::setDownloadPath(const QString &dirPath)
-{
-    m_downloadPath = QDir::toNativeSeparators(dirPath);
-    emit libraryChanged(this);
-    return true;
 }
 
 MSongList MMediaLibrary::songs() const
@@ -595,7 +561,7 @@ MSong *MMediaLibrary::newSong(const QString &filePath)
         song->m_artist = info.artist;
         song->m_album = info.album;
         song->m_kind = info.kind;
-        song->m_path = filePath;
+        song->m_path = QDir::toNativeSeparators(filePath);
 
         song->m_size = info.size;
         song->m_time = info.time;
@@ -624,6 +590,28 @@ MSong *MMediaLibrary::newSong(const QString &filePath)
         QStringList splitExt = song->m_name.split(".");
         if(splitExt.size() > 0) {
             song->m_name = splitExt.at(0);
+        }
+    }
+
+    if(!m_localMediaPath.isNull() && !m_localMediaPath.isEmpty()) {
+        QString localPath = m_localMediaPath;
+        if(!song->artist().isNull() && !song->artist().isEmpty()) {
+            localPath += "/";
+            localPath += song->artist();
+
+            if (!QDir(localPath).exists()) {
+                QDir().mkdir(localPath);
+            }
+        }
+        localPath += "/";
+        // Duplicate song names??
+        localPath += song->name();
+        localPath += ".";
+        localPath += song->kind();
+
+        if(QFile::copy(filePath, localPath)) {
+            song->m_path = QDir::toNativeSeparators(localPath);
+            qDebug() << "copied song from" << filePath << "to" << localPath;
         }
     }
 

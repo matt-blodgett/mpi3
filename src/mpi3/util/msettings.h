@@ -12,6 +12,7 @@ QT_END_NAMESPACE
 
 
 #include "mpi3/util/mutil.h"
+#include "mpi3/desktop/ui/mactions.h"
 
 #ifdef MPI3_BUILD_SHARED
 class MPI3_EXPORT_UTIL MSettingsXml;
@@ -39,15 +40,41 @@ class MSettingsXmlNode : public QObject
     Q_OBJECT
 
 public:
-    explicit MSettingsXmlNode(
-        const QString &name, const QString
-        &text = QString(), QObject *parent = nullptr);
+    explicit MSettingsXmlNode(const QString &name, const QString &text = QString(), QObject *parent = nullptr);
 
 public:
     QString fullPath() const;
     QString tagName;
     QString subtext;
 };
+
+
+
+
+
+//class MSettingsGlobal : public QObject
+//{
+//    Q_OBJECT
+
+//public:
+//    static MSettingsGlobal *instance();
+//    MSettingsXml *settings();
+
+//    void reset();
+
+//private:
+//    static MSettingsGlobal *m_settingsGlobal;
+//    MSettingsGlobal();
+//    MSettingsGlobal(const MSettingsGlobal&);
+//    MSettingsGlobal& operator=(const MSettingsGlobal&);
+
+
+//    MSettingsXml *m_settingsInteral;
+
+//};
+
+
+
 
 
 #endif

@@ -66,7 +66,7 @@ class MTreeViewLayoutSettings : public QObject
 
 private:
     explicit MTreeViewLayoutSettings(QObject *parent = nullptr);
-    friend class MTreeViewLayoutSettingsManager;
+    friend class MTreeSonglistLayoutSettings;
 
 private:
     QList<int> m_columnWidth;
@@ -84,12 +84,12 @@ public:
 };
 
 
-class MTreeViewLayoutSettingsManager : public QObject
+class MTreeSonglistLayoutSettings : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit MTreeViewLayoutSettingsManager(QObject *parent = nullptr);
+    explicit MTreeSonglistLayoutSettings(QObject *parent = nullptr);
 
 public:
     MTreeViewLayoutSettings *getLayoutSettings(const QString &pid);
@@ -99,6 +99,18 @@ public:
 
 private:
     QMap<QString, MTreeViewLayoutSettings*> m_settingsMap;
+};
+
+
+class MTreeDrives : public QTreeView
+{
+    Q_OBJECT
+
+public:
+    explicit MTreeDrives(QWidget *parent = nullptr);
+
+protected:
+    MProxyStyle *m_drawStyle = nullptr;
 };
 
 

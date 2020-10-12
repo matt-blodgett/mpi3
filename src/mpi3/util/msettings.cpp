@@ -7,14 +7,12 @@ typedef class MSettingsXmlNode XmlNode;
 static const QString RootName = "mpi3config";
 
 
+const QSettings::Format MSettingsXml::XmlSettingsFormat = QSettings::registerFormat("xml", &MSettingsXml::readSettingsXml, &MSettingsXml::writeSettingsXml);
+
 MSettingsXml::MSettingsXml(const QString &settingsPath) : QSettings (settingsPath, XmlSettingsFormat)
 {
 
 }
-
-
-const QSettings::Format MSettingsXml::XmlSettingsFormat = QSettings::registerFormat(
-            "xml", &MSettingsXml::readSettingsXml, &MSettingsXml::writeSettingsXml);
 
 
 bool MSettingsXml::readSettingsXml(QIODevice &device, QMap<QString, QVariant> &map)
@@ -128,8 +126,6 @@ bool MSettingsXml::writeSettingsXml(QIODevice &device, const QMap<QString, QVari
             }
         }
     }
-
-    return false;
 }
 
 
@@ -150,3 +146,42 @@ QString MSettingsXmlNode::fullPath() const
 
     return path.mid(RootName.size() + 1);
 }
+
+
+
+
+
+//#include <QFile>
+//#include <QDir>
+//#include <QDebug>
+
+
+//MSettingsGlobal::MSettingsGlobal() : QObject(nullptr)
+//{
+//    if(!QFile::exists(MActions::pathProfile())) {
+//        QFile(":/profiles/default.xml").copy(MActions::pathProfile());
+//        QFile(MActions::pathProfile()).setPermissions(QFile::WriteOwner);
+//    }
+
+//    m_settingsInteral = new MSettingsXml(MActions::pathProfile());
+//}
+
+//MSettingsXml *MSettingsGlobal::settings()
+//{
+//    return m_settingsInteral;
+//}
+//void MSettingsGlobal::reset()
+//{
+//    QDir().remove(MActions::pathProfile());
+//    QFile(MActions::pathProfile()).open(QFile::WriteOnly);
+//}
+
+//MSettingsGlobal *MSettingsGlobal::m_settingsGlobal = nullptr;
+//MSettingsGlobal *MSettingsGlobal::instance() {
+//    if (!m_settingsGlobal) {
+//        m_settingsGlobal = new MSettingsGlobal();
+//    }
+//    return m_settingsGlobal;
+//}
+
+

@@ -16,7 +16,7 @@ QT_END_NAMESPACE
 
 class MFrameSonglist;
 class MFrameContainers;
-class MTreeViewLayoutSettingsManager;
+class MTreeSonglistLayoutSettings;
 
 
 class MPanelMedia : public MPanel
@@ -53,7 +53,7 @@ private:
     QLabel *m_lblView = nullptr;
 
     MMediaLibrary *m_mediaLibrary = nullptr;
-    MTreeViewLayoutSettingsManager *m_layoutSettingsManager = nullptr;
+    MTreeSonglistLayoutSettings *m_layoutSettingsManager = nullptr;
 };
 
 

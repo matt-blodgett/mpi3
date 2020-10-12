@@ -20,6 +20,7 @@ class MPI3_EXPORT_UI MRootDesktop;
 
 #include "mpi3/core/mglobal.h"
 class MStyleSheet;
+class MSettingsXml;
 class MMediaLibrary;
 class MFrameContextBar;
 class MFramePlayback;
@@ -55,6 +56,7 @@ private:
 
 private:
     MStyleSheet *m_styleSheet = nullptr;
+    MSettingsXml *m_settingsProfile = nullptr;
     MMediaLibrary *m_mediaLibrary = nullptr;
     QMediaPlayer *m_mediaPlayer = nullptr;
     MFrameContextBar *m_frameContextBar = nullptr;

@@ -163,9 +163,7 @@ class MMediaLibrary : public MMediaElement
     Q_OBJECT
     Q_DISABLE_COPY(MMediaLibrary)
     Q_PROPERTY(QString savePath READ savePath)
-    Q_PROPERTY(QString mediaPath READ mediaPath WRITE setMediaPath)
-    Q_PROPERTY(QString backupPath READ backupPath WRITE setBackupPath)
-    Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath)
+    Q_PROPERTY(QString localMediaPath READ localMediaPath WRITE setLocalMediaPath)
 
 public:    
     explicit MMediaLibrary(QObject *parent = nullptr);
@@ -178,19 +176,13 @@ public:
 
 public:
     QString savePath() const;
-    QString mediaPath() const;
-    QString backupPath() const;
-    QString downloadPath() const;
+    QString localMediaPath() const;
 
-    bool setMediaPath(const QString &dirPath);
-    bool setBackupPath(const QString &dirPath);
-    bool setDownloadPath(const QString &dirPath);
+    void setLocalMediaPath(const QString &path);
 
 private:
     QString m_savePath;
-    QString m_mediaPath;
-    QString m_backupPath;
-    QString m_downloadPath;
+    QString m_localMediaPath;
 
 public:
     MSongList songs() const;

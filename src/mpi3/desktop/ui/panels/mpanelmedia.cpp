@@ -67,7 +67,7 @@ MPanelMedia::MPanelMedia(QWidget *parent) : MPanel(parent, false)
     connect(m_btnAlbums, &QRadioButton::released, this, &MPanelMedia::viewAlbums);
     connect(m_frmContainers, &MFrameContainers::containerSelected, this, &MPanelMedia::viewContainer);
 
-    m_layoutSettingsManager = new MTreeViewLayoutSettingsManager(this);
+    m_layoutSettingsManager = new MTreeSonglistLayoutSettings(this);
 }
 void MPanelMedia::setLibrary(MMediaLibrary *library)
 {

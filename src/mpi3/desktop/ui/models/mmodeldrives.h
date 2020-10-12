@@ -12,12 +12,12 @@
 #include "mpi3/core/mglobal.h"
 
 
-class MModelStorageDrives : public QAbstractItemModel
+class MModelDrives : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    explicit MModelStorageDrives(QObject *parent = nullptr);
+    explicit MModelDrives(QObject *parent = nullptr);
 
 public:
 //    Qt::ItemFlags flags(const QModelIndex &index) const override;
@@ -34,9 +34,11 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 public:
-    QList<MMediaLibrary*> raspiLibraries() const;
-    MMediaLibrary *raspiLibraryAt(const QModelIndex &idx);
-    QString rootPathAt(const QModelIndex &idx) const;
+//    QList<MMediaLibrary*> raspiLibraries() const;
+//    MMediaLibrary *raspiLibraryAt(const QModelIndex &idx);
+//    QString rootPathAt(const QModelIndex &idx) const;
+
+    QStorageInfo storageInfoAt(const QModelIndex &index);
 
     void refresh();
 
@@ -45,7 +47,6 @@ private:
     QList<QString> m_headers;
     QList<QIcon> m_deviceIcons;
     QList<QVariant> m_deviceData;
-    QMap<QString, MMediaLibrary*> m_raspiLibraries;
 };
 
 
