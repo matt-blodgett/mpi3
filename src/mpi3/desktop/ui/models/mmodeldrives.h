@@ -34,19 +34,16 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 public:
-//    QList<MMediaLibrary*> raspiLibraries() const;
-//    MMediaLibrary *raspiLibraryAt(const QModelIndex &idx);
-//    QString rootPathAt(const QModelIndex &idx) const;
-
     QStorageInfo storageInfoAt(const QModelIndex &index);
 
     void refresh();
 
 private:
-    QStorageInfo m_storageInfo;
     QList<QString> m_headers;
-    QList<QIcon> m_deviceIcons;
+    QStorageInfo m_storageInfoRoot;
+    QVector<QStorageInfo> m_storageInfoList;
     QList<QVariant> m_deviceData;
+    QList<QIcon> m_deviceIcons;
 };
 
 

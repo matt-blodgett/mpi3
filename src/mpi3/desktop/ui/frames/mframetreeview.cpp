@@ -606,7 +606,7 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
         actOpenItem->setDisabled(true);
     }
 
-    if(m_mediaLibrary->getPlaylist(model()->pidCurrentSonglist())){
+    if(!m_mediaLibrary->getPlaylist(model()->pidCurrentSonglist())){
         actRemoveItem->setDisabled(true);
     }
 
@@ -646,7 +646,6 @@ MFrameDrives::MFrameDrives(QWidget *parent) : MFrame(parent)
     m_treeDrives->setSortingEnabled(false);
     m_treeDrives->setExpandsOnDoubleClick(false);
     m_treeDrives->setItemsExpandable(false);
-
 
     QGridLayout *gridMain = new QGridLayout();
     gridMain->addWidget(m_treeDrives, 0, 0, 1, 1);
@@ -691,7 +690,9 @@ void MFrameDrives::contextMenuTreeview(const QPoint &point)
     QMenu *menuContext = new QMenu(this);
 
     QAction *actOpenItem = new QAction(menuContext);
+
     actOpenItem->setText("Open File Location");
+
     menuContext->addAction(actOpenItem);
 
     connect(actOpenItem, &QAction::triggered, this, &MFrameDrives::openItemFileLocation);

@@ -76,8 +76,8 @@ QVariant MModelDrives::headerData(int section, Qt::Orientation orientation, int 
 
 QStorageInfo MModelDrives::storageInfoAt(const QModelIndex &index)
 {
-    if(index.row() < rowCount()) {
-        return m_storageInfo.mountedVolumes().at(index.row());
+    if(index.row() >= 0 && index.row() < rowCount()) {
+        return m_storageInfoList.at(index.row());
     }
     return QStorageInfo();
 }
@@ -86,33 +86,37 @@ void MModelDrives::refresh()
 {
     beginResetModel();
 
+    m_storageInfoRoot.refresh();
+    m_storageInfoList.clear();
     m_deviceData.clear();
     m_deviceIcons.clear();
 
-    m_storageInfo.refresh();
+    for(QStorageInfo storageInfo : m_storageInfoRoot.mountedVolumes()) {
+        if(!storageInfo.name().isEmpty()) {
+            m_storageInfoList.append(storageInfo);
 
-    QStringList rootPathList;
-    for(QStorageInfo sInfo : m_storageInfo.mountedVolumes()) {
-        QString rootPath = sInfo.rootPath();
-        rootPathList.append(rootPath);
+            QString rootPath = storageInfo.rootPath();
 
-        QString label = " (" + rootPath.replace("/", "") + ") " + sInfo.name();
+            // Windows
+            // QString label = " (" + rootPath.replace("/", "") + ") " + sInfo.name();
 
-        double bfree = static_cast<double>(sInfo.bytesFree());
-        double btotal = static_cast<double>(sInfo.bytesTotal());
+            // Linux
+            QString label = " (" + rootPath + ") " + storageInfo.name();
 
-        QList<QString> deviceData;
-        deviceData << label;
-        deviceData << Mpi3::Util::sizeToString(bfree, 1);
-        deviceData << Mpi3::Util::sizeToString(btotal, 1);
-        deviceData << Mpi3::Util::percentToString(bfree / btotal, 1);
-        deviceData << sInfo.fileSystemType();
+            double bfree = static_cast<double>(storageInfo.bytesFree());
+            double btotal = static_cast<double>(storageInfo.bytesTotal());
 
-        m_deviceData << QVariant(deviceData);
-        m_deviceIcons << QFileIconProvider().icon(QFileInfo(sInfo.rootPath()));
+            QList<QString> deviceData;
+            deviceData << label;
+            deviceData << Mpi3::Util::sizeToString(bfree, 1);
+            deviceData << Mpi3::Util::sizeToString(btotal, 1);
+            deviceData << Mpi3::Util::percentToString(bfree / btotal, 1);
+            deviceData << storageInfo.fileSystemType();
+
+            m_deviceData << QVariant(deviceData);
+            m_deviceIcons << QFileIconProvider().icon(QFileInfo(storageInfo.rootPath()));
+        }
     }
 
     endResetModel();
 }
-
-
