@@ -7,6 +7,7 @@
 #include "mpi3/desktop/ui/mactions.h"
 #include "mpi3/core/mmedialibrary.h"
 #include "mpi3/core/mmediautil.h"
+#include "mpi3/core/maudioengine.h"
 
 #include <QFileDialog>
 #include <QGridLayout>
@@ -343,8 +344,11 @@ void MFrameSonglist::importSongs()
     if(Mpi3::Core::validMediaFiles(urls)){
         QStringList pidList;
         for(QString p : paths){
-            MSong *s = m_mediaLibrary->newSong(p);
-            pidList.append(s->pid());
+            MSongInfo songInfo;
+            if (songInfo.load(p)) {
+                MSong *s = m_mediaLibrary->newSong(songInfo.songInfoMap());
+                pidList.append(s->pid());
+            }
         }
 
         if(parentPlaylist){

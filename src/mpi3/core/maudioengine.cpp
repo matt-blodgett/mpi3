@@ -4,6 +4,9 @@
 #include <iostream>
 
 #include <QFileInfo>
+#include <QMap>
+#include <QVariant>
+
 
 extern "C"
 {
@@ -106,6 +109,8 @@ static int load_contexts(std::string filepath, AVFormatContext **formatCtx, AVCo
 
 bool MSongInfo::load(const QString &path)
 {
+    this->path = path;
+
     AVFormatContext *formatCtx = nullptr;
     AVCodecContext *codecCtx = nullptr;
 
@@ -154,4 +159,21 @@ bool MSongInfo::load(const QString &path)
 
     return true;
 }
-
+QMap<QString, QVariant> MSongInfo::songInfoMap()
+{
+    QMap<QString, QVariant> map;
+    map["path"] = QVariant(path);
+    map["title"] = QVariant(title);
+    map["artist"] = QVariant(artist);
+    map["album"] = QVariant(album);
+    map["kind"] = QVariant(kind);
+    map["time"] = QVariant(time);
+    map["size"] = QVariant(size);
+    map["bitRate"] = QVariant(bitRate);
+    map["sampleRate"] = QVariant(sampleRate);
+    map["majorBrand"] = QVariant(majorBrand);
+    map["minorVersion"] = QVariant(minorVersion);
+    map["compatibleBrands"] = QVariant(compatibleBrands);
+    map["encoder"] = QVariant(encoder);
+    return map;
+}

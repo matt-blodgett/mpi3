@@ -2,6 +2,8 @@
 #include "mpi3/desktop/ui/models/mmodelcontainersitem.h"
 #include "mpi3/core/mmedialibrary.h"
 #include "mpi3/core/mmediautil.h"
+#include "mpi3/core/maudioengine.h"
+
 
 #include <QMimeData>
 #include <QUrl>
@@ -155,7 +157,10 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
         }
         else if(actionIsCopyAction && dataIsValidMediaFiles) {
             for(QUrl url : data->urls()) {
-                m_mediaLibrary->newSong(url.toString());
+                MSongInfo songInfo;
+                if (songInfo.load(url.toString())) {
+                    m_mediaLibrary->newSong(songInfo.songInfoMap());
+                }
             }
             return true;
         }
@@ -174,8 +179,11 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
         else if(actionIsCopyAction && dataIsValidMediaFiles) {
             QStringList pidStrings;
             for(QUrl url : data->urls()) {
-                MSong *song = m_mediaLibrary->newSong(url.toString());
-                pidStrings << song->pid();
+                MSongInfo songInfo;
+                if (songInfo.load(url.toString())) {
+                    MSong *song = m_mediaLibrary->newSong(songInfo.songInfoMap());
+                    pidStrings << song->pid();
+                }
             }
             QStringList pidStringsCombined = targetPlaylist->songsPidList();
             pidStringsCombined.append(pidStrings);
@@ -342,6 +350,7 @@ bool MModelContainers::itemIsFolder(const QModelIndex &index) const
 void MModelContainers::setLibrary(MMediaLibrary *library)
 {
     beginResetModel();
+
     m_rootItem->removeChildren(0, rowCount());
 
     if(m_mediaLibrary) {

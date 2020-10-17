@@ -1,8 +1,8 @@
 ﻿#include "mpi3/desktop/ui/mactions.h"
 
 #include <QStandardPaths>
-#include <QFileDialog>
 #include <QProcess>
+#include <QDir>
 
 
 #include <QDebug>
@@ -32,7 +32,12 @@ QString MActions::pathLibraryBackups()
 
 void MActions::openFileLocation(const QString &path)
 {
-    QStringList processArgs;
-    processArgs << "/select," << QDir::toNativeSeparators(path);
+#if defined (WIN32) || defined (_WIN32)
+    QStringList processArgs = { "/select,", QDir::toNativeSeparators(path) };
     QProcess::startDetached("explorer", processArgs);
+#else
+    // TODO: Check for which file explorer to use on linux
+    QStringList processArgs = { QDir::toNativeSeparators(path) };
+    QProcess::startDetached("/usr/bin/nautilus", processArgs);
+#endif
 }

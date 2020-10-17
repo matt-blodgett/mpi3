@@ -17,6 +17,7 @@ struct MSongInfo
 {
     bool load(const QString &path);
 
+    QString path;
     QString title;
     QString artist;
     QString album;
@@ -31,6 +32,8 @@ struct MSongInfo
     QString minorVersion;
     QString compatibleBrands;
     QString encoder;
+
+    QMap<QString, QVariant> songInfoMap();
 };
 
 #endif

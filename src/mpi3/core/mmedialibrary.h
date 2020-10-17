@@ -239,7 +239,7 @@ private:
     static QString generatePID(Mpi3::ElementType elementType);
 
 public:
-    MSong *newSong(const QString &filePath);
+    MSong *newSong(const QMap<QString, QVariant> &songInfoMap);
     MFolder *newFolder(MFolder *parentFolder = nullptr, const QString &name = QString());
     MPlaylist *newPlaylist(MFolder *parentFolder = nullptr, const QString &name = QString());
 

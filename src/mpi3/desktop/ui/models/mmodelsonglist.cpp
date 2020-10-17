@@ -3,6 +3,7 @@
 #include "mpi3/core/mmedialibrary.h"
 #include "mpi3/core/mmediautil.h"
 #include "mpi3/util/mformat.h"
+#include "mpi3/core/maudioengine.h"
 
 #include <QMimeData>
 #include <QUrl>
@@ -176,8 +177,11 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
             QStringList pidStrings;
 
             for(QUrl url : data->urls()) {
-                MSong *s = m_mediaLibrary->newSong(url.toLocalFile());
-                pidStrings.append(s->pid());
+                MSongInfo songInfo;
+                if (songInfo.load(url.toLocalFile())) {
+                    MSong *s = m_mediaLibrary->newSong(songInfo.songInfoMap());
+                    pidStrings.append(s->pid());
+                }
             }
 
             if(playlist){

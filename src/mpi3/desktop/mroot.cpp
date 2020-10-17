@@ -1,5 +1,4 @@
 ﻿#include "mpi3/desktop/mroot.h"
-
 #include "mpi3/desktop/ui/frames/mframecontextbar.h"
 #include "mpi3/desktop/ui/frames/mframeplayback.h"
 #include "mpi3/desktop/ui/frames/mframetreeview.h"
@@ -10,9 +9,7 @@
 #include "mpi3/desktop/ui/models/mmodelsonglist.h"
 #include "mpi3/desktop/ui/mstyle.h"
 #include "mpi3/desktop/ui/mactions.h"
-
 #include "mpi3/core/mmedialibrary.h"
-
 #include "mpi3/util/msettings.h"
 #include "mpi3/util/mstylesheet.h"
 
@@ -22,20 +19,15 @@
 #include <QGridLayout>
 #include <QFileDialog>
 #include <QMenuBar>
-#include <QApplication>
 
+#include <QGuiApplication>
+#include <QApplication>
+#include <QScreen>
 
 #include <QMediaPlayer>
 
 
-#include <QScreen>
-#include <QGuiApplication>
-
-
 #include <QDebug>
-
-
-
 
 
 MRootDesktop::MRootDesktop()
@@ -56,7 +48,6 @@ void MRootDesktop::initialize()
 {
     Mpi3::initialize();
     MStyle::initialize();
-
     initializeObjects();
     initializeMainMenu();
     initializeLayout();
@@ -297,13 +288,17 @@ void MRootDesktop::initializeLayout()
 }
 void MRootDesktop::initializeState()
 {
+    // TODO: Add debugging
+    if (!QDir(MActions::pathAppData()).exists()) {
+        bool created = QDir().mkpath(MActions::pathAppData());
+        qDebug() << created << MActions::pathAppData();
+    }
     if(!QFile::exists(MActions::pathProfile())) {
         QFile(":/profiles/default.xml").copy(MActions::pathProfile());
-        QFile(MActions::pathProfile()).setPermissions(QFile::WriteOwner);
+        QFile(MActions::pathProfile()).setPermissions(QFile::WriteOwner | QFile::ReadOwner);
     }
 
     m_settingsProfile = new MSettingsXml(MActions::pathProfile());
-
 
     m_settingsProfile->beginGroup("RootWindow");
     QString stylePath = m_settingsProfile->value("style", ":/styles/default.qss").toString();
@@ -351,6 +346,8 @@ void MRootDesktop::initializeState()
     m_panelMedia->load(m_settingsProfile);
     m_panelLibrary->load(m_settingsProfile);
     m_panelDevice->load(m_settingsProfile);
+
+    m_settingsProfile->sync();
 }
 void MRootDesktop::saveSettings()
 {
@@ -373,6 +370,8 @@ void MRootDesktop::saveSettings()
     m_panelDevice->save(m_settingsProfile);
 
     m_mediaLibrary->save();
+
+    m_settingsProfile->sync();
 }
 
 void MRootDesktop::setContextPanel()
