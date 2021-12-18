@@ -96,6 +96,10 @@ bool MModelContainersItem::move(MModelContainersItem *parent, int position)
         return false;
     }
 
+    if (parent == m_parentItem) {
+        return false;
+    }
+
     if(position < 0 || position > parent->childCount()){
         return false;
     }

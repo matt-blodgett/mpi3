@@ -18,6 +18,9 @@ typedef QColor QColour; // Canadian (Sorry)
 #define MPI3_PID_PREFIX_FOLDER      "F:"
 #define MPI3_PID_PREFIX_SONG        "S:"
 
+#define MPI3_MIME_TYPE_PIDS_CONTAINERS "application/mpi3-pids-containers"
+#define MPI3_MIME_TYPE_PIDS_SONGS "application/mpi3-pids-songs"
+
 
 class MMediaLibrary;
 class MMediaElement;
