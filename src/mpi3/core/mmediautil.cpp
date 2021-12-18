@@ -11,11 +11,9 @@ namespace Mpi3
     {
         bool validMediaFiles(QUrl mediaUrl)
         {
-            if(mediaUrl.toString().endsWith(".mp3")
-                || mediaUrl.toString().endsWith(".wav")) {
+            if(mediaUrl.toString().endsWith(".mp3") || mediaUrl.toString().endsWith(".wav")) {
                 return true;
             }
-
             return false;
         }
         bool validMediaFiles(QList<QUrl> mediaUrls)
@@ -29,24 +27,22 @@ namespace Mpi3
                     return false;
                 }
             }
-
             return true;
         }
 
         QByteArray songsToBytes(MSongList songlist)
         {
             QByteArray pidBytes;
-            for(MSong *s : songlist) {
-                pidBytes.append(s->pid().toStdString().c_str());
+            for(const MSong &s : songlist) {
+                pidBytes.append(s.pid.toStdString().c_str());
             }
-
             return pidBytes;
         }
         QList<QUrl> songsToPaths(MSongList songlist)
         {
             QList<QUrl> songUrls;
-            for(MSong *s : songlist) {
-                songUrls.append(s->path());
+            for(const MSong &s : songlist) {
+                songUrls.append(s.path);
             }
 
             return songUrls;
@@ -55,14 +51,12 @@ namespace Mpi3
         QStringList bytesToSongs(QByteArray pidBytes)
         {
             QStringList pidStrings;
-
             int i = 0;
             int length = MPI3_PID_STRING_LENGTH;
             while(i + length <= pidBytes.size()) {
-                pidStrings.append(pidBytes.mid(i, length));
+                pidStrings << pidBytes.mid(i, length);
                 i += length;
             }
-
             return pidStrings;
         }
     };
