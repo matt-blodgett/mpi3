@@ -61,7 +61,7 @@ void MTreeContainers::dropEvent(QDropEvent *event)
 {
     Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
 
-    QModelIndex dropIndex = indexAt(event->pos());
+    QModelIndex dropIndex = indexAt(event->position().toPoint());
     QModelIndex parentIndex = dropIndex.parent();
 
     int row = dropIndex.row();
@@ -108,7 +108,7 @@ void MTreeSonglist::dragEnterEvent(QDragEnterEvent *event)
 {
     Qt::DropAction action = event->proposedAction();
 
-    QModelIndex dropIndex = indexAt(event->pos());
+    QModelIndex dropIndex = indexAt(event->position().toPoint());
     QModelIndex parentIndex = dropIndex.parent();
 
     int row = dropIndex.row();
@@ -129,7 +129,7 @@ void MTreeSonglist::dropEvent(QDropEvent *event)
 {
     Qt::DropAction action = event->source() == this ? Qt::MoveAction : Qt::CopyAction;
 
-    QModelIndex dropIndex = indexAt(event->pos());
+    QModelIndex dropIndex = indexAt(event->position().toPoint());
     QModelIndex parentIndex = dropIndex.parent();
 
     int row = dropIndex.row();
@@ -272,7 +272,7 @@ void MTreeSonglistLayoutSettings::load(QSettings *settings, const QStringList &p
 {
     m_settingsMap.clear();
 
-    for(QString pid : pidList) {
+    for(const QString &pid : pidList) {
 
         QString pidKey = pid;
         pidKey.remove(1, 1);

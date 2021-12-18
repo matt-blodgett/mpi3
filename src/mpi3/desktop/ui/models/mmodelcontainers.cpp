@@ -26,18 +26,18 @@ static void populateItem(MModelItem *item, MContainer *c)
         item->setType(MModelItem::PlaylistItem);
     }
 }
-static MFolderList allChildFolders(MFolder *parentFolder)
-{
-    MFolderList folders;
-    for(MFolder *childFolder : parentFolder->childFolders()){
-        folders.append(childFolder);
-        for(MFolder *f : allChildFolders(childFolder)){
-            folders.append(f);
-        }
-    }
+//static MFolderList allChildFolders(MFolder *parentFolder)
+//{
+//    MFolderList folders;
+//    for(MFolder *childFolder : parentFolder->childFolders()){
+//        folders.append(childFolder);
+//        for(MFolder *f : allChildFolders(childFolder)){
+//            folders.append(f);
+//        }
+//    }
 
-    return folders;
-}
+//    return folders;
+//}
 
 
 MModelContainers::MModelContainers(QObject *parent) : QAbstractItemModel(parent)
@@ -74,136 +74,148 @@ Qt::DropActions MModelContainers::supportedDropActions() const
 
 QStringList MModelContainers::mimeTypes() const
 {
-    QStringList mTypes = {QMetaType::typeName(qMetaTypeId<QString>())};
-    return mTypes;
+//    QStringList mTypes = {QMetaType::typeName(qMetaTypeId<QString>())};
+//    return mTypes;
+    return QStringList();
 }
 QMimeData *MModelContainers::mimeData(const QModelIndexList &indexes) const
 {
     QMimeData *mData = new QMimeData();
 
-    if(indexes.size() == 1) {
-        QByteArray pidBytes;
-        pidBytes.append(pidAt(indexes.at(0)).toStdString().c_str());
-        mData->setData(QMetaType::typeName(qMetaTypeId<QString>()), pidBytes);
-    }
+    Q_UNUSED(indexes)
+//    if(indexes.size() == 1) {
+//        QByteArray pidBytes;
+//        pidBytes.append(pidAt(indexes.at(0)).toStdString().c_str());
+//        mData->setData(QMetaType::typeName(qMetaTypeId<QString>()), pidBytes);
+//    }
 
     return mData;
 }
 bool MModelContainers::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
 {
-    bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
-    bool dataIsContainer = data->hasFormat(QMetaType::typeName(qMetaTypeId<QString>()));
-    bool dataIsValidMediaFiles = data->hasUrls() ? Mpi3::Core::validMediaFiles(data->urls()) : false;
-    bool actionIsCopyAction = action == Qt::CopyAction;
-    bool actionIsMoveAction = action == Qt::MoveAction;
+    Q_UNUSED(data)
+    Q_UNUSED(action)
+    Q_UNUSED(row)
+    Q_UNUSED(column)
+    Q_UNUSED(parent)
+//    bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
+//    bool dataIsContainer = data->hasFormat(QMetaType::typeName(qMetaTypeId<QString>()));
+//    bool dataIsValidMediaFiles = data->hasUrls() ? Mpi3::Core::validMediaFiles(data->urls()) : false;
+//    bool actionIsCopyAction = action == Qt::CopyAction;
+//    bool actionIsMoveAction = action == Qt::MoveAction;
 
-    QModelIndex targetIndex = index(row, column, parent);
-    MContainer *targetContainer = m_mediaLibrary->getContainer(pidAt(targetIndex));
+//    QModelIndex targetIndex = index(row, column, parent);
+//    MContainer *targetContainer = m_mediaLibrary->getContainer(pidAt(targetIndex));
 
-    if(!targetContainer) {
-        return dataIsContainer || dataIsValidMediaFiles;
-    }
-    else if(targetContainer->type() == Mpi3::PlaylistElement) {
-        return actionIsCopyAction && (dataIsSonglist || dataIsValidMediaFiles);
-    }
-    else if(targetContainer->type() == Mpi3::FolderElement) {
+//    if(!targetContainer) {
+//        return dataIsContainer || dataIsValidMediaFiles;
+//    }
+//    else if(targetContainer->type() == Mpi3::PlaylistElement) {
+//        return actionIsCopyAction && (dataIsSonglist || dataIsValidMediaFiles);
+//    }
+//    else if(targetContainer->type() == Mpi3::FolderElement) {
 
-        if(actionIsMoveAction && dataIsContainer){
-            QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
+//        if(actionIsMoveAction && dataIsContainer){
+//            QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
 
-            MFolder *dropFolder = m_mediaLibrary->getFolder(pid);
-            MPlaylist *dropPlaylist = m_mediaLibrary->getPlaylist(pid);
+//            MFolder *dropFolder = m_mediaLibrary->getFolder(pid);
+//            MPlaylist *dropPlaylist = m_mediaLibrary->getPlaylist(pid);
 
-            MFolder *targetFolder = static_cast<MFolder*>(targetContainer);
-            MPlaylist *targetPlaylist = static_cast<MPlaylist*>(targetContainer);
+//            MFolder *targetFolder = static_cast<MFolder*>(targetContainer);
+//            MPlaylist *targetPlaylist = static_cast<MPlaylist*>(targetContainer);
 
-            if(dropFolder && !targetFolder) {
-                return dropFolder->parentFolder() || !targetPlaylist;
-            }
-            else if(dropPlaylist && !targetFolder) {
-                return dropPlaylist->parentFolder() || !targetPlaylist;
-            }
-            else if(dropFolder && targetFolder) {
-                return dropFolder != targetFolder && !allChildFolders(dropFolder).contains(targetFolder);
-            }
-            else if(dropPlaylist && targetFolder) {
-                return dropPlaylist->parentFolder() != targetFolder;
-            }
-        }
-    }
+//            if(dropFolder && !targetFolder) {
+//                return dropFolder->parentFolder() || !targetPlaylist;
+//            }
+//            else if(dropPlaylist && !targetFolder) {
+//                return dropPlaylist->parentFolder() || !targetPlaylist;
+//            }
+//            else if(dropFolder && targetFolder) {
+//                return dropFolder != targetFolder && !allChildFolders(dropFolder).contains(targetFolder);
+//            }
+//            else if(dropPlaylist && targetFolder) {
+//                return dropPlaylist->parentFolder() != targetFolder;
+//            }
+//        }
+//    }
 
     return false;
 }
 bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-    bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
-    bool dataIsContainer = data->hasFormat(QMetaType::typeName(qMetaTypeId<QString>()));
-    bool dataIsValidMediaFiles = data->hasUrls() ? Mpi3::Core::validMediaFiles(data->urls()) : false;
-    bool actionIsCopyAction = action == Qt::CopyAction;
-    bool actionIsMoveAction = action == Qt::MoveAction;
+    Q_UNUSED(data)
+    Q_UNUSED(action)
+    Q_UNUSED(row)
+    Q_UNUSED(column)
+    Q_UNUSED(parent)
+//    bool dataIsSonglist = data->hasFormat(QMetaType::typeName(qMetaTypeId<QStringList>()));
+//    bool dataIsContainer = data->hasFormat(QMetaType::typeName(qMetaTypeId<QString>()));
+//    bool dataIsValidMediaFiles = data->hasUrls() ? Mpi3::Core::validMediaFiles(data->urls()) : false;
+//    bool actionIsCopyAction = action == Qt::CopyAction;
+//    bool actionIsMoveAction = action == Qt::MoveAction;
 
-    QModelIndex targetIndex = index(row, column, parent);
-    MContainer *targetContainer = m_mediaLibrary->getContainer(pidAt(targetIndex));
+//    QModelIndex targetIndex = index(row, column, parent);
+//    MContainer *targetContainer = m_mediaLibrary->getContainer(pidAt(targetIndex));
 
-    if(!targetContainer) {
-        if(actionIsMoveAction && dataIsContainer) {
-            QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
-            MContainer *dropContainer = m_mediaLibrary->getContainer(pid);
+//    if(!targetContainer) {
+//        if(actionIsMoveAction && dataIsContainer) {
+//            QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
+//            MContainer *dropContainer = m_mediaLibrary->getContainer(pid);
 
-            if(dropContainer){
-                m_mediaLibrary->edit(dropContainer, "parentFolder", QVariant());
-                return true;
-            }
-        }
-        else if(actionIsCopyAction && dataIsValidMediaFiles) {
-            for(QUrl url : data->urls()) {
-                MSongInfo songInfo;
-                if (songInfo.load(url.toString())) {
-                    m_mediaLibrary->newSong(songInfo.songInfoMap());
-                }
-            }
-            return true;
-        }
-    }
-    else if(targetContainer->type() == Mpi3::PlaylistElement) {
-        MPlaylist *targetPlaylist = static_cast<MPlaylist*>(targetContainer);
+//            if(dropContainer){
+//                m_mediaLibrary->edit(dropContainer, "parentFolder", QVariant());
+//                return true;
+//            }
+//        }
+//        else if(actionIsCopyAction && dataIsValidMediaFiles) {
+//            for(QUrl url : data->urls()) {
+//                MSongInfo songInfo;
+//                if (songInfo.load(url.toString())) {
+//                    m_mediaLibrary->newSong(songInfo.songInfoMap());
+//                }
+//            }
+//            return true;
+//        }
+//    }
+//    else if(targetContainer->type() == Mpi3::PlaylistElement) {
+//        MPlaylist *targetPlaylist = static_cast<MPlaylist*>(targetContainer);
 
-        if(actionIsCopyAction && dataIsSonglist) {
-            QByteArray pidBytes = data->data(QMetaType::typeName(qMetaTypeId<QStringList>()));
-            QStringList pidStrings = Mpi3::Core::bytesToSongs(pidBytes);
-            QStringList pidStringsCombined = targetPlaylist->songsPidList();
-            pidStringsCombined.append(pidStrings);
-            m_mediaLibrary->edit(targetPlaylist, "songs", pidStringsCombined);
-            return true;
-        }
-        else if(actionIsCopyAction && dataIsValidMediaFiles) {
-            QStringList pidStrings;
-            for(QUrl url : data->urls()) {
-                MSongInfo songInfo;
-                if (songInfo.load(url.toString())) {
-                    MSong *song = m_mediaLibrary->newSong(songInfo.songInfoMap());
-                    pidStrings << song->pid();
-                }
-            }
-            QStringList pidStringsCombined = targetPlaylist->songsPidList();
-            pidStringsCombined.append(pidStrings);
-            m_mediaLibrary->edit(targetPlaylist, "songs", pidStringsCombined);
-            return true;
-        }
-    }
-    else if(targetContainer->type() == Mpi3::FolderElement) {
-        MFolder *targetFolder = static_cast<MFolder*>(targetContainer);
+//        if(actionIsCopyAction && dataIsSonglist) {
+//            QByteArray pidBytes = data->data(QMetaType::typeName(qMetaTypeId<QStringList>()));
+//            QStringList pidStrings = Mpi3::Core::bytesToSongs(pidBytes);
+//            QStringList pidStringsCombined = targetPlaylist->songsPidList();
+//            pidStringsCombined.append(pidStrings);
+//            m_mediaLibrary->edit(targetPlaylist, "songs", pidStringsCombined);
+//            return true;
+//        }
+//        else if(actionIsCopyAction && dataIsValidMediaFiles) {
+//            QStringList pidStrings;
+//            for(QUrl url : data->urls()) {
+//                MSongInfo songInfo;
+//                if (songInfo.load(url.toString())) {
+//                    MSong *song = m_mediaLibrary->newSong(songInfo.songInfoMap());
+//                    pidStrings << song->pid();
+//                }
+//            }
+//            QStringList pidStringsCombined = targetPlaylist->songsPidList();
+//            pidStringsCombined.append(pidStrings);
+//            m_mediaLibrary->edit(targetPlaylist, "songs", pidStringsCombined);
+//            return true;
+//        }
+//    }
+//    else if(targetContainer->type() == Mpi3::FolderElement) {
+//        MFolder *targetFolder = static_cast<MFolder*>(targetContainer);
 
-        if(actionIsMoveAction && dataIsContainer) {
-            QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
-            MContainer *dropContainer = m_mediaLibrary->getContainer(pid);
+//        if(actionIsMoveAction && dataIsContainer) {
+//            QString pid = data->data(QMetaType::typeName(qMetaTypeId<QString>()));
+//            MContainer *dropContainer = m_mediaLibrary->getContainer(pid);
 
-            if(dropContainer){
-                m_mediaLibrary->edit(dropContainer, "parentFolder", targetFolder->pid());
-                return true;
-            }
-        }
-    }
+//            if(dropContainer){
+//                m_mediaLibrary->edit(dropContainer, "parentFolder", targetFolder->pid());
+//                return true;
+//            }
+//        }
+//    }
 
     return false;
 }

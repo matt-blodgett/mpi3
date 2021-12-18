@@ -322,7 +322,7 @@ void MFrameSonglist::deleteItems()
     }
 
     pidList.removeDuplicates();
-    for(QString pid : pidList){
+    for(const QString &pid : pidList){
         m_mediaLibrary->remove(pid);
     }
 }
@@ -333,17 +333,16 @@ void MFrameSonglist::importSongs()
 
     QString title = "Add Media Files";
     QString files = "All Files (*.*)";
-    QStringList paths = QFileDialog::getOpenFileNames(
-        nullptr, title, MActions::pathDesktop(), files);
+    QStringList paths = QFileDialog::getOpenFileNames(nullptr, title, MActions::pathDesktop(), files);
 
     QList<QUrl> urls;
-    for(QString p : paths){
+    for(const QString &p : paths){
         urls.append(QUrl(p));
     }
 
     if(Mpi3::Core::validMediaFiles(urls)){
         QStringList pidList;
-        for(QString p : paths){
+        for(const QString &p : paths){
             MSongInfo songInfo;
             if (songInfo.load(p)) {
                 MSong *s = m_mediaLibrary->newSong(songInfo.songInfoMap());

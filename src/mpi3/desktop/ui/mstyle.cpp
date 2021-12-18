@@ -14,11 +14,10 @@
 
 void MStyle::initialize()
 {
-    QFontDatabase fdb;
-    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Bold.ttf");
-    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Italic.ttf");
-    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Light.ttf");
-    fdb.addApplicationFont(":/fonts/open-sans/OpenSans-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/open-sans/OpenSans-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/open-sans/OpenSans-Italic.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/open-sans/OpenSans-Light.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/open-sans/OpenSans-Regular.ttf");
 }
 
 void MStyle::setStyle(QLabel *widget, MLabelStyle style)

@@ -41,13 +41,13 @@ private:
     QString m_icnPause;
 
 public:
-    int volume() const;
+    float volume() const;
     qint64 position() const;
 
     void setSong(MSong *song);
 
 private:
-    QMediaPlayer::State m_currentState = QMediaPlayer::StoppedState;
+    QMediaPlayer::PlaybackState m_currentState = QMediaPlayer::StoppedState;
     bool m_navigating = false;
     bool m_seeking = false;
     QString m_pidCurrentSong;
@@ -79,16 +79,16 @@ private slots:
     void positionChanged(int position);
 
 public slots:
-    void setVolume(int volume);
+    void setVolume(float volume);
     void setPosition(qint64 position);
-    void setState(QMediaPlayer::State state);
+    void setState(QMediaPlayer::PlaybackState state);
     void songChanged(MSong *song);
 
 signals:
     void playRequestedInitial();
     void playRequested();
     void pauseRequested();
-    void volumeRequested(int volume);
+    void volumeRequested(float volume);
     void seekRequested(qint64 position);
     void nextRequested();
     void prevRequested();

@@ -25,6 +25,7 @@
 #include <QScreen>
 
 #include <QMediaPlayer>
+#include <QAudioOutput>
 
 
 #include <QDebug>
@@ -68,14 +69,17 @@ void MRootDesktop::initializeObjects()
     m_panelLibrary = new MPanelLibrary(this);
     m_panelDevice = new MPanelDevice(this);
 
+    QAudioOutput *audioOutput = new QAudioOutput(this);
+    m_mediaPlayer->setAudioOutput(audioOutput);
+
     connect(m_framePlayback, &MFramePlayback::playRequested, m_mediaPlayer, &QMediaPlayer::play);
     connect(m_framePlayback, &MFramePlayback::pauseRequested, m_mediaPlayer, &QMediaPlayer::pause);
-    connect(m_framePlayback, &MFramePlayback::volumeRequested, m_mediaPlayer, &QMediaPlayer::setVolume);
+    connect(m_framePlayback, &MFramePlayback::volumeRequested, audioOutput, &QAudioOutput::setVolume);
     connect(m_framePlayback, &MFramePlayback::seekRequested, m_mediaPlayer, &QMediaPlayer::setPosition);
 
-    connect(m_mediaPlayer, &QMediaPlayer::volumeChanged, m_framePlayback, &MFramePlayback::setVolume);
+    connect(audioOutput, &QAudioOutput::volumeChanged, m_framePlayback, &MFramePlayback::setVolume);
     connect(m_mediaPlayer, &QMediaPlayer::positionChanged, m_framePlayback, &MFramePlayback::setPosition);
-    connect(m_mediaPlayer, &QMediaPlayer::stateChanged, m_framePlayback, &MFramePlayback::setState);
+    connect(m_mediaPlayer, &QMediaPlayer::playbackStateChanged, m_framePlayback, &MFramePlayback::setState);
     connect(m_mediaLibrary, &MMediaLibrary::songChanged, m_framePlayback, &MFramePlayback::songChanged);
 
     connect(m_panelMedia->frameSonglist(), &MFrameSonglist::currentPlayingSongChanged, this, &MRootDesktop::setPlaybackSong);
@@ -281,7 +285,7 @@ void MRootDesktop::initializeLayout()
     setMinimumHeight(300);
     setMinimumWidth(700);
     setCentralWidget(windowMain);
-    setWindowIcon(QIcon(":/icons/window/mpi3.ico"));
+//    setWindowIcon(QIcon(":/icons/window/mpi3.ico"));
 
     m_panelLibrary->hide();
     m_panelDevice->hide();
@@ -304,7 +308,7 @@ void MRootDesktop::initializeState()
     QString stylePath = m_settingsProfile->value("style", ":/styles/default.qss").toString();
     QString libraryPath = m_settingsProfile->value("library").toString();
     int context = m_settingsProfile->value("context").toInt();
-    int volume = m_settingsProfile->value("volume", 50).toInt();
+    float volume = m_settingsProfile->value("volume", 0.5).toFloat();
     m_settingsProfile->beginGroup("WindowGeometry");
     QScreen *screen = QGuiApplication::screenAt(pos());
     int d_rootx = (screen->availableGeometry().width() / 2) - 400;
@@ -329,7 +333,7 @@ void MRootDesktop::initializeState()
     setStyleSheet(m_styleSheet->qssStyle());
 
     m_framePlayback->setVolume(volume);
-    m_mediaPlayer->setVolume(volume);
+    m_mediaPlayer->audioOutput()->setVolume(volume);
     m_frameContextBar->changeView(static_cast<MFrameContextBar::View>(context));
 
     // Need to create the temp file if it doesn't exist
@@ -412,7 +416,7 @@ void MRootDesktop::setPlaybackSong(const QString &pid)
     if(song) {
         m_framePlayback->setSong(song);
         m_mediaPlayer->stop();
-        m_mediaPlayer->setMedia(QUrl::fromLocalFile(song->path()));
+        m_mediaPlayer->setSource(QUrl::fromLocalFile(song->path()));
         m_mediaPlayer->play();
     }
 }

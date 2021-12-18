@@ -223,7 +223,7 @@ public:
     template<typename I, class E>
     static I pidSearchList(I iterable, const QStringList &pids){
         I ret;
-        for(QString pid : pids){
+        for(const QString &pid : pids){
             E *element = MMediaLibrary::pidSearch<I, E>(iterable, pid);
             ret.append(element);
         }

@@ -98,7 +98,7 @@ void MPanelMedia::load(QSettings *settings)
     QModelIndexList indexes = m_frmContainers->model()->match(
         m_frmContainers->model()->index(0, 0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard | Qt::MatchRecursive);
 
-    for(QString pid : settings->childKeys()){
+    for(const QString &pid : settings->childKeys()){
         QString pidKey = pid;
         pidKey.insert(1, ":");
 

@@ -214,7 +214,6 @@ bool MMediaLibrary::load(const QString &filePath)
     m_localMediaPath = root.namedItem("localMediaPath").toElement().text();
     qDebug() << "found library" << m_pid << "-" << m_name;
 
-    QString oldPath = m_savePath;
     m_savePath = QDir::toNativeSeparators(filePath);
     emit libraryChanged(this);
 
@@ -245,7 +244,7 @@ bool MMediaLibrary::load(const QString &filePath)
         m_songs.append(s);
     }
 
-    QMap<MFolder*, QString> folderParents;
+    QHash<MFolder*, QString> folderParents;
     for(int i = 0; i < xmlFolders.length(); i++) {
         QDomNode node = xmlFolders.at(i);
         MFolder *f = new MFolder(this);
@@ -262,7 +261,7 @@ bool MMediaLibrary::load(const QString &filePath)
         m_folders.append(f);
     }
 
-    QMap<MFolder*, QString>::iterator iter;
+    QHash<MFolder*, QString>::iterator iter;
     for(iter = folderParents.begin(); iter != folderParents.end(); iter++){
         iter.key()->m_parentFolder = getFolder(iter.value());
     }
@@ -314,7 +313,6 @@ bool MMediaLibrary::save(const QString &filePath)
     emit aboutToSave();
 
     if(!filePath.isNull() && filePath != m_savePath){
-        QString oldPath = m_savePath;
         m_savePath = QDir::toNativeSeparators(filePath);
         emit libraryChanged(this);
     }
@@ -384,7 +382,7 @@ bool MMediaLibrary::save(const QString &filePath)
             parentFolder ? parentFolder->m_pid : "");
 
         QDomElement playlistSongs = xml.createElement("childSongs");
-        for(QString pid : p->m_songsPidList) {
+        for(const QString &pid : p->m_songsPidList) {
             xmlWriteElement(xml, playlistSongs, "pid", pid);
         }
 

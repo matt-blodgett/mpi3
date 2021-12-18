@@ -230,9 +230,9 @@ void MFramePlayback::animateFadeButton()
     }
 }
 
-int MFramePlayback::volume() const
+float MFramePlayback::volume() const
 {
-    return m_sldVolume->value();
+    return static_cast<float>(m_sldVolume->value() / 100);
 }
 qint64 MFramePlayback::position() const
 {
@@ -254,7 +254,11 @@ void MFramePlayback::playClicked()
 {
     bool paused = m_currentState == QMediaPlayer::PausedState;
     bool stopped = m_currentState == QMediaPlayer::StoppedState;
-    emit paused || stopped ? playRequested() : pauseRequested();
+    if (paused || stopped) {
+        emit playRequested();
+    } else {
+        emit pauseRequested();
+    }
 }
 void MFramePlayback::nextClicked()
 {
@@ -287,10 +291,10 @@ void MFramePlayback::positionChanged(int position)
     setPosition(static_cast<qint64>(position * 1000));
 }
 
-void MFramePlayback::setVolume(int volume)
+void MFramePlayback::setVolume(float volume)
 {
     m_sldVolume->blockSignals(true);
-    m_sldVolume->setValue(volume);
+    m_sldVolume->setValue(static_cast<int>(volume * 100));
     m_sldVolume->blockSignals(false);
 }
 void MFramePlayback::setPosition(qint64 position)
@@ -300,7 +304,7 @@ void MFramePlayback::setPosition(qint64 position)
     m_lblPositionMin->setText(Mpi3::Util::timeToString(static_cast<double>(position / 1000)));
     m_sldPosition->blockSignals(false);
 }
-void MFramePlayback::setState(QMediaPlayer::State state)
+void MFramePlayback::setState(QMediaPlayer::PlaybackState state)
 {
     if(m_seeking) {
         m_seeking = state == QMediaPlayer::PausedState;

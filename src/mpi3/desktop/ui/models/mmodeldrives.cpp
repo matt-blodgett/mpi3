@@ -91,7 +91,7 @@ void MModelDrives::refresh()
     m_deviceData.clear();
     m_deviceIcons.clear();
 
-    for(QStorageInfo storageInfo : m_storageInfoRoot.mountedVolumes()) {
+    for(const QStorageInfo &storageInfo : m_storageInfoRoot.mountedVolumes()) {
         if(!storageInfo.name().isEmpty()) {
             m_storageInfoList.append(storageInfo);
 
