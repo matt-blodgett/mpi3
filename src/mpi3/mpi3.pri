@@ -1,6 +1,7 @@
 QT += core
 QT += gui
 QT += xml
+QT += sql
 QT += widgets
 
 

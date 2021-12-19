@@ -28,7 +28,6 @@ public:
     void load(QSettings *settings) override;
     void save(QSettings *settings) override;
 
-
 private:
     MMediaLibrary *m_mediaLibrary = nullptr;
     MMediaLibrary *m_deviceLibrary = nullptr;
@@ -36,7 +35,6 @@ private:
     void setCurrentDrive(QStorageInfo info);
 
 private:
-
     MPanelSection *m_sectionDrives = nullptr;
     MPanelSection *m_sectionCurrentDrive = nullptr;
     MFrameDrives *m_frmDrives = nullptr;

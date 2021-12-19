@@ -33,8 +33,9 @@
 
 MRootDesktop::MRootDesktop()
 {
-    Q_INIT_RESOURCE(desktop);
+    Q_INIT_RESOURCE(common);
     Q_INIT_RESOURCE(fonts);
+    Q_INIT_RESOURCE(desktop);
 }
 MRootDesktop::~MRootDesktop()
 {
@@ -218,19 +219,19 @@ void MRootDesktop::initializeMainMenu()
     menuHelp->addAction(actHelpAbout);
 
 //    connect(act_audioSettings
-    connect(actWndExit, &QAction::triggered, this, [this]() {window()->close();});
+    connect(actWndExit, &QAction::triggered, this, [this](){window()->close();});
 
     connect(actLibImport, &QAction::triggered, m_panelLibrary, &MPanelLibrary::askLibraryImport);
     connect(actLibExport, &QAction::triggered, m_panelLibrary, &MPanelLibrary::askLibraryExport);
     connect(actLibReset, &QAction::triggered, m_panelLibrary, &MPanelLibrary::resetLibrary);
 
-    connect(actLibOpen, &QAction::triggered, [=]() {MActions::openFileLocation(m_mediaLibrary->savePath());});
+    connect(actLibOpen, &QAction::triggered, this, [=](){MActions::openFileLocation(m_mediaLibrary->path());});
     connect(actLibNewPlaylist, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::newPlaylist);
     connect(actLibNewFolder, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::newFolder);
     connect(actLibImportPlaylists, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::importPlaylists);
 
-    connect(actThemeSet, &QAction::triggered, this, [this]() {setTheme();});
-    connect(actThemeRefresh, &QAction::triggered, this, [this]() {refreshTheme();});
+    connect(actThemeSet, &QAction::triggered, this, [this](){setTheme();});
+    connect(actThemeRefresh, &QAction::triggered, this, [this](){refreshTheme();});
 
 //    connect(act_editUndo, &QAction::triggered, this, [this]() {editUndo();});
 //    connect(act_editRedo, &QAction::triggered, this, [this]() {editRedo();});
@@ -285,7 +286,7 @@ void MRootDesktop::initializeLayout()
     setMinimumHeight(300);
     setMinimumWidth(700);
     setCentralWidget(windowMain);
-//    setWindowIcon(QIcon(":/icons/window/mpi3.ico"));
+    setWindowIcon(QIcon(":/icons/window/mpi3.ico"));
 
     m_panelLibrary->hide();
     m_panelDevice->hide();
@@ -330,19 +331,23 @@ void MRootDesktop::initializeState()
     }
 
     m_styleSheet->load(stylePath);
-    setStyleSheet(m_styleSheet->qssStyle());
+    setStyleSheet(m_styleSheet->style());
 
     m_framePlayback->setVolume(volume);
     m_mediaPlayer->audioOutput()->setVolume(volume);
     m_frameContextBar->changeView(static_cast<MFrameContextBar::View>(context));
 
-    // Need to create the temp file if it doesn't exist
+    // Create library file if it does not exist
     if(!QFile::exists(libraryPath)){
         libraryPath = MActions::pathLibraryDefault();
-        m_mediaLibrary->save(libraryPath);
+        m_mediaLibrary->create(libraryPath);
     }
 
-    m_mediaLibrary->load(libraryPath);
+    bool loaded = m_mediaLibrary->load(libraryPath);
+    if (!loaded) {
+        // TODO: Need to do something about failed load; prompt user for overwrite / different location?
+        qDebug() << "Failed to load library";
+    }
     m_panelMedia->setLibrary(m_mediaLibrary);
     m_panelLibrary->setLibrary(m_mediaLibrary);
     m_panelDevice->setLibrary(m_mediaLibrary);
@@ -356,8 +361,8 @@ void MRootDesktop::initializeState()
 void MRootDesktop::saveSettings()
 {
     m_settingsProfile->beginGroup("RootWindow");
-    m_settingsProfile->setValue("style", m_styleSheet->qssPath());
-    m_settingsProfile->setValue("library", m_mediaLibrary->savePath());
+    m_settingsProfile->setValue("style", m_styleSheet->path());
+    m_settingsProfile->setValue("library", m_mediaLibrary->path());
     m_settingsProfile->setValue("context", m_frameContextBar->currentView());
     m_settingsProfile->setValue("volume", m_framePlayback->volume());
     m_settingsProfile->beginGroup("WindowGeometry");
@@ -373,7 +378,7 @@ void MRootDesktop::saveSettings()
     m_panelLibrary->save(m_settingsProfile);
     m_panelDevice->save(m_settingsProfile);
 
-    m_mediaLibrary->save();
+//    m_mediaLibrary->save();
 
     m_settingsProfile->sync();
 }
@@ -434,7 +439,7 @@ void MRootDesktop::setTheme()
 void MRootDesktop::refreshTheme()
 {
     m_styleSheet->load();
-    setStyleSheet(m_styleSheet->qssStyle());
+    setStyleSheet(m_styleSheet->style());
 }
 
 void MRootDesktop::paintEvent(QPaintEvent *event)

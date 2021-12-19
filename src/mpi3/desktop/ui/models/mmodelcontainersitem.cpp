@@ -35,11 +35,11 @@ void MModelContainersItem::setType(MModelContainersItem::ItemType value)
 
 QString MModelContainersItem::pid() const
 {
-    return m_itemPID;
+    return m_itemPid;
 }
-void MModelContainersItem::setPID(const QString &value)
+void MModelContainersItem::setPid(const QString &value)
 {
-    m_itemPID = value;
+    m_itemPid = value;
 }
 
 QString MModelContainersItem::label() const

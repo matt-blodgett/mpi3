@@ -15,20 +15,20 @@
 typedef MModelSonglistItem MModelItem;
 
 
-static void populateItem(MModelItem *item, MSong *s)
+static void populateItem(MModelItem *item, MSong *song)
 {
-    item->setPID(s->pid());
+    item->setPid(song->pid());
 
     int index = 1;
-    item->setData(index++, s->name());
-    item->setData(index++, s->artist());
-    item->setData(index++, s->album());
-    item->setData(index++, Mpi3::Util::timeToString(s->time()));
-    item->setData(index++, Mpi3::Util::sizeToString(s->size()));
-    item->setData(index++, s->kind());
-    item->setData(index++, s->path());
-    item->setData(index++, s->bitRate());
-    item->setData(index++, s->sampleRate());
+    item->setData(index++, song->name());
+    item->setData(index++, song->artist());
+    item->setData(index++, song->album());
+    item->setData(index++, Mpi3::Util::timeToString(song->time()));
+    item->setData(index++, Mpi3::Util::sizeToString(song->size()));
+    item->setData(index++, song->kind());
+    item->setData(index++, song->path());
+    item->setData(index++, song->bitRate());
+    item->setData(index++, song->sampleRate());
     item->setData(index++, "");
     item->setData(index++, "");
     item->setData(index++, 0);
@@ -164,8 +164,8 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
 //                }
 
 //                QList<int> indexes;
-//                for(MSong *s : droppedSongs){
-//                    indexes.append(pids.indexOf(s->pid()));
+//                for(MSong *song : droppedSongs){
+//                    indexes.append(pids.indexOf(song->pid()));
 //                }
 
 //                playlist->move(indexes, row);
@@ -179,8 +179,8 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
             for(const QUrl &url : data->urls()) {
                 MSongInfo songInfo;
                 if (songInfo.load(url.toLocalFile())) {
-                    MSong *s = m_mediaLibrary->newSong(songInfo.songInfoMap());
-                    pidStrings.append(s->pid());
+                    MSong *song = m_mediaLibrary->newSong(songInfo.songInfoMap());
+                    pidStrings.append(song->pid());
                 }
             }
 
@@ -250,19 +250,19 @@ bool MModelSonglist::setData(const QModelIndex &index, const QVariant &value, in
         int col = index.column();
 
         if(role == Qt::EditRole && flags(index).testFlag(Qt::ItemIsEditable)){
-            MSong *s = m_mediaLibrary->getSong(m_songList.at(row)->pid());
+            MSong *song = m_mediaLibrary->getSong(m_songList.at(row)->pid());
 
             switch(col){
                 case 1: {
-                    m_mediaLibrary->edit(s, "name", value);
+                    m_mediaLibrary->edit(song, "name", value);
                     break;
                 }
                 case 2: {
-                    m_mediaLibrary->edit(s, "artist", value);
+                    m_mediaLibrary->edit(song, "artist", value);
                     break;
                 }
                 case 3: {
-                    m_mediaLibrary->edit(s, "album", value);
+                    m_mediaLibrary->edit(song, "album", value);
                     break;
                 }
             }
@@ -322,9 +322,9 @@ void MModelSonglist::setSongList(MSongList songs, const QString &pid)
     m_songList.clear();
     m_pid = pid;
 
-    for(MSong *s : songs){
+    for(MSong *song : songs){
         MModelItem *item = new MModelItem(this);
-        populateItem(item, s);
+        populateItem(item, song);
         m_songList.append(item);
     }
 
@@ -345,21 +345,21 @@ void MModelSonglist::setLibrary(MMediaLibrary *library)
     connect(m_mediaLibrary, &MMediaLibrary::libraryReset, this, [this](){setSongList(m_mediaLibrary->songs(), m_mediaLibrary->pid());});
 }
 
-void MModelSonglist::songCreated(MSong *s)
+void MModelSonglist::songCreated(MSong *song)
 {
     if(m_pid == m_mediaLibrary->pid()){
         beginInsertRows(QModelIndex(), rowCount(), rowCount());
         MModelItem *item = new MModelItem(this);
-        populateItem(item, s);
+        populateItem(item, song);
         m_songList.append(item);
         endInsertRows();
     }
 }
-void MModelSonglist::songDeleted(MSong *s)
+void MModelSonglist::songDeleted(MSong *song)
 {
     QList<MModelItem*> removeItems;
     for(MModelItem *item : m_songList){
-        if(item->pid() == s->pid()){
+        if(item->pid() == song->pid()){
             removeItems.append(item);
         }
     }
@@ -371,19 +371,19 @@ void MModelSonglist::songDeleted(MSong *s)
         endRemoveRows();
     }
 }
-void MModelSonglist::songChanged(MSong *s)
+void MModelSonglist::songChanged(MSong *song)
 {
     for(MModelItem *item : m_songList){
-        if(item->pid() == s->pid()){
-            populateItem(item, s);
+        if(item->pid() == song->pid()){
+            populateItem(item, song);
             int row = m_songList.indexOf(item);
             emit dataChanged(index(row, 0), index(row, columnCount() - 1));
         }
     }
 }
-void MModelSonglist::playlistSongsChanged(MPlaylist *p)
+void MModelSonglist::playlistSongsChanged(MPlaylist *playlist)
 {
-    if(m_pid == p->pid()){
-        setSongList(p->songs(), p->pid());
+    if(m_pid == playlist->pid()){
+        setSongList(playlist->songs(), playlist->pid());
     }
 }

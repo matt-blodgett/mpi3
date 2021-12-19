@@ -2,7 +2,6 @@ QT += core
 QT += gui
 QT += sql
 
-
 INCLUDEPATH += ../../
 
 HEADERS += $$PWD/mcore.h

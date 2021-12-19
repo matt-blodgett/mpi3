@@ -4,6 +4,7 @@
 #define MMEDIALIBRARY_H
 
 
+#include <QtSql/QSqlDatabase>
 #include <QObject>
 #include <QVector>
 
@@ -162,7 +163,7 @@ class MMediaLibrary : public MMediaElement
 {
     Q_OBJECT
     Q_DISABLE_COPY(MMediaLibrary)
-    Q_PROPERTY(QString savePath READ savePath)
+    Q_PROPERTY(QString path READ path)
     Q_PROPERTY(QString localMediaPath READ localMediaPath WRITE setLocalMediaPath)
 
 public:    
@@ -170,19 +171,23 @@ public:
     Mpi3::ElementType type() const override;
 
 public:
-    bool load(const QString &filePath);
-    bool save(const QString &filePath = QString());
+    bool load(const QString &path);
+    bool create(const QString &path);
     void reset();
 
-public:
-    QString savePath() const;
-    QString localMediaPath() const;
-
-    void setLocalMediaPath(const QString &path);
-
 private:
-    QString m_savePath;
-    QString m_localMediaPath;
+    void dbReadAllData();
+
+//    void writeSetting(const QString &key, const QString &value);
+    void dbInsertSettings();
+    void dbInsertElement(MChildElement *element);
+    void dbUpdateElement(MChildElement *element);
+    void dbDeleteElement(MChildElement *element);
+
+public:
+    QString path() const;
+    QString localMediaPath() const;
+    void setLocalMediaPath(const QString &path);
 
 public:
     MSongList songs() const;
@@ -235,54 +240,55 @@ public:
     MPlaylistList getPlaylistList(const QStringList &pidList) const;
     MContainerList getContainerList(const QStringList &pidList) const;
 
-private:
-    static QString generatePID(Mpi3::ElementType elementType);
-
 public:
     MSong *newSong(const QMap<QString, QVariant> &songInfoMap);
     MFolder *newFolder(MFolder *parentFolder = nullptr, const QString &name = QString());
     MPlaylist *newPlaylist(MFolder *parentFolder = nullptr, const QString &name = QString());
 
-    bool edit(MSong *childSong, const QString &property, const QVariant &value);
-    bool edit(MFolder *childFolder, const QString &property, const QVariant &value);
-    bool edit(MPlaylist *childPlaylist, const QString &property, const QVariant &value);
-    bool edit(MContainer *childContainer, const QString &property, const QVariant &value);
+    bool edit(MSong *song, const QString &property, const QVariant &value);
+    bool edit(MFolder *folder, const QString &property, const QVariant &value);
+    bool edit(MPlaylist *playlist, const QString &property, const QVariant &value);
+    bool edit(MContainer *container, const QString &property, const QVariant &value);
 
-    bool remove(MSong *childSong);
-    bool remove(MFolder *childFolder);
-    bool remove(MPlaylist *childPlaylist);
-    bool remove(MContainer *childContainer);
+    bool remove(MSong *song);
+    bool remove(MFolder *folder);
+    bool remove(MPlaylist *playlist);
+    bool remove(MContainer *container);
     bool remove(const QString &pid);
 
 private:
+    QString m_path;
+    QString m_localMediaPath;
+    QSqlDatabase m_database;
+
     MSongList m_songs;
     MFolderList m_folders;
     MPlaylistList m_playlists;
 
 signals:
     void aboutToLoad();
-    void aboutToSave();
+//    void aboutToSave();
     void aboutToReset();
 
     void libraryLoaded();
-    void librarySaved();
+//    void librarySaved();
     void libraryReset();
 
-    void songCreated(MSong *childSong);
-    void folderCreated(MFolder *childFolder);
-    void playlistCreated(MPlaylist *childPlaylist);
+    void songCreated(MSong *song);
+    void folderCreated(MFolder *folder);
+    void playlistCreated(MPlaylist *playlist);
 
-    void songChanged(MSong *childSong);
-    void folderChanged(MFolder *childFolder);
-    void playlistChanged(MPlaylist *childPlaylist);
+    void songChanged(MSong *song);
+    void folderChanged(MFolder *folder);
+    void playlistChanged(MPlaylist *playlist);
     void libraryChanged(MMediaLibrary *library);
 
-    void songDeleted(MSong *childSong);
-    void folderDeleted(MFolder *childFolder);
-    void playlistDeleted(MPlaylist *childPlaylist);
+    void songDeleted(MSong *song);
+    void folderDeleted(MFolder *folder);
+    void playlistDeleted(MPlaylist *playlist);
 
-    void playlistSongsChanged(MPlaylist *childPlaylist);
-    void parentFolderChanged(MContainer *childContainer);
+    void playlistSongsChanged(MPlaylist *playlist);
+    void parentFolderChanged(MContainer *container);
 };
 
 

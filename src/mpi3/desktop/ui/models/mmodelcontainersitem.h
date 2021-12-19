@@ -30,7 +30,7 @@ public:
     void setType(MModelContainersItem::ItemType value);
 
     QString pid() const;
-    void setPID(const QString &value);
+    void setPid(const QString &value);
 
     QString label() const;
     void setLabel(const QString &value);
@@ -48,7 +48,7 @@ private:
     QList<MModelContainersItem*> m_childItems;
 
     MModelContainersItem::ItemType m_itemType = MModelContainersItem::ItemType::EmptyItem;
-    QString m_itemPID;
+    QString m_itemPid;
     QString m_itemLabel;
 };
 

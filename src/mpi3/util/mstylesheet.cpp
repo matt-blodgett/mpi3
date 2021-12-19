@@ -11,10 +11,10 @@ MStyleSheet::MStyleSheet()
 void MStyleSheet::load(const QString &path)
 {
     if(!path.isNull()) {
-        m_filepath = path;
+        m_path = path;
     }
 
-    QFile loadFile(m_filepath);
+    QFile loadFile(m_path);
     if(loadFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QString raw = loadFile.readAll();
         QString qss = removeComments(raw);
@@ -47,26 +47,26 @@ void MStyleSheet::load(const QString &path)
 void MStyleSheet::save(const QString &path)
 {
     if(!path.isNull()) {
-        m_filepath = path;
+        m_path = path;
     }
 
-    QFile saveFile(m_filepath);
+    QFile saveFile(m_path);
     if(saveFile.open(QFile::ReadWrite)) {
 
     }
 }
 
-QString MStyleSheet::qssName() const
+QString MStyleSheet::name() const
 {
     return m_name;
 }
-QString MStyleSheet::qssStyle() const
+QString MStyleSheet::style() const
 {
     return m_style;
 }
-QString MStyleSheet::qssPath() const
+QString MStyleSheet::path() const
 {
-    return m_filepath;
+    return m_path;
 }
 
 void MStyleSheet::setProperty(const QString &line)

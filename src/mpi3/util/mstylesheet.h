@@ -24,9 +24,9 @@ public:
     void save(const QString &path = QString());
 
 public:
-    QString qssName() const;
-    QString qssStyle() const;
-    QString qssPath() const;
+    QString name() const;
+    QString style() const;
+    QString path() const;
 
 private:
     void setProperty(const QString &line);
@@ -35,7 +35,7 @@ private:
 private:
     QString m_name;
     QString m_style;
-    QString m_filepath;
+    QString m_path;
 };
 
 

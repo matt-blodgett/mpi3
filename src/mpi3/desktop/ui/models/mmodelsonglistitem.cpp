@@ -12,11 +12,11 @@ MModelSonglistItem::MModelSonglistItem(QAbstractTableModel *parent) : QObject(pa
 
 QString MModelSonglistItem::pid() const
 {
-    return m_itemPID;
+    return m_itemPid;
 }
-void MModelSonglistItem::setPID(const QString &value)
+void MModelSonglistItem::setPid(const QString &value)
 {
-    m_itemPID = value;
+    m_itemPid = value;
 }
 
 QVariant MModelSonglistItem::data(int column) const

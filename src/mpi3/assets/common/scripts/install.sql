@@ -1,7 +1,7 @@
+DROP TABLE IF EXISTS `playlistSongs`;
 DROP TABLE IF EXISTS `songs`;
 DROP TABLE IF EXISTS `playlists`;
 DROP TABLE IF EXISTS `folders`;
-DROP TABLE IF EXISTS `playlistSongs`;
 DROP TABLE IF EXISTS `settings`;
 
 

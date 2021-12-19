@@ -132,9 +132,9 @@ void MPanelLibrary::setLibrary(MMediaLibrary *library)
 
     connect(m_optCopyMedia, &QCheckBox::toggled, this, &MPanelLibrary::setLocalMediaPath);
 
-    connect(m_mediaLibrary, &MMediaLibrary::librarySaved, this, &MPanelLibrary::setLibraryInfo);
-    connect(m_mediaLibrary, &MMediaLibrary::libraryLoaded, this, &MPanelLibrary::setLibraryInfo);
-    connect(m_mediaLibrary, &MMediaLibrary::libraryReset, this, &MPanelLibrary::setLibraryInfo);
+//    connect(m_mediaLibrary, &MMediaLibrary::librarySaved, this, &MPanelLibrary::setLibraryInfo);
+//    connect(m_mediaLibrary, &MMediaLibrary::libraryLoaded, this, &MPanelLibrary::setLibraryInfo);
+//    connect(m_mediaLibrary, &MMediaLibrary::libraryReset, this, &MPanelLibrary::setLibraryInfo);
 
 //    connect(m_mediaLibrary, &MMediaLibrary::mediaPathChanged, this, [this](){setLibraryInfo();});
 //    connect(m_mediaLibrary, &MMediaLibrary::backupPathChanged, this, [this](){setLibraryInfo();});
@@ -177,7 +177,7 @@ void MPanelLibrary::setLibraryInfo()
     if(m_mediaLibrary) {
         m_boxLibName->setText(m_mediaLibrary->name());
         m_lblLibAdded->setText(m_mediaLibrary->added());
-        m_boxLibPath->setText(m_mediaLibrary->savePath());
+        m_boxLibPath->setText(m_mediaLibrary->path());
         m_boxMediaLoc->setText(m_mediaLibrary->localMediaPath());
     }
 }
@@ -239,7 +239,7 @@ void MPanelLibrary::askLibraryMediaPath()
 {
     QString title = "Set Library Media Path";
     QString path = QFileDialog::getExistingDirectory(
-        nullptr, title, m_mediaLibrary->savePath());
+        nullptr, title, m_mediaLibrary->path());
 
     if(path != "") {
         m_boxMediaLoc->setText(QDir::toNativeSeparators(path));
@@ -251,5 +251,5 @@ void MPanelLibrary::askLibraryMediaPath()
 void MPanelLibrary::resetLibrary()
 {
     m_mediaLibrary->reset();
-    m_mediaLibrary->save();
+//    m_mediaLibrary->save();
 }
