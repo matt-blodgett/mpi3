@@ -33,7 +33,7 @@ bool MMediaLibrary::load(const QString &filePath)
     }
 
     QDomDocument xml;
-    if(!xml.setContent(loadFile.readAll())){
+    if(!xml.setContent(loadFile.readAll())) {
         qWarning() << "xml parsing error in library file" << filePath << "";
         return false;
     }
@@ -91,7 +91,7 @@ bool MMediaLibrary::load(const QString &filePath)
         f->m_added = node.namedItem("added").toElement().text();
 
         QString parentPID = node.namedItem("parent").toElement().text();
-        if(parentPID != ""){
+        if(parentPID != "") {
             folderParents[f] = parentPID;
         }
 
@@ -99,7 +99,7 @@ bool MMediaLibrary::load(const QString &filePath)
     }
 
     QHash<MFolder*, QString>::iterator iter;
-    for(iter = folderParents.begin(); iter != folderParents.end(); iter++){
+    for(iter = folderParents.begin(); iter != folderParents.end(); iter++) {
         iter.key()->m_parentFolder = getFolder(iter.value());
     }
 
@@ -149,7 +149,7 @@ bool MMediaLibrary::save(const QString &filePath)
 
     emit aboutToSave();
 
-    if(!filePath.isNull() && filePath != m_savePath){
+    if(!filePath.isNull() && filePath != m_savePath) {
         m_savePath = QDir::toNativeSeparators(filePath);
         emit libraryChanged(this);
     }
@@ -171,7 +171,7 @@ bool MMediaLibrary::save(const QString &filePath)
     root.appendChild(xmlPlaylists);
     root.appendChild(xmlFolders);
 
-    for(MSong *s : m_songs){
+    for(MSong *s : m_songs) {
         QDomElement songElement = xml.createElement("song");
 
         xmlWriteElement(xml, songElement, "pid", s->m_pid);
@@ -193,7 +193,7 @@ bool MMediaLibrary::save(const QString &filePath)
         xmlSongs.appendChild(songElement);
     }
 
-    for(MFolder *f : m_folders){
+    for(MFolder *f : m_folders) {
         QDomElement folderElement = xml.createElement("folder");
 
         xmlWriteElement(xml, folderElement, "pid", f->m_pid);
@@ -207,7 +207,7 @@ bool MMediaLibrary::save(const QString &filePath)
         xmlFolders.appendChild(folderElement);
     }
 
-    for(MPlaylist *p : m_playlists){
+    for(MPlaylist *p : m_playlists) {
         QDomElement playlistElement = xml.createElement("playlist");
 
         xmlWriteElement(xml, playlistElement, "pid", p->m_pid);

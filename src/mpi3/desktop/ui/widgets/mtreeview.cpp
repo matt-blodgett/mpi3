@@ -114,7 +114,7 @@ void MTreeSonglist::dragEnterEvent(QDragEnterEvent *event)
     int row = dropIndex.row();
     int col = dropIndex.column();
 
-    if(model()->canDropMimeData(event->mimeData(), action, row, col, parentIndex)){
+    if(model()->canDropMimeData(event->mimeData(), action, row, col, parentIndex)) {
         setStyleSheet(MPI3_TREESTYLE_OUTLINE);
     }
 
@@ -138,17 +138,17 @@ void MTreeSonglist::dropEvent(QDropEvent *event)
     int rowCount = model()->rowCount();
     int colCount = model()->columnCount();
 
-    if(row < 0){
+    if(row < 0) {
         row = rowCount;
     }
 
-    if(rowCount == 0){
+    if(rowCount == 0) {
         rowCount -= 1;
     }
 
     if(model()->canDropMimeData(event->mimeData(), action, row, col, parentIndex)) {
 
-        if(action == Qt::MoveAction){
+        if(action == Qt::MoveAction) {
             emit moveSelected(row);
         }
         else if(model()->dropMimeData(event->mimeData(), action, row, col, parentIndex)) {
@@ -156,8 +156,8 @@ void MTreeSonglist::dropEvent(QDropEvent *event)
 
             selectionModel()->clear();
             int rowDiff = model()->rowCount() - rowCount;
-            for(int r = row; r < row + rowDiff; r++){
-                for(int c = 0; c < colCount; c++){
+            for(int r = row; r < row + rowDiff; r++) {
+                for(int c = 0; c < colCount; c++) {
                     selectionModel()->select(model()->index(r, c), flags);
                 }
             }
@@ -187,7 +187,7 @@ void MTreeViewLayoutSettings::setDefaults(QTreeView *tree)
     m_columnWidth.clear();
     m_columnIsHidden.clear();
 
-    for(int i = 0; i < tree->model()->columnCount(); i++){
+    for(int i = 0; i < tree->model()->columnCount(); i++) {
         m_columnWidth.append(80);
         m_columnIsHidden.append(false);
     }
@@ -200,7 +200,7 @@ void MTreeViewLayoutSettings::setValues(QTreeView *tree, QSortFilterProxyModel *
     m_columnWidth.clear();
     m_columnIsHidden.clear();
 
-    for(int i = 0; i < tree->model()->columnCount(); i++){
+    for(int i = 0; i < tree->model()->columnCount(); i++) {
         m_columnWidth.append(tree->columnWidth(i));
         m_columnIsHidden.append(tree->isColumnHidden(i));
     }
@@ -210,7 +210,7 @@ void MTreeViewLayoutSettings::setValues(QTreeView *tree, QSortFilterProxyModel *
 }
 void MTreeViewLayoutSettings::applyValues(QTreeView *tree, QSortFilterProxyModel *sfpModel)
 {
-    for(int i = 0; i < tree->model()->columnCount(); i++){
+    for(int i = 0; i < tree->model()->columnCount(); i++) {
         tree->setColumnWidth(i, m_columnWidth[i]);
         tree->setColumnHidden(i, m_columnIsHidden[i]);
     }
@@ -228,7 +228,7 @@ MTreeViewLayoutSettings *MTreeSonglistLayoutSettings::getLayoutSettings(const QS
 {
     MTreeViewLayoutSettings *layoutSettings = m_settingsMap.value(pid, nullptr);
 
-    if(!layoutSettings){
+    if(!layoutSettings) {
         layoutSettings = new MTreeViewLayoutSettings(this);
         m_settingsMap[pid] = layoutSettings;
     }
@@ -239,12 +239,12 @@ MTreeViewLayoutSettings *MTreeSonglistLayoutSettings::getLayoutSettings(const QS
 void MTreeSonglistLayoutSettings::save(QSettings *settings, const QStringList &pidList)
 {
     QMap<QString, MTreeViewLayoutSettings*>::iterator iter;
-    for(iter = m_settingsMap.begin(); iter != m_settingsMap.end(); iter++){
+    for(iter = m_settingsMap.begin(); iter != m_settingsMap.end(); iter++) {
 
         QString pidKey = iter.key();
         pidKey.remove(1, 1);
 
-        if(pidList.contains(iter.key())){
+        if(pidList.contains(iter.key())) {
             settings->beginGroup(pidKey);
 
             QString strWidths;
@@ -277,7 +277,7 @@ void MTreeSonglistLayoutSettings::load(QSettings *settings, const QStringList &p
         QString pidKey = pid;
         pidKey.remove(1, 1);
 
-        if(settings->childGroups().contains(pidKey)){
+        if(settings->childGroups().contains(pidKey)) {
             settings->beginGroup(pidKey);
 
             QStringList strWidths = settings->value("widths", QString()).toString().split(";");

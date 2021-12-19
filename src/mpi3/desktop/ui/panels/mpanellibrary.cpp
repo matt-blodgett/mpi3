@@ -124,7 +124,7 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanel(parent)
 }
 void MPanelLibrary::setLibrary(MMediaLibrary *library)
 {
-    if(m_mediaLibrary){
+    if(m_mediaLibrary) {
         disconnect(m_mediaLibrary, nullptr, this, nullptr);
     }
 

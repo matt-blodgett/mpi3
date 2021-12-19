@@ -159,12 +159,12 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
             else if(actionIsMoveAction) {
                 return false;
 //                QStringList pids;
-//                for(MModelItem item : m_songlist){
+//                for(MModelItem item : m_songlist) {
 //                    pids.append(item.pid());
 //                }
 
 //                QList<int> indexes;
-//                for(MSong *song : droppedSongs){
+//                for(MSong *song : droppedSongs) {
 //                    indexes.append(pids.indexOf(song->pid()));
 //                }
 
@@ -184,7 +184,7 @@ bool MModelSonglist::dropMimeData(const QMimeData *data, Qt::DropAction action, 
                 }
             }
 
-            if(playlist){
+            if(playlist) {
                 QStringList pidStringsCombined = playlist->songsPidList();
                 for (const QString &pidString : pidStrings) {
                     pidStringsCombined.insert(row++, pidString);
@@ -205,7 +205,7 @@ QModelIndex MModelSonglist::index(int row, int column, const QModelIndex &parent
     Q_UNUSED(parent)
 
     MModelItem *item = m_songList.at(row);
-    if(item){
+    if(item) {
         return createIndex(row, column, item);
     }
 
@@ -229,14 +229,14 @@ QVariant MModelSonglist::data(const QModelIndex &index, int role) const
         int row = index.row();
         int col = index.column();
 
-        if(role == Qt::DisplayRole){
-            if(col == 0){
+        if(role == Qt::DisplayRole) {
+            if(col == 0) {
                 return row + 1;
             }
 
             return m_songList.at(row)->data(col);
         }
-        else if(role == Qt::EditRole && flags(index).testFlag(Qt::ItemIsEditable)){
+        else if(role == Qt::EditRole && flags(index).testFlag(Qt::ItemIsEditable)) {
             return m_songList.at(row)->data(col);
         }
     }
@@ -245,14 +245,14 @@ QVariant MModelSonglist::data(const QModelIndex &index, int role) const
 }
 bool MModelSonglist::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if(index.isValid()){
+    if(index.isValid()) {
         int row = index.row();
         int col = index.column();
 
-        if(role == Qt::EditRole && flags(index).testFlag(Qt::ItemIsEditable)){
+        if(role == Qt::EditRole && flags(index).testFlag(Qt::ItemIsEditable)) {
             MSong *song = m_mediaLibrary->getSong(m_songList.at(row)->pid());
 
-            switch(col){
+            switch(col) {
                 case 1: {
                     m_mediaLibrary->edit(song, "name", value);
                     break;
@@ -322,7 +322,7 @@ void MModelSonglist::setSongList(MSongList songs, const QString &pid)
     m_songList.clear();
     m_pid = pid;
 
-    for(MSong *song : songs){
+    for(MSong *song : songs) {
         MModelItem *item = new MModelItem(this);
         populateItem(item, song);
         m_songList.append(item);
@@ -347,7 +347,7 @@ void MModelSonglist::setLibrary(MMediaLibrary *library)
 
 void MModelSonglist::songCreated(MSong *song)
 {
-    if(m_pid == m_mediaLibrary->pid()){
+    if(m_pid == m_mediaLibrary->pid()) {
         beginInsertRows(QModelIndex(), rowCount(), rowCount());
         MModelItem *item = new MModelItem(this);
         populateItem(item, song);
@@ -358,13 +358,13 @@ void MModelSonglist::songCreated(MSong *song)
 void MModelSonglist::songDeleted(MSong *song)
 {
     QList<MModelItem*> removeItems;
-    for(MModelItem *item : m_songList){
-        if(item->pid() == song->pid()){
+    for(MModelItem *item : m_songList) {
+        if(item->pid() == song->pid()) {
             removeItems.append(item);
         }
     }
 
-    for(MModelItem *item : removeItems){
+    for(MModelItem *item : removeItems) {
         int row = m_songList.indexOf(item);
         beginRemoveRows(QModelIndex(), row, row);
         delete m_songList.takeAt(row);
@@ -373,8 +373,8 @@ void MModelSonglist::songDeleted(MSong *song)
 }
 void MModelSonglist::songChanged(MSong *song)
 {
-    for(MModelItem *item : m_songList){
-        if(item->pid() == song->pid()){
+    for(MModelItem *item : m_songList) {
+        if(item->pid() == song->pid()) {
             populateItem(item, song);
             int row = m_songList.indexOf(item);
             emit dataChanged(index(row, 0), index(row, columnCount() - 1));
@@ -383,7 +383,7 @@ void MModelSonglist::songChanged(MSong *song)
 }
 void MModelSonglist::playlistSongsChanged(MPlaylist *playlist)
 {
-    if(m_pid == playlist->pid()){
+    if(m_pid == playlist->pid()) {
         setSongList(playlist->songs(), playlist->pid());
     }
 }

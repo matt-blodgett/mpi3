@@ -19,8 +19,8 @@ typedef MRootDevice MRootWindow;
 
 QCoreApplication *initialize(int &argc, char *argv[])
 {
-    for(int i = 0; i < argc; i++){
-        if(!qstrcmp(argv[i], "--no-ui")){
+    for(int i = 0; i < argc; i++) {
+        if(!qstrcmp(argv[i], "--no-ui")) {
             return new QCoreApplication(argc, argv);
         }
     }
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     QScopedPointer<QCoreApplication> app(initialize(argc, argv));
     qSetMessagePattern(MPI3_MESSAGE_PATTERN);
 
-    if(qobject_cast<QApplication*>(app.data())){
+    if(qobject_cast<QApplication*>(app.data())) {
         MRootWindow *wnd = new MRootWindow();
         wnd->initialize();
         wnd->show();

@@ -5,7 +5,7 @@ MModelContainersItem::MModelContainersItem(MModelContainersItem *parent)
 {
     m_parentItem = parent;
 
-    if(!m_parentItem){
+    if(!m_parentItem) {
         m_itemType = MModelContainersItem::RootItem;
     }
 }
@@ -92,7 +92,7 @@ bool MModelContainersItem::removeChildren(int position, int count)
 
 bool MModelContainersItem::move(MModelContainersItem *parent, int position)
 {
-    if(!parent){
+    if(!parent) {
         return false;
     }
 
@@ -100,11 +100,11 @@ bool MModelContainersItem::move(MModelContainersItem *parent, int position)
         return false;
     }
 
-    if(position < 0 || position > parent->childCount()){
+    if(position < 0 || position > parent->childCount()) {
         return false;
     }
 
-    if(m_parentItem){
+    if(m_parentItem) {
         m_parentItem->m_childItems.removeAt(this->childNumber());
     }
 

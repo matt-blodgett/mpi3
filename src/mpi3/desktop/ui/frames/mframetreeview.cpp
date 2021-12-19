@@ -123,16 +123,16 @@ MFolder *MFrameContainers::getInsertFolder() const
 {
     QModelIndex idx = tree()->selectionModel()->currentIndex();
 
-    if(!idx.isValid()){
+    if(!idx.isValid()) {
         return nullptr;
     }
 
     QString pid = model()->pidAt(idx);
     MFolder *insertFolder = m_mediaLibrary->getFolder(pid);
 
-    if(!insertFolder){
+    if(!insertFolder) {
         MPlaylist *insertPlaylist = m_mediaLibrary->getPlaylist(pid);
-        if(insertPlaylist){
+        if(insertPlaylist) {
             insertFolder = insertPlaylist->parentFolder();
         }
     }
@@ -145,7 +145,7 @@ void MFrameContainers::selectContainer()
     QString pid = model()->pidAt(idx);
     MContainer *container = m_mediaLibrary->getContainer(pid);
 
-    if(container){
+    if(container) {
         emit containerSelected(container);
     }
 }
@@ -163,7 +163,7 @@ void MFrameContainers::containerMoved(const QModelIndex &parent, int start, int 
 }
 void MFrameContainers::containerInserted(const QModelIndex &parent, int first, int last)
 {
-    if(first == last){
+    if(first == last) {
         QModelIndex idx = model()->index(first, 0, parent);
         tree()->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::ClearAndSelect);
         tree()->expand(parent);
@@ -172,7 +172,7 @@ void MFrameContainers::containerInserted(const QModelIndex &parent, int first, i
 void MFrameContainers::containerCollapsed(const QModelIndex &index)
 {
     QModelIndexList indexes = model()->match(model()->index(0, 0, index), Qt::DisplayRole, "*", -1, Qt::MatchWildcard | Qt::MatchRecursive);
-    for(QModelIndex idx : indexes){
+    for(QModelIndex idx : indexes) {
         tree()->collapse(idx);
     }
 }
@@ -227,11 +227,11 @@ void MFrameContainers::contextMenuTreeview(const QPoint &point)
 
     tree()->selectionModel()->setCurrentIndex(idx_at, QItemSelectionModel::ClearAndSelect);
 
-    if(model()->itemIsPlaylist(idx_at)){
+    if(model()->itemIsPlaylist(idx_at)) {
         actExpandItem->setDisabled(true);
         actCollapseItem->setDisabled(true);
     }
-    else if(model()->itemIsFolder(idx_at)){
+    else if(model()->itemIsFolder(idx_at)) {
         actDuplicatePlaylist->setDisabled(true);
     }
     else {
@@ -316,13 +316,13 @@ void MFrameSonglist::deleteItems()
     QModelIndexList removeIndexes = tree()->selectionModel()->selectedRows(0);
 
     QStringList pidList;
-    for(QModelIndex idxProxy : removeIndexes){
+    for(QModelIndex idxProxy : removeIndexes) {
         QModelIndex idxSource = modelProxy()->mapToSource(idxProxy);
         pidList.append(model()->pidFromIndex(idxSource));
     }
 
     pidList.removeDuplicates();
-    for(const QString &pid : pidList){
+    for(const QString &pid : pidList) {
         m_mediaLibrary->remove(pid);
     }
 }
@@ -336,13 +336,13 @@ void MFrameSonglist::importSongs()
     QStringList paths = QFileDialog::getOpenFileNames(nullptr, title, MActions::pathDesktop(), files);
 
     QList<QUrl> urls;
-    for(const QString &p : paths){
+    for(const QString &p : paths) {
         urls.append(QUrl(p));
     }
 
-    if(Mpi3::Core::validMediaFiles(urls)){
+    if(Mpi3::Core::validMediaFiles(urls)) {
         QStringList pidList;
-        for(const QString &p : paths){
+        for(const QString &p : paths) {
             MSongInfo songInfo;
             if (songInfo.load(p)) {
                 MSong *s = m_mediaLibrary->newSong(songInfo.songInfoMap());
@@ -350,7 +350,7 @@ void MFrameSonglist::importSongs()
             }
         }
 
-        if(parentPlaylist){
+        if(parentPlaylist) {
             QStringList pidListCombined = parentPlaylist->songsPidList();
             pidListCombined.append(pidList);
             m_mediaLibrary->edit(parentPlaylist, "songs", pidListCombined);
@@ -360,7 +360,7 @@ void MFrameSonglist::importSongs()
 
 void MFrameSonglist::playItemSelected()
 {
-    if(tree()->selectionModel()->selectedRows().size() == 1){
+    if(tree()->selectionModel()->selectedRows().size() == 1) {
         QModelIndex idxCurrent = tree()->currentIndex();
         QModelIndex idxSource = modelProxy()->mapToSource(idxCurrent);
         QString pid = model()->pidFromIndex(idxSource);
@@ -402,7 +402,7 @@ void MFrameSonglist::removeItemsFrom()
 }
 void MFrameSonglist::openItemFileLocation()
 {
-    if(tree()->selectionModel()->selectedRows().size() == 1){
+    if(tree()->selectionModel()->selectedRows().size() == 1) {
         QModelIndex idxCurrent = tree()->currentIndex();
         QModelIndex idxSource = modelProxy()->mapToSource(idxCurrent);
         QString pid = model()->pidFromIndex(idxSource);
@@ -432,7 +432,7 @@ void MFrameSonglist::setLibrary(MMediaLibrary *library)
 }
 void MFrameSonglist::setPlaylist(MPlaylist *playlist)
 {
-    if(!playlist){
+    if(!playlist) {
         model()->setSongList(m_mediaLibrary->songs(), m_mediaLibrary->pid());
     }
     else {
@@ -443,12 +443,12 @@ void MFrameSonglist::setPlaylist(MPlaylist *playlist)
 
 void MFrameSonglist::setLayoutSettings(MTreeViewLayoutSettings *settings)
 {
-    if(m_layoutSettings){
+    if(m_layoutSettings) {
         saveLayoutSettings();
     }
 
     m_layoutSettings = settings;
-    if(!m_layoutSettings->columnCount()){
+    if(!m_layoutSettings->columnCount()) {
         m_layoutSettings->setDefaults(tree());
     }
 
@@ -456,7 +456,7 @@ void MFrameSonglist::setLayoutSettings(MTreeViewLayoutSettings *settings)
 }
 void MFrameSonglist::saveLayoutSettings()
 {
-    if(m_layoutSettings){
+    if(m_layoutSettings) {
         m_layoutSettings->setValues(tree(), modelProxy());
     }
 }
@@ -468,31 +468,31 @@ void MFrameSonglist::moveSelected(int row)
     bool isSortedAscending = modelProxy()->sortOrder() == Qt::AscendingOrder;
     bool isSortedRoot = modelProxy()->sortColumn() == 0;
 
-    if(playlist && (isSortedAscending && isSortedRoot)){
+    if(playlist && (isSortedAscending && isSortedRoot)) {
 
         QModelIndexList moveIndexes = tree()->selectionModel()->selectedRows(0);
 
         QList<int> indexList;
-        for(QModelIndex idx : moveIndexes){
+        for(QModelIndex idx : moveIndexes) {
             indexList.append(idx.row());
         }
 
         QStringList newList;
-        for(int i = 0; i < playlist->songsPidList().size(); i++){
+        for(int i = 0; i < playlist->songsPidList().size(); i++) {
 
-            if(i == row){
-                for(QModelIndex idx : moveIndexes){
+            if(i == row) {
+                for(QModelIndex idx : moveIndexes) {
                     newList.append(model()->pidFromIndex(idx));
                 }
             }
 
-            if(!indexList.contains(i)){
+            if(!indexList.contains(i)) {
                 newList.append(playlist->songsPidList().at(i));
             }
         }
 
-        if(row == model()->rowCount()){
-            for(QModelIndex idx : moveIndexes){
+        if(row == model()->rowCount()) {
+            for(QModelIndex idx : moveIndexes) {
                 newList.append(model()->pidFromIndex(idx));
             }
         }
@@ -605,7 +605,7 @@ void MFrameSonglist::contextMenuTreeview(const QPoint &point)
         actOpenItem->setDisabled(true);
     }
 
-    if(!m_mediaLibrary->getPlaylist(model()->pidCurrentSonglist())){
+    if(!m_mediaLibrary->getPlaylist(model()->pidCurrentSonglist())) {
         actRemoveItem->setDisabled(true);
     }
 
@@ -678,7 +678,7 @@ MModelDrives *MFrameDrives::model() const
 
 void MFrameDrives::openItemFileLocation()
 {
-    if(tree()->selectionModel()->selectedRows().size() == 1){
+    if(tree()->selectionModel()->selectedRows().size() == 1) {
         QStorageInfo info = m_modelDrives->storageInfoAt(m_treeDrives->currentIndex());
         MActions::openFileLocation(info.rootPath());
     }

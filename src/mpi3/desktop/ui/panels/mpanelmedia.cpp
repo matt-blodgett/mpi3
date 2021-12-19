@@ -79,7 +79,7 @@ void MPanelMedia::load(QSettings *settings)
 {
     QStringList pidList;
     pidList.append(m_mediaLibrary->pid());
-    for(MContainer *c : m_mediaLibrary->containers()){
+    for(MContainer *c : m_mediaLibrary->containers()) {
         pidList.append(c->pid());
     }
 
@@ -98,12 +98,12 @@ void MPanelMedia::load(QSettings *settings)
     QModelIndexList indexes = m_frmContainers->model()->match(
         m_frmContainers->model()->index(0, 0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard | Qt::MatchRecursive);
 
-    for(const QString &pid : settings->childKeys()){
+    for(const QString &pid : settings->childKeys()) {
         QString pidKey = pid;
         pidKey.insert(1, ":");
 
-        for(QModelIndex idx : indexes){
-            if(m_frmContainers->model()->pidAt(idx) == pidKey){
+        for(QModelIndex idx : indexes) {
+            if(m_frmContainers->model()->pidAt(idx) == pidKey) {
                 m_frmContainers->tree()->expand(idx);
             }
         }
@@ -114,12 +114,12 @@ void MPanelMedia::load(QSettings *settings)
 
     settings->endGroup();
 
-    if(pidSelectedContainer != ""){
+    if(pidSelectedContainer != "") {
         QModelIndexList indexes = m_frmContainers->model()->match(
             m_frmContainers->model()->index(0,0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard | Qt::MatchRecursive);
 
-        for(QModelIndex idx : indexes){
-            if(m_frmContainers->model()->pidAt(idx) == pidSelectedContainer){
+        for(QModelIndex idx : indexes) {
+            if(m_frmContainers->model()->pidAt(idx) == pidSelectedContainer) {
                 m_frmContainers->tree()->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::ClearAndSelect);
                 break;
             }
@@ -133,7 +133,7 @@ void MPanelMedia::save(QSettings *settings)
 {
     QStringList pidList;
     pidList.append(m_mediaLibrary->pid());
-    for(MContainer *c : m_mediaLibrary->containers()){
+    for(MContainer *c : m_mediaLibrary->containers()) {
         pidList.append(c->pid());
     }
 
@@ -145,7 +145,7 @@ void MPanelMedia::save(QSettings *settings)
     settings->endGroup();
 
     settings->beginGroup("TreeViewContainers");
-    if(m_frmContainers->tree()->selectionModel()->selectedRows(0).size() == 1){
+    if(m_frmContainers->tree()->selectionModel()->selectedRows(0).size() == 1) {
         settings->setValue("SelectedContainer", m_frmContainers->model()->pidAt(m_frmContainers->tree()->selectionModel()->currentIndex()));
     }
     else {
@@ -156,9 +156,9 @@ void MPanelMedia::save(QSettings *settings)
     QModelIndexList indexes = m_frmContainers->model()->match(
         m_frmContainers->model()->index(0,0), Qt::DisplayRole, "*", -1, Qt::MatchWildcard|Qt::MatchRecursive);
 
-    for(QModelIndex idx : indexes){
-        if(m_frmContainers->model()->itemIsFolder(idx)){
-            if(m_frmContainers->tree()->isExpanded(idx)){
+    for(QModelIndex idx : indexes) {
+        if(m_frmContainers->model()->itemIsFolder(idx)) {
+            if(m_frmContainers->tree()->isExpanded(idx)) {
                 QString pidKey = m_frmContainers->model()->pidAt(idx);
                 pidKey.remove(1, 1);
                 settings->setValue(pidKey, true);
@@ -210,12 +210,12 @@ void MPanelMedia::viewAlbums()
 }
 void MPanelMedia::viewContainer(MContainer *container)
 {
-    if(!container){
+    if(!container) {
         viewAllSongs();
         return;
     }
 
-    if(container->type() == Mpi3::PlaylistElement){
+    if(container->type() == Mpi3::PlaylistElement) {
         MPlaylist *playlist = static_cast<MPlaylist*>(container);
 
         m_btnSongs->setAutoExclusive(false);

@@ -107,7 +107,7 @@ MPanel::MPanel(QWidget *parent, bool sectioned) : MFrame(parent)
     m_frmDisplay->setObjectName("PanelDisplay");
     m_frmControl->setObjectName("PanelControl");
 
-    if(sectioned){
+    if(sectioned) {
         m_lblPanelTitle = new QLabel(this);
         m_frmScrollArea = new QScrollArea(this);
 

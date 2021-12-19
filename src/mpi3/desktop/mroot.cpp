@@ -338,7 +338,7 @@ void MRootDesktop::initializeState()
     m_frameContextBar->changeView(static_cast<MFrameContextBar::View>(context));
 
     // Create library file if it does not exist
-    if(!QFile::exists(libraryPath)){
+    if(!QFile::exists(libraryPath)) {
         libraryPath = MActions::pathLibraryDefault();
         m_mediaLibrary->create(libraryPath);
     }

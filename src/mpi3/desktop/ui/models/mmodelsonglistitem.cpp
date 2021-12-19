@@ -5,7 +5,7 @@
 
 MModelSonglistItem::MModelSonglistItem(QAbstractTableModel *parent) : QObject(parent)
 {
-    for(int i = 0; i < parent->columnCount() - 1; i++){
+    for(int i = 0; i < parent->columnCount() - 1; i++) {
         m_itemData.append(QVariant());
     }
 }
@@ -21,7 +21,7 @@ void MModelSonglistItem::setPid(const QString &value)
 
 QVariant MModelSonglistItem::data(int column) const
 {
-    if(column >= 0 && column < m_itemData.size()){
+    if(column >= 0 && column < m_itemData.size()) {
         return m_itemData.at(column);
     }
 
@@ -29,7 +29,7 @@ QVariant MModelSonglistItem::data(int column) const
 }
 bool MModelSonglistItem::setData(int column, const QVariant &value)
 {
-    if(column >= 0 && column < m_itemData.size()){
+    if(column >= 0 && column < m_itemData.size()) {
         m_itemData[column] = value;
         return true;
     }

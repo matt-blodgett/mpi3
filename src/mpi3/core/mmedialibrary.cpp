@@ -174,8 +174,8 @@ Mpi3::ElementType MFolder::type() const
 MFolderList MFolder::childFolders() const
 {
     MFolderList children;
-    for(MFolder *f : m_parentLibrary->folders()){
-        if(f->parentFolder() == this){
+    for(MFolder *f : m_parentLibrary->folders()) {
+        if(f->parentFolder() == this) {
             children.append(f);
         }
     }
@@ -185,8 +185,8 @@ MFolderList MFolder::childFolders() const
 MPlaylistList MFolder::childPlaylists() const
 {
     MPlaylistList children;
-    for(MPlaylist *p : m_parentLibrary->playlists()){
-        if(p->parentFolder() == this){
+    for(MPlaylist *p : m_parentLibrary->playlists()) {
+        if(p->parentFolder() == this) {
             children.append(p);
         }
     }
@@ -405,7 +405,7 @@ void MMediaLibrary::dbReadAllData() {
     qDebug() << "loaded folders:" << m_folders.length();
 
     QHash<MFolder*, QString>::iterator iter;
-    for(iter = folderParents.begin(); iter != folderParents.end(); iter++){
+    for(iter = folderParents.begin(); iter != folderParents.end(); iter++) {
         iter.key()->m_parentFolder = getFolder(iter.value());
     }
 
@@ -665,10 +665,10 @@ MPlaylistList MMediaLibrary::playlists() const
 MContainerList MMediaLibrary::containers() const
 {
     MContainerList children;
-    for(MFolder *f : m_folders){
+    for(MFolder *f : m_folders) {
         children.append(f);
     }
-    for(MPlaylist *p : m_playlists){
+    for(MPlaylist *p : m_playlists) {
         children.append(p);
     }
 
@@ -794,7 +794,7 @@ MFolder *MMediaLibrary::newFolder(MFolder *parentFolder, const QString &name)
     folder->m_parentFolder = parentFolder;
     folder->m_name = name;
 
-    if(folder->m_name.isEmpty()){
+    if(folder->m_name.isEmpty()) {
         QString newName = "New Folder";
         QString append = "";
         int duplicates = 1;
@@ -940,7 +940,7 @@ bool MMediaLibrary::edit(MContainer *container, const QString &property, const Q
 
 bool MMediaLibrary::remove(MSong *song)
 {
-    for(MPlaylist *p : m_playlists){
+    for(MPlaylist *p : m_playlists) {
         p->m_songsPidList.removeAll(song->pid());
     }
 
@@ -952,10 +952,10 @@ bool MMediaLibrary::remove(MSong *song)
 }
 bool MMediaLibrary::remove(MFolder *folder)
 {
-    for(MPlaylist *p : folder->childPlaylists()){
+    for(MPlaylist *p : folder->childPlaylists()) {
         remove(p);
     }
-    for(MFolder *f : folder->childFolders()){
+    for(MFolder *f : folder->childFolders()) {
         remove(f);
     }
 
@@ -979,18 +979,18 @@ bool MMediaLibrary::remove(MContainer *container)
 }
 bool MMediaLibrary::remove(const QString &pid)
 {
-    for(MFolder *f : m_folders){
-        if(f->pid() == pid){
+    for(MFolder *f : m_folders) {
+        if(f->pid() == pid) {
             return remove(f);
         }
     }
-    for(MPlaylist *p : m_playlists){
-        if(p->pid() == pid){
+    for(MPlaylist *p : m_playlists) {
+        if(p->pid() == pid) {
             return remove(p);
         }
     }
-    for(MSong *s : m_songs){
-        if(s->pid() == pid){
+    for(MSong *s : m_songs) {
+        if(s->pid() == pid) {
             return remove(s);
         }
     }
