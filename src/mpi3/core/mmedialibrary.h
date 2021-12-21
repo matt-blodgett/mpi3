@@ -177,12 +177,13 @@ public:
 
 private:
     void dbReadAllData();
-
 //    void writeSetting(const QString &key, const QString &value);
     void dbInsertSettings();
     void dbInsertElement(MChildElement *element);
     void dbUpdateElement(MChildElement *element);
     void dbDeleteElement(MChildElement *element);
+
+    void dbUpdatePlaylistSongs(MPlaylist *playlist);
 
 public:
     QString path() const;
@@ -259,11 +260,11 @@ public:
 private:
     QString m_path;
     QString m_localMediaPath;
-    QSqlDatabase m_database;
 
     MSongList m_songs;
     MFolderList m_folders;
     MPlaylistList m_playlists;
+    QSqlDatabase m_database;
 
 signals:
     void aboutToLoad();

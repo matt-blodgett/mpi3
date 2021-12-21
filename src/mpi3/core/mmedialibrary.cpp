@@ -421,16 +421,24 @@ void MMediaLibrary::dbReadAllData() {
         playlist->m_added = query.value(2).toString();
         playlist->m_parentFolder = getFolder(query.value(3).toString());
 
-//        QDomNodeList childSongs = node.namedItem("childSongs").childNodes();
-//        for(int c = 0; c < childSongs.size(); c++) {
-//            p->m_songsPidList.append(childSongs.at(c).toElement().text());
-//        }
         m_playlists.append(playlist);
+    }
+
+    // Playlist Songs
+    sql = "SELECT `pidSong` FROM `playlistSongs` WHERE `pidPlaylist` = ?;";
+
+    for (MPlaylist *playlist : m_playlists) {
+        query.prepare(sql);
+        query.bindValue(0, playlist->pid());
+        query.exec();
+
+        while (query.next()) {
+            playlist->m_songsPidList << query.value(0).toString();
+        }
     }
 
     qDebug() << "loaded playlists:" << m_playlists.length();
 }
-
 void MMediaLibrary::dbInsertSettings() {
     QSqlQuery query(m_database);
     QString sql;
@@ -468,7 +476,7 @@ void MMediaLibrary::dbInsertElement(MChildElement *element)
         QStringList stmt;
         stmt << "INSERT INTO `songs` "
              << "(`pid`, `name`, `added`, `artist`, `album`, `kind`, `path`, `time`, `size`, `bitRate`, `sampleRate`) "
-             << "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+             << "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
         QString sql = stmt.join("");
 
         query.prepare(sql);
@@ -634,6 +642,29 @@ void MMediaLibrary::dbDeleteElement(MChildElement *element)
 
         qDebug() << "deleted playlist" << element->pid();
     }
+}
+
+void MMediaLibrary::dbUpdatePlaylistSongs(MPlaylist *playlist) {
+    QSqlQuery query(m_database);
+    QString sql;
+
+    sql = "DELETE FROM `playlistSongs` WHERE `pidPlaylist` = ?;";
+    query.prepare(sql);
+    query.bindValue(0, playlist->pid());
+    query.exec();
+
+    sql = "INSERT INTO `playlistSongs` (`pidPlaylist`, `pidSong`) VALUES (?, ?);";
+
+    for (const QString &pidSong : playlist->m_songsPidList) {
+        query.prepare(sql);
+        query.bindValue(0, playlist->pid());
+        query.bindValue(1, pidSong);
+        query.exec();
+        qDebug() << "inserted song" << pidSong;
+    }
+
+    qDebug() << "update playlist songs" << playlist->pid();
+
 }
 
 QString MMediaLibrary::path() const
@@ -898,6 +929,7 @@ bool MMediaLibrary::edit(MPlaylist *playlist, const QString &property, const QVa
     }
     else if (property == "songs") {
         playlist->m_songsPidList = value.toStringList();
+        dbUpdatePlaylistSongs(playlist);
         emit playlistSongsChanged(playlist);
         qDebug() << "edited playlist" << property << ":" << playlist->m_pid << "-" << playlist->m_name;
         return true;

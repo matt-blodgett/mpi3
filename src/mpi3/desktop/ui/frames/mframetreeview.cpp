@@ -398,7 +398,24 @@ void MFrameSonglist::addItemsTo()
 }
 void MFrameSonglist::removeItemsFrom()
 {
-    qDebug();
+    MPlaylist *playlist = m_mediaLibrary->getPlaylist(m_modelSonglist->pidCurrentSonglist());
+    if (playlist) {
+        QModelIndexList indexList = tree()->selectionModel()->selectedRows(0);
+        QStringList pidListRemove;
+
+        for(QModelIndex idx : indexList) {
+            pidListRemove << model()->pidFromIndex(idx);
+        }
+
+        QStringList pidListUpdate;
+        for(const QString &pid : playlist->songsPidList()) {
+            if (!pidListRemove.contains(pid)) {
+                pidListUpdate << pid;
+            }
+        }
+
+        m_mediaLibrary->edit(playlist, "songs", pidListUpdate);
+    }
 }
 void MFrameSonglist::openItemFileLocation()
 {
