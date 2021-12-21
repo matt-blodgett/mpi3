@@ -12,7 +12,6 @@
 #include "mpi3/desktop/ui/mactions.h"
 #include "mpi3/core/mmedialibrary.h"
 #include "mpi3/util/msettings.h"
-#include "mpi3/util/mstylesheet.h"
 
 #include <QStyleOption>
 #include <QPainter>
@@ -42,7 +41,6 @@ MRootDesktop::~MRootDesktop()
 {
     m_mediaPlayer->stop();
     delete m_mediaPlayer;
-    delete m_styleSheet;
     delete m_mediaLibrary;
     delete m_settingsProfile;
 }
@@ -60,7 +58,6 @@ void MRootDesktop::initialize()
 
 void MRootDesktop::initializeObjects()
 {
-    m_styleSheet = new MStyleSheet();
     m_mediaLibrary = new MMediaLibrary(this);
     m_mediaPlayer = new QMediaPlayer(this);
 
@@ -110,9 +107,6 @@ void MRootDesktop::initializeMainMenu()
     QAction *actLibNewPlaylist = new QAction(menuMain);
     QAction *actLibImportPlaylists = new QAction(menuMain);
 
-    QAction *actThemeSet = new QAction(menuMain);
-    QAction *actThemeRefresh = new QAction(menuMain);
-
     QAction *actEditUndo = new QAction(menuMain);
     QAction *actEditRedo = new QAction(menuMain);
 
@@ -141,9 +135,6 @@ void MRootDesktop::initializeMainMenu()
     actLibNewPlaylist->setText("New Playlist");
     actLibImportPlaylists->setText("Import Playlists");
 
-    actThemeSet->setText("Set Theme");
-    actThemeRefresh->setText("Refresh");
-
     actEditUndo->setText("Undo");
     actEditRedo->setText("Redo");
     actEditCut->setText("Cut");
@@ -161,7 +152,6 @@ void MRootDesktop::initializeMainMenu()
 
     QMenu *menuFile = new QMenu(menuMain);
     QMenu *menuLibrary = new QMenu(menuMain);
-    QMenu *menuTheme = new QMenu(menuMain);
 
     QMenu *menuEdit = new QMenu(menuMain);
     QMenu *menuDevice = new QMenu(menuMain);
@@ -170,7 +160,6 @@ void MRootDesktop::initializeMainMenu()
 
     menuFile->setTitle("File");
     menuLibrary->setTitle("Library");
-    menuTheme->setTitle("Themes");
     menuEdit->setTitle("Edit");
     menuDevice->setTitle("Device");
     menuTools->setTitle("Tools");
@@ -189,12 +178,8 @@ void MRootDesktop::initializeMainMenu()
     menuLibrary->addSeparator();
     menuLibrary->addAction(actLibImportPlaylists);
 
-    menuTheme->addAction(actThemeSet);
-    menuTheme->addAction(actThemeRefresh);
-
     menuFile->addAction(actAudioSettings);
     menuFile->addMenu(menuLibrary);
-    menuFile->addMenu(menuTheme);
     menuFile->addSeparator();
     menuFile->addAction(actWndExit);
 
@@ -231,9 +216,6 @@ void MRootDesktop::initializeMainMenu()
     connect(actLibNewFolder, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::newFolder);
     connect(actLibImportPlaylists, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::importPlaylists);
 
-    connect(actThemeSet, &QAction::triggered, this, [this](){setTheme();});
-    connect(actThemeRefresh, &QAction::triggered, this, [this](){refreshTheme();});
-
 //    connect(act_editUndo, &QAction::triggered, this, [this]() {editUndo();});
 //    connect(act_editRedo, &QAction::triggered, this, [this]() {editRedo();});
 
@@ -262,11 +244,6 @@ void MRootDesktop::initializeMainMenu()
     actEditCut->setDisabled(true);
     actEditCopy->setDisabled(true);
     actEditDelete->setDisabled(true);
-
-    QAction *act_RefreshThemeDirect = new QAction(this);
-    act_RefreshThemeDirect->setText("Refresh Theme");
-    connect(act_RefreshThemeDirect, &QAction::triggered, this, &MRootDesktop::refreshTheme);
-    menuMain->addAction(act_RefreshThemeDirect);
 }
 void MRootDesktop::initializeLayout()
 {
@@ -291,6 +268,12 @@ void MRootDesktop::initializeLayout()
 
     m_panelLibrary->hide();
     m_panelDevice->hide();
+
+    QFile qssFile(":/styles/default.qss");
+    if (qssFile.open(QIODevice::ReadOnly)) {
+        QString qssStyleSheet = qssFile.readAll();
+        setStyleSheet(qssStyleSheet);
+    }
 }
 void MRootDesktop::initializeState()
 {
@@ -307,7 +290,6 @@ void MRootDesktop::initializeState()
     m_settingsProfile = new MSettingsXml(MActions::pathProfile());
 
     m_settingsProfile->beginGroup("RootWindow");
-    QString stylePath = m_settingsProfile->value("style", ":/styles/default.qss").toString();
     QString libraryPath = m_settingsProfile->value("library").toString();
     int context = m_settingsProfile->value("context").toInt();
     float volume = m_settingsProfile->value("volume", 0.5).toFloat();
@@ -330,9 +312,6 @@ void MRootDesktop::initializeState()
         move(wnd_rootx, wnd_rooty);
         resize(wnd_width, wnd_height);
     }
-
-    m_styleSheet->load(stylePath);
-    setStyleSheet(m_styleSheet->style());
 
     m_framePlayback->setVolume(volume);
     m_mediaPlayer->audioOutput()->setVolume(volume);
@@ -362,7 +341,6 @@ void MRootDesktop::initializeState()
 void MRootDesktop::saveSettings()
 {
     m_settingsProfile->beginGroup("RootWindow");
-    m_settingsProfile->setValue("style", m_styleSheet->path());
     m_settingsProfile->setValue("library", m_mediaLibrary->path());
     m_settingsProfile->setValue("context", m_frameContextBar->currentView());
     m_settingsProfile->setValue("volume", m_framePlayback->volume());
@@ -425,22 +403,6 @@ void MRootDesktop::setPlaybackSong(const QString &pid)
         m_mediaPlayer->setSource(QUrl::fromLocalFile(song->path()));
         m_mediaPlayer->play();
     }
-}
-void MRootDesktop::setTheme()
-{
-    QString title = "Open QSS Theme File";
-    QString files = "QSS Files (*.qss)";
-    QString path = QFileDialog::getOpenFileName(this, title, MActions::pathDesktop(), files);
-
-    if(path != "") {
-        m_styleSheet->load(path);
-        refreshTheme();
-    }
-}
-void MRootDesktop::refreshTheme()
-{
-    m_styleSheet->load();
-    setStyleSheet(m_styleSheet->style());
 }
 
 void MRootDesktop::paintEvent(QPaintEvent *event)
