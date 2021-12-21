@@ -14,8 +14,8 @@ class QRadioButton;
 QT_END_NAMESPACE
 
 
-class MFrameSonglist;
 class MFrameContainers;
+class MFrameSonglist;
 class MTreeSonglistLayoutSettings;
 
 

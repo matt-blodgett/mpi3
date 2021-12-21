@@ -1,4 +1,4 @@
-include(widgets/widgets.pri)
+include(trees/trees.pri)
 include(models/models.pri)
 include(frames/frames.pri)
 include(panels/panels.pri)

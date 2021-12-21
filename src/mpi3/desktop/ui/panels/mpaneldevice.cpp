@@ -1,8 +1,6 @@
 #include "mpi3/desktop/ui/panels/mpaneldevice.h"
 #include "mpi3/desktop/ui/models/mmodeldrives.h"
-
-#include "mpi3/desktop/ui/frames/mframetreeview.h"
-
+#include "mpi3/desktop/ui/frames/mframedrives.h"
 #include "mpi3/desktop/ui/mstyle.h"
 #include "mpi3/core/mmedialibrary.h"
 

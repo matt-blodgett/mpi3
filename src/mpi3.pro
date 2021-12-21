@@ -18,7 +18,7 @@ contains(DEFINES, MPI3_BUILD_DESKTOP):BUILD_TARGET = desktop
 contains(DEFINES, MPI3_BUILD_DEVICE):BUILD_TARGET = device
 
 
-message("build.pro")
+message("mpi3.pro")
 message("Build Target = $$BUILD_TARGET")
 message("Build File = $$_PRO_FILE_")
 message("Build Dest Dir = $$DESTDIR")
