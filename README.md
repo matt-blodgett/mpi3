@@ -41,7 +41,7 @@ A showcase of the `mpi3desktop` application in its current state:
 
 ![asdf](./docs/homescreen-example.png)
 
-It is a nearly identical rip-off of the iTunes UI at the moment, but in the future my hope is it will take on a more unique and user friendly interface, both on the desktop and especially on Raspberry Pi devices.
+It is a nearly identical replication of the iTunes UI at the moment, but in the future my hope is it will take on a more unique and user friendly interface, both on the desktop and especially on Raspberry Pi devices.
 
 ## Author
 
