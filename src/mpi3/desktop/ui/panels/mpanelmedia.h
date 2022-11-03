@@ -9,8 +9,10 @@
 
 #include "mpi3/desktop/ui/panels/mpanel.h"
 
+
 QT_BEGIN_NAMESPACE
 class QRadioButton;
+class QLabel;
 QT_END_NAMESPACE
 
 

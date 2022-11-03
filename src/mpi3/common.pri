@@ -6,10 +6,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 !contains(QT, multimedia):QT += multimedia
 
 
-#equals(TEMPLATE, lib){
-#    contains(DEFINES, MPI3_BUILD_STATIC):CONFIG += static
-#    contains(DEFINES, MPI3_BUILD_SHARED):CONFIG += shared
-#}
+equals(TEMPLATE, lib) {
+    contains(DEFINES, MPI3_BUILD_STATIC):CONFIG += static
+    contains(DEFINES, MPI3_BUILD_SHARED):CONFIG += shared
+}
 
 
 CONFIG += skip_target_version_ext

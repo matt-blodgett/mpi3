@@ -1,5 +1,4 @@
 #include "mpi3/desktop/ui/frames/mframeplayback.h"
-#include "mpi3/desktop/ui/mstyle.h"
 #include "mpi3/core/mmedialibrary.h"
 #include "mpi3/util/mformat.h"
 
@@ -35,7 +34,7 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     frmVolume->setLayout(gridVolume);
 
     m_sldVolume->setOrientation(Qt::Horizontal);
-    MStyle::setStyle(m_sldVolume, MStyle::SLD_Volume);
+    m_sldVolume->setObjectName("Volume");
 
     // -------------------------------------------------- PLAYBACK
 
@@ -55,16 +54,16 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     m_btnFade = new QPushButton(this);
     m_sldPosition = new QSlider(this);
 
-    MStyle::setStyle(m_lblTitle, MStyle::LBL_SongTitle);
-    MStyle::setStyle(m_lblArtist, MStyle::LBL_SongArtist);
-    MStyle::setStyle(m_lblPositionMin, MStyle::LBL_SongPosition);
-    MStyle::setStyle(m_lblPositionMax, MStyle::LBL_SongPosition);
+    m_lblTitle->setObjectName("SongTitle");
+    m_lblArtist->setObjectName("SongArtist");
+    m_lblPositionMin->setObjectName("SongPosition");
+    m_lblPositionMax->setObjectName("SongPosition");
 
-    MStyle::setStyle(m_btnPlay, MStyle::PB_PlaySong);
-    MStyle::setStyle(m_btnNext, MStyle::PB_NextSong);
-    MStyle::setStyle(m_btnPrev, MStyle::PB_PreviousSong);
-    MStyle::setStyle(m_btnFade, MStyle::PB_Fade);
-    MStyle::setStyle(m_sldPosition, MStyle::SLD_Postion);
+    m_btnPlay->setObjectName("PlaySong");
+    m_btnNext->setObjectName("NextSong");
+    m_btnPrev->setObjectName("PreviousSong");
+    m_btnFade->setObjectName("Fade");
+    m_sldPosition->setObjectName("Position");
 
     QGridLayout *gridControl = new QGridLayout(this);
     gridControl->addWidget(m_lblTitle, 0, 2, 1, 1);
@@ -114,8 +113,8 @@ MFramePlayback::MFramePlayback(QWidget *parent) : MFrame(parent)
     m_boxSearch = new QLineEdit(this);
     m_btnSearch = new QPushButton(this);
 
-    MStyle::setStyle(m_boxSearch, MStyle::LE_Search);
-    MStyle::setStyle(m_btnSearch, MStyle::PB_Search);
+    m_boxSearch->setObjectName("Search");
+    m_btnSearch->setObjectName("Search");
 
     QGridLayout *gridSearchbar = new QGridLayout(this);
     gridSearchbar->addWidget(m_btnSearch, 1, 0, 1, 1);

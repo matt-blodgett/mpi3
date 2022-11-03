@@ -5,13 +5,12 @@
 #include "mpi3/desktop/ui/panels/mpanellibrary.h"
 #include "mpi3/desktop/ui/panels/mpaneldevice.h"
 #include "mpi3/desktop/ui/panels/mpanelmedia.h"
-#include "mpi3/desktop/ui/widgets/mtreeview.h"
+#include "mpi3/desktop/ui/trees/mtreesonglist.h"
 #include "mpi3/desktop/ui/models/mmodelsonglist.h"
 #include "mpi3/desktop/ui/mstyle.h"
 #include "mpi3/desktop/ui/mactions.h"
 #include "mpi3/core/mmedialibrary.h"
 #include "mpi3/util/msettings.h"
-#include "mpi3/util/mstylesheet.h"
 
 #include <QStyleOption>
 #include <QPainter>
@@ -40,9 +39,8 @@ MRootDesktop::~MRootDesktop()
 {
     m_mediaPlayer->stop();
     delete m_mediaPlayer;
-    delete m_styleSheet;
     delete m_mediaLibrary;
-    delete m_settingsProfile;
+    delete m_settings;
 }
 
 void MRootDesktop::initialize()
@@ -58,7 +56,6 @@ void MRootDesktop::initialize()
 
 void MRootDesktop::initializeObjects()
 {
-    m_styleSheet = new MStyleSheet();
     m_mediaLibrary = new MMediaLibrary(this);
     m_mediaPlayer = new QMediaPlayer(this);
 
@@ -108,9 +105,6 @@ void MRootDesktop::initializeMainMenu()
     QAction *actLibNewPlaylist = new QAction(menuMain);
     QAction *actLibImportPlaylists = new QAction(menuMain);
 
-    QAction *actThemeSet = new QAction(menuMain);
-    QAction *actThemeRefresh = new QAction(menuMain);
-
     QAction *actEditUndo = new QAction(menuMain);
     QAction *actEditRedo = new QAction(menuMain);
 
@@ -139,9 +133,6 @@ void MRootDesktop::initializeMainMenu()
     actLibNewPlaylist->setText("New Playlist");
     actLibImportPlaylists->setText("Import Playlists");
 
-    actThemeSet->setText("Set Theme");
-    actThemeRefresh->setText("Refresh");
-
     actEditUndo->setText("Undo");
     actEditRedo->setText("Redo");
     actEditCut->setText("Cut");
@@ -159,7 +150,6 @@ void MRootDesktop::initializeMainMenu()
 
     QMenu *menuFile = new QMenu(menuMain);
     QMenu *menuLibrary = new QMenu(menuMain);
-    QMenu *menuTheme = new QMenu(menuMain);
 
     QMenu *menuEdit = new QMenu(menuMain);
     QMenu *menuDevice = new QMenu(menuMain);
@@ -168,7 +158,6 @@ void MRootDesktop::initializeMainMenu()
 
     menuFile->setTitle("File");
     menuLibrary->setTitle("Library");
-    menuTheme->setTitle("Themes");
     menuEdit->setTitle("Edit");
     menuDevice->setTitle("Device");
     menuTools->setTitle("Tools");
@@ -187,12 +176,8 @@ void MRootDesktop::initializeMainMenu()
     menuLibrary->addSeparator();
     menuLibrary->addAction(actLibImportPlaylists);
 
-    menuTheme->addAction(actThemeSet);
-    menuTheme->addAction(actThemeRefresh);
-
     menuFile->addAction(actAudioSettings);
     menuFile->addMenu(menuLibrary);
-    menuFile->addMenu(menuTheme);
     menuFile->addSeparator();
     menuFile->addAction(actWndExit);
 
@@ -229,9 +214,6 @@ void MRootDesktop::initializeMainMenu()
     connect(actLibNewFolder, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::newFolder);
     connect(actLibImportPlaylists, &QAction::triggered, m_panelMedia->frameContainers(), &MFrameContainers::importPlaylists);
 
-    connect(actThemeSet, &QAction::triggered, this, [this]() {setTheme();});
-    connect(actThemeRefresh, &QAction::triggered, this, [this]() {refreshTheme();});
-
 //    connect(act_editUndo, &QAction::triggered, this, [this]() {editUndo();});
 //    connect(act_editRedo, &QAction::triggered, this, [this]() {editRedo();});
 
@@ -260,11 +242,6 @@ void MRootDesktop::initializeMainMenu()
     actEditCut->setDisabled(true);
     actEditCopy->setDisabled(true);
     actEditDelete->setDisabled(true);
-
-    QAction *act_RefreshThemeDirect = new QAction(this);
-    act_RefreshThemeDirect->setText("Refresh Theme");
-    connect(act_RefreshThemeDirect, &QAction::triggered, this, &MRootDesktop::refreshTheme);
-    menuMain->addAction(act_RefreshThemeDirect);
 }
 void MRootDesktop::initializeLayout()
 {
@@ -285,10 +262,16 @@ void MRootDesktop::initializeLayout()
     setMinimumHeight(300);
     setMinimumWidth(700);
     setCentralWidget(windowMain);
-//    setWindowIcon(QIcon(":/icons/window/mpi3.ico"));
+    setWindowIcon(QIcon(":/icons/window/mpi3.ico"));
 
     m_panelLibrary->hide();
     m_panelDevice->hide();
+
+    QFile qssFile(":/styles/default.qss");
+    if (qssFile.open(QIODevice::ReadOnly)) {
+        QString qssStyleSheet = qssFile.readAll();
+        setStyleSheet(qssStyleSheet);
+    }
 }
 void MRootDesktop::initializeState()
 {
@@ -302,24 +285,23 @@ void MRootDesktop::initializeState()
         QFile(MActions::pathProfile()).setPermissions(QFile::WriteOwner | QFile::ReadOwner);
     }
 
-    m_settingsProfile = new MSettingsXml(MActions::pathProfile());
+    m_settings = new MSettingsXml(MActions::pathProfile());
 
-    m_settingsProfile->beginGroup("RootWindow");
-    QString stylePath = m_settingsProfile->value("style", ":/styles/default.qss").toString();
-    QString libraryPath = m_settingsProfile->value("library").toString();
-    int context = m_settingsProfile->value("context").toInt();
-    float volume = m_settingsProfile->value("volume", 0.5).toFloat();
-    m_settingsProfile->beginGroup("WindowGeometry");
+    m_settings->beginGroup("RootWindow");
+    QString libraryPath = m_settings->value("library").toString();
+    int context = m_settings->value("context").toInt();
+    float volume = m_settings->value("volume", 0.5).toFloat();
+    m_settings->beginGroup("WindowGeometry");
     QScreen *screen = QGuiApplication::screenAt(pos());
     int d_rootx = (screen->availableGeometry().width() / 2) - 400;
     int d_rooty = (screen->availableGeometry().height() / 2) - 300;
-    int wnd_rootx = m_settingsProfile->value("rootx", d_rootx).toInt();
-    int wnd_rooty = m_settingsProfile->value("rooty", d_rooty).toInt();
-    int wnd_width = m_settingsProfile->value("width", 800).toInt();
-    int wnd_height = m_settingsProfile->value("height", 600).toInt();
-    bool wnd_maximized = m_settingsProfile->value("maximized", false).toBool();
-    m_settingsProfile->endGroup();
-    m_settingsProfile->endGroup();
+    int wnd_rootx = m_settings->value("rootx", d_rootx).toInt();
+    int wnd_rooty = m_settings->value("rooty", d_rooty).toInt();
+    int wnd_width = m_settings->value("width", 800).toInt();
+    int wnd_height = m_settings->value("height", 600).toInt();
+    bool wnd_maximized = m_settings->value("maximized", false).toBool();
+    m_settings->endGroup();
+    m_settings->endGroup();
 
     if(wnd_maximized) {
         showMaximized();
@@ -329,15 +311,12 @@ void MRootDesktop::initializeState()
         resize(wnd_width, wnd_height);
     }
 
-    m_styleSheet->load(stylePath);
-    setStyleSheet(m_styleSheet->qssStyle());
-
     m_framePlayback->setVolume(volume);
     m_mediaPlayer->audioOutput()->setVolume(volume);
     m_frameContextBar->changeView(static_cast<MFrameContextBar::View>(context));
 
     // Need to create the temp file if it doesn't exist
-    if(!QFile::exists(libraryPath)){
+    if(!QFile::exists(libraryPath)) {
         libraryPath = MActions::pathLibraryDefault();
         m_mediaLibrary->save(libraryPath);
     }
@@ -347,41 +326,39 @@ void MRootDesktop::initializeState()
     m_panelLibrary->setLibrary(m_mediaLibrary);
     m_panelDevice->setLibrary(m_mediaLibrary);
 
-    m_panelMedia->load(m_settingsProfile);
-    m_panelLibrary->load(m_settingsProfile);
-    m_panelDevice->load(m_settingsProfile);
+    m_panelMedia->load(m_settings);
+    m_panelLibrary->load(m_settings);
+    m_panelDevice->load(m_settings);
 
-    m_settingsProfile->sync();
+    m_settings->sync();
 }
 void MRootDesktop::saveSettings()
 {
-    m_settingsProfile->beginGroup("RootWindow");
-    m_settingsProfile->setValue("style", m_styleSheet->qssPath());
-    m_settingsProfile->setValue("library", m_mediaLibrary->savePath());
-    m_settingsProfile->setValue("context", m_frameContextBar->currentView());
-    m_settingsProfile->setValue("volume", m_framePlayback->volume());
-    m_settingsProfile->beginGroup("WindowGeometry");
-    m_settingsProfile->setValue("rootx", x());
-    m_settingsProfile->setValue("rooty", y());
-    m_settingsProfile->setValue("width", width());
-    m_settingsProfile->setValue("height", height());
-    m_settingsProfile->setValue("maximized", isMaximized());
-    m_settingsProfile->endGroup();
-    m_settingsProfile->endGroup();
+    m_settings->beginGroup("RootWindow");
+    m_settings->setValue("library", m_mediaLibrary->savePath());
+    m_settings->setValue("context", m_frameContextBar->currentView());
+    m_settings->setValue("volume", m_framePlayback->volume());
+    m_settings->beginGroup("WindowGeometry");
+    m_settings->setValue("rootx", x());
+    m_settings->setValue("rooty", y());
+    m_settings->setValue("width", width());
+    m_settings->setValue("height", height());
+    m_settings->setValue("maximized", isMaximized());
+    m_settings->endGroup();
+    m_settings->endGroup();
 
-    m_panelMedia->save(m_settingsProfile);
-    m_panelLibrary->save(m_settingsProfile);
-    m_panelDevice->save(m_settingsProfile);
+    m_panelMedia->save(m_settings);
+    m_panelLibrary->save(m_settings);
+    m_panelDevice->save(m_settings);
 
     m_mediaLibrary->save();
 
-    m_settingsProfile->sync();
+    m_settings->sync();
 }
 
 void MRootDesktop::setContextPanel()
 {
     switch(m_frameContextBar->currentView()) {
-
         case MFrameContextBar::ViewMedia: {
             m_panelMedia->show();
             m_panelLibrary->hide();
@@ -420,23 +397,12 @@ void MRootDesktop::setPlaybackSong(const QString &pid)
         m_mediaPlayer->play();
     }
 }
-void MRootDesktop::setTheme()
-{
-    QString title = "Open QSS Theme File";
-    QString files = "QSS Files (*.qss)";
-    QString path = QFileDialog::getOpenFileName(this, title, MActions::pathDesktop(), files);
 
-    if(path != "") {
-        m_styleSheet->load(path);
-        refreshTheme();
-    }
-}
-void MRootDesktop::refreshTheme()
+void MRootDesktop::closeEvent(QCloseEvent *event)
 {
-    m_styleSheet->load();
-    setStyleSheet(m_styleSheet->qssStyle());
+    saveSettings();
+    QMainWindow::closeEvent(event);
 }
-
 void MRootDesktop::paintEvent(QPaintEvent *event)
 {
     QStyleOption opt;
@@ -446,9 +412,4 @@ void MRootDesktop::paintEvent(QPaintEvent *event)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 
     QWidget::paintEvent(event);
-}
-void MRootDesktop::closeEvent(QCloseEvent *event)
-{
-    saveSettings();
-    QMainWindow::closeEvent(event);
 }

@@ -191,10 +191,10 @@ public:
     MContainerList containers() const;
 
     template<typename I, class E>
-    static I rootSearch(I iterable){
+    static I rootSearch(I iterable) {
         I ret;
-        for(E *e : iterable){
-            if(!e->parentFolder()){
+        for(E *e : iterable) {
+            if(!e->parentFolder()) {
                 ret.append(e);
             }
         }
@@ -206,9 +206,9 @@ public:
     MContainerList rootContainers() const;
 
     template<typename I, class E>
-    static E *pidSearch(I iterable, const QString &pid){
-        for(E *element : iterable){
-            if(element->pid() == pid){
+    static E *pidSearch(I iterable, const QString &pid) {
+        for(E *element : iterable) {
+            if(element->pid() == pid) {
                 return element;
             }
         }
@@ -221,9 +221,9 @@ public:
     MContainer *getContainer(const QString &pid) const;
 
     template<typename I, class E>
-    static I pidSearchList(I iterable, const QStringList &pids){
+    static I pidSearchList(I iterable, const QStringList &pids) {
         I ret;
-        for(const QString &pid : pids){
+        for(const QString &pid : pids) {
             E *element = MMediaLibrary::pidSearch<I, E>(iterable, pid);
             ret.append(element);
         }
@@ -243,15 +243,15 @@ public:
     MFolder *newFolder(MFolder *parentFolder = nullptr, const QString &name = QString());
     MPlaylist *newPlaylist(MFolder *parentFolder = nullptr, const QString &name = QString());
 
-    bool edit(MSong *childSong, const QString &property, const QVariant &value);
-    bool edit(MFolder *childFolder, const QString &property, const QVariant &value);
-    bool edit(MPlaylist *childPlaylist, const QString &property, const QVariant &value);
-    bool edit(MContainer *childContainer, const QString &property, const QVariant &value);
+    bool edit(MSong *song, const QString &property, const QVariant &value);
+    bool edit(MFolder *folder, const QString &property, const QVariant &value);
+    bool edit(MPlaylist *playlist, const QString &property, const QVariant &value);
+    bool edit(MContainer *container, const QString &property, const QVariant &value);
 
-    bool remove(MSong *childSong);
-    bool remove(MFolder *childFolder);
-    bool remove(MPlaylist *childPlaylist);
-    bool remove(MContainer *childContainer);
+    bool remove(MSong *song);
+    bool remove(MFolder *folder);
+    bool remove(MPlaylist *playlist);
+    bool remove(MContainer *container);
     bool remove(const QString &pid);
 
 private:
@@ -260,29 +260,29 @@ private:
     MPlaylistList m_playlists;
 
 signals:
-    void aboutToLoad();
-    void aboutToSave();
-    void aboutToReset();
+    void libraryLoading();
+    void librarySaving();
+    void libraryResetting();
 
     void libraryLoaded();
     void librarySaved();
     void libraryReset();
 
-    void songCreated(MSong *childSong);
-    void folderCreated(MFolder *childFolder);
-    void playlistCreated(MPlaylist *childPlaylist);
+    void songCreated(MSong *song);
+    void folderCreated(MFolder *folder);
+    void playlistCreated(MPlaylist *playlist);
 
-    void songChanged(MSong *childSong);
-    void folderChanged(MFolder *childFolder);
-    void playlistChanged(MPlaylist *childPlaylist);
+    void songChanged(MSong *song);
+    void folderChanged(MFolder *folder);
+    void playlistChanged(MPlaylist *playlist);
     void libraryChanged(MMediaLibrary *library);
 
-    void songDeleted(MSong *childSong);
-    void folderDeleted(MFolder *childFolder);
-    void playlistDeleted(MPlaylist *childPlaylist);
+    void songDeleted(MSong *song);
+    void folderDeleted(MFolder *folder);
+    void playlistDeleted(MPlaylist *playlist);
 
-    void playlistSongsChanged(MPlaylist *childPlaylist);
-    void parentFolderChanged(MContainer *childContainer);
+    void playlistSongsChanged(MPlaylist *playlist);
+    void parentFolderChanged(MContainer *container);
 };
 
 

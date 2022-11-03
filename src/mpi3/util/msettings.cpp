@@ -9,6 +9,7 @@ static const QString RootName = "mpi3config";
 
 const QSettings::Format MSettingsXml::XmlSettingsFormat = QSettings::registerFormat("xml", &MSettingsXml::readSettingsXml, &MSettingsXml::writeSettingsXml);
 
+
 MSettingsXml::MSettingsXml(const QString &settingsPath) : QSettings (settingsPath, XmlSettingsFormat)
 {
 

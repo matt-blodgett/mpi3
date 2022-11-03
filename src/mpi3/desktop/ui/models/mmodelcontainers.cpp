@@ -13,24 +13,24 @@
 typedef MModelContainersItem MModelItem;
 
 
-static void populateItem(MModelItem *item, MContainer *c)
+static void populateItem(MModelItem *item, MContainer *container)
 {
-    item->setPID(c->pid());
-    item->setLabel(c->name());
+    item->setPID(container->pid());
+    item->setLabel(container->name());
 
-    if(c->type() == Mpi3::FolderElement){
+    if(container->type() == Mpi3::FolderElement) {
         item->setType(MModelItem::FolderItem);
     }
-    else if(c->type() == Mpi3::PlaylistElement){
+    else if(container->type() == Mpi3::PlaylistElement) {
         item->setType(MModelItem::PlaylistItem);
     }
 }
 static MFolderList allChildFolders(MFolder *parentFolder)
 {
     MFolderList folders;
-    for(MFolder *childFolder : parentFolder->childFolders()){
+    for(MFolder *childFolder : parentFolder->childFolders()) {
         folders.append(childFolder);
-        for(MFolder *f : allChildFolders(childFolder)){
+        for(MFolder *f : allChildFolders(childFolder)) {
             folders.append(f);
         }
     }
@@ -74,9 +74,7 @@ Qt::DropActions MModelContainers::supportedDropActions() const
 QStringList MModelContainers::mimeTypes() const
 {
     QStringList mTypes;
-
     mTypes << MPI3_MIME_TYPE_PIDS_CONTAINERS;
-
     return mTypes;
 }
 QMimeData *MModelContainers::mimeData(const QModelIndexList &indexes) const
@@ -111,7 +109,7 @@ bool MModelContainers::canDropMimeData(const QMimeData *data, Qt::DropAction act
     }
     else if(targetContainer->type() == Mpi3::FolderElement) {
 
-        if(actionIsMoveAction && dataIsContainer){
+        if(actionIsMoveAction && dataIsContainer) {
             QString pid = data->data(MPI3_MIME_TYPE_PIDS_CONTAINERS);
 
             MFolder *dropFolder = m_mediaLibrary->getFolder(pid);
@@ -153,7 +151,7 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
             QString pid = data->data(MPI3_MIME_TYPE_PIDS_CONTAINERS);
             MContainer *dropContainer = m_mediaLibrary->getContainer(pid);
 
-            if(dropContainer && dropContainer->parentFolder()){
+            if(dropContainer && dropContainer->parentFolder()) {
                 m_mediaLibrary->edit(dropContainer, "parentFolder", QVariant());
                 return true;
             }
@@ -197,7 +195,7 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
             QString pid = data->data(MPI3_MIME_TYPE_PIDS_CONTAINERS);
             MContainer *dropContainer = m_mediaLibrary->getContainer(pid);
 
-            if(dropContainer){
+            if(dropContainer) {
                 m_mediaLibrary->edit(dropContainer, "parentFolder", targetFolder->pid());
                 return true;
             }
@@ -247,10 +245,10 @@ QVariant MModelContainers::data(const QModelIndex &index, int role) const
     if(index.isValid() && index.column() == 0) {
         if(role == Qt::DecorationRole) {
             MModelItem *item = getItem(index);
-            if(item->type() == MModelItem::FolderItem){
+            if(item->type() == MModelItem::FolderItem) {
                 return iconFolder;
             }
-            else if(item->type() == MModelItem::PlaylistItem){
+            else if(item->type() == MModelItem::PlaylistItem) {
                 return iconPlaylist;
             }
         }
@@ -266,8 +264,8 @@ bool MModelContainers::setData(const QModelIndex &index, const QVariant &value, 
 {
     if(role == Qt::EditRole) {
         MModelItem *item = getItem(index);
-        MContainer *c = m_mediaLibrary->getContainer(item->pid());
-        m_mediaLibrary->edit(c, "name", value);
+        MContainer *container = m_mediaLibrary->getContainer(item->pid());
+        m_mediaLibrary->edit(container, "name", value);
         return true;
     }
 
@@ -285,17 +283,17 @@ QVariant MModelContainers::headerData(int section, Qt::Orientation orientation, 
 
 QList<MModelItem*> MModelContainers::allItems(MModelItem *parentItem) const
 {
-    if(!parentItem){
+    if(!parentItem) {
         parentItem = m_rootItem;
     }
 
     QList<MModelItem*> childItems;
-    for(int i = 0; i < parentItem->childCount(); i++){
+    for(int i = 0; i < parentItem->childCount(); i++) {
         MModelItem *childItem = parentItem->child(i);
-        childItems.append(childItem);
+        childItems << childItem;
 
-        for(MModelItem *c : allItems(childItem)){
-            childItems.append(c);
+        for(MModelItem *child : allItems(childItem)) {
+            childItems.append(child);
         }
     }
 
@@ -314,8 +312,8 @@ MModelItem *MModelContainers::getItem(const QModelIndex &index) const
 }
 MModelItem *MModelContainers::getItem(const QString &pid) const
 {
-    for(MModelItem *item : allItems()){
-        if(item->pid() == pid){
+    for(MModelItem *item : allItems()) {
+        if(item->pid() == pid) {
             return item;
         }
     }
@@ -357,7 +355,7 @@ void MModelContainers::setLibrary(MMediaLibrary *library)
     }
 
     m_mediaLibrary = library;
-    connect(m_mediaLibrary, &MMediaLibrary::libraryReset, this, [this](){beginResetModel(); m_rootItem->removeChildren(0, rowCount()); endResetModel();});
+    connect(m_mediaLibrary, &MMediaLibrary::libraryReset, this, [this]() {beginResetModel(); m_rootItem->removeChildren(0, rowCount()); endResetModel();});
     connect(m_mediaLibrary, &MMediaLibrary::folderCreated, this, &MModelContainers::folderCreated);
     connect(m_mediaLibrary, &MMediaLibrary::playlistCreated, this, &MModelContainers::playlistCreated);
     connect(m_mediaLibrary, &MMediaLibrary::folderDeleted, this, &MModelContainers::folderDeleted);
@@ -369,63 +367,63 @@ void MModelContainers::setLibrary(MMediaLibrary *library)
     MFolderList parentFolders;
     MFolderList childFolders;
 
-    for(MFolder *f : m_mediaLibrary->folders()){
-        if(f->parentFolder()){
-            childFolders.append(f);
+    for(MFolder *folder : m_mediaLibrary->folders()) {
+        if(folder->parentFolder()) {
+            childFolders.append(folder);
         }
         else {
-            parentFolders.append(f);
+            parentFolders.append(folder);
         }
     }
 
-    for(MFolder *f : parentFolders){
+    for(MFolder *folder : parentFolders) {
         int position = m_rootItem->childCount();
         m_rootItem->insertChildren(position, 1);
-        populateItem(m_rootItem->child(position), f);
+        populateItem(m_rootItem->child(position), folder);
     }
 
-    while(allItems().size() != m_mediaLibrary->folders().size()){
+    while(allItems().size() != m_mediaLibrary->folders().size()) {
 
-        for(MFolder *f : childFolders){
-            MModelItem *item = getItem(f->parentFolder()->pid());
+        for(MFolder *folder : childFolders) {
+            MModelItem *item = getItem(folder->parentFolder()->pid());
 
-            if(item != m_rootItem){
+            if(item != m_rootItem) {
                 int position = item->childCount();
                 item->insertChildren(position, 1);
-                populateItem(item->child(position), f);
+                populateItem(item->child(position), folder);
             }
         }
     }
 
-    for(MPlaylist *p : m_mediaLibrary->playlists()){
+    for(MPlaylist *playlist : m_mediaLibrary->playlists()) {
         MModelItem *item = m_rootItem;
 
-        if(p->parentFolder()){
-            item = getItem(p->parentFolder()->pid());
+        if(playlist->parentFolder()) {
+            item = getItem(playlist->parentFolder()->pid());
         }
 
         int position = item->childCount();
         item->insertChildren(position, 1);
-        populateItem(item->child(position), p);
+        populateItem(item->child(position), playlist);
     }
 
     endResetModel();
 }
 
-void MModelContainers::containerCreated(MContainer *c)
+void MModelContainers::containerCreated(MContainer *container)
 {
     MModelItem *parentItem = m_rootItem;
     QModelIndex parentIndex = QModelIndex();
 
-    if(c->parentFolder()){
-        parentItem = getItem(c->parentFolder()->pid());
-        parentIndex = getIndex(c->parentFolder()->pid());
+    if(container->parentFolder()) {
+        parentItem = getItem(container->parentFolder()->pid());
+        parentIndex = getIndex(container->parentFolder()->pid());
     }
 
     int row = parentItem->childCount();
-    if(c->type() == Mpi3::FolderElement){
-        for(int i = 0; i < parentItem->childCount(); i++){
-            if(parentItem->child(i)->type() == MModelItem::PlaylistItem){
+    if(container->type() == Mpi3::FolderElement) {
+        for(int i = 0; i < parentItem->childCount(); i++) {
+            if(parentItem->child(i)->type() == MModelItem::PlaylistItem) {
                 row = i;
                 break;
             }
@@ -434,69 +432,69 @@ void MModelContainers::containerCreated(MContainer *c)
 
     beginInsertRows(parentIndex, row, row);
     parentItem->insertChildren(row, 1);
-    populateItem(parentItem->child(row), c);
+    populateItem(parentItem->child(row), container);
     endInsertRows();
 }
-void MModelContainers::containerDeleted(MContainer *c)
+void MModelContainers::containerDeleted(MContainer *container)
 {
-    MModelItem *childItem = getItem(c->pid());
+    MModelItem *childItem = getItem(container->pid());
 
-    if(childItem != m_rootItem){
-        QModelIndex idx = getIndex(c->pid());
+    if(childItem != m_rootItem) {
+        QModelIndex idx = getIndex(container->pid());
         beginRemoveRows(idx.parent(), idx.row(), idx.row());
         childItem->parent()->removeChildren(childItem->childNumber(), 1);
         endRemoveRows();
     }
 }
-void MModelContainers::containerChanged(MContainer *c)
+void MModelContainers::containerChanged(MContainer *container)
 {
-    MModelItem *childItem = getItem(c->pid());
+    MModelItem *childItem = getItem(container->pid());
 
-    if(childItem != m_rootItem){
-        QModelIndex idx = getIndex(c->pid());
-        childItem->setLabel(c->name());
+    if(childItem != m_rootItem) {
+        QModelIndex idx = getIndex(container->pid());
+        childItem->setLabel(container->name());
 
-        QVector<int> roles = {Qt::DisplayRole};
+        QVector<int> roles = { Qt::DisplayRole };
         emit dataChanged(idx, idx, roles);
     }
 }
 
-void MModelContainers::folderCreated(MFolder *f)
+void MModelContainers::folderCreated(MFolder *folder)
 {
-    containerCreated(f);
+    containerCreated(folder);
 }
-void MModelContainers::playlistCreated(MPlaylist *p)
+void MModelContainers::playlistCreated(MPlaylist *playlist)
 {
-    containerCreated(p);
+    containerCreated(playlist);
 }
-void MModelContainers::folderDeleted(MFolder *f)
+void MModelContainers::folderDeleted(MFolder *folder)
 {
-    containerDeleted(f);
+    containerDeleted(folder);
 }
-void MModelContainers::playlistDeleted(MPlaylist *p)
+void MModelContainers::playlistDeleted(MPlaylist *playlist)
 {
-    containerDeleted(p);
+    containerDeleted(playlist);
 }
-void MModelContainers::folderChanged(MFolder *f)
+void MModelContainers::folderChanged(MFolder *folder)
 {
-    containerChanged(f);
+    containerChanged(folder);
 }
-void MModelContainers::playlistChanged(MPlaylist *p)
+void MModelContainers::playlistChanged(MPlaylist *playlist)
 {
-    containerChanged(p);
+    containerChanged(playlist);
 }
-void MModelContainers::parentFolderChanged(MContainer *c)
+void MModelContainers::parentFolderChanged(MContainer *container)
 {
-    QModelIndex sourceIdx = getIndex(c->pid());
-    QModelIndex parentIdx = c->parentFolder() ? getIndex(c->parentFolder()->pid()) : QModelIndex();
+    QModelIndex sourceIdx = getIndex(container->pid());
+    QModelIndex parentIdx = container->parentFolder() ? getIndex(container->parentFolder()->pid()) : QModelIndex();
 
     MModelItem *sourceItem = getItem(sourceIdx);
     MModelItem *parentItem = getItem(parentIdx);
 
     int row = parentItem->childCount();
-    if(c->type() == Mpi3::FolderElement){
-        for(int i = 0; i < parentItem->childCount(); i++){
-            if(parentItem->child(i)->type() == MModelItem::PlaylistItem){
+    if(container->type() == Mpi3::FolderElement) {
+        for(int i = 0; i < parentItem->childCount(); i++) {
+            if(parentItem->child(i)->type() == MModelItem::PlaylistItem) {
                 row = i;
                 break;
             }

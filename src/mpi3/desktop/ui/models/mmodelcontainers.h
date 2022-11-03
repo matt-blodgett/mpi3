@@ -70,18 +70,18 @@ private:
     MMediaLibrary *m_mediaLibrary = nullptr;
 
 private:
-    void containerCreated(MContainer *c);
-    void containerDeleted(MContainer *c);
-    void containerChanged(MContainer *c);
+    void containerCreated(MContainer *container);
+    void containerDeleted(MContainer *container);
+    void containerChanged(MContainer *container);
 
 private slots:
-    void folderCreated(MFolder *f);
-    void playlistCreated(MPlaylist *p);
-    void folderDeleted(MFolder *f);
-    void playlistDeleted(MPlaylist *p);
-    void folderChanged(MFolder *f);
-    void playlistChanged(MPlaylist *p);
-    void parentFolderChanged(MContainer *c);
+    void folderCreated(MFolder *folder);
+    void playlistCreated(MPlaylist *playlist);
+    void folderDeleted(MFolder *folder);
+    void playlistDeleted(MPlaylist *playlist);
+    void folderChanged(MFolder *folder);
+    void playlistChanged(MPlaylist *playlist);
+    void parentFolderChanged(MContainer *container);
 };
 
 

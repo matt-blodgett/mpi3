@@ -1,4 +1,6 @@
 # Mpi3 Base Project
+# DEFINES+=MPI3_BUILD_DESKTOP DEFINES+=MPI3_BUILD_SHARED DESTDIR=%{buildDir}/mpi3 LIBS+=-L%{buildDir}/mpi3
+
 
 defineTest(mutexRequiredDefines) {
     if(!contains(DEFINES, $$1):!contains(DEFINES, $$2)) {
@@ -18,7 +20,7 @@ contains(DEFINES, MPI3_BUILD_DESKTOP):BUILD_TARGET = desktop
 contains(DEFINES, MPI3_BUILD_DEVICE):BUILD_TARGET = device
 
 
-message("build.pro")
+message("mpi3.pro")
 message("Build Target = $$BUILD_TARGET")
 message("Build File = $$_PRO_FILE_")
 message("Build Dest Dir = $$DESTDIR")

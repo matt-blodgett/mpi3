@@ -63,10 +63,10 @@ private:
     QString m_pid;
 
 private slots:
-    void songCreated(MSong *s);
-    void songDeleted(MSong *s);
-    void songChanged(MSong *s);
-    void playlistSongsChanged(MPlaylist *p);
+    void songCreated(MSong *song);
+    void songDeleted(MSong *song);
+    void songChanged(MSong *song);
+    void playlistSongsChanged(MPlaylist *playlist);
 };
 
 

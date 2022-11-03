@@ -11,6 +11,7 @@ class QPushButton;
 class QCheckBox;
 class QComboBox;
 class QLineEdit;
+class QLabel;
 QT_END_NAMESPACE
 
 
@@ -43,9 +44,7 @@ private slots:
     void setLocalMediaPath(bool allow);
 
 private:
-    MPanelSection *m_sectionLibrary = nullptr;
-    MPanelSection *m_sectionMedia = nullptr;
-
+    QLabel *m_lblLibNameTag = nullptr;
     QLineEdit *m_boxLibName = nullptr;
     QLabel *m_lblLibAddedTag = nullptr;
     QLabel *m_lblLibAdded = nullptr;

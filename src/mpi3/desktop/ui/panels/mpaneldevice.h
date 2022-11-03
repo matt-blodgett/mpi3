@@ -6,15 +6,14 @@
 
 #include "mpi3/desktop/ui/panels/mpanel.h"
 
+
 QT_BEGIN_NAMESPACE
-class QPushButton;
-class QTreeView;
-class QLineEdit;
 class QStorageInfo;
+class QLabel;
 QT_END_NAMESPACE
 
 
-class MModelDrives;
+//class MModelDrives;
 class MFrameDrives;
 
 
@@ -36,12 +35,7 @@ private:
     void setCurrentDrive(QStorageInfo info);
 
 private:
-
-    MPanelSection *m_sectionDrives = nullptr;
-    MPanelSection *m_sectionCurrentDrive = nullptr;
     MFrameDrives *m_frmDrives = nullptr;
-
-    QLabel *m_lblDrives = nullptr;
     QLabel *m_lblCurrentDrive = nullptr;
 
 };

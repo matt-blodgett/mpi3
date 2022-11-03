@@ -9,9 +9,6 @@
 #include <QIcon>
 
 
-#include "mpi3/core/mglobal.h"
-
-
 class MModelDrives : public QAbstractItemModel
 {
     Q_OBJECT

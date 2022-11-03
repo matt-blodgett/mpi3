@@ -1,6 +1,5 @@
 ﻿#include "mpi3/desktop/ui/panels/mpanellibrary.h"
 //#include "mpi3/desktop/ui/mactions.h"
-#include "mpi3/desktop/ui/mstyle.h"
 #include "mpi3/core/mmedialibrary.h"
 
 #include <QGridLayout>
@@ -14,6 +13,8 @@
 #include <QDate>
 
 
+#include <QScrollArea>
+
 //#include "mpi3/util/msettings.h"
 #include <QSettings>
 
@@ -22,9 +23,7 @@
 
 MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanel(parent)
 {
-    m_sectionLibrary = addSection();
-    m_sectionMedia = addSection();
-
+    m_lblLibNameTag = new QLabel(this);
     m_boxLibName = new QLineEdit(this);
     m_lblLibAddedTag = new QLabel(this);
     m_lblLibAdded = new QLabel(this);
@@ -35,15 +34,16 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanel(parent)
     m_boxLibPath = new QLineEdit(this);
     m_btnSetLibPath = new QPushButton(this);
 
-    MStyle::setStyle(m_boxLibName, MStyle::LE_Hidden);
-    MStyle::setStyle(m_lblLibAddedTag, MStyle::LBL_Tag);
-    MStyle::setStyle(m_lblLibAdded, MStyle::LBL_Value);
-    MStyle::setStyle(m_btnLibImport, MStyle::PB_Normal);
-    MStyle::setStyle(m_btnLibExport, MStyle::PB_Normal);
+    m_lblLibNameTag->setObjectName("Tag");
+    m_boxLibName->setObjectName("Hidden");
+    m_lblLibAddedTag->setObjectName("Tag");
+    m_lblLibAdded->setObjectName("Value");
+    m_btnLibImport->setObjectName("Normal");
+    m_btnLibExport->setObjectName("Normal");
 
-    MStyle::setStyle(m_lblLibPathTag, MStyle::LBL_Tag);
-    MStyle::setStyle(m_boxLibPath, MStyle::LE_Normal);
-    MStyle::setStyle(m_btnSetLibPath, MStyle::PB_Normal);
+    m_lblLibPathTag->setObjectName("Tag");
+    m_boxLibPath->setObjectName("Normal");
+    m_btnSetLibPath->setObjectName("Normal");
 
     m_optCopyMedia = new QCheckBox(this);
     m_lblMediaSizeTag = new QLabel(this);
@@ -53,65 +53,120 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanel(parent)
     m_boxMediaLoc = new QLineEdit(this);
     m_btnSetMediaLoc = new QPushButton(this);
 
-    MStyle::setStyle(m_lblMediaSizeTag, MStyle::LBL_Tag);
-    MStyle::setStyle(m_lblMediaSize, MStyle::LBL_Value);
-    MStyle::setStyle(m_lblMediaFileCount, MStyle::LBL_Value);
-    MStyle::setStyle(m_lblMediaLocTag, MStyle::LBL_Tag);
-    MStyle::setStyle(m_boxMediaLoc, MStyle::LE_Normal);
-    MStyle::setStyle(m_btnSetMediaLoc, MStyle::PB_Normal);
+    m_lblMediaSizeTag->setObjectName("Tag");
+    m_lblMediaSize->setObjectName("Value");
+    m_lblMediaFileCount->setObjectName("Value");
+    m_lblMediaLocTag->setObjectName("Tag");
+    m_boxMediaLoc->setObjectName("Normal");
+    m_btnSetMediaLoc->setObjectName("Normal");
 
-//    MStyle::setStyle(m_optBackupLibrary, MStyle::);
-//    MStyle::setStyle(m_cbxBackupFreq, MStyle::);
-    MStyle::setStyle(m_lblMediaLocTag, MStyle::LBL_Tag);
+    QGridLayout *m_gridPanel = new QGridLayout();
+    QWidget *m_frmPanel = new QWidget(this);
+    m_frmPanel->setLayout(m_gridPanel);
 
-    QGridLayout *library_gridWest = m_sectionLibrary->gridWest();
-    QGridLayout *library_gridEast = m_sectionLibrary->gridEast();
-    QGridLayout *library_gridSouth = m_sectionLibrary->gridSouth();
+    QLabel *m_lblPanelTitle = new QLabel(this);
+    m_lblPanelTitle->setObjectName("Title");
 
-    library_gridWest->addWidget(m_boxLibName, 0, 0, 1, 3);
-    library_gridWest->addWidget(m_lblLibAddedTag, 1, 0, 1, 1);
-    library_gridWest->addWidget(m_lblLibAdded, 1, 1, 1, 1);
-    library_gridWest->setRowStretch(2, 1);
-    library_gridWest->setColumnStretch(2, 1);
+    QScrollArea *m_scrollArea = new QScrollArea(this);
+    QWidget *m_frmScrollArea = new QWidget(this);
+    m_scrollArea->setWidget(m_frmScrollArea);
+    m_scrollArea->setWidgetResizable(true);
 
-    library_gridEast->addWidget(m_btnLibImport, 0, 1, 1, 1);
-    library_gridEast->addWidget(m_btnLibExport, 1, 1, 1, 1);
-    library_gridEast->setColumnStretch(0, 1);
-    library_gridEast->setRowStretch(1, 1);
+    m_gridPanel->addWidget(m_lblPanelTitle, 0, 0, 1, 1);
+    m_gridPanel->addWidget(m_scrollArea, 1, 0, 1, 1);
+    m_gridPanel->setAlignment(m_lblPanelTitle, Qt::AlignCenter);
+    m_gridPanel->setContentsMargins(0, 10, 0, 0);
+    m_gridPanel->setRowStretch(1, 1);
+    m_gridPanel->setColumnStretch(0, 1);
 
-    library_gridSouth->addWidget(m_lblLibPathTag, 0, 0, 1, 1);
-    library_gridSouth->addWidget(m_boxLibPath, 1, 0, 1, 1);
-    library_gridSouth->addWidget(m_btnSetLibPath, 1, 1, 1, 1);
+    QGridLayout *m_gridMain = new QGridLayout();
+    m_gridMain->addWidget(m_frmPanel);
+    m_gridMain->setContentsMargins(0, 0, 0, 0);
+    m_gridMain->setColumnStretch(0, 1);
+    m_gridMain->setRowStretch(0, 1);
+    setLayout(m_gridMain);
 
-    QGridLayout *media_gridWest = m_sectionMedia->gridWest();
-    QGridLayout *media_gridEast = m_sectionMedia->gridEast();
-    QGridLayout *media_gridSouth = m_sectionMedia->gridSouth();
+    QGridLayout *m_gridScrollArea = new QGridLayout();
+    m_frmScrollArea->setLayout(m_gridScrollArea);
 
-    media_gridWest->addWidget(m_optCopyMedia, 0, 0, 1, 1);
-    media_gridWest->setColumnStretch(1, 1);
-    media_gridWest->setRowStretch(1, 1);
+    QGridLayout *m_grid0 = new QGridLayout();
+    m_grid0->addWidget(m_lblLibNameTag, 0, 0, 1, 1);
+    m_grid0->addWidget(m_boxLibName, 0, 1, 1, 1);
+    m_grid0->addWidget(m_lblLibAddedTag, 1, 0, 1, 1);
+    m_grid0->addWidget(m_lblLibAdded, 1, 1, 1, 1);
+    m_grid0->addWidget(m_lblLibPathTag, 2, 0, 1, 1);
+    m_grid0->addWidget(m_boxLibPath, 2, 1, 1, 1);
+    m_grid0->addWidget(m_btnSetLibPath, 2, 2, 1, 1);
+    m_grid0->setContentsMargins(0, 20, 0, 0);
+    m_grid0->setRowStretch(0, 0);
+    m_grid0->setRowStretch(1, 0);
+    m_grid0->setRowStretch(2, 0);
+    m_grid0->setRowStretch(3, 1);
+    m_grid0->setColumnStretch(1, 1);
 
-    media_gridEast->addWidget(m_lblMediaSizeTag, 0, 0, 1, 1);
-    media_gridEast->addWidget(m_lblMediaSize, 0, 1, 1, 1);
-    media_gridEast->addWidget(m_lblMediaFileCount, 0, 2, 1, 1);
-    media_gridEast->setColumnStretch(3, 1);
-    media_gridEast->setRowStretch(1, 1);
+    QGridLayout *m_grid1 = new QGridLayout();
+    m_grid1->addWidget(m_btnLibImport, 0, 0, 1, 1);
+    m_grid1->addWidget(m_btnLibExport, 0, 1, 1, 1);
+    m_grid1->setContentsMargins(0, 20, 0, 0);
+    m_grid1->setRowStretch(0, 0);
+    m_grid1->setRowStretch(1, 1);
+    m_grid1->setColumnStretch(0, 0);
+    m_grid1->setColumnStretch(1, 0);
+    m_grid1->setColumnStretch(2, 1);
 
-    media_gridSouth->addWidget(m_lblMediaLocTag, 0, 0, 1, 1);
-    media_gridSouth->addWidget(m_boxMediaLoc, 1, 0, 1, 1);
-    media_gridSouth->addWidget(m_btnSetMediaLoc, 1, 1, 1, 1);
+    QGridLayout *m_grid2 = new QGridLayout();
+    m_grid2->addWidget(m_optCopyMedia, 0, 0, 1, 3);
+    m_grid2->addWidget(m_lblMediaLocTag, 1, 0, 1, 1);
+    m_grid2->addWidget(m_boxMediaLoc, 1, 1, 1, 1);
+    m_grid2->addWidget(m_btnSetMediaLoc, 1, 2, 1, 1);
+    m_grid2->setContentsMargins(0, 20, 0, 0);
+    m_grid2->setRowStretch(0, 0);
+    m_grid2->setRowStretch(1, 0);
+    m_grid2->setRowStretch(2, 1);
 
-    setTitle("Local Library");
-    m_sectionLibrary->setHeader("Library");
-    m_sectionMedia->setHeader("Media Files");
+    QGridLayout *m_grid3 = new QGridLayout();
+    m_grid3->addWidget(m_lblMediaSizeTag, 0, 0, 1, 1);
+    m_grid3->addWidget(m_lblMediaSize, 0, 1, 1, 1);
+    m_grid3->addWidget(m_lblMediaFileCount, 0, 2, 1, 1);
+    m_grid3->setContentsMargins(0, 0, 0, 0);
+    m_grid3->setRowStretch(0, 0);
+    m_grid3->setRowStretch(1, 1);
+
+    m_gridScrollArea->addLayout(m_grid0, 0, 1, 1, 1);
+    m_gridScrollArea->addLayout(m_grid1, 1, 1, 1, 1);
+    m_gridScrollArea->addLayout(m_grid2, 2, 1, 1, 1);
+    m_gridScrollArea->addLayout(m_grid3, 3, 1, 1, 1);
+    m_gridScrollArea->setContentsMargins(0, 0, 0, 0);
+    m_gridScrollArea->setRowStretch(0, 0);
+    m_gridScrollArea->setRowStretch(1, 0);
+    m_gridScrollArea->setRowStretch(2, 0);
+    m_gridScrollArea->setRowStretch(3, 0);
+    m_gridScrollArea->setRowStretch(4, 1);
+    m_gridScrollArea->setColumnMinimumWidth(0, 50);
+//    m_gridScrollArea->setColumnStretch(0, 0);
+    m_gridScrollArea->setColumnStretch(1, 1);
+//    m_gridScrollArea->setColumnStretch(2, 0);
+    m_gridScrollArea->setColumnMinimumWidth(2, 50);
+
+
+    m_frmPanel->setObjectName("PanelScrollArea");
+    m_frmScrollArea->setObjectName("PanelScrollArea");
+
+//    setTitle("Local Library");
+//    m_sectionLibrary->setHeader("Library");
+//    m_sectionMedia->setHeader("Media Files");
+
+    m_lblPanelTitle->setText("Library Settings");
+
 
     m_btnLibImport->setText("Import");
     m_btnLibExport->setText("Export");
     m_btnSetMediaLoc->setText("Change");
     m_btnSetLibPath->setText("Change");
 
-    m_optCopyMedia->setText("Make Local Copies of Files");
+    m_optCopyMedia->setText("Make Local Copies of Media Files");
 
+    m_lblLibNameTag->setText("Library Name:");
     m_lblLibAddedTag->setText("Date Created:");
     m_lblLibPathTag->setText("File Location:");
     m_lblMediaSizeTag->setText("Size on Disk:");
@@ -125,7 +180,7 @@ MPanelLibrary::MPanelLibrary(QWidget *parent) : MPanel(parent)
 }
 void MPanelLibrary::setLibrary(MMediaLibrary *library)
 {
-    if(m_mediaLibrary){
+    if(m_mediaLibrary) {
         disconnect(m_mediaLibrary, nullptr, this, nullptr);
     }
 
@@ -239,8 +294,7 @@ void MPanelLibrary::askLibrarySavePath()
 void MPanelLibrary::askLibraryMediaPath()
 {
     QString title = "Set Library Media Path";
-    QString path = QFileDialog::getExistingDirectory(
-        nullptr, title, m_mediaLibrary->savePath());
+    QString path = QFileDialog::getExistingDirectory(nullptr, title, m_mediaLibrary->savePath());
 
     if(path != "") {
         m_boxMediaLoc->setText(QDir::toNativeSeparators(path));

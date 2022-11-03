@@ -36,8 +36,8 @@ namespace Mpi3
         QByteArray songsToBytes(MSongList songlist)
         {
             QByteArray pidBytes;
-            for(MSong *s : songlist) {
-                pidBytes.append(s->pid().toStdString().c_str());
+            for(MSong *song : songlist) {
+                pidBytes.append(song->pid().toStdString().c_str());
             }
 
             return pidBytes;
@@ -45,8 +45,8 @@ namespace Mpi3
         QList<QUrl> songsToPaths(MSongList songlist)
         {
             QList<QUrl> songUrls;
-            for(MSong *s : songlist) {
-                songUrls.append(s->path());
+            for(MSong *song : songlist) {
+                songUrls.append(song->path());
             }
 
             return songUrls;

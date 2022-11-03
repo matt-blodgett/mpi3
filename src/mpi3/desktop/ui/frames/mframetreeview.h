@@ -16,7 +16,7 @@ class MModelContainers;
 class MTreeSonglist;
 class MModelSonglist;
 class MModelSonglistProxy;
-class MTreeViewLayoutSettings;
+class MTreeLayoutSettings;
 class MTreeDrives;
 class MModelDrives;
 
@@ -130,7 +130,7 @@ public:
     void setLibrary(MMediaLibrary *library);
     void setPlaylist(MPlaylist *playlist);
 
-    void setLayoutSettings(MTreeViewLayoutSettings *layoutSettings);
+    void setLayoutSettings(MTreeLayoutSettings *layoutSettings);
     void saveLayoutSettings();
 
 private:
@@ -138,7 +138,7 @@ private:
     MTreeSonglist *m_treeSonglist = nullptr;
     MModelSonglist *m_modelSonglist = nullptr;
     MModelSonglistProxy *m_modelSonglistProxy = nullptr;
-    MTreeViewLayoutSettings *m_layoutSettings = nullptr;
+    MTreeLayoutSettings *m_layoutSettings = nullptr;
     QString m_pidCurrentPlayingSong;
 
 private slots:

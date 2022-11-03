@@ -19,7 +19,6 @@ class MPI3_EXPORT_UI MRootDesktop;
 
 
 //#include "mpi3/core/mglobal.h"
-class MStyleSheet;
 class MSettingsXml;
 class MMediaLibrary;
 class MFrameContextBar;
@@ -51,12 +50,9 @@ private:
     void setContextPanel();
     void setPlaybackSongInitial();
     void setPlaybackSong(const QString &pid);
-    void setTheme();
-    void refreshTheme();
 
 private:
-    MStyleSheet *m_styleSheet = nullptr;
-    MSettingsXml *m_settingsProfile = nullptr;
+    MSettingsXml *m_settings = nullptr;
     MMediaLibrary *m_mediaLibrary = nullptr;
     QMediaPlayer *m_mediaPlayer = nullptr;
     MFrameContextBar *m_frameContextBar = nullptr;
@@ -66,8 +62,8 @@ private:
     MPanelMedia *m_panelMedia = nullptr;
 
 protected:
-    void paintEvent(QPaintEvent *event);
     void closeEvent(QCloseEvent *event);
+    void paintEvent(QPaintEvent *event);
 };
 
 #endif

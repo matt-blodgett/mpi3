@@ -7,6 +7,7 @@
 #include <QVariant>
 #include <QList>
 
+
 QT_BEGIN_NAMESPACE
 class QAbstractTableModel;
 QT_END_NAMESPACE
