@@ -5,6 +5,8 @@
 #include <QDir>
 
 
+#include "mpi3/core/mglobal.h"
+
 #include <QDebug>
 
 

@@ -5,7 +5,7 @@
 
 
 #include <QMetaType>
-typedef QColor QColour; // Canadian (Sorry)
+typedef QColor QColour;  // Canadian (Sorry)
 
 
 #define MPI3_LIBRARY_FILE_EXT ".mpi3lib"

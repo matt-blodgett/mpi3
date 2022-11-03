@@ -3,9 +3,16 @@
 #include <QRandomGenerator>
 #include <QDomDocument>
 #include <QTextStream>
+#include <QFileInfo>
 #include <QFile>
 #include <QUrl>
 #include <QDir>
+
+#include <QMediaPlayer>
+#include <QMediaMetaData>
+#include <QAudioOutput>
+#include <QEventLoop>
+#include <QTimer>
 
 
 #include <QDebug>
@@ -539,58 +546,82 @@ QString MMediaLibrary::generatePID(Mpi3::ElementType elementType)
     return pid;
 }
 
-MSong *MMediaLibrary::newSong(const QMap<QString, QVariant> &songInfoMap)
+MSong *MMediaLibrary::newSong(const QUrl &url)
 {
+    QMediaPlayer *mediaPlayer = new QMediaPlayer(this);
+    QAudioOutput *audioOutput = new QAudioOutput(this);
+    mediaPlayer->setAudioOutput(audioOutput);
+    mediaPlayer->setSource(url);
+
+    QEventLoop loop;
+    QTimer timer;
+    timer.setSingleShot(true);
+    connect(mediaPlayer, &QMediaPlayer::metaDataChanged, &loop, &QEventLoop::quit);
+    connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
+    timer.start(100);
+    loop.exec();
+
+    if (mediaPlayer->metaData().isEmpty()) {
+        qWarning() << "error reading file metadata from" << url.toString();
+        return nullptr;
+    }
+
+    QMediaMetaData mediaMetaData = mediaPlayer->metaData();
+    QFileInfo fileInfo = QFileInfo(mediaPlayer->source().toLocalFile());
+
     MSong *song = new MSong(this);
     song->m_pid = generatePID(Mpi3::SongElement);
-    song->m_name = songInfoMap["title"].toString();
-//    song->m_added = ?
-    song->m_path = QDir::toNativeSeparators(songInfoMap["path"].toString());
-    song->m_artist = songInfoMap["artist"].toString();
-    song->m_album = songInfoMap["album"].toString();
-    song->m_kind = songInfoMap["kind"].toString();
+    song->m_name = mediaMetaData.value(QMediaMetaData::Title).toString();
+    song->m_path = QDir::toNativeSeparators(url.toLocalFile());
+    song->m_artist = mediaMetaData.value(QMediaMetaData::Author).toString();
+    song->m_album = mediaMetaData.value(QMediaMetaData::AlbumTitle).toString();
+    song->m_kind = fileInfo.suffix();
 
-    song->m_size = songInfoMap["size"].toDouble();
-    song->m_time = songInfoMap["time"].toDouble();
+    song->m_size = fileInfo.size();
+    song->m_time = mediaMetaData.value(QMediaMetaData::Duration).toDouble();
 
-    song->m_bitRate = songInfoMap["bitRate"].toInt();
-    song->m_sampleRate = songInfoMap["sampleRate"].toInt();
+    song->m_bitRate = mediaMetaData.value(QMediaMetaData::AudioBitRate).toInt();
+    // TODO: Not sure how to calculate
+    song->m_sampleRate = 44100;
 
-    if(song->m_name.isEmpty() || song->m_name.isNull()) {
-        song->m_name = QUrl(songInfoMap["path"].toString()).fileName();
+    delete mediaPlayer;
+    delete audioOutput;
+
+    if(song->m_name.isEmpty()) {
+        song->m_name = url.fileName();
         QStringList splitExt = song->m_name.split(".");
         if(splitExt.size() > 0) {
             song->m_name = splitExt.at(0);
         }
     }
 
-    if(!m_localMediaPath.isNull() && !m_localMediaPath.isEmpty()) {
-        QString localPath = m_localMediaPath;
-        if(!song->m_artist.isNull() && !song->m_artist.isEmpty()) {
-            localPath += "/";
-            localPath += song->m_artist;
-            if (!QDir(localPath).exists()) {
-                QDir().mkdir(localPath);
-            }
-        }
-        localPath += "/";
-        // Duplicate song names??
-        // Use tail of song->m_path to determine file name
-        localPath += song->m_name;
-        localPath += ".";
-        localPath += song->m_kind;
+//    if(!m_localMediaPath.isNull() && !m_localMediaPath.isEmpty()) {
+//        QString localPath = m_localMediaPath;
+//        if(!song->m_artist.isNull() && !song->m_artist.isEmpty()) {
+//            localPath += "/";
+//            localPath += song->m_artist;
+//            if (!QDir(localPath).exists()) {
+//                QDir().mkdir(localPath);
+//            }
+//        }
+//        localPath += "/";
+//        // Duplicate song names??
+//        // Use tail of song->m_path to determine file name
+//        localPath += song->m_name;
+//        localPath += ".";
+//        localPath += song->m_kind;
 
-        if(QFile::copy(song->m_path, localPath)) {
-            qDebug() << "copied song from" << song->m_path << "to" << localPath;
-            song->m_path = QDir::toNativeSeparators(localPath);
-        }
-    }
+//        if(QFile::copy(song->m_path, localPath)) {
+//            qDebug() << "copied song from" << song->m_path << "to" << localPath;
+//            song->m_path = QDir::toNativeSeparators(localPath);
+//        }
+//    }
 
     m_songs.append(song);
     emit songCreated(song);
 
     qDebug().nospace()
-        << "craeted new song "
+        << "created new song "
         << " path=" << song->m_path
         << " name=" << song->m_name
         << " artist=" << song->m_artist
@@ -601,13 +632,6 @@ MSong *MMediaLibrary::newSong(const QMap<QString, QVariant> &songInfoMap)
         << " bitRate=" << song->m_bitRate
         << " sampleRate=" << song->m_sampleRate;
     return song;
-//    QMapIterator<QString, QVariant> i(songInfo);
-//    while (i.hasNext()) {
-//        i.next();
-//        if (i.key() == 'path') {
-
-//        }
-//    }
 }
 MFolder *MMediaLibrary::newFolder(MFolder *parentFolder, const QString &name)
 {

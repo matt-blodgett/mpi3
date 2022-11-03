@@ -1,5 +1,5 @@
 ﻿#include "mpi3/desktop/ui/panels/mpanellibrary.h"
-#include "mpi3/desktop/ui/mactions.h"
+//#include "mpi3/desktop/ui/mactions.h"
 #include "mpi3/desktop/ui/mstyle.h"
 #include "mpi3/core/mmedialibrary.h"
 
@@ -14,7 +14,8 @@
 #include <QDate>
 
 
-#include "mpi3/util/msettings.h"
+//#include "mpi3/util/msettings.h"
+#include <QSettings>
 
 #include <QDebug>
 

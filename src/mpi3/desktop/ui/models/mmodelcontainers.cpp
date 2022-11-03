@@ -2,7 +2,6 @@
 #include "mpi3/desktop/ui/models/mmodelcontainersitem.h"
 #include "mpi3/core/mmedialibrary.h"
 #include "mpi3/core/mmediautil.h"
-#include "mpi3/core/maudioengine.h"
 
 #include <QMimeData>
 #include <QUrl>
@@ -161,10 +160,7 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
         }
         else if(actionIsCopyAction && dataIsValidMediaFiles) {
             for(const QUrl &url : data->urls()) {
-                MSongInfo songInfo;
-                if (songInfo.load(url.toString())) {
-                    m_mediaLibrary->newSong(songInfo.songInfoMap());
-                }
+                m_mediaLibrary->newSong(url);
             }
             return true;
         }
@@ -183,9 +179,8 @@ bool MModelContainers::dropMimeData(const QMimeData *data, Qt::DropAction action
         else if(actionIsCopyAction && dataIsValidMediaFiles) {
             QStringList pidStrings;
             for(const QUrl &url : data->urls()) {
-                MSongInfo songInfo;
-                if (songInfo.load(url.toString())) {
-                    MSong *song = m_mediaLibrary->newSong(songInfo.songInfoMap());
+                MSong *song = m_mediaLibrary->newSong(url);
+                if (song) {
                     pidStrings << song->pid();
                 }
             }

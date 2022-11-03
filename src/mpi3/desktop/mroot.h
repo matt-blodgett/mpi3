@@ -18,7 +18,7 @@ class MPI3_EXPORT_UI MRootDesktop;
 #endif
 
 
-#include "mpi3/core/mglobal.h"
+//#include "mpi3/core/mglobal.h"
 class MStyleSheet;
 class MSettingsXml;
 class MMediaLibrary;

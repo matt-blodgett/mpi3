@@ -10,6 +10,7 @@ namespace Mpi3 {
 
         QString timeToString(double time)
         {
+            time /= 1000;
             int sctime = static_cast<int>(time);
             int seconds = sctime % 60;
             int minutes = (sctime - seconds) / 60;

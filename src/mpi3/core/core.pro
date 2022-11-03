@@ -9,6 +9,5 @@ include(../common.pri)
 
 contains(DEFINES, MPI3_BUILD_SHARED) {
     DEFINES += MPI3_SHARED_LIBRARY_CORE
-    LIBS += -lavcodec -lavformat -lavutil
 }
 

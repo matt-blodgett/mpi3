@@ -6,10 +6,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 !contains(QT, multimedia):QT += multimedia
 
 
-equals(TEMPLATE, lib){
-    contains(DEFINES, MPI3_BUILD_STATIC):CONFIG += static
-    contains(DEFINES, MPI3_BUILD_SHARED):CONFIG += shared
-}
+#equals(TEMPLATE, lib){
+#    contains(DEFINES, MPI3_BUILD_STATIC):CONFIG += static
+#    contains(DEFINES, MPI3_BUILD_SHARED):CONFIG += shared
+#}
 
 
 CONFIG += skip_target_version_ext
@@ -17,10 +17,10 @@ contains(DEFINES, MPI3_BUILD_DESKTOP):CONFIG += c++1z
 contains(DEFINES, MPI3_BUILD_DEVICE):CONFIG += c++14
 
 
-LIBS += "-L$${DESTDIR}"
-unix:contains(DEFINES, MPI3_BUILD_SHARED) {
-    QMAKE_RPATHDIR += $$DESTDIR
-}
+#LIBS += "-L$${DESTDIR}"
+#unix:contains(DEFINES, MPI3_BUILD_SHARED) {
+#    QMAKE_RPATHDIR += $$DESTDIR
+#}
 
 
 BUILD_TARGET = mpi3$${BUILD_TARGET}

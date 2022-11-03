@@ -17,7 +17,6 @@ include(common.pri)
 
 contains(DEFINES, MPI3_BUILD_STATIC) {
     LIBS += -lmpi3ui -lmpi3util -lmpi3core -lmpi3assets
-    LIBS += -lavcodec -lavformat -lavutil
 }
 contains(DEFINES, MPI3_BUILD_SHARED) {
     LIBS += -lmpi3ui

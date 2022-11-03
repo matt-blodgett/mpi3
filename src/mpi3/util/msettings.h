@@ -12,7 +12,7 @@ QT_END_NAMESPACE
 
 
 #include "mpi3/util/mutil.h"
-#include "mpi3/desktop/ui/mactions.h"
+//#include "mpi3/desktop/ui/mactions.h"
 
 #ifdef MPI3_BUILD_SHARED
 class MPI3_EXPORT_UTIL MSettingsXml;

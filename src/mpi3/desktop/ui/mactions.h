@@ -4,7 +4,8 @@
 #define MACTIONS_H
 
 
-#include "mpi3/core/mglobal.h"
+//#include "mpi3/core/mglobal.h"
+#include <QString>
 
 
 namespace MActions
